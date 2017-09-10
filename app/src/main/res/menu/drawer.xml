@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/tv"
+            android:checked="false"
+            android:title="@string/home_tv" />
+
+        <item
+            android:id="@+id/app"
+            android:checked="false"
+            android:title="@string/home_app" />
+
+        <item
+            android:id="@+id/cool"
+            android:checked="false"
+            android:title="@string/home_cooling" />
+
+        <item
+            android:id="@+id/small"
+            android:checked="false"
+            android:title="@string/home_small" />
+
+        <item
+            android:id="@+id/kitchen"
+            android:checked="false"
+            android:title="@string/home_kitchen" />
+
+        <item
+            android:id="@+id/health"
+            android:checked="false"
+            android:title="@string/home_health" />
+
+        <item
+            android:id="@+id/life"
+            android:checked="false"
+            android:title="@string/home_life" />
+
+        <item
+            android:id="@+id/wearable"
+            android:checked="false"
+            android:title="@string/home_wearable" />
+
+        <item
+            android:id="@+id/accessories"
+            android:checked="false"
+            android:title="@string/home_accessories" />
+
+        <item
+            android:id="@+id/schedule"
+            android:checked="false"
+            android:title="@string/schedule" />
+
+        <item
+            android:id="@+id/compare"
+            android:checked="false"
+            android:title="@string/compare" />
+
+        <item
+            android:id="@+id/change"
+            android:checked="false"
+            android:title="@string/change" />
+
+        <item
+            android:id="@+id/help"
+            android:checked="false"
+            android:title="@string/help" />
+
+    </group>
+</menu>

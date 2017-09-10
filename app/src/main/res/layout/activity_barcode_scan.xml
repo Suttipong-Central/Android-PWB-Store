@@ -1,0 +1,36 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.journeyapps.barcodescanner.CompoundBarcodeView
+            android:id="@+id/zxing_barcode_scanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:minHeight="?attr/actionBarSize"
+            android:minWidth="?attr/actionBarSize"
+            android:src="@drawable/ic_arrow_back"/>
+
+        <ImageButton
+            android:id="@+id/image_button_flashlight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:minHeight="?attr/actionBarSize"
+            android:minWidth="?attr/actionBarSize"
+            android:src="@drawable/ic_flash_on" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

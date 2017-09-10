@@ -1,0 +1,283 @@
+package cenergy.central.com.pwb_store.adapter;
+
+import android.content.Context;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductDeliveryViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductDetailDescriptionViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductDetailImageViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductOverviewViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductPromotionViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductRecommendListViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.ProductSpecViewHolder;
+import cenergy.central.com.pwb_store.model.IViewType;
+import cenergy.central.com.pwb_store.model.ProductDetail;
+import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
+import cenergy.central.com.pwb_store.model.ProductDetailImage;
+import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
+import cenergy.central.com.pwb_store.model.Recommend;
+import cenergy.central.com.pwb_store.model.SpecDao;
+import cenergy.central.com.pwb_store.model.ViewType;
+
+/**
+ * Created by napabhat on 7/18/2017 AD.
+ */
+
+public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    //Static members
+    private static final int VIEW_TYPE_ID_IMAGE = 0;
+    private static final int VIEW_TYPE_ID_DETAIL_ITEM = 1;
+    private static final int VIEW_TYPE_ID_DETAIL_OVERVIEW = 2;
+    private static final int VIEW_TYPE_ID_DETAIL_PROMOTION = 3;
+    private static final int VIEW_TYPE_ID_DETAIL_SPEC = 4;
+    private static final int VIEW_TYPE_ID_DETAIL_DELIVERY = 5;
+    private static final int VIEW_TYPE_ID_RECOMMEND_ITEM = 6;
+
+    private static final ViewType VIEW_TYPE_OVERVIEW = new ViewType(VIEW_TYPE_ID_DETAIL_OVERVIEW);
+    private static final ViewType VIEW_TYPE_PROMOTION = new ViewType(VIEW_TYPE_ID_DETAIL_PROMOTION);
+    //private static final ViewType VIEW_TYPE_SPEC = new ViewType(VIEW_TYPE_ID_DETAIL_SPEC);
+    private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DETAIL_DELIVERY);
+
+    //Data Members
+    private Context mContext;
+    private FragmentManager mFragmentManager;
+    private ProductDetail mProductDetail;
+    private List<IViewType> mListViewType = new ArrayList<>();
+    private final GridLayoutManager.SpanSizeLookup mSpanSize = new GridLayoutManager.SpanSizeLookup() {
+        @Override
+        public int getSpanSize(int position) {
+            switch (getItemViewType(position)) {
+                case VIEW_TYPE_ID_IMAGE:
+                    return 3;
+                case VIEW_TYPE_ID_DETAIL_ITEM:
+                    return 4;
+                case VIEW_TYPE_ID_DETAIL_OVERVIEW:
+                    return 7;
+                case VIEW_TYPE_ID_DETAIL_PROMOTION:
+                    return 7;
+                case VIEW_TYPE_ID_DETAIL_SPEC:
+                    return 7;
+                case VIEW_TYPE_ID_DETAIL_DELIVERY:
+                    return 7;
+                case VIEW_TYPE_ID_RECOMMEND_ITEM:
+                    return 7;
+                default:
+                    return 1;
+            }
+        }
+    };
+
+    public ProductDetailAdapter(Context context, FragmentManager mFragmentManager) {
+        this.mContext = context;
+        this.mFragmentManager = mFragmentManager;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_ID_IMAGE:
+                return new ProductDetailImageViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_product_detail_image_main, parent, false)
+                );
+            case VIEW_TYPE_ID_DETAIL_ITEM:
+                return new ProductDetailDescriptionViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_product_detail_description, parent, false)
+                );
+            case VIEW_TYPE_ID_DETAIL_OVERVIEW:
+                return new ProductOverviewViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_product_overview, parent, false)
+                );
+            case VIEW_TYPE_ID_DETAIL_SPEC:
+                return new ProductSpecViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_product_detail_spec, parent, false)
+                );
+            case VIEW_TYPE_ID_DETAIL_PROMOTION:
+                return new ProductPromotionViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_product_detail_promotion, parent, false)
+                );
+
+            case VIEW_TYPE_ID_DETAIL_DELIVERY:
+                return new ProductDeliveryViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_product_detail_delivery, parent, false)
+                );
+
+            case VIEW_TYPE_ID_RECOMMEND_ITEM:
+                return new ProductRecommendListViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_recommend, parent, false)
+                );
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        int viewTypeId = getItemViewType(position);
+        IViewType viewType = mListViewType.get(position);
+        switch (viewTypeId) {
+            case VIEW_TYPE_ID_IMAGE:
+                if (viewType instanceof ProductDetailImage && holder instanceof ProductDetailImageViewHolder) {
+                    ProductDetailImage productDetailImage = (ProductDetailImage) viewType;
+                    ProductDetailImageViewHolder productDetailImageViewHolder = (ProductDetailImageViewHolder) holder;
+                    productDetailImageViewHolder.setViewHolder(productDetailImage, mFragmentManager);
+                }
+
+                break;
+
+            case VIEW_TYPE_ID_DETAIL_ITEM:
+                if (viewType instanceof ProductDetail && holder instanceof ProductDetailDescriptionViewHolder) {
+                    ProductDetail productDetail = (ProductDetail) viewType;
+                    ProductDetailDescriptionViewHolder productDetailDescriptionViewHolder = (ProductDetailDescriptionViewHolder) holder;
+                    productDetailDescriptionViewHolder.setViewHolder(productDetail);
+                }
+
+                break;
+
+            case VIEW_TYPE_ID_DETAIL_OVERVIEW:
+                if (holder instanceof ProductOverviewViewHolder) {
+                    ProductOverviewViewHolder productOverviewViewHolder = (ProductOverviewViewHolder) holder;
+                    productOverviewViewHolder.setViewHolder();
+                }
+                break;
+
+            case VIEW_TYPE_ID_DETAIL_SPEC:
+                if (viewType instanceof SpecDao && holder instanceof ProductSpecViewHolder) {
+                    SpecDao specDao = (SpecDao) viewType;
+                    ProductSpecViewHolder productSpecViewHolder = (ProductSpecViewHolder) holder;
+                    productSpecViewHolder.setViewHolder(specDao);
+                }
+                break;
+
+            case VIEW_TYPE_ID_DETAIL_PROMOTION:
+                if (holder instanceof ProductPromotionViewHolder) {
+                    ProductPromotionViewHolder productPromotionViewHolder = (ProductPromotionViewHolder) holder;
+                    productPromotionViewHolder.setViewHolder(mFragmentManager);
+                }
+                break;
+
+            case VIEW_TYPE_ID_DETAIL_DELIVERY:
+                if (holder instanceof ProductDeliveryViewHolder) {
+                    ProductDeliveryViewHolder productDeliveryViewHolder = (ProductDeliveryViewHolder) holder;
+                    productDeliveryViewHolder.setViewHolder();
+                }
+                break;
+
+            case VIEW_TYPE_ID_RECOMMEND_ITEM:
+                if (viewType instanceof Recommend && holder instanceof ProductRecommendListViewHolder) {
+                    Recommend recommend = (Recommend) viewType;
+                    ProductRecommendListViewHolder productRecommendListViewHolder = (ProductRecommendListViewHolder) holder;
+                    productRecommendListViewHolder.setViewHolder(mFragmentManager, recommend);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mListViewType.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return mListViewType.get(position).getViewTypeId();
+    }
+
+    public void setProductDetail(ProductDetail productDetail) {
+        this.mProductDetail = productDetail;
+        if (productDetail.getProductImageList() != null) {
+            ProductDetailImage productDetailImage = productDetail.getProductImageList();
+            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+            mListViewType.add(productDetailImage);
+        }
+
+        productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+        mListViewType.add(productDetail);
+
+        mListViewType.add(VIEW_TYPE_OVERVIEW);
+
+        SpecDao specDao = productDetail.getSpecDao();
+        specDao.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);
+        mListViewType.add(specDao);
+        mListViewType.add(VIEW_TYPE_PROMOTION);
+        mListViewType.add(VIEW_TYPE_DELIVERY);
+
+        notifyDataSetChanged();
+
+    }
+
+    public void setProductRecommend(Recommend recommend) {
+        recommend.setViewTypeId(VIEW_TYPE_ID_RECOMMEND_ITEM);
+        mListViewType.add(recommend);
+        notifyDataSetChanged();
+    }
+
+    public void updateProductDetailOption(ProductDetail productDetail, ProductDetailOptionItem productDetailOptionItem, int adapterPosition) {
+        ProductDetailOptionItem selectedProductDetailOptionItem = productDetailOptionItem;
+        if (selectedProductDetailOptionItem.isAvailableOptionAvailable()) {
+            productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+            mListViewType.set(adapterPosition, productDetail);
+            notifyItemChanged(adapterPosition);
+        } else {
+            ProductDetailImage productDetailImage = selectedProductDetailOptionItem.getProductDetailImage();
+            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+            mListViewType.set(0, productDetailImage);
+            notifyItemChanged(0);
+
+            productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+            mListViewType.set(adapterPosition, productDetail);
+            notifyItemChanged(adapterPosition);
+        }
+
+    }
+
+    public void updateProductDetailImage(ProductDetail productDetail, ProductDetailAvailableOptionItem productDetailAvailableOptionItem, int adapterPosition, int adapterItem) {
+        ProductDetailAvailableOptionItem selectProductAvaileOptionItem = productDetailAvailableOptionItem;
+        if (selectProductAvaileOptionItem.isSelected()) {
+            ProductDetailImage productDetailImage = selectProductAvaileOptionItem.getProductDetailImage();
+            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+            mListViewType.set(adapterPosition, productDetailImage);
+            notifyItemChanged(adapterPosition);
+
+            productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+            mListViewType.set(adapterItem, productDetail);
+            notifyItemChanged(adapterItem);
+
+        } else {
+            ProductDetailImage productDetailImage = productDetail.getProductImageList();
+            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+            mListViewType.set(adapterPosition, productDetailImage);
+            notifyItemChanged(adapterPosition);
+
+            productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+            mListViewType.set(adapterItem, productDetail);
+            notifyItemChanged(adapterItem);
+
+        }
+    }
+
+    public GridLayoutManager.SpanSizeLookup getSpanSize() {
+        return mSpanSize;
+    }
+}

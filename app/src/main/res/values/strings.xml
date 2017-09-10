@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">PowerBuy-Store</string>
+
+    <string name="home">Home</string>
+    <string name="home_tv">TV &amp; Home Entertainment</string>
+    <string name="home_app">Home Appliances</string>
+    <string name="home_cooling">Cooling &amp; Heating</string>
+    <string name="home_small">Small Appliances</string>
+    <string name="home_kitchen">Kitchen</string>
+    <string name="home_health">Health &amp; Beauty</string>
+    <string name="home_life">Lifestyle Electronic</string>
+    <string name="home_wearable">Wearable &amp; Gadgets</string>
+    <string name="home_accessories">Accessories</string>
+    <string name="schedule">HDL Schedule</string>
+    <string name="compare">Compare</string>
+    <string name="change">Change Language to Thai</string>
+    <string name="help">Help</string>
+
+    <!-- Category -->
+    <string name="category">SHOP BY CATEGORY</string>
+    <!-- Search -->
+    <string name="search_hint">I\'m Looking for</string>
+    <!-- ProductList -->
+    <string name="baht">฿</string>
+    <string name="product_overview">Overview</string>
+    <string name="product_available">Available store</string>
+    <string name="product_compare">Add to Compare</string>
+    <string name="product_read">Read More >></string>
+    <string name="product_promotion">Promotion</string>
+    <string name="product_spec">Specification</string>
+    <string name="product_delivery">Delivery / Warranty / Refund</string>
+    <string name="product_stock">In Stock</string>
+    <string name="product_out_stock">Out Stock</string>
+    <string name="filter_count">(%1$s)</string>
+
+    <!-- Product Detail -->
+    <string name="promotion_header">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
+    <string name="promotion_detail">ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560</string>
+    <string name="error_ssl_cert_invalid">คุณกำลังไปยังหน้าที่อาจจะไม่ปลอดภัย ต้องการดำเนินการต่อหรือไม่?</string>
+    <string name="spec_product">คุณสมบัติ</string>
+    <string name="book_time">จองเวลานัดส่งสินค้า</string>
+    <string name="hdl_url">http://hdl.powerbuy.co.th/Users/Login</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+    <!-- Compare -->
+    <string name="compare_header">Compare Product</string>
+
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    <!-- Search -->
+    <string name="clear_history">Clear History</string>
+    <string name="search_result_header">search result for</string>
+
+    <!-- Store -->
+    <string name="select_store">Select store</string>
+    <string name="store_avaliable">Avaliable Store</string>
+    <string name="store">Store</string>
+    <string name="address">Address</string>
+    <string name="stock">Stock</string>
+
+    <!-- Date -->
+    <string name="sun">SUN</string>
+    <string name="mon">MON</string>
+    <string name="tue">TUE</string>
+    <string name="wed">WED</string>
+    <string name="thu">THU</string>
+    <string name="fri">FRI</string>
+    <string name="sat">SAT</string>
+    <string name="last_date">30</string>
+    <string name="time_10am">10.00 - 12.00</string>
+    <string name="time_12pm">12.00 - 14.00</string>
+    <string name="time_14pm">14.00 - 16.00</string>
+    <string name="time_16pm">16.00 - 18.00</string>
+    <string name="time_18pm">18.00 - 20.00</string>
+    <string name="time_20pm">20.00 - 22.00</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:orientation="horizontal">
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/txt_item_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        style="@style/textSub"
+        android:layout_marginLeft="25dp"
+        app:typeFaceAsset="RobotoLight.ttf"
+        tools:text="Sub Filter"/>
+
+    <!--<ImageView-->
+        <!--android:id="@+id/img_check"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="end|center_vertical"-->
+        <!--android:src="@drawable/ic_done"/>-->
+</FrameLayout>

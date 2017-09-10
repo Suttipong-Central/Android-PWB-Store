@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="?attr/selectableItemBackground"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="1dp">
+
+    <LinearLayout
+        android:id="@+id/layout_overview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/border_grey_bottom">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_header_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/product_overview"
+                android:textColor="@color/nameProductColor"
+                android:textSize="20sp"
+                app:typeFaceAsset="RobotoLight.ttf"
+                android:layout_marginLeft="10dp"
+                android:padding="5dp"/>
+            
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_keyboard_arrow_right"/>
+    </RelativeLayout>
+    </LinearLayout>
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/layout_available"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:padding="5dp">-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/img_icon"-->
+                    <!--android:layout_width="24dp"-->
+                    <!--android:layout_height="24dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:src="@drawable/ic_store"-->
+                    <!--android:layout_marginRight="10dp"/>-->
+
+                <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+                    <!--android:id="@+id/txt_available"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="bottom"-->
+                    <!--android:text="@string/product_available"-->
+                    <!--android:textColor="@color/powerBuyPurple"-->
+                    <!--android:textSize="18sp"-->
+                    <!--app:typeFaceAsset="RobotoLight.ttf"-->
+                    <!--android:layout_marginRight="15dp"-->
+                    <!--android:background="?attr/selectableItemBackground"-->
+                    <!--/>-->
+
+                <!--<ImageView-->
+                    <!--android:layout_width="24dp"-->
+                    <!--android:layout_height="24dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:src="@drawable/ic_compare"-->
+                    <!--android:layout_marginRight="10dp"/>-->
+
+                <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+                    <!--android:id="@+id/txt_compare"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="bottom"-->
+                    <!--android:text="@string/product_compare"-->
+                    <!--android:textColor="@color/powerBuyPurple"-->
+                    <!--android:textSize="18sp"-->
+                    <!--app:typeFaceAsset="RobotoLight.ttf"-->
+                    <!--android:layout_marginRight="10dp"-->
+                    <!--android:background="?attr/selectableItemBackground"/>-->
+            <!--</LinearLayout>-->
+        <!--</RelativeLayout>-->
+
+        <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+            <!--android:id="@+id/txt_detail"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_marginTop="15dp"-->
+            <!--android:ellipsize="end"-->
+            <!--android:maxLines="3"-->
+            <!--android:textColor="@android:color/darker_gray"-->
+            <!--android:textSize="16dp"-->
+            <!--app:typeFaceAsset="RobotoLight.ttf"-->
+            <!--/>-->
+
+        <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+            <!--android:id="@+id/txt_view_detail"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:clickable="true"-->
+            <!--android:foreground="?attr/selectableItemBackground"-->
+            <!--android:padding="5dp"-->
+            <!--android:text="@string/product_read"-->
+            <!--android:textSize="16dp"-->
+            <!--android:textColor="@color/categoryColor"-->
+            <!--app:typeFaceAsset="RobotoLight.ttf"/>-->
+
+    <!--</LinearLayout>-->
+</android.support.v7.widget.CardView>

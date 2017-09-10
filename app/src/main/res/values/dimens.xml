@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Drawer -->
+    <dimen name="drawer_header_height">50dp</dimen>
+
+    <dimen name="textBannerTopMargin">18dp</dimen>
+    <dimen name="recycler_view_content_horizontal_padding">9dp</dimen>
+
+    <dimen name="product_item_spacing">10dp</dimen>
+
+    <!-- Raised Button Asset -->
+    <dimen name="raised_button_min_width">64dp</dimen>
+    <dimen name="raised_button_min_height">36dp</dimen>
+    <dimen name="raised_button_height">36dp</dimen>
+    <dimen name="raised_button_text_size">16sp</dimen>
+    <dimen name="raised_button_vertical_padding">8.5dp</dimen>
+    <dimen name="raised_button_horizontal_padding">12dp</dimen>
+    <dimen name="raised_button_card_padding">8dp</dimen>
+    <dimen name="raised_button_card_elevation">2dp</dimen>
+    <dimen name="raised_button_cardCornerRadius">4dp</dimen>
+    <dimen name="common_40_dp">40dp</dimen>
+</resources>

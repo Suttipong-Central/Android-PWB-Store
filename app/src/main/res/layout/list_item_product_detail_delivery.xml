@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="550dp"
+    android:background="?attr/selectableItemBackground"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="1dp">
+
+    <LinearLayout
+        android:id="@+id/layout_delivery"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/border_grey_bottom"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:padding="5dp"
+                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:text="@string/product_delivery"
+                android:textColor="@color/nameProductColor"
+                android:textSize="20sp"
+                app:typeFaceAsset="RobotoLight.ttf"/>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_keyboard_arrow_right"/>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_add_time"
+                style="@style/RaisedButtonCard"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="16dp"
+                android:layout_gravity="center_horizontal"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/categoryColor">
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/RaisedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/book_time"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    app:typeFaceAsset="RobotoLight.ttf"/>
+            </android.support.v7.widget.CardView>
+        </RelativeLayout>
+
+        <cenergy.central.com.pwb_store.view.CalendarViewCustom
+            android:id="@+id/custom_calendar"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </cenergy.central.com.pwb_store.view.CalendarViewCustom>
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

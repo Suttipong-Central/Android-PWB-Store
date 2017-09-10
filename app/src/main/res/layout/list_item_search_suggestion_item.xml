@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_search_suggestion_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_view_suggestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/headerTextColor"
+            android:textSize="13sp"
+            tools:text="cameras" />
+
+        <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+            <!--android:id="@+id/txt_view_suggestion_description"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textColor="@color/hintColor"-->
+            <!--android:textSize="11sp"-->
+            <!--tools:text="in Central Department Store" />-->
+    </LinearLayout>
+</LinearLayout>

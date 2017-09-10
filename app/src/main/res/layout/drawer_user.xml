@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_header_user"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/powerBuyPurple"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp">
+
+        <ImageView
+            android:id="@+id/image_view_profile"
+            android:layout_width="67dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/ic_circle_grey_placeholder"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_view_full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:padding="5dp"
+                android:text="Panisa Punjavorn"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="14dp"
+                android:background="@android:color/transparent"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:padding="5dp"
+                android:drawableRight="@drawable/ic_keyboard_arrow_down_white"
+                android:text="Central World"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_promotion_payment"
+    android:layout_width="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_height="72dp"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="45dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:text="@string/promotion_header"
+            android:textColor="@color/blackText"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:typeFaceAsset="RobotoLight.ttf"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_header"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="45dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:text="@string/promotion_detail"
+            android:textColor="@color/blackText"
+            android:textSize="14sp"
+            app:typeFaceAsset="RobotoLight.ttf"/>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/ic_keyboard_arrow_right"/>
+    </RelativeLayout>
+
+</LinearLayout>

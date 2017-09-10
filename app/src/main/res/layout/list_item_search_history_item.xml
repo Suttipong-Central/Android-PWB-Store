@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/txt_view_search_item"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="14dp"
+        android:textSize="16sp"
+        android:layout_marginLeft="16dp"
+        android:textColor="@color/headerTextColor"
+        tools:text="lancôme" />
+</LinearLayout>

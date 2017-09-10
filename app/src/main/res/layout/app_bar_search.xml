@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.AppBarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppBarStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/powerBuyWhite">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ToolbarCancel"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <!--<cenergy.central.com.pwb_store.view.ClearAbleEditText-->
+            <!--android:id="@+id/edit_text_search"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="?attr/actionBarSize"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:drawableLeft="@drawable/ic_search"-->
+            <!--android:drawablePadding="24dp"-->
+            <!--android:drawableStart="@drawable/ic_search"-->
+            <!--android:hint="@string/search_hint"-->
+            <!--android:imeOptions="actionSearch"-->
+            <!--android:inputType="text"-->
+            <!--android:maxLines="1"-->
+            <!--android:padding="16dp"-->
+            <!--android:textColor="@color/headerTextColor"-->
+            <!--android:textColorHint="@color/hintColor"-->
+            <!--android:textSize="12sp"/>-->
+    </android.support.v7.widget.Toolbar>
+</android.support.design.widget.AppBarLayout>

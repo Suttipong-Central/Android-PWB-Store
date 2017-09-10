@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/headDetail">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="5"
+        android:orientation="horizontal">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/text_store"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center|center_vertical"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/nameProductColor"
+            android:text="@string/store"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/text_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center|center_vertical"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/nameProductColor"
+            android:text="@string/address"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/text_stock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center|center_vertical"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/nameProductColor"
+            android:text="@string/stock"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,130 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert"/>
+
+    <style name="textSize18Sp">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="textSize22Sp">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/contentTextColor</item>
+    </style>
+
+    <style name="textNameProduct">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/contentTextColor</item>
+    </style>
+
+    <style name="filterProduct">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/contentTextColor</item>
+    </style>
+
+    <style name="textNameCategory">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/categoryColor</item>
+    </style>
+
+    <style name="textHead">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/categoryColor</item>
+    </style>
+
+    <style name="textFilterHead">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/categoryColor</item>
+    </style>
+
+    <style name="textCompare">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/categoryColor</item>
+    </style>
+
+    <style name="textSub">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/headerTextColor</item>
+    </style>
+
+    <style name="textSubCheck">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/nameProductColor</item>
+    </style>
+
+    <style name="PowerBuyTabTextStyle" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textSize">19sp</item>
+    </style>
+
+    <style name="AppBarStyle" />
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="ToolbarTheme">
+        <item name="colorControlHighlight">#DCDCDC</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+    </style>
+
+    <style name="ToolbarBack">
+        <item name="colorControlHighlight">#DCDCDC</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back_white</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+    </style>
+
+    <style name="ToolbarCancel">
+        <item name="colorControlHighlight">#DCDCDC</item>
+        <item name="navigationIcon">@drawable/ic_clear_white</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.Light.SearchView">
+        <item name="closeIcon">@drawable/ic_clear</item>
+        <item name="searchIcon">@drawable/ic_search</item>
+        <item name="colorControlNormal">@android:color/black</item>
+    </style>
+
+    <style name="ToolbarColoredBackArrow" parent="AppTheme">
+        <item name="android:textColorSecondary">#DCDCDC</item>
+    </style>
+
+    <style name="RaisedButton">
+        <item name="android:minWidth">@dimen/raised_button_min_width</item>
+        <item name="android:minHeight">@dimen/raised_button_min_height</item>
+        <item name="android:paddingLeft">@dimen/raised_button_horizontal_padding</item>
+        <item name="android:paddingStart">@dimen/raised_button_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/raised_button_horizontal_padding</item>
+        <item name="android:paddingEnd">@dimen/raised_button_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/raised_button_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/raised_button_vertical_padding</item>
+        <item name="android:layout_gravity">center_vertical|center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center_vertical|center</item>
+        <item name="android:textSize">@dimen/raised_button_text_size</item>
+    </style>
+
+    <style name="RaisedButtonCard">
+        <item name="android:height">@dimen/raised_button_height</item>
+        <item name="android:padding">@dimen/raised_button_card_padding</item>
+        <item name="cardElevation">@dimen/raised_button_card_elevation</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="cardCornerRadius">@dimen/raised_button_cardCornerRadius</item>
+    </style>
+
+</resources>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<FrameLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="64dp"-->
+        <!--android:layout_marginBottom="9dp"-->
+        <!--android:layout_marginEnd="6dp"-->
+        <!--android:layout_marginStart="6dp"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="1">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/img_view_search"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.1"-->
+            <!--android:padding="6dp"-->
+            <!--android:src="@drawable/ic_search"/>-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/edt_search"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.8"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:gravity="center_vertical"-->
+            <!--android:hint="ค้นหาสินค้า"-->
+            <!--android:imeOptions="actionSearch"-->
+            <!--android:inputType="text"-->
+            <!--android:maxLines="1"-->
+            <!--android:paddingLeft="16dp"-->
+            <!--android:paddingStart="16dp"-->
+            <!--android:textSize="19sp"/>-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/image_view_barcode"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.1"-->
+            <!--android:padding="6dp"-->
+            <!--android:src="@drawable/ic_barcode_scan"/>-->
+    <!--</LinearLayout>-->
+<!--</FrameLayout>-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:gravity="end|center_vertical">
+
+    <!--<android.support.v7.widget.SearchView-->
+        <!--android:id="@+id/search_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_toLeftOf="@+id/image_view_barcode"-->
+        <!--android:layout_toStartOf="@+id/image_view_barcode"-->
+
+        <!--app:iconifiedByDefault="false"/>-->
+    <ImageView
+        android:id="@+id/image_view_search"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_search" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyEditText
+        android:id="@+id/edit_text_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="45dp"
+        android:layout_marginLeft="42dp"
+        android:layout_marginRight="45dp"
+        android:layout_marginStart="6dp"
+        android:layout_toEndOf="@id/image_view_search"
+        android:layout_toRightOf="@id/image_view_search"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:hint="@string/search_hint"
+        android:imeOptions="actionDone"
+        android:inputType="textFilter"
+        android:maxLines="1"
+        android:textAllCaps="true"
+        android:textColor="@color/headerTextColor"
+        android:textColorHint="@color/hintColor"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/image_view_barcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="10dp"
+        android:padding="6dp"
+        android:src="@drawable/ic_barcode_scan"
+        android:background="?attr/selectableItemBackground"/>
+</RelativeLayout>
