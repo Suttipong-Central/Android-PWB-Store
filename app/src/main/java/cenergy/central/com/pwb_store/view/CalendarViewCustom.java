@@ -218,7 +218,8 @@ public class CalendarViewCustom extends LinearLayout {
         previousButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                getWeekDayPrev();
+                weekDays = getWeekDayPrev();
+                showDate(weekDays);
             }
         });
     }
@@ -226,7 +227,8 @@ public class CalendarViewCustom extends LinearLayout {
         nextButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                getWeekDayNext();
+                weekDays = getWeekDayNext();
+                showDate(weekDays);
             }
         });
     }
@@ -294,6 +296,24 @@ public class CalendarViewCustom extends LinearLayout {
         }
 
         return days;
+
+    }
+
+    public void showDate(String[] weekDays){
+        NextPreWeekday = weekDays;
+        firstDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[0]);
+        lastDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[6]);
+
+        currentDate.setText(firstDayOfWeek + "-" + lastDayOfWeek + " "
+                + CommonMethod.convertWeekDaysMouth(NextPreWeekday[6]));
+
+        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(NextPreWeekday[0]));
+        monday.setText("MON\n" + CommonMethod.convertWeekDays(NextPreWeekday[1]));
+        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(NextPreWeekday[2]));
+        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(NextPreWeekday[3]));
+        thursday.setText("THU\n" + CommonMethod.convertWeekDays(NextPreWeekday[4]));
+        friday.setText("FRI\n" + CommonMethod.convertWeekDays(NextPreWeekday[5]));
+        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(NextPreWeekday[6]));
 
     }
 

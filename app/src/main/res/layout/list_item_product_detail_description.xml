@@ -54,7 +54,7 @@
                     android:textColor="@color/nameProductColor"
                     android:textSize="18sp"
                     app:typeFaceAsset="RobotoLight.ttf"
-                    tools:text="Product Code : CT20178"/>
+                    android:text="Product Code : "/>
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:id="@+id/txt_stock"
@@ -109,6 +109,7 @@
                 android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_name_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
@@ -123,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:padding="5dp"
                     android:textSize="20sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
+                    app:typeFaceAsset="Roboto-Medium.ttf"
                     android:textColor="@color/salePriceColor"
                     tools:text="฿2,890"/>
 
@@ -169,7 +170,7 @@
                     android:layout_height="32dp"
                     android:layout_gravity="center"
                     android:padding="5dp"
-                    android:src="@mipmap/ic_logo"/>
+                    android:src="@drawable/ic_icon_t1c"/>
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:id="@+id/txt_redeem"

@@ -42,6 +42,8 @@
     <string name="hdl_url">http://hdl.powerbuy.co.th/Users/Login</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
+    <string name="product_code">Product Code : </string>
+    <string name="the_1_card">Redeem your point %1$,d points</string>
     <!-- Compare -->
     <string name="compare_header">Compare Product</string>
 

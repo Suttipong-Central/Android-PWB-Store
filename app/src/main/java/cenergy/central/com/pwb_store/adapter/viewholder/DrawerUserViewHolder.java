@@ -76,10 +76,6 @@ public class DrawerUserViewHolder extends RecyclerView.ViewHolder{
         }
     };
 
-    private void setStoreName(StoreList storeList){
-
-    }
-
     @OnClick(R.id.txt_store)
     protected void onStoreClick(PowerBuyTextView powerBuyTextView) {
         storeAdapter.setStore(mStoreDao);

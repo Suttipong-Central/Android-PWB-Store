@@ -3,8 +3,13 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by napabhat on 10/25/2016 AD.
@@ -26,27 +31,83 @@ public class ProductDetail implements IViewType, Parcelable {
 
     private int viewTypeId;
     private int masterId;
-    private String slug;
-    private String brand;
+    @SerializedName("ProductId")
+    @Expose
+    private String productCode;
+    @SerializedName("ProductName")
+    @Expose
     private String productName;
+    @SerializedName("ProductNameEN")
+    @Expose
+    private String productNameEN;
+    @SerializedName("UrlName")
+    @Expose
+    private String urlName;
+    @SerializedName("UrlNameEN")
+    @Expose
+    private String urlNameEN;
+    private String slug;
+    @SerializedName("Description")
+    @Expose
+    private String description;
+    @SerializedName("DescriptionEN")
+    @Expose
+    private String descriptionEN;
+    @SerializedName("Review")
+    @Expose
+    private String review;
+    @SerializedName("ReviewEN")
+    @Expose
+    private String reviewEN;
+    @SerializedName("Barcode")
+    @Expose
+    private String barcode;
+    @SerializedName("NumOfImage")
+    @Expose
+    private int numOfImage;
+    @SerializedName("CanInstallment")
+    @Expose
+    private boolean canInstallment;
+    @SerializedName("T1CRedeemPoint")
+    @Expose
+    private int t1cPoint;
+    @SerializedName("DepartmentId")
+    @Expose
+    private int departmentId;
+    @SerializedName("BrandId")
+    @Expose
+    private int brandId;
+    @SerializedName("BrandName")
+    @Expose
+    private String brand;
+    @SerializedName("BrandNameEn")
+    @Expose
+    private String brandEN;
     private String bu;
+    @SerializedName("Pictures")
+    @Expose
+    private List<ProductDetailImageItem> mProductDetailImageItems;
     private ProductDetailImage productImageList;
     private double savePercent;
+    @SerializedName("NormalPrice")
+    @Expose
     private double originalPrice;
+    @SerializedName("SpecialPrice")
+    @Expose
     private double price;
+    @SerializedName("StoreId")
+    @Expose
+    private String storeId;
     private int quantity;
     private int minQuantity;
     private int maxQuantity;
-    private String productCode;
-    private String description;
-    private String descriptionHtml;
-    private String shippingReturn;
-    private String shippingReturnHtml;
-    private String deliveryDescription;
-    private String deliveryHtml;
-    private String warrantyDescription;
-    private String warrantyHtml;
+    @SerializedName("StockOnHand")
+    @Expose
     private int stockAvailable;
+    @SerializedName("ProductRecommended")
+    @Expose
+    private List<ProductRelatedList> mProductRelatedLists;
+    private Recommend mRecommend;
     private TheOneCardProductDetail theOneCardDetailList;
     private List<ProductDetailPromotion> detailPromotionList;
     private ProductDetailOption productDetailOption;
@@ -79,6 +140,9 @@ public class ProductDetail implements IViewType, Parcelable {
         slug = in.readString();
         brand = in.readString();
         productName = in.readString();
+        productNameEN = in.readString();
+        urlName = in.readString();
+        urlNameEN = in.readString();
         productImageList = in.readParcelable(ProductDetailImage.class.getClassLoader());
         savePercent = in.readDouble();
         originalPrice = in.readDouble();
@@ -88,18 +152,26 @@ public class ProductDetail implements IViewType, Parcelable {
         maxQuantity = in.readInt();
         productCode = in.readString();
         description = in.readString();
-        descriptionHtml = in.readString();
-        shippingReturn = in.readString();
-        shippingReturnHtml = in.readString();
-        deliveryDescription = in.readString();
-        deliveryHtml = in.readString();
-        warrantyDescription = in.readString();
-        warrantyHtml = in.readString();
+        descriptionEN = in.readString();
+        //descriptionHtml = in.readString();
+        review = in.readString();
+        reviewEN = in.readString();
+        barcode = in.readString();
+        numOfImage = in.readInt();
+        canInstallment = in.readByte() != 0;
+        t1cPoint = in.readInt();
+        departmentId = in.readInt();
+        brandId = in.readInt();
+        brandEN = in.readString();
+        storeId = in.readString();
         stockAvailable = in.readInt();
+        mRecommend = in.readParcelable(Recommend.class.getClassLoader());
         theOneCardDetailList = in.readParcelable(TheOneCardProductDetail.class.getClassLoader());
         detailPromotionList = in.createTypedArrayList(ProductDetailPromotion.CREATOR);
         productDetailOption = in.readParcelable(ProductDetailOption.class.getClassLoader());
         mSpecDao = in.readParcelable(SpecDao.class.getClassLoader());
+        mProductDetailImageItems = in.createTypedArrayList(ProductDetailImageItem.CREATOR);
+        mProductRelatedLists = in.createTypedArrayList(ProductRelatedList.CREATOR);
     }
 
     public void replaceProduct(ProductDetailOptionItem productDetailOptionItem) {
@@ -122,6 +194,9 @@ public class ProductDetail implements IViewType, Parcelable {
         dest.writeString(slug);
         dest.writeString(brand);
         dest.writeString(productName);
+        dest.writeString(productNameEN);
+        dest.writeString(urlName);
+        dest.writeString(urlNameEN);
         dest.writeParcelable(productImageList, flags);
         dest.writeDouble(savePercent);
         dest.writeDouble(originalPrice);
@@ -131,18 +206,26 @@ public class ProductDetail implements IViewType, Parcelable {
         dest.writeInt(maxQuantity);
         dest.writeString(productCode);
         dest.writeString(description);
-        dest.writeString(descriptionHtml);
-        dest.writeString(shippingReturn);
-        dest.writeString(shippingReturnHtml);
-        dest.writeString(deliveryDescription);
-        dest.writeString(deliveryHtml);
-        dest.writeString(warrantyDescription);
-        dest.writeString(warrantyHtml);
+        dest.writeString(descriptionEN);
+        //dest.writeString(descriptionHtml);
+        dest.writeString(review);
+        dest.writeString(reviewEN);
+        dest.writeString(barcode);
+        dest.writeInt(numOfImage);
+        dest.writeByte((byte) (canInstallment ? 1 : 0));
+        dest.writeInt(t1cPoint);
+        dest.writeInt(departmentId);
+        dest.writeInt(brandId);
+        dest.writeString(brandEN);
+        dest.writeString(storeId);
         dest.writeInt(stockAvailable);
+        dest.writeParcelable(mRecommend, flags);
         dest.writeParcelable(theOneCardDetailList, flags);
         dest.writeList(detailPromotionList);
         dest.writeParcelable(productDetailOption, flags);
         dest.writeParcelable(mSpecDao, flags);
+        dest.writeList(mProductDetailImageItems);
+        dest.writeList(mProductRelatedLists);
     }
 
     @Override
@@ -278,62 +361,6 @@ public class ProductDetail implements IViewType, Parcelable {
         this.description = description;
     }
 
-    public String getDescriptionHtml() {
-        return descriptionHtml;
-    }
-
-    public void setDescriptionHtml(String descriptionHtml) {
-        this.descriptionHtml = descriptionHtml;
-    }
-
-    public String getShippingReturn() {
-        return shippingReturn;
-    }
-
-    public void setShippingReturn(String shippingReturn) {
-        this.shippingReturn = shippingReturn;
-    }
-
-    public String getShippingReturnHtml() {
-        return shippingReturnHtml;
-    }
-
-    public void setShippingReturnHtml(String shippingReturnHtml) {
-        this.shippingReturnHtml = shippingReturnHtml;
-    }
-
-    public String getDeliveryDescription() {
-        return deliveryDescription;
-    }
-
-    public void setDeliveryDescription(String deliveryDescription) {
-        this.deliveryDescription = deliveryDescription;
-    }
-
-    public String getDeliveryHtml() {
-        return deliveryHtml;
-    }
-
-    public void setDeliveryHtml(String deliveryHtml) {
-        this.deliveryHtml = deliveryHtml;
-    }
-
-    public String getWarrantyDescription() {
-        return warrantyDescription;
-    }
-
-    public void setWarrantyDescription(String warrantyDescription) {
-        this.warrantyDescription = warrantyDescription;
-    }
-
-    public String getWarrantyHtml() {
-        return warrantyHtml;
-    }
-
-    public void setWarrantyHtml(String warrantyHtml) {
-        this.warrantyHtml = warrantyHtml;
-    }
-
     public int getStockAvailable() {
         return stockAvailable;
     }
@@ -377,5 +404,150 @@ public class ProductDetail implements IViewType, Parcelable {
 
     public void setSpecDao(SpecDao specDao) {
         mSpecDao = specDao;
+    }
+
+    public String getProductNameEN() {
+        return productNameEN;
+    }
+
+    public void setProductNameEN(String productNameEN) {
+        this.productNameEN = productNameEN;
+    }
+
+    public String getUrlName() {
+        return urlName;
+    }
+
+    public void setUrlName(String urlName) {
+        this.urlName = urlName;
+    }
+
+    public String getUrlNameEN() {
+        return urlNameEN;
+    }
+
+    public void setUrlNameEN(String urlNameEN) {
+        this.urlNameEN = urlNameEN;
+    }
+
+    public String getDescriptionEN() {
+        return descriptionEN;
+    }
+
+    public void setDescriptionEN(String descriptionEN) {
+        this.descriptionEN = descriptionEN;
+    }
+
+    public String getReview() {
+        return review;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
+    }
+
+    public String getReviewEN() {
+        return reviewEN;
+    }
+
+    public void setReviewEN(String reviewEN) {
+        this.reviewEN = reviewEN;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public int getNumOfImage() {
+        return numOfImage;
+    }
+
+    public void setNumOfImage(int numOfImage) {
+        this.numOfImage = numOfImage;
+    }
+
+    public boolean isCanInstallment() {
+        return canInstallment;
+    }
+
+    public void setCanInstallment(boolean canInstallment) {
+        this.canInstallment = canInstallment;
+    }
+
+    public int getT1cPoint() {
+        return t1cPoint;
+    }
+
+    public void setT1cPoint(int t1cPoint) {
+        this.t1cPoint = t1cPoint;
+    }
+
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public int getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(int brandId) {
+        this.brandId = brandId;
+    }
+
+    public String getBrandEN() {
+        return brandEN;
+    }
+
+    public void setBrandEN(String brandEN) {
+        this.brandEN = brandEN;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    public Recommend getRecommend() {
+        return mRecommend;
+    }
+
+    public void setRecommend(Recommend recommend) {
+        mRecommend = recommend;
+    }
+
+    public List<ProductDetailImageItem> getProductDetailImageItems() {
+        return mProductDetailImageItems;
+    }
+
+    public void setProductDetailImageItems(List<ProductDetailImageItem> productDetailImageItems) {
+        mProductDetailImageItems = productDetailImageItems;
+    }
+
+    public List<ProductRelatedList> getProductRelatedLists() {
+        return mProductRelatedLists;
+    }
+
+    public void setProductRelatedLists(List<ProductRelatedList> productRelatedLists) {
+        mProductRelatedLists = productRelatedLists;
+    }
+
+    public String getDisplayOldPrice(String unit) {
+        //return String.format(Locale.getDefault(), "%s %s", NumberFormat.getInstance(Locale.getDefault()).format(oldPrice), unit);
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(originalPrice));
+    }
+
+    public String getDisplayNewPrice(String unit) {
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(price));
     }
 }

@@ -1,12 +1,16 @@
 package cenergy.central.com.pwb_store.activity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -22,8 +26,12 @@ import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductDetailFragment;
 import cenergy.central.com.pwb_store.fragment.WebViewFragment;
+import cenergy.central.com.pwb_store.manager.HttpManager;
+import cenergy.central.com.pwb_store.manager.UserInfoManager;
+import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
+import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOption;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
@@ -38,15 +46,22 @@ import cenergy.central.com.pwb_store.model.Recommend;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.model.SpecItem;
 import cenergy.central.com.pwb_store.model.TheOneCardProductDetail;
+import cenergy.central.com.pwb_store.utils.APIErrorUtils;
+import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by napabhat on 7/19/2017 AD.
  */
 
 public class ProductDetailActivity extends AppCompatActivity implements PowerBuyCompareView.OnClickListener {
+    private static final String TAG = ProductDetailActivity.class.getSimpleName();
 
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
+    public static final String ARG_IS_BARCODE = "ARG_IS_BARCODE";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -57,6 +72,97 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private ProductDetail mProductDetail;
     private Recommend mRecommend;
     private SpecDao mSpecDao;
+    private ProgressDialog mProgressDialog;
+    private String productId;
+    private boolean isBarcode;
+
+    final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
+        @Override
+        public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
+            if (response.isSuccessful()){
+                mProductDetail = response.body();
+                if (mProductDetail != null){
+                    List<SpecItem> specItems = new ArrayList<>();
+                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
+                    specItems.add(new SpecItem("Picture size","62x46mm"));
+                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
+                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
+                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
+                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
+                            "range : 0.6m - 2.7m"));
+                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+
+                    mSpecDao = new SpecDao(specItems);
+                    mProductDetail.setSpecDao(mSpecDao);
+                    mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction
+                            .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
+                            .commit();
+                    mProgressDialog.dismiss();
+                }else {
+                    MockData();
+                    mProgressDialog.dismiss();
+                }
+            }else {
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                showAlertDialog(error.getErrorMessage(), false);
+                mProgressDialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ProductDetail> call, Throwable t) {
+            Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
+        }
+    };
+
+    final Callback<ProductDetail> CALLBACK_BARCODE = new Callback<ProductDetail>() {
+        @Override
+        public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
+            if (response.isSuccessful()){
+                mProductDetail = response.body();
+                if (mProductDetail != null){
+                    List<SpecItem> specItems = new ArrayList<>();
+                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
+                    specItems.add(new SpecItem("Picture size","62x46mm"));
+                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
+                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
+                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
+                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
+                            "range : 0.6m - 2.7m"));
+                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+
+                    mSpecDao = new SpecDao(specItems);
+                    mProductDetail.setSpecDao(mSpecDao);
+                    mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction
+                            .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
+                            .commit();
+                    mProgressDialog.dismiss();
+                }else {
+                    MockData();
+                    mProgressDialog.dismiss();
+                }
+            }else {
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                showAlertDialog(error.getErrorMessage(), false);
+                mProgressDialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ProductDetail> call, Throwable t) {
+            Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
+        }
+    };
 
     @Subscribe
     public void onEvent(PromotionItemBus promotionItemBus){
@@ -68,6 +174,19 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(promotionItemBus.getView(), 0, 0, promotionItemBus.getView().getWidth(), promotionItemBus.getView().getHeight())
+                        .toBundle());
+    }
+
+    @Subscribe
+    public void onEvent(OverviewBus overviewBus){
+        Intent intent = new Intent(this, WebViewActivity.class);
+        intent.putExtra(WebViewActivity.ARG_WEB_URL, overviewBus.getReviewDetailText().getHtml());
+        intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML);
+        intent.putExtra(WebViewActivity.ARG_TITLE, "Web");
+
+        ActivityCompat.startActivity(this, intent,
+                ActivityOptionsCompat
+                        .makeScaleUpAnimation(overviewBus.getView(), 0, 0, overviewBus.getView().getWidth(), overviewBus.getView().getHeight())
                         .toBundle());
     }
 
@@ -86,22 +205,32 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-//        Intent mIntent = getIntent();
-//        Bundle extras = mIntent.getExtras();
-//        if (extras != null) {
-//            title = extras.getString(ARG_TITLE);
-//            productId = extras.getString(ARG_PRODUCT_ID);
-//            //productId = "0366977";
-//
-//        }
+        Intent mIntent = getIntent();
+        Bundle extras = mIntent.getExtras();
+        if (extras != null) {
+            productId = extras.getString(ARG_PRODUCT_ID);
+            //productId = "0366977";
+            isBarcode = extras.getBoolean(ARG_IS_BARCODE);
+        }
 
         initView();
-        MockData();
+//        MockData();
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
-                .commit();
+        if (savedInstanceState == null){
+            if (!isBarcode){
+                showProgressDialog();
+                HttpManager.getInstance().getProductService().getProductDetail(productId, UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT_DETAIL);
+            }else {
+                showProgressDialog();
+                HttpManager.getInstance().getProductService().getSearchBarcode(productId, UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_BARCODE);
+            }
+        }else {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
+                    .commit();
+        }
+
     }
 
     private void initView() {
@@ -338,6 +467,17 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         super.onPause();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_PRODUCT_ID, productId);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        productId = savedInstanceState.getString(ARG_PRODUCT_ID);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -364,5 +504,27 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(imageView, 0, 0, imageView.getWidth(), imageView.getHeight())
                         .toBundle());
+    }
+
+    private void showAlertDialog(String message, final boolean shouldCloseActivity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (shouldCloseActivity) finish();
+                    }
+                });
+
+        builder.show();
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtils.createProgressDialog(this);
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.show();
+        }
     }
 }

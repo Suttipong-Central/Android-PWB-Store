@@ -4,9 +4,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
+import cenergy.central.com.pwb_store.model.Event;
+import cenergy.central.com.pwb_store.model.ReviewDetailText;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
@@ -14,15 +19,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
  */
 
 public class ProductOverviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-//    @BindView(R.id.txt_available)
-//    PowerBuyTextView mAvailable;
-//
-//    @BindView(R.id.txt_compare)
-//    PowerBuyTextView mCompare;
-//
-//    @BindView(R.id.txt_view_detail)
-//    PowerBuyTextView mViewDetail;
 
     @BindView(R.id.layout_overview)
     LinearLayout overView;
@@ -33,12 +29,14 @@ public class ProductOverviewViewHolder extends RecyclerView.ViewHolder implement
         itemView.setOnClickListener(this);
     }
 
-    public void setViewHolder(){
-
+    public void setViewHolder(ReviewDetailText reviewDetailText){
+        itemView.setTag(reviewDetailText);
+        itemView.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-
+        ReviewDetailText reviewDetailText = (ReviewDetailText) itemView.getTag();
+        EventBus.getDefault().post(new OverviewBus(v, reviewDetailText));
     }
 }
