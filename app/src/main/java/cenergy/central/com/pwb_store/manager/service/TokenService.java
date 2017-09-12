@@ -17,7 +17,7 @@ public interface TokenService {
             @Header("AppSecret") String appSecret,
             @Query("device_id") String deviceId,
             @Query("user_id") String userId,
-            @Query("store_code") int storeCode
+            @Query("store_code") String storeCode
     );
 
 }

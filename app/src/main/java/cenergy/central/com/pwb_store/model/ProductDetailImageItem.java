@@ -3,6 +3,9 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by napabhat on 10/26/2016 AD.
  */
@@ -21,6 +24,8 @@ public class ProductDetailImageItem implements IViewType, Parcelable {
         }
     };
     private int viewTypeId;
+    @SerializedName("LargeFullUrl")
+    @Expose
     private String imgUrl;
     private String pId;
     private String slug;

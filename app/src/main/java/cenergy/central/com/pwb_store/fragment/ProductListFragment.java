@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -76,6 +77,7 @@ public class ProductListFragment extends Fragment {
     private static final String ARG_PRODUCT_FILTER_TEMP = "ARG_PRODUCT_FILTER_TEMP";
     private static final String ARG_SORT_NAME = "ARG_SORT_NAME";
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
+    private static final String ARG_PAGE = "ARG_PAGE";
 
     //View Members
     @BindView(R.id.recycler_view)
@@ -119,6 +121,7 @@ public class ProductListFragment extends Fragment {
     private int mPreviousTotal;
     private int currentPage;
     private int totalPage;
+    private Context mContext;
 
     public ProductListFragment() {
         super();
@@ -219,6 +222,7 @@ public class ProductListFragment extends Fragment {
         public void onFailure(Call<ProductDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
+            setTextHeader(totalPage, title);
         }
     };
 
@@ -285,7 +289,7 @@ public class ProductListFragment extends Fragment {
     @Subscribe
     public void onEvent(ProductDetailBus productDetailBus) {
         Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-        //intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, productDetailBus.getProductId());
+        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, productDetailBus.getProductId());
         ActivityCompat.startActivity(getContext(), intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())
@@ -472,6 +476,8 @@ public class ProductListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         EventBus.getDefault().register(this);
+        mContext = context;
+
     }
 
     @Override
@@ -493,6 +499,8 @@ public class ProductListFragment extends Fragment {
         outState.putInt(ARG_DEPARTMENT_ID, departmentId);
         outState.putString(ARG_SORT_NAME, sortName);
         outState.putBoolean(ARG_IS_DONE, isDoneFilter);
+        outState.putString(ARG_TITLE, title);
+        outState.putInt(ARG_PAGE, currentPage);
     }
 
     /*
@@ -507,6 +515,8 @@ public class ProductListFragment extends Fragment {
         departmentId = savedInstanceState.getInt(ARG_DEPARTMENT_ID);
         sortName = savedInstanceState.getString(ARG_SORT_NAME);
         isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE);
+        title = savedInstanceState.getString(ARG_TITLE);
+        currentPage = savedInstanceState.getInt(ARG_PAGE);
     }
 
     @OnClick(R.id.layout_title)
@@ -550,7 +560,7 @@ public class ProductListFragment extends Fragment {
     }
 
     private void setTextHeader(int total, String name) {
-        productCount.setText(name + " " + getActivity().getString(R.string.filter_count, String.valueOf(total)));
+        productCount.setText(name + " " + mContext.getString(R.string.filter_count, String.valueOf(total)));
     }
 
 //    private int totalPageCal(int total){

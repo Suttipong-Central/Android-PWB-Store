@@ -2,8 +2,10 @@ package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.graphics.drawable.TintAwareDrawable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -22,8 +24,10 @@ import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
+import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.Recommend;
+import cenergy.central.com.pwb_store.model.ReviewDetailText;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.model.ViewType;
 
@@ -32,6 +36,7 @@ import cenergy.central.com.pwb_store.model.ViewType;
  */
 
 public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final String TAG = ProductDetailAdapter.class.getSimpleName();
 
     //Static members
     private static final int VIEW_TYPE_ID_IMAGE = 0;
@@ -156,9 +161,10 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                 break;
 
             case VIEW_TYPE_ID_DETAIL_OVERVIEW:
-                if (holder instanceof ProductOverviewViewHolder) {
+                if (viewType instanceof ReviewDetailText && holder instanceof ProductOverviewViewHolder) {
+                    ReviewDetailText reviewDetailText = (ReviewDetailText) viewType;
                     ProductOverviewViewHolder productOverviewViewHolder = (ProductOverviewViewHolder) holder;
-                    productOverviewViewHolder.setViewHolder();
+                    productOverviewViewHolder.setViewHolder(reviewDetailText);
                 }
                 break;
 
@@ -206,8 +212,22 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setProductDetail(ProductDetail productDetail) {
         this.mProductDetail = productDetail;
-        if (productDetail.getProductImageList() != null) {
+//        if (productDetail.getProductImageList() != null) {
+//            ProductDetailImage productDetailImage = productDetail.getProductImageList();
+//            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+//            mListViewType.add(productDetailImage);
+//        }
+        //if (productDetail.getProductDetailImageItems() != null || productDetail.getProductImageList() != null) {
+        if (productDetail.getProductDetailImageItems() == null){
             ProductDetailImage productDetailImage = productDetail.getProductImageList();
+            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+            mListViewType.add(productDetailImage);
+        }else {
+            int i ;
+            for (i = 0; i < productDetail.getProductDetailImageItems().size(); i ++){
+                Log.d(TAG, "total : " + i);
+            }
+            ProductDetailImage productDetailImage = new ProductDetailImage(i, productDetail.getProductDetailImageItems());
             productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
             mListViewType.add(productDetailImage);
         }
@@ -215,7 +235,17 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
         mListViewType.add(productDetail);
 
-        mListViewType.add(VIEW_TYPE_OVERVIEW);
+        if (productDetail.getReview() == null || productDetail.getReviewEN() == null){
+            mListViewType.add(VIEW_TYPE_OVERVIEW);
+        }else {
+            ReviewDetailText reviewDetailText = new ReviewDetailText(productDetail.getReview(), ReviewDetailText.MODE_DESCRIPTION);
+            reviewDetailText.setViewTypeId(VIEW_TYPE_ID_DETAIL_OVERVIEW);
+            mListViewType.add(reviewDetailText);
+        }
+
+
+
+
 
         SpecDao specDao = productDetail.getSpecDao();
         specDao.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);

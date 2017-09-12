@@ -3,7 +3,10 @@ package cenergy.central.com.pwb_store.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,6 +24,7 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -50,6 +54,7 @@ import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
@@ -60,9 +65,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
+    private static final String ARG_STORE_ID = "ARG_STORE_ID";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -103,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     if (UserInfoManager.getInstance().getUserId() == null || UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")){
                         Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId().toString());
                             storeId = "00096";
+                        UserInfoManager.getInstance().setUserIdLogin(storeId);
                         if (!mStoreDao.isStoreEmpty()) {
                             if (mStoreDao.isStoreListItemListAvailable()) {
                                 List<StoreList> storeLists = mStoreDao.getStoreLists();
@@ -149,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
+    final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
         @Override
         public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
             if (response.isSuccessful()){
@@ -269,11 +276,11 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null){
             showProgressDialog();
             HttpManager.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
-//            HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
-//            if (UserInfoManager.getInstance().getUserToken() == null){
-//                HttpManager.getInstance().getTokenService().createToken("V1VTTklVNWx0UEllL3ZkMlJLbmViQjVDdkhVcFdOeUJXdysvSm1FbHRrTWI5T2FFU1FvMHB3PT0=", UserInfoManager.getInstance().getUUID(), UserInfoManager.getInstance().getUUID(), 00010)
-//                        .enqueue(CALLBACK_CREATE_TOKEN);
-//            }
+            if (UserInfoManager.getInstance().getUserToken() == null){
+                HttpManager.getInstance().getTokenService().createToken("V1VTTklVNWx0UEllL3ZkMlJLbmViQjVDdkhVcFdOeUJXdysvSm1FbHRrTWI5T2FFU1FvMHB3PT0=", UserInfoManager.getInstance().getUUID(), UserInfoManager.getInstance().getUUID(),
+                        UserInfoManager.getInstance().getUserId())
+                        .enqueue(CALLBACK_CREATE_TOKEN);
+            }
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
@@ -347,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_CATEGORY, mCategoryDao);
         outState.putParcelableArrayList(ARG_DRAWER_LIST, mDrawerItemList);
+        outState.putString(ARG_STORE_ID, storeId);
     }
 
     @Override
@@ -354,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         mCategoryDao = savedInstanceState.getParcelable(ARG_CATEGORY);
         mDrawerItemList = savedInstanceState.getParcelableArrayList(ARG_DRAWER_LIST);
+        storeId = savedInstanceState.getString(ARG_STORE_ID);
     }
 
     @Override
@@ -366,6 +375,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         EventBus.getDefault().unregister(this);
         super.onPause();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() != null) {
+                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                Log.d(TAG, "barcode : " + result.getContents());
+                Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+                intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());
+                intent.putExtra(ProductDetailActivity.ARG_IS_BARCODE, true);
+                ActivityCompat.startActivity(MainActivity.this, intent,
+                        ActivityOptionsCompat
+                                .makeScaleUpAnimation(mToolbar, 0, 0, mToolbar.getWidth(), mToolbar.getHeight())
+                                .toBundle());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void hideSoftKeyboard(View view) {

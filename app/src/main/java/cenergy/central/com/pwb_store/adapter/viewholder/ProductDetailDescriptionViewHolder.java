@@ -1,5 +1,9 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -46,6 +50,9 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
     @BindView(R.id.img_pro_third)
     ImageView imgThird;
 
+    @BindView(R.id.txt_name_price)
+    PowerBuyTextView namePrice;
+
     @BindView(R.id.txt_sale_price)
     PowerBuyTextView mSalePrice;
 
@@ -78,8 +85,10 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
     }
 
     public void setViewHolder(ProductDetail productDetail){
+        String unit = Contextor.getInstance().getContext().getString(R.string.baht);
+
         mProductName.setText(productDetail.getProductName());
-        mProductCode.setText(productDetail.getProductCode());
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetail.getProductCode());
         if (productDetail.getStockAvailable() > 0){
             mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
         }else {
@@ -105,6 +114,18 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
                 .fitCenter()
                 .into(imgThird);
 
+        if (productDetail.getPrice() < productDetail.getOriginalPrice()){
+            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));
+        }else {
+            mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
+            namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));
+        }
+
+        String redeem = String.format(Contextor.getInstance().getContext().getResources()
+                .getString(R.string.the_1_card), productDetail.getT1cPoint());
+
+        mRedeem.setText(redeem);
 
         if (productDetail.getProductDetailOption() != null) {
             mAdapter = new ProductDetailOptionItemAdapter(productDetail.getProductDetailOption(), getAdapterPosition());
