@@ -186,7 +186,7 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             case VIEW_TYPE_ID_DETAIL_DELIVERY:
                 if (holder instanceof ProductDeliveryViewHolder) {
                     ProductDeliveryViewHolder productDeliveryViewHolder = (ProductDeliveryViewHolder) holder;
-                    productDeliveryViewHolder.setViewHolder();
+                    productDeliveryViewHolder.setViewHolder(mContext);
                 }
                 break;
 

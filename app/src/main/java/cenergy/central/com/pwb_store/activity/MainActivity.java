@@ -17,10 +17,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -37,10 +37,10 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
-import cenergy.central.com.pwb_store.fragment.LoadingFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SearchSuggestionFragment;
 import cenergy.central.com.pwb_store.manager.HttpManager;
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -49,14 +49,15 @@ import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
+import cenergy.central.com.pwb_store.manager.bus.event.StoreListBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
-import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
+import cenergy.central.com.pwb_store.model.request.CreateTokenRequest;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
+    //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private CategoryDao mCategoryDao;
     private String storeId;
     private ProgressDialog mProgressDialog;
+    private TelephonyManager mTelephonyManager;
 
     final Callback<List<Category>> CALLBACK_CATEGORY = new Callback<List<Category>>() {
         @Override
@@ -106,10 +109,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                     mDrawerDao = new DrawerDao(mDrawerItemList);
                     mDrawerDao.setStoreDao(mStoreDao);
-                    if (UserInfoManager.getInstance().getUserId() == null || UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")){
+                    if (UserInfoManager.getInstance().getUserId() == null ||
+                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")){
                         Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId().toString());
                             storeId = "00096";
                         UserInfoManager.getInstance().setUserIdLogin(storeId);
+                        for (StoreList storeList : mStoreDao.getStoreLists()){
+                            if (storeList.getStoreId().equalsIgnoreCase(storeId)){
+                                UserInfoManager.getInstance().setStore(storeList);
+                            }
+                        }
                         if (!mStoreDao.isStoreEmpty()) {
                             if (mStoreDao.isStoreListItemListAvailable()) {
                                 List<StoreList> storeLists = mStoreDao.getStoreLists();
@@ -141,7 +150,23 @@ public class MainActivity extends AppCompatActivity {
                         .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
                         .commit();
                 mProgressDialog.dismiss();
-            }else {
+
+                if (UserInfoManager.getInstance().getUserToken().equalsIgnoreCase("")){
+                    UserInfoManager.getInstance().setToken(true);
+//                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
+//                            UserInfoManager.getInstance().getImei(),
+//                            UserInfoManager.getInstance().getImei(),
+//                            UserInfoManager.getInstance().getUserId())
+//                            .enqueue(CALLBACK_CREATE_TOKEN);
+                    CreateTokenRequest createTokenRequest = new CreateTokenRequest(UserInfoManager.getInstance().getImei(),
+                            UserInfoManager.getInstance().getImei(), "", UserInfoManager.getInstance().getUserId());
+                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
+                            "application/json",
+                            createTokenRequest).enqueue(CALLBACK_CREATE_TOKEN);
+                } else {
+                    UserInfoManager.getInstance().setToken(false);
+                }
+            } else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
                 showAlertDialog(error.getErrorMessage(), false);
@@ -163,12 +188,18 @@ public class MainActivity extends AppCompatActivity {
                 mStoreDao = new StoreDao(response.body());
 
                 HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
+            }else {
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                showAlertDialog(error.getErrorMessage(), false);
+                mProgressDialog.dismiss();
             }
         }
 
         @Override
         public void onFailure(Call<List<StoreList>> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
         }
     };
 
@@ -256,7 +287,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
             if (response.isSuccessful()){
-                UserInfoManager.getInstance().setCreateToken(response.body());
+                TokenResponse tokenResponse = response.body();
+                if (tokenResponse.getResultStatus() != null){
+                    UserInfoManager.getInstance().setCreateToken(tokenResponse);
+                }
+
             }
         }
 
@@ -276,11 +311,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null){
             showProgressDialog();
             HttpManager.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
-            if (UserInfoManager.getInstance().getUserToken() == null){
-                HttpManager.getInstance().getTokenService().createToken("V1VTTklVNWx0UEllL3ZkMlJLbmViQjVDdkhVcFdOeUJXdysvSm1FbHRrTWI5T2FFU1FvMHB3PT0=", UserInfoManager.getInstance().getUUID(), UserInfoManager.getInstance().getUUID(),
-                        UserInfoManager.getInstance().getUserId())
-                        .enqueue(CALLBACK_CREATE_TOKEN);
-            }
+
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
@@ -314,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
 
         mNavigationView.setItemIconTintList(null);
-        //mockData();
+
 
     }
 

@@ -6,10 +6,13 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
 import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
@@ -59,11 +62,15 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
 
         newPrice.setText(productList.getDisplayNewPrice(unit));
         itemView.setOnClickListener(this);
+        imgCancel.setOnClickListener(this);
         itemView.setTag(productList);
     }
 
     @Override
     public void onClick(View v) {
-
+        if (v == imgCancel){
+            ProductList productList = (ProductList) itemView.getTag();
+            EventBus.getDefault().post(new CompareDeleteBus(productList, true));
+        }
     }
 }

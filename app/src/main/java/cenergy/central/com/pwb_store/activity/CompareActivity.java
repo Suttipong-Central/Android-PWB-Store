@@ -11,6 +11,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.CompareFragment;
+import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.realm.RealmController;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by napabhat on 7/26/2017 AD.

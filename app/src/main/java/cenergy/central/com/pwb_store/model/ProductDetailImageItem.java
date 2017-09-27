@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+
 /**
  * Created by napabhat on 10/26/2016 AD.
  */
@@ -31,8 +33,12 @@ public class ProductDetailImageItem implements IViewType, Parcelable {
     private String slug;
     private boolean isSelected;
 
-    public ProductDetailImageItem(String slug, String imgUrl) {
-        this.slug = slug;
+    public ProductDetailImageItem(){
+
+    }
+
+    public ProductDetailImageItem(String id, String imgUrl) {
+        this.pId = id;
         this.imgUrl = imgUrl;
     }
 

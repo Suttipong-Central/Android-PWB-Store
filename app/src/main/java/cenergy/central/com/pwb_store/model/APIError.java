@@ -24,10 +24,14 @@ public class APIError implements Parcelable {
         }
     };
 
+    @SerializedName("errorCode")
+    @Expose
     private String errorCode;
     @SerializedName("Message")
     @Expose
     private String errorMessage;
+    @SerializedName("errorMessage")
+    @Expose
     private String errorUserMessage;
 
     /**

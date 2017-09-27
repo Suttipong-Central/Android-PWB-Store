@@ -127,6 +127,24 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyDataSetChanged();
     }
 
+    public void setUpdateCompare(CompareList compareList){
+
+        mListViewType.clear();
+
+        mListViewType.add(VIEW_TYPE_COMPARE_HEADER);
+
+        compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
+        mListViewType.add(compareList);
+
+        if (compareList.getCompareDao() != null){
+            CompareDao compareDao  = compareList.getCompareDao();
+            compareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
+            mListViewType.add(compareDao);
+        }
+
+        notifyDataSetChanged();
+    }
+
     public GridLayoutManager.SpanSizeLookup getSpanSize() {
         return mSpanSize;
     }

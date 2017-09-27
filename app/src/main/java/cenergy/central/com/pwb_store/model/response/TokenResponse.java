@@ -14,13 +14,13 @@ import cenergy.central.com.pwb_store.model.ResultStatus;
 
 public class TokenResponse implements Parcelable{
 
-    @SerializedName("tokenData")
+    @SerializedName("errorMessage")
     @Expose
-    private String tokenData;
-    @SerializedName("tokenExpireDate")
+    private String errorMessage;
+    @SerializedName("errorCode")
     @Expose
-    private String tokenExpireDate;
-    @SerializedName("resultStatus")
+    private String errorCode;
+    @SerializedName("data")
     @Expose
     private ResultStatus mResultStatus;
 
@@ -42,32 +42,36 @@ public class TokenResponse implements Parcelable{
     }
 
     protected TokenResponse(Parcel in) {
-        tokenData = in.readString();
-        tokenExpireDate = in.readString();
+//        tokenData = in.readString();
+//        tokenExpireDate = in.readString();
+        errorMessage = in.readString();
+        errorCode = in.readString();
         mResultStatus = in.readParcelable(ResultStatus.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(tokenData);
-        dest.writeString(tokenExpireDate);
+//        dest.writeString(tokenData);
+//        dest.writeString(tokenExpireDate);
+        dest.writeString(errorMessage);
+        dest.writeString(errorCode);
         dest.writeParcelable(mResultStatus, flags);
     }
 
-    public String getTokenData() {
-        return tokenData;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setTokenData(String tokenData) {
-        this.tokenData = tokenData;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
-    public String getTokenExpireDate() {
-        return tokenExpireDate;
+    public String getErrorCode() {
+        return errorCode;
     }
 
-    public void setTokenExpireDate(String tokenExpireDate) {
-        this.tokenExpireDate = tokenExpireDate;
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
     }
 
     public ResultStatus getResultStatus() {

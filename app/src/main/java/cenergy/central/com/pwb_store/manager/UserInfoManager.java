@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.google.gson.Gson;
 import com.securepreferences.SecurePreferences;
 
 import java.util.UUID;
 
+import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
 
 /**
@@ -26,6 +29,8 @@ public class UserInfoManager {
     private static final String KEY_UUID = "uuid";
     private static final String KEY_GUEST_ID = "guest_id";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_IMEI = "imei";
+    private static final String KEY_STORE_LIST = "store_list";
 
     private static final String KEY_T1C_USERNAME = "t1c_username";
     private static final String KEY_T1C_PASSWORD = "t1c_password";
@@ -40,7 +45,9 @@ public class UserInfoManager {
     private String mGuestId;
     private String mUserId;
     private int mUserType;
-    //private TheOneCardSecure mTheOneCardSecure;
+    private String imei;
+    private boolean isToken;
+    private StoreList mStoreList;
 
     private UserInfoManager() {
         mContext = Contextor.getInstance().getContext();
@@ -74,19 +81,6 @@ public class UserInfoManager {
         mUserToken = userToken;
     }
 
-    public String getEmployeeId() {
-        return mEmployeeId;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        mEmployeeId = employeeId;
-    }
-
-//    public void setEmployeeId(Employee employee) {
-//        saveProfile(employee);
-//        setEmployeeId(employee.getEmployeeId());
-//    }
-
     public void setUserType(int userType) {
         this.mUserType = userType;
     }
@@ -105,9 +99,34 @@ public class UserInfoManager {
 //        setUserType(USER_TYPE_GUEST);
 //    }
 
+
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
+
+    public boolean isToken() {
+        return isToken;
+    }
+
+    public void setToken(boolean token) {
+        isToken = token;
+    }
+
+    public StoreList getStoreList() {
+        return mStoreList;
+    }
+
+    public void setStoreList(StoreList storeList) {
+        mStoreList = storeList;
+    }
+
     public void setCreateToken(TokenResponse tokenResponse){
         saveToken(tokenResponse);
-        setUserToken(tokenResponse.getTokenData());
+        setUserToken(tokenResponse.getResultStatus().getTokenData());
     }
 
     public void setUserIdLogin(String userId) {
@@ -115,21 +134,46 @@ public class UserInfoManager {
         setUserId(userId);
     }
 
+    public void setStore(StoreList storeList){
+        saveStore(storeList);
+    }
+
+    public void setKeyImei(String imei){
+        saveKeyImei(imei);
+        setImei(imei);
+    }
+
+    public void setIsToken(boolean isToken){
+        setToken(isToken);
+    }
+
     private void saveToken(TokenResponse tokenResponse){
         SharedPreferences preferences = new SecurePreferences(mContext, "", PREF_SECURE_VALUE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(KEY_TOKEN, tokenResponse.getTokenData());
-        editor.putString(KEY_EXPIRE_DATE, tokenResponse.getTokenExpireDate());
+        editor.putString(KEY_TOKEN, tokenResponse.getResultStatus().getTokenData());
+        editor.putString(KEY_EXPIRE_DATE, tokenResponse.getResultStatus().getTokenExpireDate());
         editor.apply();
     }
 
-//    private void saveToken(LoginResponse loginResponse) {
-//        SharedPreferences preferences = new SecurePreferences(mContext, "", PREF_SECURE_VALUE);
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.putString(KEY_TOKEN, loginResponse.getToken());
-//        editor.apply();
-//    }
-//
+    private void saveStore(StoreList storeList){
+        SharedPreferences preferences = new SecurePreferences(mContext, "", PREF_SECURE_VALUE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_STORE_LIST, new Gson().toJson(storeList));
+        editor.apply();
+
+        loadStore();
+    }
+
+    public StoreList loadStore() {
+        SharedPreferences preferences = new SecurePreferences(mContext, "", PREF_SECURE_VALUE);
+        String storeList = preferences.getString(KEY_STORE_LIST, "");
+
+        mStoreList = new Gson().fromJson(storeList, StoreList.class);
+        setStoreList(mStoreList);
+
+        return mStoreList;
+    }
+
 //    private void saveProfile(Employee employee) {
 //        SharedPreferences preferences = new SecurePreferences(mContext, "", PREF_SECURE_VALUE);
 //        SharedPreferences.Editor editor = preferences.edit();
@@ -239,6 +283,13 @@ public class UserInfoManager {
         mUserId = preferences.getString(KEY_USER_ID, "");
 
         return !TextUtils.isEmpty(mUserToken) ? USER_TYPE_LOGIN : USER_TYPE_GUEST;
+    }
+
+    private void saveKeyImei(String imei) {
+        SharedPreferences preferences = new SecurePreferences(mContext, "", PREF_SECURE_VALUE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_IMEI, imei);
+        editor.apply();
     }
 
 

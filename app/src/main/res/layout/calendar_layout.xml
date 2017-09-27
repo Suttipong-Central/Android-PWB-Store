@@ -169,7 +169,7 @@
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/text10am"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:gravity="center"
                 android:textSize="14sp"
@@ -179,7 +179,7 @@
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/text12pm"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:layout_below="@+id/text10am"
                 android:gravity="center"
@@ -190,7 +190,7 @@
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/text14pm"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:layout_below="@+id/text12pm"
                 android:gravity="center"
@@ -201,7 +201,7 @@
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/text16pm"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:layout_below="@+id/text14pm"
                 android:gravity="center"
@@ -212,7 +212,7 @@
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/text18pm"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:layout_below="@+id/text16pm"
                 android:gravity="center"
@@ -223,7 +223,7 @@
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/text20pm"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:layout_below="@+id/text18pm"
                 android:gravity="center"

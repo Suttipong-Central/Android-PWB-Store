@@ -14,7 +14,9 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.CompareFragment;
 import cenergy.central.com.pwb_store.fragment.SpecFragment;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
+import io.realm.Realm;
 
 /**
  * Created by napabhat on 7/26/2017 AD.
@@ -27,6 +29,8 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
 
     @BindView(R.id.button_compare)
     PowerBuyCompareView mBuyCompareView;
+
+    private Realm mRealm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +58,12 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
             }
         });
 
+        //get realm instance
+        this.mRealm = RealmController.with(this).getRealm();
+        long count = RealmController.with(this).getCount();
+
         mBuyCompareView.setListener(this);
-        mBuyCompareView.updateCartCount();
+        mBuyCompareView.updateCartCount((int) count);
 
     }
 

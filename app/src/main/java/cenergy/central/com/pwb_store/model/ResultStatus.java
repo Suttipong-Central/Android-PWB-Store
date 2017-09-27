@@ -11,12 +11,13 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class ResultStatus implements Parcelable {
-    @SerializedName("errorCode")
+
+    @SerializedName("token")
     @Expose
-    private String errorCode;
-    @SerializedName("errorDesc")
+    private String tokenData;
+    @SerializedName("expireDate")
     @Expose
-    private String errorDesc;
+    private String tokenExpireDate;
 
     public static final Creator<ResultStatus> CREATOR = new Creator<ResultStatus>() {
         @Override
@@ -36,29 +37,29 @@ public class ResultStatus implements Parcelable {
     }
 
     protected ResultStatus(Parcel in) {
-        errorCode = in.readString();
-        errorDesc = in.readString();
+        tokenData = in.readString();
+        tokenExpireDate = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(errorCode);
-        dest.writeString(errorDesc);
+        dest.writeString(tokenData);
+        dest.writeString(tokenExpireDate);
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public String getTokenData() {
+        return tokenData;
     }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
+    public void setTokenData(String tokenData) {
+        this.tokenData = tokenData;
     }
 
-    public String getErrorDesc() {
-        return errorDesc;
+    public String getTokenExpireDate() {
+        return tokenExpireDate;
     }
 
-    public void setErrorDesc(String errorDesc) {
-        this.errorDesc = errorDesc;
+    public void setTokenExpireDate(String tokenExpireDate) {
+        this.tokenExpireDate = tokenExpireDate;
     }
 }

@@ -1,28 +1,58 @@
 package cenergy.central.com.pwb_store.view;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.HDLCalendarAdapter;
 import cenergy.central.com.pwb_store.adapter.base.GridCellAdapter;
+import cenergy.central.com.pwb_store.manager.HttpManager;
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
+import cenergy.central.com.pwb_store.manager.UserInfoManager;
+import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.model.StoreList;
+import cenergy.central.com.pwb_store.model.TimeSlotItem;
 import cenergy.central.com.pwb_store.model.WeekSets;
+import cenergy.central.com.pwb_store.model.request.CartDataRequest;
+import cenergy.central.com.pwb_store.model.request.HDLRequest;
+import cenergy.central.com.pwb_store.model.response.HDLResponse;
+import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.CommonMethod;
+import cenergy.central.com.pwb_store.utils.DialogUtils;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by napabhat on 8/18/2017 AD.
  */
@@ -103,6 +133,7 @@ public class CalendarViewCustom extends LinearLayout {
 
     private Calendar _calendar;
     private GridCellAdapter adapter;
+    private HDLCalendarAdapter mHDLCalendarAdapter;
     @SuppressLint("NewApi")
     private int month, year;
     @SuppressWarnings("unused")
@@ -118,6 +149,9 @@ public class CalendarViewCustom extends LinearLayout {
 
     public int weekDaysCount = 0;
     public ArrayList<WeekSets> weekDatas;
+    private List<TimeSlotItem> mTimeSlotItems;
+    private OnItemClickListener mListener;
+
 
     public CalendarViewCustom(Context context) {
         super(context);
@@ -147,7 +181,7 @@ public class CalendarViewCustom extends LinearLayout {
     private void initInflate() {
         //Inflate Layout
         inflate(getContext(), R.layout.calendar_layout, this);
-
+//        this.mRealm = RealmController.getInstance().getRealm();
 //        _calendar = Calendar.getInstance(Locale.getDefault());
 //        month = _calendar.get(Calendar.MONTH) + 1;
 //        year = _calendar.get(Calendar.YEAR);
@@ -176,6 +210,7 @@ public class CalendarViewCustom extends LinearLayout {
 //                CalendarUtils.getCalendarDBFormat().format(Calendar.getInstance().getTime()));
 //        Singleton.getInstance().setStartMonth(mStartMonth);
 //        Singleton.getInstance().setEndMonth(mEndMonth);
+    //    getData();
     }
 
     private void initInstance() {
@@ -209,29 +244,29 @@ public class CalendarViewCustom extends LinearLayout {
         text18pm.setText(getContext().getResources().getString(R.string.time_18pm));
         text20pm.setText(getContext().getResources().getString(R.string.time_20pm));
 
-        setPreviousButtonClickEvent();
-        setNextButtonClickEvent();
+//        setPreviousButtonClickEvent();
+//        setNextButtonClickEvent();
         setGridCellClickEvents();
     }
 
-    private void setPreviousButtonClickEvent(){
-        previousButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                weekDays = getWeekDayPrev();
-                showDate(weekDays);
-            }
-        });
-    }
-    private void setNextButtonClickEvent(){
-        nextButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                weekDays = getWeekDayNext();
-                showDate(weekDays);
-            }
-        });
-    }
+//    private void setPreviousButtonClickEvent(){
+//        previousButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                weekDays = getWeekDayPrev();
+//                showDate(weekDays);
+//            }
+//        });
+//    }
+//    private void setNextButtonClickEvent(){
+//        nextButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                weekDays = getWeekDayNext();
+//                showDate(weekDays);
+//            }
+//        });
+//    }
     private void setGridCellClickEvents(){
         calendarGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -315,6 +350,18 @@ public class CalendarViewCustom extends LinearLayout {
         friday.setText("FRI\n" + CommonMethod.convertWeekDays(NextPreWeekday[5]));
         saturday.setText("SAT\n" + CommonMethod.convertWeekDays(NextPreWeekday[6]));
 
+    }
+
+    public void setTimeSlotItem(List<TimeSlotItem> timeSlotItems) {
+        this.mTimeSlotItems = timeSlotItems;
+
+        setInfo();
+    }
+
+    private void setInfo() {
+        mHDLCalendarAdapter = new HDLCalendarAdapter(getContext(), mTimeSlotItems);
+        mHDLCalendarAdapter.notifyDataSetChanged();
+        calendarGridView.setAdapter(mHDLCalendarAdapter);
     }
 
 //    private void setUpCalendarAdapter(){
@@ -529,5 +576,31 @@ public class CalendarViewCustom extends LinearLayout {
 //        return maxP;
 //    }
 
+    public void setListener(OnItemClickListener listener) {
+        this.mListener = listener;
+    }
 
+    @OnClick(R.id.previous_month)
+    public void onImageViewPreviousClick(ImageView imageView) {
+        weekDays = getWeekDayPrev();
+        showDate(weekDays);
+        if (mListener != null) {
+            mListener.onPreviousClick(weekDays);
+        }
+    }
+
+    @OnClick(R.id.next_month)
+    public void onImageViewNextClick(ImageView imageView) {
+        weekDays = getWeekDayNext();
+        showDate(weekDays);
+        if (mListener != null) {
+            mListener.onNextClick(weekDays);;
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onPreviousClick(String[] day);
+
+        void onNextClick(String[] day);
+    }
 }

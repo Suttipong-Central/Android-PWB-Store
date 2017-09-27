@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerChangeViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerCompareViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerDeliveryViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHeaderViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHelpViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerItemViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.StoreSelectedViewHolder;
@@ -31,8 +35,16 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int VIEW_TYPE_ID_HEADER = 0;
     private static final int VIEW_TYPE_ID_ITEM = 1;
     private static final int VIEW_TYPE_ID_USER = 2;
+    private static final int VIEW_TYPE_ID_DELIVERY = 3;
+    private static final int VIEW_TYPE_ID_COMPARE = 4;
+    private static final int VIEW_TYPE_ID_CHANGE = 5;
+    private static final int VIEW_TYPE_ID_HELP = 6;
 
     private static final ViewType VIEW_TYPE_HEADER = new ViewType(VIEW_TYPE_ID_HEADER);
+    private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DELIVERY);
+    private static final ViewType VIEW_TYPE_COMPARE = new ViewType(VIEW_TYPE_ID_COMPARE);
+    private static final ViewType VIEW_TYPE_CHANGE = new ViewType(VIEW_TYPE_ID_CHANGE);
+    private static final ViewType VIEW_TYPE_HELP = new ViewType(VIEW_TYPE_ID_HELP);
 
     private Context mContext;
     private List<IViewType> mListViewType = new ArrayList<>();
@@ -63,6 +75,34 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         LayoutInflater
                                 .from(parent.getContext())
                                 .inflate(R.layout.drawer_user, parent, false)
+                );
+
+            case VIEW_TYPE_ID_DELIVERY:
+                return new DrawerDeliveryViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_delivery, parent, false)
+                );
+
+            case VIEW_TYPE_ID_COMPARE:
+                return new DrawerCompareViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_compare, parent, false)
+                );
+
+            case VIEW_TYPE_ID_CHANGE:
+                return new DrawerChangeViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_change, parent, false)
+                );
+
+            case VIEW_TYPE_ID_HELP:
+                return new DrawerHelpViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_help, parent, false)
                 );
         }
         return null;
@@ -136,6 +176,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             drawerItem.setViewTypeId(VIEW_TYPE_ID_ITEM);
             mListViewType.add(drawerItem);
         }
+
+        mListViewType.add(VIEW_TYPE_DELIVERY);
+        mListViewType.add(VIEW_TYPE_COMPARE);
+        mListViewType.add(VIEW_TYPE_CHANGE);
+        mListViewType.add(VIEW_TYPE_HELP);
 
         notifyDataSetChanged();
     }
