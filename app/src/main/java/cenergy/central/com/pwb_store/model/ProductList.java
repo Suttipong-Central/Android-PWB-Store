@@ -82,7 +82,7 @@ public class ProductList implements IViewType,Parcelable {
     @Expose
     private int stockOnHand;
 
-    public ProductList(String productId, String imageUrl, String name, String description, int oldPrice, int newPrice) {
+    public ProductList(String productId, String imageUrl, String name, String description, double oldPrice, double newPrice) {
         this.productId = productId;
         this.imageUrl = imageUrl;
         this.name = name;

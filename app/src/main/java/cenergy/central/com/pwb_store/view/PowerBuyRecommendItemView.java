@@ -5,29 +5,38 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.manager.bus.event.RecommendBus;
 import cenergy.central.com.pwb_store.model.BundleSavedState;
+import cenergy.central.com.pwb_store.model.Event;
 import cenergy.central.com.pwb_store.model.ProductRelatedList;
 
 /**
  * Created by napabhat on 7/18/2017 AD.
  */
 
-public class PowerBuyRecommendItemView extends FrameLayout {
+public class PowerBuyRecommendItemView extends FrameLayout implements View.OnClickListener{
     private static final String TAG = PowerBuyRecommendItemView.class.getSimpleName();
 
     private static final String ARG_CHILD_STATES = "childrenStates";
     private static final String ARG_PRODUCT_RECOMMEND_ITEM = "productList";
+
+    @BindView(R.id.card_view_recommend)
+    CardView mCardView;
 
     @BindView(R.id.img_product)
     ImageView mImgProduct;
@@ -166,7 +175,15 @@ public class PowerBuyRecommendItemView extends FrameLayout {
             oldPrice.setEnableStrikeThrough(true);
 
             newPrice.setText(productRelatedList.getDisplayNewPrice(unit));
+
+            mCardView.setOnClickListener(this);
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v == mCardView){
+            EventBus.getDefault().post(new RecommendBus(v,productRelatedList));
+        }
+    }
 }

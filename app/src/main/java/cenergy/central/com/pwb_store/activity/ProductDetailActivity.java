@@ -30,7 +30,9 @@ import cenergy.central.com.pwb_store.manager.HttpManager;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
+import cenergy.central.com.pwb_store.manager.bus.event.RecommendBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
+import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOption;
@@ -46,9 +48,11 @@ import cenergy.central.com.pwb_store.model.Recommend;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.model.SpecItem;
 import cenergy.central.com.pwb_store.model.TheOneCardProductDetail;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,6 +79,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private ProgressDialog mProgressDialog;
     private String productId;
     private boolean isBarcode;
+    private Realm mRealm;
 
     final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
         @Override
@@ -200,6 +205,26 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                         .toBundle());
     }
 
+    @Subscribe
+    public void onEvent(UpdateBageBus updateBageBus){
+        if (updateBageBus.isUpdate() == true){
+            long count = RealmController.with(this).getCount();
+            mBuyCompareView.updateCartCount((int) count);
+        }
+    }
+
+    @Subscribe
+    public void onEvent(RecommendBus recommendBus){
+        Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
+        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, recommendBus.getRelatedList().getProductId());
+        intent.putExtra(ProductDetailActivity.ARG_IS_BARCODE, false);
+        ActivityCompat.startActivity(ProductDetailActivity.this, intent,
+                ActivityOptionsCompat
+                        .makeScaleUpAnimation(mToolbar, 0, 0, mToolbar.getWidth(), mToolbar.getHeight())
+                        .toBundle());
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -247,8 +272,12 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
             }
         });
 
+        //get realm instance
+        this.mRealm = RealmController.with(this).getRealm();
+        long count = RealmController.with(this).getCount();
+
         mBuyCompareView.setListener(this);
-        mBuyCompareView.updateCartCount();
+        mBuyCompareView.updateCartCount((int) count);
     }
 
     private void MockData() {

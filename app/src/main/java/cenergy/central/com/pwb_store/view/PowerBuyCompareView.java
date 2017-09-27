@@ -25,8 +25,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.BundleSavedState;
 import cenergy.central.com.pwb_store.model.CompareCount;
+import cenergy.central.com.pwb_store.realm.RealmController;
+import io.realm.Realm;
 
 /**
  * Created by napabhat on 7/19/2017 AD.
@@ -52,6 +55,7 @@ public class PowerBuyCompareView extends FrameLayout {
     private OnClickListener mListener;
     private CompareCount mCompareCount;
     private boolean isAddCart;
+    private Realm mRealm;
 
     public PowerBuyCompareView(@NonNull Context context) {
         super(context);
@@ -86,6 +90,7 @@ public class PowerBuyCompareView extends FrameLayout {
     private void initInstance() {
         ButterKnife.bind(this);
         mBadgeCart.setCharacterList(TickerUtils.getDefaultNumberList());
+        //this.mRealm = RealmController.getInstance().getRealm();
     }
 
     public void setBadgeCart(int count) {
@@ -216,10 +221,8 @@ public class PowerBuyCompareView extends FrameLayout {
         this.mCompareCount = bundle.getParcelable(ARG_COMPARE_COUNT);
     }
 
-    public void updateCartCount() {
-
-        setBadgeCart(10);
-
+    public void updateCartCount(int count) {
+        setBadgeCart(count);
 //        HttpManager.getInstance().getCartService().getCartCount().enqueue(new Callback<CartCountDao>() {
 //            @Override
 //            public void onResponse(Call<CartCountDao> call, Response<CartCountDao> response) {

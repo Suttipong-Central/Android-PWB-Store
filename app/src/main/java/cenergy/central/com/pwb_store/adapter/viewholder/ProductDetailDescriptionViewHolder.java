@@ -19,7 +19,9 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.ProductDetailOptionItemAdapter;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
+import cenergy.central.com.pwb_store.model.Event;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductList;
@@ -157,6 +159,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         }
         mCardViewStore.setTag(productDetail);
         mCardViewStore.setOnClickListener(this);
+        mCardViewCompare.setTag(productDetail);
         mCardViewCompare.setOnClickListener(this);
     }
 
@@ -165,6 +168,9 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         if (view == mCardViewStore){
             ProductDetail productDetail = (ProductDetail) mCardViewStore.getTag();
             EventBus.getDefault().post(new StoreAvaliableBus(view, productDetail.getProductCode()));
+        }else if (view == mCardViewCompare){
+            ProductDetail productDetail = (ProductDetail) mCardViewCompare.getTag();
+            EventBus.getDefault().post(new ProductBus(productDetail));
         }
     }
 }

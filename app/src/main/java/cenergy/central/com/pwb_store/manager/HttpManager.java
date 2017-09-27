@@ -49,6 +49,7 @@ public class HttpManager {
     private CategoryService mCategoryService;
     private ProductService mProductService;
     private StoreService mStoreService;
+    private String url;
 
     private HttpManager() {
         mContext = Contextor.getInstance().getContext();
@@ -56,30 +57,18 @@ public class HttpManager {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient defaultHttpClient = new OkHttpClient.Builder()
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request().newBuilder()
                                 .addHeader(HEADER_AUTHORIZATION, CLIENT_AUTH)
-//                                .addHeader(HEADER_OS_VERSION, Build.VERSION.RELEASE)
-//                                .addHeader(HEADER_LANGUAGE, CLIENT_LANGUAGE)
-//                                .addHeader(HEADER_APP_ID, CLIENT_APP_ID)
-//                                .addHeader(HEADER_UUID, UserInfoManager.getInstance().getUUID())
-//                                .addHeader(UserInfoManager.getInstance().isGuestUser()
-//                                                ? HEADER_GUEST_ID
-//                                                : HEADER_USER_ID
-//                                        , UserInfoManager.getInstance().isGuestUser()
-//                                                ? UserInfoManager.getInstance().getGuestId()
-//                                                : UserInfoManager.getInstance().getUserId())
-//                                //.addHeader(HEADER_EMPLOYEE_ID, UserInfoManager.getInstance().getEmployeeId())
                                 .build();
                         return chain.proceed(request);
                     }
                 })
                 .addInterceptor(interceptor)
-                .connectTimeout(1, TimeUnit.MINUTES)
-                .writeTimeout(1, TimeUnit.MINUTES)
-                .readTimeout(1, TimeUnit.MINUTES)
                 .build();
 
         retrofit = new Retrofit.Builder()

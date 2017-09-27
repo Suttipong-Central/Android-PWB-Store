@@ -6,6 +6,8 @@ import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 
 import cenergy.central.com.pwb_store.manager.Contextor;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by napabhat on 7/5/2017 AD.
@@ -17,6 +19,7 @@ public class PowerBuyStoreApplication extends Application {
         super.onCreate();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         Contextor.getInstance().init(this);
+        initRealm();
     }
 
     @Override
@@ -28,5 +31,15 @@ public class PowerBuyStoreApplication extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+    }
+
+    private void initRealm() {
+        Realm.init(this);  // add this line
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("power_buy.realm")
+                .schemaVersion(0)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 }

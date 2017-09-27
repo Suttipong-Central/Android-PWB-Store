@@ -64,12 +64,13 @@ public class DrawerUserViewHolder extends RecyclerView.ViewHolder{
             if (object instanceof StoreList) {
                 StoreList storeList = (StoreList) object;
                 if (!mStoreDao.isSelectedStoreTheSame(storeList)) {
-                        mStoreDao.setSelectStore(storeList);
-                        storeName.setText(storeList.getStoreNameEN());
-                        UserInfoManager.getInstance().setUserIdLogin(storeList.getStoreId());
-                        storeAdapter.updateSingleStore(storeList);
+                    mStoreDao.setSelectStore(storeList);
+                    storeName.setText(storeList.getStoreNameEN());
+                    UserInfoManager.getInstance().setUserIdLogin(storeList.getStoreId());
+                    storeAdapter.updateSingleStore(storeList);
+                    UserInfoManager.getInstance().setStore(storeList);
                 }
-            }else {
+            } else {
                 Log.e(TAG, "onItemClick: No matching type");
             }
 

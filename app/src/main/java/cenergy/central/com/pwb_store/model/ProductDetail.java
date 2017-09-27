@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import io.realm.RealmObject;
+
 /**
  * Created by napabhat on 10/25/2016 AD.
  */
