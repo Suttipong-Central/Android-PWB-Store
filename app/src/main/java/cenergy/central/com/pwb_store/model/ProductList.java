@@ -7,6 +7,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -15,72 +17,81 @@ import java.util.Locale;
 
 public class ProductList implements IViewType,Parcelable {
     private int viewTypeId;
-    @SerializedName("ProductId")
+    @SerializedName("id")
+    @Expose
+    private int id;
+    @SerializedName(value = "ProductId", alternate = "sku")
     @Expose
     private String productId;
-    @SerializedName("MediumFullUrl")
-    @Expose
+//    @SerializedName(value = "MediumFullUrl", alternate = "image")
+//    @Expose
     private String imageUrl;
-    @SerializedName("ProductName")
+    @SerializedName(value = "ProductName", alternate = "name")
     @Expose
     private String name;
-    @SerializedName("ProductNameEN")
-    @Expose
-    private String productNameEN;
-    @SerializedName("Description")
-    @Expose
+//    @SerializedName("ProductNameEN")
+//    @Expose
+//    private String productNameEN;
+//    @SerializedName(value = "Description" , alternate = "description")
+//    @Expose
     private String description;
-    @SerializedName("DescriptionEN")
-    @Expose
-    private String descriptionEN;
-    @SerializedName("NormalPrice")
+//    @SerializedName("DescriptionEN")
+//    @Expose
+//    private String descriptionEN;
+    @SerializedName(value = "NormalPrice", alternate = "price")
     @Expose
     private double oldPrice;
-    @SerializedName("SpecialPrice")
-    @Expose
+//    @SerializedName("SpecialPrice")
+//    @Expose
     private double newPrice;
-    @SerializedName("UrlName")
-    @Expose
+//    @SerializedName("UrlName")
+//    @Expose
     private String urlName;
-    @SerializedName("UrlNameEN")
-    @Expose
+//    @SerializedName("UrlNameEN")
+//    @Expose
     private String urlNameEN;
-    @SerializedName("Review")
-    @Expose
+//    @SerializedName("Review")
+//    @Expose
     private String review;
-    @SerializedName("ReviewEN")
-    @Expose
+//    @SerializedName("ReviewEN")
+//    @Expose
     private String reviewEN;
-    @SerializedName("Barcode")
-    @Expose
+//    @SerializedName("Barcode")
+//    @Expose
     private String barcode;
-    @SerializedName("NumOfImage")
-    @Expose
+//    @SerializedName("NumOfImage")
+//    @Expose
     private int numOfImage;
-    @SerializedName("CanInstallment")
-    @Expose
+//    @SerializedName("CanInstallment")
+//    @Expose
     private boolean canInstallment;
-    @SerializedName("T1CRedeemPoint")
-    @Expose
+//    @SerializedName("T1CRedeemPoint")
+//    @Expose
     private int t1CRedeemPoint;
-    @SerializedName("DepartmentId")
-    @Expose
+//    @SerializedName("DepartmentId")
+//    @Expose
     private int departmentId;
-    @SerializedName("BrandId")
-    @Expose
+//    @SerializedName("BrandId")
+//    @Expose
     private int brandId;
-    @SerializedName("BrandName")
-    @Expose
+//    @SerializedName("BrandName")
+//    @Expose
     private String brandName;
-    @SerializedName("BrandNameEn")
-    @Expose
+//    @SerializedName("BrandNameEn")
+//    @Expose
     private String brandNameEN;
-    @SerializedName("StoreId")
-    @Expose
+//    @SerializedName("StoreId")
+//    @Expose
     private String storeId;
-    @SerializedName("StockOnHand")
-    @Expose
+//    @SerializedName("StockOnHand")
+//    @Expose
     private int stockOnHand;
+    @SerializedName("extension_attributes")
+    @Expose
+    private Extension mExtension;
+//    @SerializedName("custom_attributes")
+//    @Expose
+    private List<CustomAttributes> mCustomAttributes = new ArrayList<>();
 
     public ProductList(String productId, String imageUrl, String name, String description, double oldPrice, double newPrice) {
         this.productId = productId;
@@ -97,10 +108,10 @@ public class ProductList implements IViewType,Parcelable {
         imageUrl = in.readString();
         name = in.readString();
         description = in.readString();
-        descriptionEN = in.readString();
+        //descriptionEN = in.readString();
         oldPrice = in.readInt();
         newPrice = in.readInt();
-        productNameEN = in.readString();
+        //productNameEN = in.readString();
         urlName = in.readString();
         urlNameEN = in.readString();
         review = in.readString();
@@ -115,6 +126,8 @@ public class ProductList implements IViewType,Parcelable {
         brandNameEN = in.readString();
         storeId = in.readString();
         stockOnHand = in.readInt();
+        mExtension = in.readParcelable(Extension.class.getClassLoader());
+        mCustomAttributes = in.createTypedArrayList(CustomAttributes.CREATOR);
     }
 
     @Override
@@ -124,10 +137,10 @@ public class ProductList implements IViewType,Parcelable {
         dest.writeString(imageUrl);
         dest.writeString(name);
         dest.writeString(description);
-        dest.writeString(descriptionEN);
+       // dest.writeString(descriptionEN);
         dest.writeDouble(oldPrice);
         dest.writeDouble(newPrice);
-        dest.writeString(productNameEN);
+      //  dest.writeString(productNameEN);
         dest.writeString(urlName);
         dest.writeString(urlNameEN);
         dest.writeString(review);
@@ -142,6 +155,8 @@ public class ProductList implements IViewType,Parcelable {
         dest.writeString(brandNameEN);
         dest.writeString(storeId);
         dest.writeInt(stockOnHand);
+        dest.writeParcelable(mExtension, flags);
+        dest.writeTypedList(mCustomAttributes);
     }
 
     public static final Creator<ProductList> CREATOR = new Creator<ProductList>() {
@@ -226,22 +241,6 @@ public class ProductList implements IViewType,Parcelable {
 
     public String getDisplayNewPrice(String unit) {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(newPrice));
-    }
-
-    public String getProductNameEN() {
-        return productNameEN;
-    }
-
-    public void setProductNameEN(String productNameEN) {
-        this.productNameEN = productNameEN;
-    }
-
-    public String getDescriptionEN() {
-        return descriptionEN;
-    }
-
-    public void setDescriptionEN(String descriptionEN) {
-        this.descriptionEN = descriptionEN;
     }
 
     public String getUrlName() {
@@ -354,5 +353,37 @@ public class ProductList implements IViewType,Parcelable {
 
     public void setStockOnHand(int stockOnHand) {
         this.stockOnHand = stockOnHand;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setOldPrice(double oldPrice) {
+        this.oldPrice = oldPrice;
+    }
+
+    public void setNewPrice(double newPrice) {
+        this.newPrice = newPrice;
+    }
+
+    public Extension getExtension() {
+        return mExtension;
+    }
+
+    public void setExtension(Extension extension) {
+        mExtension = extension;
+    }
+
+    public List<CustomAttributes> getCustomAttributes() {
+        return mCustomAttributes;
+    }
+
+    public void setCustomAttributes(List<CustomAttributes> customAttributes) {
+        mCustomAttributes = customAttributes;
     }
 }

@@ -1,8 +1,5 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -21,10 +18,10 @@ import cenergy.central.com.pwb_store.adapter.ProductDetailOptionItemAdapter;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
-import cenergy.central.com.pwb_store.model.Event;
+import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
-import cenergy.central.com.pwb_store.model.ProductList;
+import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 import cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView;
 
@@ -91,12 +88,34 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
         mProductName.setText(productDetail.getProductName());
         mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetail.getProductCode());
-        if (productDetail.getStockAvailable() > 0){
-            mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
-        }else {
-            mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
-            mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+        ExtensionProductDetail extensionProductDetail = productDetail.getExtensionProductDetail();
+        if (extensionProductDetail != null){
+            for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
+                float oldPrice = Float.parseFloat(productDetailStore.getPrice());
+                float newPrice = Float.parseFloat(productDetailStore.getSpecialPrice());
+                if (oldPrice > newPrice){
+                    mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
+                }else {
+                    mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
+                    namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+                    mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
+                }
+
+                if (Integer.parseInt(productDetailStore.getStockAvailable()) > 0){
+                    mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
+                }else {
+                    mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
+                    mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+                }
+            }
         }
+
+//        if (productDetail.getStockAvailable() > 0){
+//            mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
+//        }else {
+//            mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
+//            mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+//        }
 
         Glide.with(Contextor.getInstance().getContext())
                 .load(R.drawable.newproduct)
@@ -116,13 +135,13 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
                 .fitCenter()
                 .into(imgThird);
 
-        if (productDetail.getPrice() < productDetail.getOriginalPrice()){
-            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));
-        }else {
-            mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
-            namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
-            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));
-        }
+//        if (productDetail.getPrice() < productDetail.getOriginalPrice()){
+//            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));
+//        }else {
+//            mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
+//            namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+//            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));
+//        }
 
         String redeem = String.format(Contextor.getInstance().getContext().getResources()
                 .getString(R.string.the_1_card), productDetail.getT1cPoint());
@@ -167,7 +186,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
     public void onClick(View view) {
         if (view == mCardViewStore){
             ProductDetail productDetail = (ProductDetail) mCardViewStore.getTag();
-            EventBus.getDefault().post(new StoreAvaliableBus(view, productDetail.getProductCode()));
+            EventBus.getDefault().post(new StoreAvaliableBus(view, productDetail.getSku()));
         }else if (view == mCardViewCompare){
             ProductDetail productDetail = (ProductDetail) mCardViewCompare.getTag();
             EventBus.getDefault().post(new ProductBus(productDetail));

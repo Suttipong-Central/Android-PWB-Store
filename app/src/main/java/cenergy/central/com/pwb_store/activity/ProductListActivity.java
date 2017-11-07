@@ -21,12 +21,14 @@ public class ProductListActivity extends AppCompatActivity {
 
     public static final String ARG_SEARCH = "ARG_SEARCH";
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
+    public static final String ARG_KEY_WORD = "ARG_KEY_WORD";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     private boolean isSearch;
     private String productId;
+    private String keyWord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,10 +42,11 @@ public class ProductListActivity extends AppCompatActivity {
         if (extras != null) {
             isSearch = extras.getBoolean(ARG_SEARCH);
             productId = extras.getString(ARG_PRODUCT_ID);
+            keyWord = extras.getString(ARG_KEY_WORD);
         }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
-                .replace(R.id.container, ProductListFragment.newInstance("", isSearch, 0 , ""))
+                .replace(R.id.container, ProductListFragment.newInstance(keyWord, isSearch, "0" , "", null, keyWord))
                 .commit();
     }
 

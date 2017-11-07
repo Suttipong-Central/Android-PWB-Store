@@ -22,16 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by napabhat on 8/9/2017 AD.
  */
 
-public class HttpManager {
+public class HttpManagerMagento {
     //Specific Header
-    public static final String HEADER_GUEST_ID = "GuestId";
-    private static final String HEADER_CLIENT = "X-Client";
-    private static final String HEADER_OS_VERSION = "OSVersion";
-    private static final String HEADER_LANGUAGE = "X-Language";
-    private static final String HEADER_APP_ID = "AppId";
-    private static final String HEADER_UUID = "UUID";
-    private static final String HEADER_USER_ID = "UserId"; // Mock Data
-    private static final String HEADER_EMPLOYEE_ID = "EmployeeId";
     private static final String HEADER_AUTHORIZATION = "Authorization";
     //Specific Client
     private static final String CLIENT_ANDROID = "Android";
@@ -41,8 +33,7 @@ public class HttpManager {
     private static final String CLIENT_MAGENTO = "Bearer ien5o19evja6n641s7s9kxrgpgy6tavt";
 
     private static final String BASE_URL_MAGENTO = "http://api.powerbuy.world";
-    private static final String BASE_URL_UAT = "http://uat-api.powerbuy.co.th";
-    private static HttpManager instance;
+    private static HttpManagerMagento instance;
     private Context mContext;
     private Retrofit retrofit;
     private TokenService mTokenService;
@@ -51,7 +42,7 @@ public class HttpManager {
     private StoreService mStoreService;
     private String url;
 
-    private HttpManager() {
+    private HttpManagerMagento() {
         mContext = Contextor.getInstance().getContext();
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -63,7 +54,7 @@ public class HttpManager {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request().newBuilder()
-                                .addHeader(HEADER_AUTHORIZATION, CLIENT_AUTH)
+                                .addHeader(HEADER_AUTHORIZATION, CLIENT_MAGENTO)
                                 .build();
                         return chain.proceed(request);
                     }
@@ -72,7 +63,7 @@ public class HttpManager {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL_UAT)
+                .baseUrl(BASE_URL_MAGENTO)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build();
@@ -82,9 +73,9 @@ public class HttpManager {
         mStoreService = retrofit.create(StoreService.class);
     }
 
-    public static HttpManager getInstance() {
+    public static HttpManagerMagento getInstance() {
         if (instance == null)
-            instance = new HttpManager();
+            instance = new HttpManagerMagento();
         return instance;
     }
 

@@ -53,6 +53,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
             android:layout_marginRight="16dp"
+            android:visibility="gone"
+            android:clickable="false"
             android:src="@drawable/ic_keyboard_arrow_right"/>
     </RelativeLayout>
 

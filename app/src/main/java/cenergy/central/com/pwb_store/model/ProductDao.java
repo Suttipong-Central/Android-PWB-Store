@@ -17,18 +17,14 @@ public class ProductDao implements IViewType,Parcelable {
 
     private int viewTypeId;
     private int noOfElement;
-    @SerializedName("TotalItems")
+    @SerializedName(value = "TotalItems", alternate = "total_count")
     @Expose
     private int totalElement;
     private int currentPage;
     private int perPage;
-    @SerializedName("TotalPages")
-    @Expose
     private int totalPage;
-    @SerializedName("CanScrollPage")
-    @Expose
     private boolean isLastPage;
-    @SerializedName("Products")
+    @SerializedName(value = "Products", alternate = "items")
     @Expose
     private List<ProductList> mProductListList = new ArrayList<>();
 

@@ -13,7 +13,9 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
+import cenergy.central.com.pwb_store.model.Extension;
 import cenergy.central.com.pwb_store.model.ProductList;
+import cenergy.central.com.pwb_store.model.ProductListStore;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
@@ -46,19 +48,48 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
-        Glide.with(Contextor.getInstance().getContext())
-                .load(productList.getImageUrl())
-                //.placeholder(R.drawable.ic_error_placeholder)
-                .crossFade()
-                .fitCenter()
-                .into(mImageView);
+        Extension extension = productList.getExtension();
+        if (extension != null){
+            for (ProductListStore productListStore : extension.getProductListStores()){
+                if (productListStore.getPrice().equalsIgnoreCase(productListStore.getSpecialPriceTo())){
+                    oldPrice.setText(productListStore.getDisplayOldPrice(unit));
+                    newPrice.setText("");
+                }else {
+                    oldPrice.setText(productListStore.getDisplayOldPrice(unit));
+                    oldPrice.setEnableStrikeThrough(true);
+                    newPrice.setText(productListStore.getDisplayNewPrice(unit));
+                }
+            }
 
+            productDescription.setText(productList.getName());
+
+            Glide.with(Contextor.getInstance().getContext())
+                    .load("http://api.powerbuy.world/media/catalog/product"+extension.getImageUrl())
+                    //.placeholder(R.drawable.ic_error_placeholder)
+                    .crossFade()
+                    .fitCenter()
+                    .into(mImageView);
+        }
+//        if (productList.getCustomAttributes() != null){
+//            for (CustomAttributes customAttributes : productList.getCustomAttributes()){
+//                if (customAttributes.getAttributeCode().equalsIgnoreCase("description")){
+//                    //for (String value : customAttributes.getValue()){
+//                        productDescription.setText(customAttributes.getValue());
+//                    //}
+//                }else if (customAttributes.getAttributeCode().equalsIgnoreCase("image")){
+//                    //for (String value : customAttributes.getValue()){
+//                        Glide.with(Contextor.getInstance().getContext())
+//                                .load("http://api.powerbuy.world/media/catalog/product"+ customAttributes.getValue())
+//                                //.placeholder(R.drawable.ic_error_placeholder)
+//                                .crossFade()
+//                                .fitCenter()
+//                                .into(mImageView);
+//                   // }
+//
+//                }
+//            }
+//        }
         productName.setText(productList.getName());
-        productDescription.setText(productList.getDescription());
-        oldPrice.setText(productList.getDisplayOldPrice(unit));
-        oldPrice.setEnableStrikeThrough(true);
-
-        newPrice.setText(productList.getDisplayNewPrice(unit));
         itemView.setOnClickListener(this);
         itemView.setTag(productList);
     }

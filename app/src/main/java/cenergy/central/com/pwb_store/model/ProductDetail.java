@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import io.realm.RealmObject;
-
 /**
  * Created by napabhat on 10/25/2016 AD.
  */
@@ -33,87 +31,54 @@ public class ProductDetail implements IViewType, Parcelable {
 
     private int viewTypeId;
     private int masterId;
-    @SerializedName("ProductId")
+    @SerializedName(value = "ProductId", alternate = "id")
     @Expose
     private String productCode;
-    @SerializedName("ProductName")
+    @SerializedName(value = "ProductName", alternate = "name")
     @Expose
     private String productName;
-    @SerializedName("ProductNameEN")
+    @SerializedName("sku")
     @Expose
+    private String sku;
     private String productNameEN;
-    @SerializedName("UrlName")
-    @Expose
     private String urlName;
-    @SerializedName("UrlNameEN")
-    @Expose
     private String urlNameEN;
     private String slug;
-    @SerializedName("Description")
-    @Expose
     private String description;
-    @SerializedName("DescriptionEN")
-    @Expose
     private String descriptionEN;
-    @SerializedName("Review")
-    @Expose
     private String review;
-    @SerializedName("ReviewEN")
-    @Expose
     private String reviewEN;
-    @SerializedName("Barcode")
-    @Expose
     private String barcode;
-    @SerializedName("NumOfImage")
-    @Expose
     private int numOfImage;
-    @SerializedName("CanInstallment")
-    @Expose
     private boolean canInstallment;
-    @SerializedName("T1CRedeemPoint")
-    @Expose
     private int t1cPoint;
-    @SerializedName("DepartmentId")
-    @Expose
     private int departmentId;
-    @SerializedName("BrandId")
-    @Expose
     private int brandId;
-    @SerializedName("BrandName")
-    @Expose
     private String brand;
-    @SerializedName("BrandNameEn")
-    @Expose
     private String brandEN;
     private String bu;
-    @SerializedName("Pictures")
-    @Expose
     private List<ProductDetailImageItem> mProductDetailImageItems;
     private ProductDetailImage productImageList;
     private double savePercent;
-    @SerializedName("NormalPrice")
-    @Expose
     private double originalPrice;
-    @SerializedName("SpecialPrice")
-    @Expose
     private double price;
-    @SerializedName("StoreId")
-    @Expose
     private String storeId;
     private int quantity;
     private int minQuantity;
     private int maxQuantity;
-    @SerializedName("StockOnHand")
-    @Expose
     private int stockAvailable;
-    @SerializedName("ProductRecommended")
-    @Expose
     private List<ProductRelatedList> mProductRelatedLists;
     private Recommend mRecommend;
     private TheOneCardProductDetail theOneCardDetailList;
     private List<ProductDetailPromotion> detailPromotionList;
     private ProductDetailOption productDetailOption;
     private SpecDao mSpecDao;
+    @SerializedName("extension_attributes")
+    @Expose
+    private ExtensionProductDetail mExtensionProductDetail;
+//    @SerializedName("custom_attributes")
+//    @Expose
+    private List<CustomAttributesProductDetail> mCustomAttributesProductDetails = new ArrayList<>();
 
     public ProductDetail(String slug, String brand, String productName, String productCode, String bu, ProductDetailImage productDetailImages,
                          double savePercent, double originalPrice, double price, int quantity, int minQuantity, int maxQuantity, TheOneCardProductDetail theOneCardDetailList,
@@ -174,6 +139,8 @@ public class ProductDetail implements IViewType, Parcelable {
         mSpecDao = in.readParcelable(SpecDao.class.getClassLoader());
         mProductDetailImageItems = in.createTypedArrayList(ProductDetailImageItem.CREATOR);
         mProductRelatedLists = in.createTypedArrayList(ProductRelatedList.CREATOR);
+        mExtensionProductDetail = in.readParcelable(ExtensionProductDetail.class.getClassLoader());
+        mCustomAttributesProductDetails = in.createTypedArrayList(CustomAttributesProductDetail.CREATOR);
     }
 
     public void replaceProduct(ProductDetailOptionItem productDetailOptionItem) {
@@ -228,6 +195,8 @@ public class ProductDetail implements IViewType, Parcelable {
         dest.writeParcelable(mSpecDao, flags);
         dest.writeList(mProductDetailImageItems);
         dest.writeList(mProductRelatedLists);
+        dest.writeParcelable(mExtensionProductDetail, flags);
+        dest.writeTypedList(mCustomAttributesProductDetails);
     }
 
     @Override
@@ -551,5 +520,29 @@ public class ProductDetail implements IViewType, Parcelable {
 
     public String getDisplayNewPrice(String unit) {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(price));
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public ExtensionProductDetail getExtensionProductDetail() {
+        return mExtensionProductDetail;
+    }
+
+    public void setExtensionProductDetail(ExtensionProductDetail extensionProductDetail) {
+        mExtensionProductDetail = extensionProductDetail;
+    }
+
+    public List<CustomAttributesProductDetail> getCustomAttributesProductDetails() {
+        return mCustomAttributesProductDetails;
+    }
+
+    public void setCustomAttributesProductDetails(List<CustomAttributesProductDetail> customAttributesProductDetails) {
+        mCustomAttributesProductDetails = customAttributesProductDetails;
     }
 }

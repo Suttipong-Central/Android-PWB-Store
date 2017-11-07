@@ -2,7 +2,6 @@ package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,8 +15,6 @@ import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
-import cenergy.central.com.pwb_store.model.SortingHeader;
-import cenergy.central.com.pwb_store.model.SortingItem;
 
 /**
  * Created by napabhat on 7/13/2017 AD.
@@ -150,15 +147,15 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public void  updateSingleProductFilterItem(ProductFilterItem productFilterItem) {
-        int parentId = productFilterItem.getParentId();
+        int parentId = Integer.parseInt(productFilterItem.getId());
         for (ProductFilterHeader productFilterHeader : mProductFilterHeaders) {
-            if (parentId == productFilterHeader.getDepartmentId()) {
+            if (parentId == Integer.parseInt(productFilterHeader.getId())) {
                 if (!productFilterHeader.isMultipleType()) {
                     if (productFilterHeader.isProductFilterItemListAvailable()) {
                         List<ProductFilterItem> productFilterItemList = productFilterHeader.getProductFilterItemList();
                         for (ProductFilterItem headerProductFilterItem :
                                 productFilterItemList) {
-                            headerProductFilterItem.setSelected(headerProductFilterItem.getDepartmentId() == productFilterItem.getDepartmentId());
+                            headerProductFilterItem.setSelected(headerProductFilterItem.getId() == productFilterItem.getId());
                         }
 
                         notifyItemRangeChanged(1, productFilterItemList.size());

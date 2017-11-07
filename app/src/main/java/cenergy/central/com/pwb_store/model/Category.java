@@ -6,51 +6,30 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by napabhat on 7/5/2017 AD.
  */
 
 public class Category implements IViewType, Parcelable {
     private int viewTypeId;
-    @SerializedName("DepartmentId")
+    @SerializedName("entity_id")
     @Expose
-    private int departmentId;
-    @SerializedName("ParentId")
+    private String id;
+    @SerializedName("level")
     @Expose
-    private int parentId;
-    @SerializedName("RootDeptId")
-    @Expose
-    private int rootDeptId;
-    @SerializedName("DepartmentName")
+    private String level;
+    @SerializedName("name")
     @Expose
     private String departmentName;
-    @SerializedName("DepartmentNameEN")
-    @Expose
-    private String departmentNameEN;
-    @SerializedName("MetaKeyword")
-    @Expose
-    private String metaKeyword;
-    @SerializedName("MetaDescription")
-    @Expose
-    private String metaDescription;
-    @SerializedName("UrlName")
-    @Expose
-    private String urlName;
-    @SerializedName("UrlNameEN")
-    @Expose
-    private String urlNameEN;
-    @SerializedName("Title")
-    @Expose
-    private String title;
-    @SerializedName("TitleEN")
-    @Expose
-    private String titleEN;
-    @SerializedName("ImageUrl")
+    @SerializedName("image")
     @Expose
     private String imageURL;
-    @SerializedName("Imagerl")
+    @SerializedName("children")
     @Expose
-    private String imagerl;
+    private List<ProductFilterHeader> mFilterHeaders = new ArrayList<>();
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {
         @Override
@@ -66,42 +45,26 @@ public class Category implements IViewType, Parcelable {
 
     public Category(String imageURL, String title) {
         this.imageURL = imageURL;
-        this.title = title;
+        this.departmentName = title;
     }
 
     protected Category(Parcel in) {
         viewTypeId = in.readInt();
         imageURL = in.readString();
-        title = in.readString();
-        departmentId = in.readInt();
-        parentId = in.readInt();
-        rootDeptId = in.readInt();
+        id = in.readString();
+        level = in.readString();
         departmentName = in.readString();
-        departmentNameEN = in.readString();
-        metaKeyword = in.readString();
-        metaDescription = in.readString();
-        urlName = in.readString();
-        urlNameEN = in.readString();
-        titleEN = in.readString();
-        imagerl = in.readString();
+        mFilterHeaders = in.createTypedArrayList(ProductFilterHeader.CREATOR);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
         dest.writeString(imageURL);
-        dest.writeString(title);
-        dest.writeInt(departmentId);
-        dest.writeInt(parentId);
-        dest.writeInt(rootDeptId);
         dest.writeString(departmentName);
-        dest.writeString(departmentNameEN);
-        dest.writeString(metaKeyword);
-        dest.writeString(metaDescription);
-        dest.writeString(urlName);
-        dest.writeString(urlNameEN);
-        dest.writeString(titleEN);
-        dest.writeString(imagerl);
+        dest.writeString(id);
+        dest.writeString(level);
+        dest.writeTypedList(mFilterHeaders);
     }
 
     @Override
@@ -127,38 +90,6 @@ public class Category implements IViewType, Parcelable {
         this.imageURL = imageURL;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(int departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public int getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
-    }
-
-    public int getRootDeptId() {
-        return rootDeptId;
-    }
-
-    public void setRootDeptId(int rootDeptId) {
-        this.rootDeptId = rootDeptId;
-    }
-
     public String getDepartmentName() {
         return departmentName;
     }
@@ -167,59 +98,27 @@ public class Category implements IViewType, Parcelable {
         this.departmentName = departmentName;
     }
 
-    public String getDepartmentNameEN() {
-        return departmentNameEN;
+    public String getId() {
+        return id;
     }
 
-    public void setDepartmentNameEN(String departmentNameEN) {
-        this.departmentNameEN = departmentNameEN;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getMetaKeyword() {
-        return metaKeyword;
+    public String getLevel() {
+        return level;
     }
 
-    public void setMetaKeyword(String metaKeyword) {
-        this.metaKeyword = metaKeyword;
+    public void setLevel(String level) {
+        this.level = level;
     }
 
-    public String getMetaDescription() {
-        return metaDescription;
+    public List<ProductFilterHeader> getFilterHeaders() {
+        return mFilterHeaders;
     }
 
-    public void setMetaDescription(String metaDescription) {
-        this.metaDescription = metaDescription;
-    }
-
-    public String getUrlName() {
-        return urlName;
-    }
-
-    public void setUrlName(String urlName) {
-        this.urlName = urlName;
-    }
-
-    public String getUrlNameEN() {
-        return urlNameEN;
-    }
-
-    public void setUrlNameEN(String urlNameEN) {
-        this.urlNameEN = urlNameEN;
-    }
-
-    public String getTitleEN() {
-        return titleEN;
-    }
-
-    public void setTitleEN(String titleEN) {
-        this.titleEN = titleEN;
-    }
-
-    public String getImagerl() {
-        return imagerl;
-    }
-
-    public void setImagerl(String imagerl) {
-        this.imagerl = imagerl;
+    public void setFilterHeaders(List<ProductFilterHeader> filterHeaders) {
+        mFilterHeaders = filterHeaders;
     }
 }

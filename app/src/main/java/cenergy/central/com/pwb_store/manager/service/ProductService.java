@@ -1,10 +1,8 @@
 package cenergy.central.com.pwb_store.manager.service;
 
-import java.util.List;
-
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
-import cenergy.central.com.pwb_store.model.ProductList;
+import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -30,14 +28,56 @@ public interface ProductService {
             @Query("StoreId") String storeId,
             @Query("SortBy") String sortBy);
 
+    @GET("/rest/V1/products")
+    Call<ProductDao> getProductList(
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String category,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") String categoryId,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String in,
+            @Query("searchCriteria[filterGroups][1][filters][0][field]") String inStore,
+            @Query("searchCriteria[filterGroups][1][filters][0][value]") String storeId,
+            @Query("searchCriteria[filterGroups][1][filters][0][conditionType]") String type,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("searchCriteria[sortOrders][0][field]") String name,
+            @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
+            @Query("fields") String fields);
+
     @GET("/api/Products/{id}")
     Call<ProductDetail> getProductDetail(
             @Path("id") String productId,
             @Query("storeid") String storeId
     );
 
+    @GET("/rest/V1/products/{sku}")
+    Call<ProductDetail> getProductDetailMagento(
+            @Path("sku") String sku,
+            @Query("branch_id") String storeId,
+            @Query("fields") String fields
+    );
+
     @GET("/api/Products")
     Call<ProductDetail> getSearchBarcode(
             @Query("barcode") String barcode,
             @Query("storeid") String storeId);
+
+    @GET("/rest/V1/products")
+    Call<ProductDetailDao> getSearchBarcodeMagento(
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String inStore,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") String storeId,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String type,
+            @Query("searchCriteria[filterGroups][1][filters][0][field]") String barCodeName,
+            @Query("searchCriteria[filterGroups][1][filters][0][value]") String barCode,
+            @Query("searchCriteria[filterGroups][1][filters][0][conditionType]") String eq,
+            @Query("searchCriteria[sortOrders][0][field]") String name,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage);
+
+    @GET("/rest/V2/search")
+    Call<ProductDao> getProductSearch(
+            @Query("searchCriteria[requestName]") String quick,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String searchTerm,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") String keyWord,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("fields") String fields);
 }

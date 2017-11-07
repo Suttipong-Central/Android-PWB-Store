@@ -41,7 +41,7 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
     public void setViewHolder(ProductDetailImage productDetailImage, FragmentManager fragmentManager){
 
         Glide.with(Contextor.getInstance().getContext())
-                .load(productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
+                .load("http://api.powerbuy.world/media/catalog/product"+productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
                 .error(R.drawable.ic_error_placeholder)
                 .placeholder(R.drawable.ic_banner_placeholder)
                 .crossFade()
@@ -51,7 +51,7 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
         for (ProductDetailImageItem productDetailImageItem : productDetailImage.getProductDetailImageItems()) {
             if (productDetailImageItem.isSelected()) {
                 Glide.with(Contextor.getInstance().getContext())
-                        .load(productDetailImageItem.getImgUrl())
+                        .load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
                         .error(R.drawable.ic_error_placeholder)
                         .placeholder(R.drawable.ic_banner_placeholder)
                         .crossFade()

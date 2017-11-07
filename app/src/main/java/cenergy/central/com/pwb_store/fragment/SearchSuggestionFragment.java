@@ -9,14 +9,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 
@@ -32,8 +34,6 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.BarcodeScanActivity;
-import cenergy.central.com.pwb_store.activity.MainActivity;
-import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.activity.ProductListActivity;
 import cenergy.central.com.pwb_store.adapter.SearchListSuggestionAdapter;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
@@ -154,31 +154,32 @@ public class SearchSuggestionFragment extends Fragment {
         // Init 'View' instance(s) with rootView.findViewById here
         ButterKnife.bind(this, rootView);
         hideSoftKeyboard(mTextSearch);
-        mAdapter = new SearchListSuggestionAdapter(getContext());
-        //mAdapter.showLoading();
-        mLayoutManager = new GridLayoutManager(getContext(), 1, LinearLayoutManager.VERTICAL, false);
-
-        //if (!TextUtils.isEmpty(mQuery) && mSearchSuggestionDao != null) {
-        //    mAdapter.setSearchSuggestion(mSearchSuggestionDao);
-        //} else if (!TextUtils.isEmpty(mQuery)) {
-            //HttpManager.getInstance().getSearchService().getSearchSuggestion(mQuery).enqueue(CALLBACK_SEARCH_SUGGESTION);
-        //} else {
-        //    mAdapter.setSearchHistory(new TheCentralSQLiteHelper(getContext()).getAllSearchHistory());
-        //}
-
-        mAdapter.setSearch(mSearchSuggestionDao);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mHandler = new Handler();
-        mSearchSuggestionRunnable = new Runnable() {
-            @Override
-            public void run() {
-                //HttpManager.getInstance().getSearchService().getSearchSuggestion(mQuery).enqueue(CALLBACK_SEARCH_SUGGESTION);
-            }
-        };
+//        mAdapter = new SearchListSuggestionAdapter(getContext());
+//        //mAdapter.showLoading();
+//        mLayoutManager = new GridLayoutManager(getContext(), 1, LinearLayoutManager.VERTICAL, false);
+//
+//        //if (!TextUtils.isEmpty(mQuery) && mSearchSuggestionDao != null) {
+//        //    mAdapter.setSearchSuggestion(mSearchSuggestionDao);
+//        //} else if (!TextUtils.isEmpty(mQuery)) {
+//            //HttpManager.getInstance().getSearchService().getSearchSuggestion(mQuery).enqueue(CALLBACK_SEARCH_SUGGESTION);
+//        //} else {
+//        //    mAdapter.setSearchHistory(new TheCentralSQLiteHelper(getContext()).getAllSearchHistory());
+//        //}
+//
+//        mAdapter.setSearch(mSearchSuggestionDao);
+//
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+//        mRecyclerView.setAdapter(mAdapter);
+//        mHandler = new Handler();
+//        mSearchSuggestionRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                //HttpManager.getInstance().getSearchService().getSearchSuggestion(mQuery).enqueue(CALLBACK_SEARCH_SUGGESTION);
+//            }
+//        };
 
         //addTextListener();
+        mTextSearch.setOnEditorActionListener(new SearchOnEditorActionListener());
     }
 
     @Override
@@ -231,23 +232,25 @@ public class SearchSuggestionFragment extends Fragment {
     protected void onQueryChanged(Editable editable) {
         mQuery = editable.toString().trim();
 
-        if (mTextSearch.hasFocus()) {
-            final List<SearchSuggestionItem> filteredList = new ArrayList<>();
+        //performSearch();
 
-            for (int i = 0; i < mSearchSuggestion.getSearchSuggestionItemList().size(); i++) {
-
-                final String text = mSearchSuggestion.getSearchSuggestionItemList().get(i).getType().toLowerCase();
-                if (text.contains(mQuery)) {
-
-                    filteredList.add(mSearchSuggestion.getSearchSuggestionItemList().get(i));
-                }
-            }
-
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mAdapter.setSearchDetail(filteredList);
-            mRecyclerView.setAdapter(mAdapter);
-            mAdapter.notifyDataSetChanged();  // data set changed
-        }
+//        if (mTextSearch.hasFocus()) {
+//            final List<SearchSuggestionItem> filteredList = new ArrayList<>();
+//
+//            for (int i = 0; i < mSearchSuggestion.getSearchSuggestionItemList().size(); i++) {
+//
+//                final String text = mSearchSuggestion.getSearchSuggestionItemList().get(i).getType().toLowerCase();
+//                if (text.contains(mQuery)) {
+//
+//                    filteredList.add(mSearchSuggestion.getSearchSuggestionItemList().get(i));
+//                }
+//            }
+//
+//            mRecyclerView.setLayoutManager(mLayoutManager);
+//            mAdapter.setSearchDetail(filteredList);
+//            mRecyclerView.setAdapter(mAdapter);
+//            mAdapter.notifyDataSetChanged();  // data set changed
+ //       }
     }
 
 
@@ -257,6 +260,29 @@ public class SearchSuggestionFragment extends Fragment {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @OnClick(R.id.image_view_barcode)
+    protected void onBarcodeClick(ImageView imageView) {
+        EventBus.getDefault().post(new BarcodeBus(true));
+    }
+
+    private class SearchOnEditorActionListener implements TextView.OnEditorActionListener {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
+                performSearch();
+            }
+
+            return true;
+        }
+    }
+
+    private void performSearch(){
+        Intent intent = new Intent(getContext(), ProductListActivity.class);
+        intent.putExtra(ProductListActivity.ARG_KEY_WORD, mTextSearch.getText().toString());
+        intent.putExtra(ProductListActivity.ARG_SEARCH, true);
+        startActivity(intent);
     }
 
 //    public void addTextListener(){
@@ -269,23 +295,23 @@ public class SearchSuggestionFragment extends Fragment {
 //
 //            public void onTextChanged(CharSequence query, int start, int before, int count) {
 //
-//                query = query.toString().toLowerCase();
-//
-//                final List<SearchSuggestionItem> filteredList = new ArrayList<>();
-//
-//                for (int i = 0; i < mSearchSuggestion.getSearchSuggestionItemList().size(); i++) {
-//
-//                    final String text = mSearchSuggestion.getSearchSuggestionItemList().get(i).getType().toLowerCase();
-//                    if (text.contains(query)) {
-//
-//                        filteredList.add(mSearchSuggestion.getSearchSuggestionItemList().get(i));
-//                    }
-//                }
-//
-//                mRecyclerView.setLayoutManager(mLayoutManager);
-//                mAdapter.setSearchDetail(filteredList);
-//                mRecyclerView.setAdapter(mAdapter);
-//                mAdapter.notifyDataSetChanged();  // data set changed
+////                query = query.toString().toLowerCase();
+////
+////                final List<SearchSuggestionItem> filteredList = new ArrayList<>();
+////
+////                for (int i = 0; i < mSearchSuggestion.getSearchSuggestionItemList().size(); i++) {
+////
+////                    final String text = mSearchSuggestion.getSearchSuggestionItemList().get(i).getType().toLowerCase();
+////                    if (text.contains(query)) {
+////
+////                        filteredList.add(mSearchSuggestion.getSearchSuggestionItemList().get(i));
+////                    }
+////                }
+////
+////                mRecyclerView.setLayoutManager(mLayoutManager);
+////                mAdapter.setSearchDetail(filteredList);
+////                mRecyclerView.setAdapter(mAdapter);
+////                mAdapter.notifyDataSetChanged();  // data set changed
 //            }
 //        });
 //    }

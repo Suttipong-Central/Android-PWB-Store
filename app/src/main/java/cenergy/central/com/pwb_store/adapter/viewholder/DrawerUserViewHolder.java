@@ -50,7 +50,7 @@ public class DrawerUserViewHolder extends RecyclerView.ViewHolder{
         String storeId = UserInfoManager.getInstance().getUserId();
         for (StoreList storeList : storeDao.getStoreLists()){
             if (storeList.getStoreId().equalsIgnoreCase(storeId)){
-                storeName.setText(storeList.getStoreNameEN());
+                storeName.setText(storeList.getStoreName());
             }
         }
         //storeName.setOnClickListener(this);
@@ -65,7 +65,7 @@ public class DrawerUserViewHolder extends RecyclerView.ViewHolder{
                 StoreList storeList = (StoreList) object;
                 if (!mStoreDao.isSelectedStoreTheSame(storeList)) {
                     mStoreDao.setSelectStore(storeList);
-                    storeName.setText(storeList.getStoreNameEN());
+                    storeName.setText(storeList.getStoreName());
                     UserInfoManager.getInstance().setUserIdLogin(storeList.getStoreId());
                     storeAdapter.updateSingleStore(storeList);
                     UserInfoManager.getInstance().setStore(storeList);

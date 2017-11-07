@@ -2,13 +2,11 @@ package cenergy.central.com.pwb_store.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,6 @@ import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.AvaliableStoreAdapter;
 import cenergy.central.com.pwb_store.adapter.AvaliableStoreFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.ProductFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.SortingAdapter;
@@ -32,12 +29,6 @@ import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
 import cenergy.central.com.pwb_store.model.StoreFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreFilterList;
-
-import static android.R.attr.focusable;
-import static android.R.attr.label;
-import static android.R.attr.thickness;
-import static android.R.attr.x;
-import static android.R.attr.y;
 
 /**
  * Created by napabhat on 7/13/2017 AD.
@@ -153,7 +144,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
         p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         p.dimAmount = 0.1f;
-        p.x = 405;
+        //p.x = 405;
         wm.updateViewLayout(container, p);
     }
 

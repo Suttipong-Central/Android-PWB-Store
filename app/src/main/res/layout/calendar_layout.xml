@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/previous_month"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
             android:layout_marginLeft="16dp"
@@ -40,8 +40,8 @@
 
         <ImageView
             android:id="@+id/next_month"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
             android:layout_marginRight="16dp"

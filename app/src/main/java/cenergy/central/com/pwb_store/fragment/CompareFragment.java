@@ -65,46 +65,46 @@ public class CompareFragment extends Fragment {
         results = RealmController.with(this).deletedCompare(productList.getProductId());
         List<ProductList> mProductListList = new ArrayList<>();
         for (AddCompare addCompare : results){
-            mProductListList.add(new ProductList(addCompare.getProductId(), addCompare.getUrl(), addCompare.getProductName(),
+            mProductListList.add(new ProductList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
                     addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
         }
 
         List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
-        compareDetailItems1.add(new CompareDetailItem("-"));
-        compareDetailItems1.add(new CompareDetailItem("Yes"));
-        compareDetailItems1.add(new CompareDetailItem("Yes"));
-        compareDetailItems1.add(new CompareDetailItem("Yes"));
+        compareDetailItems1.add(new CompareDetailItem(""));
+        compareDetailItems1.add(new CompareDetailItem(""));
+        compareDetailItems1.add(new CompareDetailItem(""));
+        compareDetailItems1.add(new CompareDetailItem(""));
 
         List<CompareDetailItem> compareDetailItems2 = new ArrayList<>();
-        compareDetailItems2.add(new CompareDetailItem("Yes"));
-        compareDetailItems2.add(new CompareDetailItem("A9 CHIP WITH 64BIT"));
-        compareDetailItems2.add(new CompareDetailItem("Yes"));
-        compareDetailItems2.add(new CompareDetailItem("Yes"));
+        compareDetailItems2.add(new CompareDetailItem(""));
+        compareDetailItems2.add(new CompareDetailItem(""));
+        compareDetailItems2.add(new CompareDetailItem(""));
+        compareDetailItems2.add(new CompareDetailItem(""));
 
         List<CompareDetailItem> compareDetailItems3 = new ArrayList<>();
-        compareDetailItems3.add(new CompareDetailItem("-"));
-        compareDetailItems3.add(new CompareDetailItem("-"));
-        compareDetailItems3.add(new CompareDetailItem("Yes"));
-        compareDetailItems3.add(new CompareDetailItem("Yes"));
+        compareDetailItems3.add(new CompareDetailItem(""));
+        compareDetailItems3.add(new CompareDetailItem(""));
+        compareDetailItems3.add(new CompareDetailItem(""));
+        compareDetailItems3.add(new CompareDetailItem(""));
 
         List<CompareDetailItem> compareDetailItems4 = new ArrayList<>();
-        compareDetailItems4.add(new CompareDetailItem("-"));
-        compareDetailItems4.add(new CompareDetailItem("Yes"));
-        compareDetailItems4.add(new CompareDetailItem("Yes"));
-        compareDetailItems4.add(new CompareDetailItem("Yes"));
+        compareDetailItems4.add(new CompareDetailItem(""));
+        compareDetailItems4.add(new CompareDetailItem(""));
+        compareDetailItems4.add(new CompareDetailItem(""));
+        compareDetailItems4.add(new CompareDetailItem(""));
 
         List<CompareDetailItem> compareDetailItems5 = new ArrayList<>();
-        compareDetailItems5.add(new CompareDetailItem("1"));
-        compareDetailItems5.add(new CompareDetailItem("2"));
-        compareDetailItems5.add(new CompareDetailItem("Yes"));
-        compareDetailItems5.add(new CompareDetailItem("Yes"));
+        compareDetailItems5.add(new CompareDetailItem(""));
+        compareDetailItems5.add(new CompareDetailItem(""));
+        compareDetailItems5.add(new CompareDetailItem(""));
+        compareDetailItems5.add(new CompareDetailItem(""));
 
         List<CompareDetail> compareDetails = new ArrayList<>();
-        compareDetails.add(new CompareDetail("Bluetooth", compareDetailItems1));
-        compareDetails.add(new CompareDetail("CPU", compareDetailItems2));
-        compareDetails.add(new CompareDetail("Touch Screen", compareDetailItems3));
-        compareDetails.add(new CompareDetail("Photo booth", compareDetailItems4));
-        compareDetails.add(new CompareDetail("Warranty(Year)", compareDetailItems5));
+        compareDetails.add(new CompareDetail("", compareDetailItems1));
+        compareDetails.add(new CompareDetail("", compareDetailItems2));
+        compareDetails.add(new CompareDetail("", compareDetailItems3));
+        compareDetails.add(new CompareDetail("", compareDetailItems4));
+        compareDetails.add(new CompareDetail("", compareDetailItems5));
 
         mCompareDao = new CompareDao(5, compareDetails);
         mCompareList = new CompareList(4, mProductListList, mCompareDao);
@@ -173,87 +173,87 @@ public class CompareFragment extends Fragment {
             mProductListList.add(new ProductList("1122","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
 
             List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
-            compareDetailItems1.add(new CompareDetailItem("-"));
-            compareDetailItems1.add(new CompareDetailItem("Yes"));
-            compareDetailItems1.add(new CompareDetailItem("Yes"));
-            compareDetailItems1.add(new CompareDetailItem("Yes"));
+            compareDetailItems1.add(new CompareDetailItem(""));
+            compareDetailItems1.add(new CompareDetailItem(""));
+            compareDetailItems1.add(new CompareDetailItem(""));
+            compareDetailItems1.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems2 = new ArrayList<>();
-            compareDetailItems2.add(new CompareDetailItem("Yes"));
-            compareDetailItems2.add(new CompareDetailItem("A9 CHIP WITH 64BIT"));
-            compareDetailItems2.add(new CompareDetailItem("Yes"));
-            compareDetailItems2.add(new CompareDetailItem("Yes"));
+            compareDetailItems2.add(new CompareDetailItem(""));
+            compareDetailItems2.add(new CompareDetailItem(""));
+            compareDetailItems2.add(new CompareDetailItem(""));
+            compareDetailItems2.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems3 = new ArrayList<>();
-            compareDetailItems3.add(new CompareDetailItem("-"));
-            compareDetailItems3.add(new CompareDetailItem("-"));
-            compareDetailItems3.add(new CompareDetailItem("Yes"));
-            compareDetailItems3.add(new CompareDetailItem("Yes"));
+            compareDetailItems3.add(new CompareDetailItem(""));
+            compareDetailItems3.add(new CompareDetailItem(""));
+            compareDetailItems3.add(new CompareDetailItem(""));
+            compareDetailItems3.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems4 = new ArrayList<>();
-            compareDetailItems4.add(new CompareDetailItem("-"));
-            compareDetailItems4.add(new CompareDetailItem("Yes"));
-            compareDetailItems4.add(new CompareDetailItem("Yes"));
-            compareDetailItems4.add(new CompareDetailItem("Yes"));
+            compareDetailItems4.add(new CompareDetailItem(""));
+            compareDetailItems4.add(new CompareDetailItem(""));
+            compareDetailItems4.add(new CompareDetailItem(""));
+            compareDetailItems4.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems5 = new ArrayList<>();
-            compareDetailItems5.add(new CompareDetailItem("1"));
-            compareDetailItems5.add(new CompareDetailItem("2"));
-            compareDetailItems5.add(new CompareDetailItem("Yes"));
-            compareDetailItems5.add(new CompareDetailItem("Yes"));
+            compareDetailItems5.add(new CompareDetailItem(""));
+            compareDetailItems5.add(new CompareDetailItem(""));
+            compareDetailItems5.add(new CompareDetailItem(""));
+            compareDetailItems5.add(new CompareDetailItem(""));
 
             List<CompareDetail> compareDetails = new ArrayList<>();
-            compareDetails.add(new CompareDetail("Bluetooth", compareDetailItems1));
-            compareDetails.add(new CompareDetail("CPU", compareDetailItems2));
-            compareDetails.add(new CompareDetail("Touch Screen", compareDetailItems3));
-            compareDetails.add(new CompareDetail("Photo booth", compareDetailItems4));
-            compareDetails.add(new CompareDetail("Warranty(Year)", compareDetailItems5));
+            compareDetails.add(new CompareDetail("", compareDetailItems1));
+            compareDetails.add(new CompareDetail("", compareDetailItems2));
+            compareDetails.add(new CompareDetail("", compareDetailItems3));
+            compareDetails.add(new CompareDetail("", compareDetailItems4));
+            compareDetails.add(new CompareDetail("", compareDetailItems5));
 
             mCompareDao = new CompareDao(5, compareDetails);
             mCompareList = new CompareList(4, mProductListList, mCompareDao);
         }else {
             List<ProductList> mProductListList = new ArrayList<>();
             for (AddCompare addCompare : results){
-                mProductListList.add(new ProductList(addCompare.getProductId(), addCompare.getUrl(), addCompare.getProductName(),
+                mProductListList.add(new ProductList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
                         addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
             }
 
             List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
-            compareDetailItems1.add(new CompareDetailItem("-"));
-            compareDetailItems1.add(new CompareDetailItem("Yes"));
-            compareDetailItems1.add(new CompareDetailItem("Yes"));
-            compareDetailItems1.add(new CompareDetailItem("Yes"));
+            compareDetailItems1.add(new CompareDetailItem(""));
+            compareDetailItems1.add(new CompareDetailItem(""));
+            compareDetailItems1.add(new CompareDetailItem(""));
+            compareDetailItems1.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems2 = new ArrayList<>();
-            compareDetailItems2.add(new CompareDetailItem("Yes"));
-            compareDetailItems2.add(new CompareDetailItem("A9 CHIP WITH 64BIT"));
-            compareDetailItems2.add(new CompareDetailItem("Yes"));
-            compareDetailItems2.add(new CompareDetailItem("Yes"));
+            compareDetailItems2.add(new CompareDetailItem(""));
+            compareDetailItems2.add(new CompareDetailItem(""));
+            compareDetailItems2.add(new CompareDetailItem(""));
+            compareDetailItems2.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems3 = new ArrayList<>();
-            compareDetailItems3.add(new CompareDetailItem("-"));
-            compareDetailItems3.add(new CompareDetailItem("-"));
-            compareDetailItems3.add(new CompareDetailItem("Yes"));
-            compareDetailItems3.add(new CompareDetailItem("Yes"));
+            compareDetailItems3.add(new CompareDetailItem(""));
+            compareDetailItems3.add(new CompareDetailItem(""));
+            compareDetailItems3.add(new CompareDetailItem(""));
+            compareDetailItems3.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems4 = new ArrayList<>();
-            compareDetailItems4.add(new CompareDetailItem("-"));
-            compareDetailItems4.add(new CompareDetailItem("Yes"));
-            compareDetailItems4.add(new CompareDetailItem("Yes"));
-            compareDetailItems4.add(new CompareDetailItem("Yes"));
+            compareDetailItems4.add(new CompareDetailItem(""));
+            compareDetailItems4.add(new CompareDetailItem(""));
+            compareDetailItems4.add(new CompareDetailItem(""));
+            compareDetailItems4.add(new CompareDetailItem(""));
 
             List<CompareDetailItem> compareDetailItems5 = new ArrayList<>();
-            compareDetailItems5.add(new CompareDetailItem("1"));
-            compareDetailItems5.add(new CompareDetailItem("2"));
-            compareDetailItems5.add(new CompareDetailItem("Yes"));
-            compareDetailItems5.add(new CompareDetailItem("Yes"));
+            compareDetailItems5.add(new CompareDetailItem(""));
+            compareDetailItems5.add(new CompareDetailItem(""));
+            compareDetailItems5.add(new CompareDetailItem(""));
+            compareDetailItems5.add(new CompareDetailItem(""));
 
             List<CompareDetail> compareDetails = new ArrayList<>();
-            compareDetails.add(new CompareDetail("Bluetooth", compareDetailItems1));
-            compareDetails.add(new CompareDetail("CPU", compareDetailItems2));
-            compareDetails.add(new CompareDetail("Touch Screen", compareDetailItems3));
-            compareDetails.add(new CompareDetail("Photo booth", compareDetailItems4));
-            compareDetails.add(new CompareDetail("Warranty(Year)", compareDetailItems5));
+            compareDetails.add(new CompareDetail("", compareDetailItems1));
+            compareDetails.add(new CompareDetail("", compareDetailItems2));
+            compareDetails.add(new CompareDetail("", compareDetailItems3));
+            compareDetails.add(new CompareDetail("", compareDetailItems4));
+            compareDetails.add(new CompareDetail("", compareDetailItems5));
 
             mCompareDao = new CompareDao(5, compareDetails);
             mCompareList = new CompareList(4, mProductListList, mCompareDao);

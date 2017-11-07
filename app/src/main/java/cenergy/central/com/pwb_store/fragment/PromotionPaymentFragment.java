@@ -191,14 +191,10 @@ public class PromotionPaymentFragment extends Fragment {
         promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
         promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
         promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
+//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
+//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
+//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
+//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
 
         mPromotion = new Promotion(promotionItems);
     }

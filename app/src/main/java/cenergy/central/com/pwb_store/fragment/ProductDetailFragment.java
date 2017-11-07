@@ -23,9 +23,6 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
@@ -39,9 +36,11 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailOptionItemBu
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
+import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.model.Recommend;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -90,7 +89,8 @@ public class ProductDetailFragment extends Fragment {
     @Subscribe
     public void onEvent(StoreAvaliableBus storeAvaliableBus){
         Intent intent = new Intent(getContext(), AvaliableStoreActivity.class);
-        //intent.putExtra(AvaliableStoreActivity.ARG_PRODUCT_ID, storeAvaliableBus.getProductId());
+        Log.d(TAG, "sku" +storeAvaliableBus.getProductId());
+        intent.putExtra(AvaliableStoreActivity.ARG_SKU, storeAvaliableBus.getProductId());
         ActivityCompat.startActivity(getContext(), intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(storeAvaliableBus.getView(), 0, 0, storeAvaliableBus.getView().getWidth(), storeAvaliableBus.getView().getHeight())
@@ -194,7 +194,7 @@ public class ProductDetailFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setProductDetail(mProductDetail);
 
-        mAdapter.setProductRecommend(mRecommend);
+        //mAdapter.setProductRecommend(mRecommend);
 
     }
 
@@ -217,28 +217,38 @@ public class ProductDetailFragment extends Fragment {
                                     addCompare.setProductId(mRealmProductDetail.getProductCode());
                                     addCompare.setProductName(mRealmProductDetail.getProductName());
                                     addCompare.setProductNameEN(mRealmProductDetail.getProductNameEN());
-                                    addCompare.setUrlName(mRealmProductDetail.getUrlName());
-                                    addCompare.setUrlNameEN(mRealmProductDetail.getUrlNameEN());
                                     addCompare.setDescription(mRealmProductDetail.getDescription());
                                     addCompare.setDescriptionEN(mRealmProductDetail.getDescriptionEN());
+                                    ExtensionProductDetail extensionProductDetail = mRealmProductDetail.getExtensionProductDetail();
+                                    if (extensionProductDetail != null){
+                                        for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
+                                            addCompare.setBarcode(productDetailStore.getBarCode());
+                                            addCompare.setOriginalPrice(Double.parseDouble(productDetailStore.getPrice()));
+                                            addCompare.setPrice(Double.parseDouble(productDetailStore.getSpecialPrice()));
+                                            addCompare.setStoreId(productDetailStore.getStoreId());
+                                            addCompare.setStockAvailable(Integer.parseInt(productDetailStore.getStockAvailable()));
+                                            addCompare.setUrlName(mRealmProductDetail.getExtensionProductDetail().getImageUrl());
+                                            addCompare.setUrlNameEN(mRealmProductDetail.getExtensionProductDetail().getImageUrl());
+                                        }
+                                    }
                                     addCompare.setReview(mRealmProductDetail.getReview());
                                     addCompare.setReviewEN(mRealmProductDetail.getReviewEN());
-                                    addCompare.setBarcode(mRealmProductDetail.getBarcode());
                                     addCompare.setNumOfImage(mRealmProductDetail.getNumOfImage());
                                     addCompare.setCanInstallment(mRealmProductDetail.isCanInstallment());
                                     addCompare.setT1cPoint(mRealmProductDetail.getT1cPoint());
-                                    addCompare.setDepartmentId(mRealmProductDetail.getDepartmentId());
+                                    addCompare.setProductSku(mRealmProductDetail.getSku());
+                                    //addCompare.setDepartmentId(mRealmProductDetail.getDepartmentId());
+                                    addCompare.setDepartmentId(Integer.parseInt(mRealmProductDetail.getSku()));
                                     addCompare.setBrandId(mRealmProductDetail.getBrandId());
                                     addCompare.setBrand(mRealmProductDetail.getBrand());
                                     addCompare.setBrandEN(mRealmProductDetail.getBrandEN());
-                                    for (ProductDetailImageItem productDetailImageItem :
-                                            mRealmProductDetail.getProductDetailImageItems()) {
-                                        addCompare.setUrl(productDetailImageItem.getImgUrl());
+                                    if (mRealmProductDetail.getProductDetailImageItems() != null){
+                                        for (ProductDetailImageItem productDetailImageItem :
+                                                mRealmProductDetail.getProductDetailImageItems()) {
+                                            addCompare.setUrl(productDetailImageItem.getImgUrl());
+                                        }
                                     }
-                                    addCompare.setOriginalPrice(mRealmProductDetail.getOriginalPrice());
-                                    addCompare.setPrice(mRealmProductDetail.getPrice());
-                                    addCompare.setStoreId(mRealmProductDetail.getStoreId());
-                                    addCompare.setStockAvailable(mRealmProductDetail.getStockAvailable());
+
                                 }
 
                             }
@@ -260,7 +270,8 @@ public class ProductDetailFragment extends Fragment {
                             public void onError(Throwable error) {
                                 error.printStackTrace();
                                 mProgressDialog.dismiss();
-                                Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "" + error.getMessage());
                             }
                         });
             }

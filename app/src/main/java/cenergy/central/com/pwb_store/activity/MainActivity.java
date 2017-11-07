@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -12,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,18 +38,17 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
-import cenergy.central.com.pwb_store.fragment.SearchSuggestionFragment;
-import cenergy.central.com.pwb_store.manager.HttpManager;
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryBus;
+import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
-import cenergy.central.com.pwb_store.manager.bus.event.StoreListBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
@@ -103,8 +102,9 @@ public class MainActivity extends AppCompatActivity {
                 if (mDrawerItemList.size() == 0) {
                     for (Category category : mCategoryDao.getCategoryList()) {
 
-                        mDrawerItemList.add(new DrawerItem(category.getDepartmentNameEN(), category.getDepartmentId(),
-                                category.getParentId(), category.getRootDeptId(), category.getDepartmentNameEN()));
+//                        mDrawerItemList.add(new DrawerItem(category.getDepartmentNameEN(), category.getDepartmentId(),
+//                                category.getParentId(), category.getRootDeptId(), category.getDepartmentNameEN()));
+                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), category.getId(), category));
                         Log.d(TAG, "Detail : " + mDrawerItemList.toString());
                     }
                     mDrawerDao = new DrawerDao(mDrawerItemList);
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             if (response.isSuccessful()){
                 mStoreDao = new StoreDao(response.body());
 
-                HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
+                HttpManagerMagento.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
             }else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -205,11 +205,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
+        DrawerItem drawerItem = drawItemBus.getDrawerItem();
         Toast.makeText(this,""+ drawItemBus.getDrawerItem().getTitle(), Toast.LENGTH_SHORT).show();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
-                .replace(R.id.container, ProductListFragment.newInstance(drawItemBus.getDrawerItem().getDepartmentNameEN(), false,
-                        drawItemBus.getDrawerItem().getDepartmentId(), storeId))
+                .replace(R.id.container, ProductListFragment.newInstance(drawerItem.getTitle(), false,
+                        drawerItem.getId(), storeId, drawerItem.getCategory(), ""))
                 .commit();
     }
 
@@ -223,12 +224,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(CategoryBus categoryBus){
-        if (categoryBus.getCategory().getTitle().equalsIgnoreCase("Change Language to Thai")){
+        if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Change Language to Thai")){
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
                     .commit();
-        }else if (categoryBus.getCategory().getTitle().equalsIgnoreCase("Compare")){
+        }else if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Compare")){
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
@@ -236,8 +237,8 @@ public class MainActivity extends AppCompatActivity {
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
-                    .replace(R.id.container, ProductListFragment.newInstance(categoryBus.getCategory().getDepartmentNameEN(), false,
-                            categoryBus.getCategory().getDepartmentId(), storeId))
+                    .replace(R.id.container, ProductListFragment.newInstance(categoryBus.getCategory().getDepartmentName(), false,
+                            categoryBus.getCategory().getId(), storeId, categoryBus.getCategory(), ""))
                     .commit();
         }
 
@@ -264,12 +265,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(SearchEventBus searchEventBus){
-        hideSoftKeyboard(searchEventBus.getView());
-        if (searchEventBus.isClick() == true){
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, SearchSuggestionFragment.newInstance())
-                    .commit();
+       // hideSoftKeyboard(searchEventBus.getView());
+//        if (searchEventBus.isClick() == true){
+//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//            fragmentTransaction
+//                    .replace(R.id.container, SearchSuggestionFragment.newInstance())
+//                    .commit();
+//        }
+        if (searchEventBus.getKeyword().length() > 0){
+            Intent intent = new Intent(this, ProductListActivity.class);
+            intent.putExtra(ProductListActivity.ARG_KEY_WORD, searchEventBus.getKeyword());
+            intent.putExtra(ProductListActivity.ARG_SEARCH, searchEventBus.isClick());
+            startActivity(intent);
         }
     }
 
@@ -283,6 +290,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Subscribe
+    public void onEvent(CompareMenuBus compareMenuBus){
+        Intent intent = new Intent(this, CompareActivity.class);
+        ActivityCompat.startActivity(this, intent,
+                ActivityOptionsCompat
+                        .makeScaleUpAnimation(compareMenuBus.getView(), 0, 0, compareMenuBus.getView().getWidth(), compareMenuBus.getView().getHeight())
+                        .toBundle());
+    }
+
     final Callback<TokenResponse> CALLBACK_CREATE_TOKEN = new Callback<TokenResponse>() {
         @Override
         public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
@@ -290,6 +306,11 @@ public class MainActivity extends AppCompatActivity {
                 TokenResponse tokenResponse = response.body();
                 if (tokenResponse.getResultStatus() != null){
                     UserInfoManager.getInstance().setCreateToken(tokenResponse);
+                }else {
+                    APIError error = APIErrorUtils.parseError(response);
+                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                    showAlertDialog(error.getErrorMessage(), false);
+                    mProgressDialog.dismiss();
                 }
 
             }
@@ -298,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFailure(Call<TokenResponse> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
         }
     };
 
@@ -310,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null){
             showProgressDialog();
-            HttpManager.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
+            HttpManagerMagento.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
 
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -413,6 +435,7 @@ public class MainActivity extends AppCompatActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() != null) {
+                //TODO แก้Barcode
                 Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "barcode : " + result.getContents());
                 Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);

@@ -13,8 +13,8 @@ import retrofit2.http.Query;
  */
 
 public interface CategoryService {
-    @GET("/api/Categories")
-    //Call<CategoryDao> getCategories();
+    //@GET("/api/Categories")
+    @GET("/rest/V2/categories")
     Call<List<Category>> getCategories();
 
     @GET("api/Categories")

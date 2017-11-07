@@ -15,7 +15,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,7 +27,6 @@ import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.Delivery;
-import cenergy.central.com.pwb_store.model.Event;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.TimeSlotItem;
 import cenergy.central.com.pwb_store.model.request.CartDataRequest;
@@ -117,6 +115,7 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
     public void setViewHolder(Context context) {
         this.mContext = context;
         mCardView.setOnClickListener(this);
+        showProgressDialog();
         getData(getMonth());
         mCalendarView.setListener(this);
         //getMonth();
@@ -167,7 +166,7 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         for (AddCompare addCompare : results) {
             for (int i = 0; i < results.size(); i++) {
                 i++;
-                cartDataRequests.add(new CartDataRequest(i, addCompare.getBarcode(), addCompare.getProductId(),
+                cartDataRequests.add(new CartDataRequest(i, addCompare.getBarcode(), addCompare.getProductSku(),
                         1, "1", "00991", "", ""));
             }
         }
@@ -176,7 +175,6 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
             mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
                     storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
 
-            showProgressDialog();
             HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
                     "application/json",
                     mHDLRequest).enqueue(CALLBACK_HDL);
@@ -480,23 +478,17 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
 
     @Override
     public void onPreviousClick(String[] days) {
+        showProgressDialog();
         NextPreWeekday = days;
         String month = CommonMethod.convertMonth(NextPreWeekday[0]);
         getData(month);
-//        showProgressDialog();
-//        HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
-//                "application/json",
-//                mHDLRequest).enqueue(CALLBACK_HDL);
     }
 
     @Override
     public void onNextClick(String[] days) {
+        showProgressDialog();
         NextPreWeekday = days;
         String month = CommonMethod.convertMonth(NextPreWeekday[0]);
         getData(month);
-//        showProgressDialog();
-//        HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
-//                "application/json",
-//                mHDLRequest).enqueue(CALLBACK_HDL);
     }
 }

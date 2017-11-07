@@ -49,7 +49,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
         Glide.with(Contextor.getInstance().getContext())
-                .load(productList.getImageUrl())
+                .load("http://api.powerbuy.world/media/catalog/product"+productList.getImageUrl())
                 //.placeholder(R.drawable.ic_error_placeholder)
                 .crossFade()
                 .fitCenter()

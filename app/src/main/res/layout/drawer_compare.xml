@@ -2,10 +2,12 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_compare"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:padding="16dp"
+    android:clickable="true"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
@@ -19,7 +21,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/nameProductColor"
         android:layout_marginLeft="16dp"
-        android:text="@string/drawer_delivery"
+        android:text="@string/drawer_compare"
         android:layout_gravity="center"
         app:typeFaceAsset="RobotoLight.ttf"/>
 

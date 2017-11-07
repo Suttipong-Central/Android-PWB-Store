@@ -32,7 +32,7 @@ public class StoreSelectedViewHolder extends RecyclerView.ViewHolder implements 
 
     public void setViewHolder(StoreList storeList, PowerBuyListDialog.OnItemClickListener listener){
         this.mListener = listener;
-        mStoreName.setText(storeList.getStoreNameEN());
+        mStoreName.setText(storeList.getStoreName());
         mRadioButton.setChecked(storeList.isSelected() ? true : false);
         itemView.setTag(storeList);
         itemView.setOnClickListener(this);

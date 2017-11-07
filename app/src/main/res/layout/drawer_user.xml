@@ -44,6 +44,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:padding="5dp"
+                android:visibility="gone"
                 android:text="Panisa Punjavorn"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView

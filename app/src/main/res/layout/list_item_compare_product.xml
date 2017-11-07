@@ -15,15 +15,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="269dp"
-        android:layout_marginRight="5dp">
+        android:layout_height="269dp">
         <!--android:layout_width="200dp"-->
         <!--android:layout_height="269dp">-->
 
         <ImageView
             android:id="@+id/img_cancel"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_cancel_copy"/>
@@ -68,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="2dp"
                     android:layout_marginStart="10dp"
                     android:ellipsize="end"
                     android:gravity="left"
@@ -96,33 +95,34 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
                         android:id="@+id/txt_product_old_price"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
+                        android:layout_weight="0.5"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginLeft="10dp"
                         android:gravity="left"
                         android:maxLines="1"
                         android:textColor="@color/nameProductColor"
-                        android:textSize="16dp"
+                        android:textSize="12sp"
                         app:typeFaceAsset="RobotoLight.ttf"
                         tools:text="16,800"/>
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
                         android:id="@+id/txt_product_new_price"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
+                        android:layout_weight="0.5"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="2dp"
                         android:gravity="right"
                         android:maxLines="1"
                         android:textColor="@color/salePriceColor"
-                        android:textSize="20dp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
                         app:typeFaceAsset="RobotoLight.ttf"
                         tools:text="12,600"/>

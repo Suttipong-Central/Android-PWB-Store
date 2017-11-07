@@ -25,23 +25,21 @@ public class ProductFilterItem implements IViewType, Parcelable {
     };
     private static final String TAG = "ProductFilterItem";
     private int viewTypeId;
-    @SerializedName("DepartmentId")
+    @SerializedName("entity_id")
     @Expose
-    private int departmentId;
-    @SerializedName("ParentId")
+    private String id;
+    @SerializedName("level")
     @Expose
-    private int parentId;
-    @SerializedName("RootDeptId")
+    private String level;
+    @SerializedName(value = "UrlName", alternate = "image")
     @Expose
-    private int rootDeptId;
-    @SerializedName("DepartmentName")
+    private String urlName;
+    @SerializedName(value = "DepartmentName", alternate = "name")
     @Expose
     private String filterName;
-    @SerializedName("DepartmentNameEN")
-    @Expose
-    private String filterNameEN;
-    @SerializedName("MetaKeyword")
-    @Expose
+//
+//    @SerializedName("name")
+//    @Expose
     private String slug;
 
     private String value;
@@ -50,23 +48,11 @@ public class ProductFilterItem implements IViewType, Parcelable {
 
     private int filterId;
 
-//    public ProductFilterItem(int filterId, String filterName, String slug, String value, int parentId, boolean isSelected){
-//        this.filterId = filterId;
-//        this.filterName = filterName;
-//        this.slug = slug;
-//        this.value = value;
-//        this.parentId = parentId;
-//        this.isSelected = isSelected;
-//    }
-
     public ProductFilterItem(ProductFilterItem productFilterItem) {
         this.filterId = productFilterItem.getFilterId();
         this.filterName = productFilterItem.getFilterName();
         this.slug = productFilterItem.getSlug();
         this.isSelected = productFilterItem.isSelected();
-        this.filterNameEN = productFilterItem.getFilterNameEN();
-        this.parentId = productFilterItem.getParentId();
-        this.departmentId = productFilterItem.getDepartmentId();
     }
 
     protected ProductFilterItem(Parcel in) {
@@ -74,12 +60,8 @@ public class ProductFilterItem implements IViewType, Parcelable {
         filterId = in.readInt();
         filterName = in.readString();
         slug = in.readString();
-        parentId = in.readInt();
         isSelected = in.readByte() != 0;
         value = in.readString();
-        departmentId = in.readInt();
-        rootDeptId = in.readInt();
-        filterNameEN = in.readString();
     }
 
     @Override
@@ -88,12 +70,8 @@ public class ProductFilterItem implements IViewType, Parcelable {
         dest.writeInt(filterId);
         dest.writeString(filterName);
         dest.writeString(slug);
-        dest.writeInt(parentId);
         dest.writeByte((byte) (isSelected ? 1 : 0));
         dest.writeString(value);
-        dest.writeInt(departmentId);
-        dest.writeInt(rootDeptId);
-        dest.writeString(filterNameEN);
     }
 
     @Override
@@ -147,23 +125,6 @@ public class ProductFilterItem implements IViewType, Parcelable {
         this.slug = slug;
     }
 
-//    public String getParentId() {
-//        return parentId;
-//    }
-//
-//    public void setParentId(String parentId) {
-//        this.parentId = parentId;
-//    }
-
-
-    public int getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
-    }
-
     public String getValue() {
         return value;
     }
@@ -172,27 +133,27 @@ public class ProductFilterItem implements IViewType, Parcelable {
         this.value = value;
     }
 
-    public int getDepartmentId() {
-        return departmentId;
+    public String getId() {
+        return id;
     }
 
-    public void setDepartmentId(int departmentId) {
-        this.departmentId = departmentId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public int getRootDeptId() {
-        return rootDeptId;
+    public String getLevel() {
+        return level;
     }
 
-    public void setRootDeptId(int rootDeptId) {
-        this.rootDeptId = rootDeptId;
+    public void setLevel(String level) {
+        this.level = level;
     }
 
-    public String getFilterNameEN() {
-        return filterNameEN;
+    public String getUrlName() {
+        return urlName;
     }
 
-    public void setFilterNameEN(String filterNameEN) {
-        this.filterNameEN = filterNameEN;
+    public void setUrlName(String urlName) {
+        this.urlName = urlName;
     }
 }

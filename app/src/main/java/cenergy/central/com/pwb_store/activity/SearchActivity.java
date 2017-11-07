@@ -2,26 +2,46 @@ package cenergy.central.com.pwb_store.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.fragment.CompareFragment;
 import cenergy.central.com.pwb_store.fragment.SearchSuggestionFragment;
+import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 
 /**
  * Created by napabhat on 7/11/2017 AD.
  */
 
 public class SearchActivity extends AppCompatActivity {
+    private static final String TAG = SearchActivity.class.getSimpleName();
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Subscribe
+    public void onEvent(BarcodeBus barcodeBus){
+        if (barcodeBus.isBarcode() == true){
+            IntentIntegrator integrator = new IntentIntegrator(this).setCaptureActivity(BarcodeScanActivity.class);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+            integrator.initiateScan();
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +49,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         initView();
-
+        //TODO ยังไม่มี Suggestion รอ API
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container, SearchSuggestionFragment.newInstance())
@@ -64,20 +84,33 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onPause() {
+        EventBus.getDefault().unregister(this);
         super.onPause();
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_CANCELED) {
-            finish();
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() != null) {
+                //TODO แก้Barcode
+                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                Log.d(TAG, "barcode : " + result.getContents());
+                Intent intent = new Intent(SearchActivity.this, ProductDetailActivity.class);
+                intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());
+                intent.putExtra(ProductDetailActivity.ARG_IS_BARCODE, true);
+                ActivityCompat.startActivity(SearchActivity.this, intent,
+                        ActivityOptionsCompat
+                                .makeScaleUpAnimation(mToolbar, 0, 0, mToolbar.getWidth(), mToolbar.getHeight())
+                                .toBundle());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
