@@ -10,14 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterHeaderViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterItemViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SortingHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SortingItemViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.ProductFilterItem;
-import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
@@ -117,8 +112,8 @@ public class SortingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     List<SortingItem> sortingItemList = sortingHeader.getSortingItems();
                     for (SortingItem headerSortingItem :
                             sortingItemList) {
-                        Log.d(TAG, "loop : " + headerSortingItem.getSlug());
-                        headerSortingItem.setSelected(headerSortingItem.getSlug().equalsIgnoreCase(sortingItem.getSlug()));
+                        Log.d(TAG, "loop : " + headerSortingItem.getFilterName());
+                        headerSortingItem.setSelected(headerSortingItem.getFilterName().equalsIgnoreCase(sortingItem.getFilterName()));
                         Log.d(TAG, "bus : " + sortingItem.getSlug());
                     }
                     notifyItemRangeChanged(0, sortingItemList.size());

@@ -1,9 +1,5 @@
 package cenergy.central.com.pwb_store.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -14,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
 public class AddCompare extends RealmObject {
     @PrimaryKey
     private String productId;
+    private String productSku;
     private String productName;
     private String productNameEN;
     private String urlName;
@@ -219,5 +216,13 @@ public class AddCompare extends RealmObject {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getProductSku() {
+        return productSku;
+    }
+
+    public void setProductSku(String productSku) {
+        this.productSku = productSku;
     }
 }

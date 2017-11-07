@@ -39,10 +39,11 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.
                 .load(category.getImageURL())
                 .placeholder(R.drawable.ic_circle_grey_placeholder)
                 .crossFade()
+                //.fitCenter()
                 .bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
                 .into(mImageView);
 
-        mTextView.setText(category.getDepartmentNameEN());
+        mTextView.setText(category.getDepartmentName());
         itemView.setTag(category);
         itemView.setOnClickListener(this);
     }

@@ -15,6 +15,7 @@ public class DrawerDao implements IViewType,Parcelable {
     private List<DrawerItem> mDrawerItems = new ArrayList<>();
     private StoreDao mStoreDao;
 
+
     protected DrawerDao(Parcel in) {
         viewTypeId = in.readInt();
         mDrawerItems = in.readArrayList(DrawerItem.class.getClassLoader());
@@ -74,4 +75,5 @@ public class DrawerDao implements IViewType,Parcelable {
     public void setStoreDao(StoreDao storeDao) {
         mStoreDao = storeDao;
     }
+
 }

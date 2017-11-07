@@ -35,17 +35,20 @@ public class ProductFilterList  implements IViewType, Parcelable {
     }
 
     public ProductFilterList(ProductFilterList productFilterList) {
-        this.total = productFilterList.getTotal();
-        List<ProductFilterHeader> productFilterHeaderList = new ArrayList<>();
+        if (productFilterList != null){
+            this.total = productFilterList.getTotal();
+            List<ProductFilterHeader> productFilterHeaderList = new ArrayList<>();
 
-        if (productFilterList.isProductFilterListAvailable()) {
-            for (ProductFilterHeader productFilterHeader :
-                    productFilterList.getProductFilterHeaders()) {
-                productFilterHeaderList.add(new ProductFilterHeader(productFilterHeader));
+            if (productFilterList.isProductFilterListAvailable()) {
+                for (ProductFilterHeader productFilterHeader :
+                        productFilterList.getProductFilterHeaders()) {
+                    productFilterHeaderList.add(new ProductFilterHeader(productFilterHeader));
+                }
             }
+
+            this.mProductFilterHeaders = productFilterHeaderList;
         }
 
-        this.mProductFilterHeaders = productFilterHeaderList;
     }
 
     protected ProductFilterList(Parcel in) {
@@ -94,14 +97,14 @@ public class ProductFilterList  implements IViewType, Parcelable {
         List<String> indexList = new ArrayList<>();
         for (ProductFilterHeader productFilterHeader :
                 loadedProductFilterHeaderList) {
-            indexList.add(productFilterHeader.getNameEN());
+            indexList.add(productFilterHeader.getName());
         }
 
         ListIterator<ProductFilterHeader> it = this.mProductFilterHeaders.listIterator();
         while (it.hasNext()) {
             ProductFilterHeader productFilterHeader = it.next();
-            if (indexList.contains(productFilterHeader.getNameEN())) {
-                int matchIndex = indexList.indexOf(productFilterHeader.getNameEN());
+            if (indexList.contains(productFilterHeader.getName())) {
+                int matchIndex = indexList.indexOf(productFilterHeader.getName());
                 productFilterHeader.replaceExisting(loadedProductFilterHeaderList.get(matchIndex), isPreserveSelection);
             } else {
                 it.remove();
@@ -113,12 +116,12 @@ public class ProductFilterList  implements IViewType, Parcelable {
         List<String> indexList = new ArrayList<>();
         for (ProductFilterHeader loadedProductFilterHeader :
                 this.mProductFilterHeaders) {
-            indexList.add(loadedProductFilterHeader.getNameEN());
+            indexList.add(loadedProductFilterHeader.getName());
         }
 
         for (ProductFilterHeader loadedProductFilterHeader :
                 productFilterList.getProductFilterHeaders()) {
-            if (!indexList.contains(loadedProductFilterHeader.getNameEN())) {
+            if (!indexList.contains(loadedProductFilterHeader.getName())) {
                 this.mProductFilterHeaders.add(loadedProductFilterHeader);
             }
         }
@@ -172,7 +175,7 @@ public class ProductFilterList  implements IViewType, Parcelable {
                 mProductFilterHeaders) {
             productFilterOption = productFilterHeader.getSelectedProductFilterOptionIfAvailable();
             if (!TextUtils.isEmpty(productFilterOption)) {
-                filterOptionMap.put(productFilterHeader.getSlug(), productFilterOption);
+                filterOptionMap.put(productFilterHeader.getName(), productFilterOption);
             }
         }
 

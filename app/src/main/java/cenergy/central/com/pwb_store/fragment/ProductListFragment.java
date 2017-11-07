@@ -1,10 +1,8 @@
 package cenergy.central.com.pwb_store.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -14,11 +12,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -36,23 +32,24 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
-import cenergy.central.com.pwb_store.manager.HttpManager;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
+import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
-import cenergy.central.com.pwb_store.model.CategoryDao;
-import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
+import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
+import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -78,6 +75,8 @@ public class ProductListFragment extends Fragment {
     private static final String ARG_SORT_NAME = "ARG_SORT_NAME";
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
     private static final String ARG_PAGE = "ARG_PAGE";
+    private static final String ARG_CATEGORY = "ARG_CATEGORY";
+    private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
 
     //View Members
     @BindView(R.id.recycler_view)
@@ -111,17 +110,20 @@ public class ProductListFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private boolean isDoneFilter;
     private boolean isSearch;
-    private int departmentId;
+    private String departmentId;
     private String storeId;
     private String sortName;
+    private Category mCategory;
     //Pagination
     private static final int PER_PAGE = 20;
     // Page
     private boolean isLoadingMore;
     private int mPreviousTotal;
-    private int currentPage;
+    private int currentPage = 0;
     private int totalPage;
+    private int totalItem;
     private Context mContext;
+    private String keyWord;
 
     public ProductListFragment() {
         super();
@@ -136,8 +138,10 @@ public class ProductListFragment extends Fragment {
                 mSortingList = mTempSortingList;
             }
             if (mProductFilterList != null) {
-                for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()) {
-                    productFilterHeader.setExpanded(false);
+                if (mProductFilterList.getProductFilterHeaders() != null){
+                    for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()) {
+                        productFilterHeader.setExpanded(false);
+                    }
                 }
             } else {
                 for (SortingHeader sortingHeader : mSortingList.getSortingHeaders()) {
@@ -167,9 +171,20 @@ public class ProductListFragment extends Fragment {
                     && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
                     && isStillHavePages()) {
 
-                HttpManager.getInstance().getProductService().getProduct(departmentId, getNextPage(), PER_PAGE, storeId, sortName).enqueue(CALLBACK_PRODUCT);
+                //HttpManager.getInstance().getProductService().getProduct(departmentId, getNextPage(), PER_PAGE, storeId, sortName).enqueue(CALLBACK_PRODUCT);
+                if (isSearch == true){
+                    //showProgressDialog();
+                    HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
+                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                }else {
+                    //showProgressDialog();
+                    HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                            "finset", PER_PAGE, getNextPage(), "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                }
                 currentPage = getNextPage();
-                mProductDao.setCurrentPage(currentPage);
+                if (mProductDao != null){
+                    mProductDao.setCurrentPage(currentPage);
+                }
                 isLoadingMore = true;
             }
         }
@@ -204,17 +219,26 @@ public class ProductListFragment extends Fragment {
                 if (currentPage == 0) {
                     mProductDao.setCurrentPage(1);
                 }
-                totalPage = mProductDao.getTotalElement();
-                if (mProductDao.getProductListList().size() > 0) {
+                totalItem = mProductDao.getTotalElement();
+                totalPage = totalPageCal(totalItem);
+                Log.d(TAG, " totalPage :"+totalPage);
+                if (mProductDao.getProductListList() != null) {
                     mProductListAdapter.setProduct(mProductDao);
-                } else {
+                } else if (mProductDao.getProductListList() == null){
                     mProductListAdapter.setError();
                 }
-                setTextHeader(totalPage, title);
+                else {
+                    mProductListAdapter.setError();
+                }
+                setTextHeader(totalItem, title);
                 mProgressDialog.dismiss();
             } else {
                 mProductListAdapter.setError();
-                setTextHeader(totalPage, title);
+                setTextHeader(totalItem, title);
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+//                showAlertDialog(error.getErrorMessage(), false);
+                mProgressDialog.dismiss();
             }
         }
 
@@ -222,40 +246,40 @@ public class ProductListFragment extends Fragment {
         public void onFailure(Call<ProductDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
-            setTextHeader(totalPage, title);
+            setTextHeader(totalItem, title);
         }
     };
 
-    final Callback<List<ProductFilterHeader>> CALLBACK_PRODUCT_FILTER = new Callback<List<ProductFilterHeader>>() {
-        @Override
-        public void onResponse(Call<List<ProductFilterHeader>> call, Response<List<ProductFilterHeader>> response) {
-            if (response.isSuccessful()) {
-                mProductFilterList = new ProductFilterList(response.body());
-                List<ProductFilterHeader> productFilterHeaders = new ArrayList<>();
-                for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()){
-                    productFilterHeaders.add(new ProductFilterHeader(productFilterHeader.getDepartmentId(), productFilterHeader.getRootDeptId(),
-                            productFilterHeader.getId(), productFilterHeader.getName(), productFilterHeader.getNameEN(),
-                            productFilterHeader.getSlug(), productFilterHeader.getMetaDescription(), productFilterHeader.getUrlName(),
-                            productFilterHeader.getUrlNameEN(), "single", productFilterHeader.getProductFilterItemList()));
-                }
-                mProductFilterList = new ProductFilterList(productFilterHeaders);
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<ProductFilterHeader>> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-        }
-    };
+//    final Callback<List<ProductFilterHeader>> CALLBACK_PRODUCT_FILTER = new Callback<List<ProductFilterHeader>>() {
+//        @Override
+//        public void onResponse(Call<List<ProductFilterHeader>> call, Response<List<ProductFilterHeader>> response) {
+//            if (response.isSuccessful()) {
+//                mProductFilterList = new ProductFilterList(response.body());
+//                List<ProductFilterHeader> productFilterHeaders = new ArrayList<>();
+//                for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()){
+//                    productFilterHeaders.add(new ProductFilterHeader(productFilterHeader.getDepartmentId(), productFilterHeader.getRootDeptId(),
+//                            productFilterHeader.getId(), productFilterHeader.getName(), productFilterHeader.getNameEN(),
+//                            productFilterHeader.getSlug(), productFilterHeader.getMetaDescription(), productFilterHeader.getUrlName(),
+//                            productFilterHeader.getUrlNameEN(), "single", productFilterHeader.getProductFilterItemList()));
+//                }
+//                mProductFilterList = new ProductFilterList(productFilterHeaders);
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call<List<ProductFilterHeader>> call, Throwable t) {
+//            Log.e(TAG, "onFailure: ", t);
+//        }
+//    };
 
     @Subscribe
     public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
         showProgressDialog();
         isDoneFilter = true;
         ProductFilterHeader productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
-        callFilter(productFilterHeader.getDepartmentId(), sortName);
-        title = productFilterHeader.getNameEN();
-        departmentId = productFilterHeader.getDepartmentId();
+        callFilter(productFilterHeader.getId(), sortName);
+        title = productFilterHeader.getName();
+        departmentId = productFilterHeader.getId();
         mPowerBuyPopupWindow.setFilterItem(productFilterHeaderBus.getProductFilterHeader());
         Log.d(TAG, "productFilterHeaderBus" + isDoneFilter);
     }
@@ -265,9 +289,9 @@ public class ProductListFragment extends Fragment {
         showProgressDialog();
         isDoneFilter = true;
         ProductFilterItem productFilterItem = productFilterItemBus.getProductFilterItem();
-        callFilter(productFilterItem.getDepartmentId(), sortName);
-        title = productFilterItem.getFilterNameEN();
-        departmentId = productFilterItem.getDepartmentId();
+        callFilter(productFilterItem.getId(), sortName);
+        title = productFilterItem.getFilterName();
+        departmentId = productFilterItem.getId();
         mPowerBuyPopupWindow.updateSingleProductFilterItem(productFilterItem);
         Log.d(TAG, "productFilterItemBus" + isDoneFilter);
     }
@@ -297,13 +321,15 @@ public class ProductListFragment extends Fragment {
     }
 
     @SuppressWarnings("unused")
-    public static ProductListFragment newInstance(String title, boolean search, int departmentId, String storeId) {
+    public static ProductListFragment newInstance(String title, boolean search, String departmentId, String storeId, Category category, String keyWord) {
         ProductListFragment fragment = new ProductListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TITLE, title);
         args.putBoolean(ARG_SEARCH, search);
-        args.putInt(ARG_DEPARTMENT_ID, departmentId);
+        args.putString(ARG_DEPARTMENT_ID, departmentId);
         args.putString(ARG_STORE_ID, storeId);
+        args.putParcelable(ARG_CATEGORY, category);
+        args.putString(ARG_KEY_WORD, keyWord);
         fragment.setArguments(args);
         return fragment;
     }
@@ -330,8 +356,10 @@ public class ProductListFragment extends Fragment {
         if (getArguments() != null) {
             title = getArguments().getString(ARG_TITLE);
             isSearch = getArguments().getBoolean(ARG_SEARCH);
-            departmentId = getArguments().getInt(ARG_DEPARTMENT_ID);
+            departmentId = getArguments().getString(ARG_DEPARTMENT_ID);
             storeId = getArguments().getString(ARG_STORE_ID);
+            mCategory = getArguments().getParcelable(ARG_CATEGORY);
+            keyWord = getArguments().getString(ARG_KEY_WORD);
         }
         resetPage();
 
@@ -379,12 +407,12 @@ public class ProductListFragment extends Fragment {
 
         // sorting
         List<SortingItem> sortingItems = new ArrayList<>();
-        sortingItems.add(new SortingItem(1, "Price : Low to High", "pricelowtohigh", "lpricelowtohigh", "1", false));
-        sortingItems.add(new SortingItem(2, "Price : High to Low", "pricehightolow", "pricehightolow", "2", false));
-        sortingItems.add(new SortingItem(3, "Brand : Name(A-Z)", "atoz", "atoz", "3", false));
-        sortingItems.add(new SortingItem(4, "Brand : Name(Z-A)", "ztoa", "ztoa", "4", false));
-        sortingItems.add(new SortingItem(5, "Discount : Low to High", "disclowtohigh", "disclowtohigh", "5", false));
-        sortingItems.add(new SortingItem(6, "Discount : High to Low", "dischightolow", "dischightolow", "6", false));
+        sortingItems.add(new SortingItem(1, "Price : Low to High", "ASC", "ASC", "1", false));
+        sortingItems.add(new SortingItem(2, "Price : High to Low", "DESC", "DESC", "2", false));
+        sortingItems.add(new SortingItem(3, "Brand : Name(A-Z)", "ASC", "ASC", "3", false));
+        sortingItems.add(new SortingItem(4, "Brand : Name(Z-A)", "DESC", "DESC", "4", false));
+        sortingItems.add(new SortingItem(5, "Discount : Low to High", "ASC", "ASC", "5", false));
+        sortingItems.add(new SortingItem(6, "Discount : High to Low", "DESC", "DESC", "6", false));
 
         List<SortingHeader> sortingHeaders = new ArrayList<>();
         sortingHeaders.add(new SortingHeader("0", "Sorting", "sorting", "single", sortingItems));
@@ -418,9 +446,18 @@ public class ProductListFragment extends Fragment {
         mRecyclerView.setAdapter(mProductListAdapter);
 
         if (savedInstanceState == null) {
-            showProgressDialog();
-            HttpManager.getInstance().getProductService().getProduct(departmentId, 1, PER_PAGE, storeId, sortName).enqueue(CALLBACK_PRODUCT);
-            HttpManager.getInstance().getCategoryService().getProductFilter(departmentId).enqueue(CALLBACK_PRODUCT_FILTER);
+            if (isSearch == true){
+                showProgressDialog();
+                HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container",
+                        "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+            }else {
+                showProgressDialog();
+                HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                        "finset", PER_PAGE, 1, "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+            }
+            if (mCategory != null){
+                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
+            }
         } else {
             mProductListAdapter.setProduct(mProductDao);
         }
@@ -443,10 +480,12 @@ public class ProductListFragment extends Fragment {
         totalPage = 1;
         isLoadingMore = true;
         mPreviousTotal = 0;
+        sortName = "ASC";
     }
 
     private int getNextPage() {
-        return currentPage + PER_PAGE;
+        //return currentPage + PER_PAGE;
+        return currentPage + 1;
     }
 
     private boolean isStillHavePages() {
@@ -496,11 +535,13 @@ public class ProductListFragment extends Fragment {
         outState.putParcelable(ARG_PRODUCT, mProductDao);
         outState.putParcelable(ARG_PRODUCT_FILTER, mProductFilterList);
         outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
-        outState.putInt(ARG_DEPARTMENT_ID, departmentId);
+        outState.putString(ARG_DEPARTMENT_ID, departmentId);
         outState.putString(ARG_SORT_NAME, sortName);
         outState.putBoolean(ARG_IS_DONE, isDoneFilter);
         outState.putString(ARG_TITLE, title);
         outState.putInt(ARG_PAGE, currentPage);
+        outState.putString(ARG_KEY_WORD, keyWord);
+        outState.putBoolean(ARG_SEARCH, isSearch);
     }
 
     /*
@@ -512,11 +553,13 @@ public class ProductListFragment extends Fragment {
         mProductDao = savedInstanceState.getParcelable(ARG_PRODUCT);
         mProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER);
         mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
-        departmentId = savedInstanceState.getInt(ARG_DEPARTMENT_ID);
+        departmentId = savedInstanceState.getString(ARG_DEPARTMENT_ID);
         sortName = savedInstanceState.getString(ARG_SORT_NAME);
         isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE);
         title = savedInstanceState.getString(ARG_TITLE);
         currentPage = savedInstanceState.getInt(ARG_PAGE);
+        keyWord = savedInstanceState.getString(ARG_KEY_WORD);
+        isSearch = savedInstanceState.getBoolean(ARG_SEARCH);
     }
 
     @OnClick(R.id.layout_title)
@@ -554,19 +597,22 @@ public class ProductListFragment extends Fragment {
         mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
     }
 
-    private void callFilter(int departmentId, String sortName) {
+    private void callFilter(String departmentId, String sortName) {
         resetPage();
-        HttpManager.getInstance().getProductService().getProduct(departmentId, 1, PER_PAGE, storeId, sortName).enqueue(CALLBACK_PRODUCT);
+        HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                "finset", PER_PAGE, 1, "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
     }
 
     private void setTextHeader(int total, String name) {
         productCount.setText(name + " " + mContext.getString(R.string.filter_count, String.valueOf(total)));
     }
 
-//    private int totalPageCal(int total){
-//        int num;
-//        num = (int) ceil(total/20);
-//
-//        return num;
-//    }
+    private int totalPageCal(int total){
+        int num;
+        float x = ((float)total/20);
+        Log.d(TAG, "Calculator : "+ x);
+        num = (int) ceil(x);
+        return num;
+    }
+
 }

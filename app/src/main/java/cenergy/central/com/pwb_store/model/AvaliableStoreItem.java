@@ -3,6 +3,9 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by napabhat on 8/16/2017 AD.
  */
@@ -10,11 +13,17 @@ import android.os.Parcelable;
 public class AvaliableStoreItem implements IViewType,Parcelable {
 
     private int viewTypeId;
+    @SerializedName("name")
+    @Expose
     private String storeName;
+    @SerializedName("address")
+    @Expose
     private String address;
-    private int stock;
+    @SerializedName("stock_available")
+    @Expose
+    private String stock;
 
-    public AvaliableStoreItem(String storeName, String address, int stock) {
+    public AvaliableStoreItem(String storeName, String address, String stock) {
         this.storeName = storeName;
         this.address = address;
         this.stock = stock;
@@ -24,7 +33,7 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         viewTypeId = in.readInt();
         storeName = in.readString();
         address = in.readString();
-        stock = in.readInt();
+        stock = in.readString();
     }
 
     @Override
@@ -32,7 +41,7 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         dest.writeInt(viewTypeId);
         dest.writeString(storeName);
         dest.writeString(address);
-        dest.writeInt(stock);
+        dest.writeString(stock);
     }
 
     public static final Creator<AvaliableStoreItem> CREATOR = new Creator<AvaliableStoreItem>() {
@@ -78,11 +87,11 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         this.address = address;
     }
 
-    public int getStock() {
+    public String getStock() {
         return stock;
     }
 
-    public void setStock(int stock) {
+    public void setStock(String stock) {
         this.stock = stock;
     }
 }

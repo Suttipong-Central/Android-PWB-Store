@@ -95,7 +95,7 @@ public class SortingList implements IViewType, Parcelable {
             boolean isFound = false;
             for (SortingHeader sortingHeader1 :
                     mSortingHeaders) {
-                if (sortingHeader1.getSlug().equalsIgnoreCase(sortingHeader.getSlug())) {
+                if (sortingHeader1.getName().equalsIgnoreCase(sortingHeader.getName())) {
                     sortingHeader1.replaceSortHeader(sortingHeader, isPreserveSelection);
                     isFound = true;
                     break;

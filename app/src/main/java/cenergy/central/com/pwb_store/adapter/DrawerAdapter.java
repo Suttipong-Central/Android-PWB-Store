@@ -16,14 +16,10 @@ import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHelpViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerItemViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.StoreSelectedViewHolder;
-import cenergy.central.com.pwb_store.model.Category;
-import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.StoreDao;
-import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.ViewType;
 
 /**
@@ -144,6 +140,34 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     StoreDao storeDao = (StoreDao) viewType;
                     DrawerUserViewHolder drawerUserViewHolder = (DrawerUserViewHolder) holder;
                     drawerUserViewHolder.setViewHolder(mContext, storeDao);
+                }
+                break;
+
+            case VIEW_TYPE_ID_DELIVERY:
+                if (holder instanceof DrawerDeliveryViewHolder) {
+                    DrawerDeliveryViewHolder drawerDeliveryViewHolder = (DrawerDeliveryViewHolder) holder;
+                    drawerDeliveryViewHolder.setViewHolder();
+                }
+                break;
+
+            case VIEW_TYPE_ID_COMPARE:
+                if (holder instanceof DrawerCompareViewHolder) {
+                    DrawerCompareViewHolder drawerCompareViewHolder = (DrawerCompareViewHolder) holder;
+                    drawerCompareViewHolder.setViewHolder();
+                }
+                break;
+
+            case VIEW_TYPE_ID_CHANGE:
+                if (holder instanceof DrawerChangeViewHolder) {
+                    DrawerChangeViewHolder drawerChangeViewHolder = (DrawerChangeViewHolder) holder;
+                    drawerChangeViewHolder.setViewHolder();
+                }
+                break;
+
+            case VIEW_TYPE_ID_HELP:
+                if (holder instanceof DrawerHelpViewHolder) {
+                    DrawerHelpViewHolder drawerHelpViewHolder = (DrawerHelpViewHolder) holder;
+                    drawerHelpViewHolder.setViewHolder();
                 }
                 break;
         }

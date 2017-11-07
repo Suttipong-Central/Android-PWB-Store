@@ -26,7 +26,7 @@ import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductDetailFragment;
 import cenergy.central.com.pwb_store.fragment.WebViewFragment;
-import cenergy.central.com.pwb_store.manager.HttpManager;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
@@ -37,13 +37,13 @@ import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOption;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
+import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
 import cenergy.central.com.pwb_store.model.ProductDetailOption;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailPromotion;
 import cenergy.central.com.pwb_store.model.ProductRelatedList;
-import cenergy.central.com.pwb_store.model.PromotionItem;
 import cenergy.central.com.pwb_store.model.Recommend;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.model.SpecItem;
@@ -80,6 +80,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private String productId;
     private boolean isBarcode;
     private Realm mRealm;
+    private ProductDetailDao mProductDetailDao;
 
     final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
         @Override
@@ -88,18 +89,24 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                 mProductDetail = response.body();
                 if (mProductDetail != null){
                     List<SpecItem> specItems = new ArrayList<>();
-                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
-                    specItems.add(new SpecItem("Picture size","62x46mm"));
-                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
-                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
-                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
-                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
-                            "range : 0.6m - 2.7m"));
-                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+//                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
+//                    specItems.add(new SpecItem("Picture size","62x46mm"));
+//                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
+//                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
+//                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
+//                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
+//                            "range : 0.6m - 2.7m"));
+//                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
 
                     mSpecDao = new SpecDao(specItems);
                     mProductDetail.setSpecDao(mSpecDao);
-                    mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
+                    //mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
 
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction
@@ -125,25 +132,80 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         }
     };
 
-    final Callback<ProductDetail> CALLBACK_BARCODE = new Callback<ProductDetail>() {
+//    final Callback<ProductDetail> CALLBACK_BARCODE = new Callback<ProductDetail>() {
+//        @Override
+//        public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
+//            if (response.isSuccessful()){
+//                mProductDetail = response.body();
+//                if (mProductDetail != null){
+//                    List<SpecItem> specItems = new ArrayList<>();
+//                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
+//                    specItems.add(new SpecItem("Picture size","62x46mm"));
+//                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
+//                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
+//                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
+//                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
+//                            "range : 0.6m - 2.7m"));
+//                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+//
+//                    mSpecDao = new SpecDao(specItems);
+//                    mProductDetail.setSpecDao(mSpecDao);
+//                    //mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
+//
+//                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                    fragmentTransaction
+//                            .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
+//                            .commit();
+//                    mProgressDialog.dismiss();
+//                }else {
+//                    MockData();
+//                    mProgressDialog.dismiss();
+//                }
+//            }else {
+//                APIError error = APIErrorUtils.parseError(response);
+//                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+//                showAlertDialog(error.getErrorMessage(), false);
+//                mProgressDialog.dismiss();
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call<ProductDetail> call, Throwable t) {
+//            Log.e(TAG, "onFailure: ", t);
+//            mProgressDialog.dismiss();
+//        }
+//    };
+
+    final Callback<ProductDetailDao> CALLBACK_BARCODE = new Callback<ProductDetailDao>() {
         @Override
-        public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
+        public void onResponse(Call<ProductDetailDao> call, Response<ProductDetailDao> response) {
             if (response.isSuccessful()){
-                mProductDetail = response.body();
+                mProductDetailDao = response.body();
+                if (mProductDetailDao != null){
+                    for (ProductDetail productDetail : mProductDetailDao.getProductDetails()){
+                        mProductDetail = productDetail;
+                    }
+                }
                 if (mProductDetail != null){
                     List<SpecItem> specItems = new ArrayList<>();
-                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
-                    specItems.add(new SpecItem("Picture size","62x46mm"));
-                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
-                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
-                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
-                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
-                            "range : 0.6m - 2.7m"));
-                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+//                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
+//                    specItems.add(new SpecItem("Picture size","62x46mm"));
+//                    specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
+//                    specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
+//                    specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
+//                            "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
+//                            "range : 0.6m - 2.7m"));
+//                    specItems.add(new SpecItem("Display Screen","3.0 Inches."));
 
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
+                    specItems.add(new SpecItem("",""));
                     mSpecDao = new SpecDao(specItems);
                     mProductDetail.setSpecDao(mSpecDao);
-                    mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
+                    //mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
 
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction
@@ -163,11 +225,12 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         }
 
         @Override
-        public void onFailure(Call<ProductDetail> call, Throwable t) {
+        public void onFailure(Call<ProductDetailDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
         }
     };
+
 
     @Subscribe
     public void onEvent(PromotionItemBus promotionItemBus){
@@ -244,10 +307,13 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         if (savedInstanceState == null){
             if (!isBarcode){
                 showProgressDialog();
-                HttpManager.getInstance().getProductService().getProductDetail(productId, UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT_DETAIL);
+                //HttpManager.getInstance().getProductService().getProductDetail(productId, UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT_DETAIL);
+                HttpManagerMagento.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(), getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
             }else {
                 showProgressDialog();
-                HttpManager.getInstance().getProductService().getSearchBarcode(productId, UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_BARCODE);
+                //HttpManager.getInstance().getProductService().getSearchBarcode(productId, UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_BARCODE);
+                HttpManagerMagento.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
+                        "finset", "barcode", productId, "eq", "name", 10, 1).enqueue(CALLBACK_BARCODE);
             }
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

@@ -32,7 +32,7 @@ public class ProductFilterItemViewHolder extends RecyclerView.ViewHolder impleme
     public void setViewHolder(ProductFilterItem productFilterItem) {
         itemView.setTag(productFilterItem);
 
-        mTxtItem.setText(productFilterItem.getFilterNameEN());
+        mTxtItem.setText(productFilterItem.getFilterName());
         mTxtItem.setTextAppearance(Contextor.getInstance().getContext(),productFilterItem.isSelected() ? R.style.textSubCheck : R.style.textSub);
         itemView.setOnClickListener(this);
     }

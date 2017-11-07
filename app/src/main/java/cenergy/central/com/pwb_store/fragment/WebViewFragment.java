@@ -141,6 +141,8 @@ public class WebViewFragment extends Fragment {
                 case MODE_URL:
                     if (url.equals(mWebUrl)) {
                         view.loadUrl(url);
+                    }else {
+                        view.loadUrl(url);
                     }
                 case MODE_ADD_CARD:
                     lastPathSegment = url.substring(url.lastIndexOf('/') + 1);

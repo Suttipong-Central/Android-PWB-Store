@@ -171,7 +171,7 @@ public class SortingHeader implements IViewType, Parcelable {
                     mSortingItems) {
                 for (SortingItem newSortingItem :
                         sortingHeader.getSortingItems()) {
-                    if (sortingItem.getSlug().equalsIgnoreCase(newSortingItem.getSlug())) {
+                    if (sortingItem.getFilterName().equalsIgnoreCase(newSortingItem.getFilterName())) {
                         newSortingItem.setSelected(sortingItem.isSelected());
                         break;
                     }
@@ -193,7 +193,7 @@ public class SortingHeader implements IViewType, Parcelable {
                     mSortingItems) {
                 for (SortingItem newSortingItem :
                         loadedSortingHeader.getSortingItems()) {
-                    if (sortingItem.getSlug().equalsIgnoreCase(newSortingItem.getSlug())) {
+                    if (sortingItem.getFilterName().equalsIgnoreCase(newSortingItem.getFilterName())) {
                         newSortingItem.setSelected(sortingItem.isSelected());
                         break;
                     }

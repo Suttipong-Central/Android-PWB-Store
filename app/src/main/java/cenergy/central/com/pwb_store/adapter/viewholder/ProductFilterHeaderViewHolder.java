@@ -85,9 +85,9 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder imple
 
 
         if (checkCount <= 0) {
-            filter = productFilterHeader.getNameEN();
+            filter = productFilterHeader.getName();
         } else {
-            filter = productFilterHeader.getNameEN() + " (" + checkCount + ")";
+            filter = productFilterHeader.getName() + " (" + checkCount + ")";
         }
 
         return filter;

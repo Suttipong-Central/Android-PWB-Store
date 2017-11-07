@@ -90,7 +90,7 @@ public class StoreAdapter extends ListDialogAbstractItemAdapter {
                 List<StoreList> storeLists = mStoreDao.getStoreLists();
                 for (StoreList headerStore :
                         storeLists) {
-                    Log.d(TAG, "loop : " + headerStore.getStoreNameEN());
+                    Log.d(TAG, "loop : " + headerStore.getStoreName());
                     headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeList.getStoreId()));
                     Log.d(TAG, "bus : " + storeList.getStoreId());
                 }

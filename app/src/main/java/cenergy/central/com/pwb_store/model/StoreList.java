@@ -12,114 +12,114 @@ import com.google.gson.annotations.SerializedName;
 
 public class StoreList implements IViewType,Parcelable{
     private int viewTypeId;
-    @SerializedName("StoreId")
+    @SerializedName(value = "StoreId", alternate = "store_code")
     @Expose
     private String storeId;
-    @SerializedName("StoreName")
+    @SerializedName(value = "StoreName", alternate = "name")
     @Expose
     private String storeName;
-    @SerializedName("StoreNameEN")
-    @Expose
-    private String storeNameEN;
-    @SerializedName("OpenTime")
+//    @SerializedName("StoreNameEN")
+//    @Expose
+//    private String storeNameEN;
+    @SerializedName(value = "OpenTime", alternate = "open_time")
     @Expose
     private String openTime;
-    @SerializedName("Description")
-    @Expose
-    private String description;
-    @SerializedName("StoreAddrNo")
+//    @SerializedName("Description")
+//    @Expose
+//    private String description;
+    @SerializedName(value = "StoreAddrNo", alternate = "address")
     @Expose
     private String storeAddrNo;
-    @SerializedName("StoreAddrNoEN")
-    @Expose
-    private String storeAddrNoEN;
-    @SerializedName("StoreAddrVillages")
-    @Expose
-    private String storeAddrVillages;
-    @SerializedName("StoreAddrVillagesEN")
-    @Expose
-    private String storeAddrVillagesEN;
-    @SerializedName("StoreAddrStreet")
+//    @SerializedName("StoreAddrNoEN")
+//    @Expose
+//    private String storeAddrNoEN;
+//    @SerializedName("StoreAddrVillages")
+//    @Expose
+//    private String storeAddrVillages;
+//    @SerializedName("StoreAddrVillagesEN")
+//    @Expose
+//    private String storeAddrVillagesEN;
+    @SerializedName(value = "StoreAddrStreet", alternate = "street")
     @Expose
     private String storeAddrStreet;
-    @SerializedName("StoreAddrStreetEN")
-    @Expose
-    private String storeAddrStreetEN;
-    @SerializedName("StoreAddrSoi")
-    @Expose
-    private String storeAddrSoi;
-    @SerializedName("StoreAddrSoiEN")
-    @Expose
-    private String storeAddrSoiEN;
-    @SerializedName("SubdistrictName")
+//    @SerializedName("StoreAddrStreetEN")
+//    @Expose
+//    private String storeAddrStreetEN;
+//    @SerializedName("StoreAddrSoi")
+//    @Expose
+//    private String storeAddrSoi;
+//    @SerializedName("StoreAddrSoiEN")
+//    @Expose
+//    private String storeAddrSoiEN;
+    @SerializedName(value = "SubdistrictName", alternate = "sub_district")
     @Expose
     private String subDistrictName;
-    @SerializedName("SubdistrictNameEN")
-    @Expose
-    private String subDistrictNameEN;
-    @SerializedName("DistrictName")
+//    @SerializedName("SubdistrictNameEN")
+//    @Expose
+//    private String subDistrictNameEN;
+    @SerializedName(value = "DistrictName", alternate = "district")
     @Expose
     private String districtName;
-    @SerializedName("DistrictNameEN")
-    @Expose
-    private String districtNameEN;
-    @SerializedName("ProvinceName")
+//    @SerializedName("DistrictNameEN")
+//    @Expose
+//    private String districtNameEN;
+    @SerializedName(value = "ProvinceName", alternate = "province")
     @Expose
     private String provinceName;
-    @SerializedName("ProvinceNameEN")
-    @Expose
-    private String provinceNameEN;
-    @SerializedName("Postcode")
+//    @SerializedName("ProvinceNameEN")
+//    @Expose
+//    private String provinceNameEN;
+    @SerializedName(value = "Postcode", alternate = "postcode")
     @Expose
     private String postCode;
-    @SerializedName("Fax")
-    @Expose
-    private String fax;
-    @SerializedName("Telephone")
+//    @SerializedName("Fax")
+//    @Expose
+//    private String fax;
+    @SerializedName(value = "Telephone", alternate = "telephone")
     @Expose
     private String telephone;
-    @SerializedName("EMail")
+    @SerializedName(value = "EMail", alternate = "email")
     @Expose
     private String email;
-    @SerializedName("Latitude")
-    @Expose
-    private double latitude;
-    @SerializedName("Longitude")
-    @Expose
-    private double longitude;
-    @SerializedName("StockOnHand")
-    @Expose
-    private int stockOnHand;
+//    @SerializedName("Latitude")
+//    @Expose
+//    private double latitude;
+//    @SerializedName("Longitude")
+//    @Expose
+//    private double longitude;
+//    @SerializedName("StockOnHand")
+//    @Expose
+//    private int stockOnHand;
     private boolean isSelected;
 
     protected StoreList(Parcel in) {
         viewTypeId = in.readInt();
         storeId = in.readString();
         storeName = in.readString();
-        storeNameEN = in.readString();
+        //storeNameEN = in.readString();
         openTime = in.readString();
-        description = in.readString();
+        //description = in.readString();
         storeAddrNo = in.readString();
-        storeAddrNoEN = in.readString();
-        storeAddrVillages = in.readString();
-        storeAddrVillagesEN = in.readString();
-        storeAddrStreet = in.readString();
-        storeAddrStreetEN = in.readString();
-        storeAddrSoi = in.readString();
-        storeAddrSoiEN = in.readString();
+//        storeAddrNoEN = in.readString();
+//        storeAddrVillages = in.readString();
+//        storeAddrVillagesEN = in.readString();
+//        storeAddrStreet = in.readString();
+//        storeAddrStreetEN = in.readString();
+//        storeAddrSoi = in.readString();
+//        storeAddrSoiEN = in.readString();
         subDistrictName = in.readString();
-        subDistrictNameEN = in.readString();
+//        subDistrictNameEN = in.readString();
         districtName = in.readString();
-        districtNameEN = in.readString();
+//        districtNameEN = in.readString();
         provinceName = in.readString();
-        provinceNameEN = in.readString();
+//        provinceNameEN = in.readString();
         postCode = in.readString();
-        fax = in.readString();
+//        fax = in.readString();
         telephone = in.readString();
         email = in.readString();
-        latitude = in.readDouble();
-        longitude = in.readDouble();
-        stockOnHand = in.readInt();
+//        latitude = in.readDouble();
+//        longitude = in.readDouble();
+//        stockOnHand = in.readInt();
         isSelected = in.readByte() != 0;
     }
 
@@ -128,30 +128,30 @@ public class StoreList implements IViewType,Parcelable{
         dest.writeInt(viewTypeId);
         dest.writeString(storeId);
         dest.writeString(storeName);
-        dest.writeString(storeNameEN);
+        //dest.writeString(storeNameEN);
         dest.writeString(openTime);
-        dest.writeString(description);
+        //dest.writeString(description);
         dest.writeString(storeAddrNo);
-        dest.writeString(storeAddrNoEN);
-        dest.writeString(storeAddrVillages);
-        dest.writeString(storeAddrVillagesEN);
-        dest.writeString(storeAddrStreet);
-        dest.writeString(storeAddrStreetEN);
-        dest.writeString(storeAddrSoi);
-        dest.writeString(storeAddrSoiEN);
+//        dest.writeString(storeAddrNoEN);
+//        dest.writeString(storeAddrVillages);
+//        dest.writeString(storeAddrVillagesEN);
+//        dest.writeString(storeAddrStreet);
+//        dest.writeString(storeAddrStreetEN);
+//        dest.writeString(storeAddrSoi);
+//        dest.writeString(storeAddrSoiEN);
         dest.writeString(subDistrictName);
-        dest.writeString(subDistrictNameEN);
+//        dest.writeString(subDistrictNameEN);
         dest.writeString(districtName);
-        dest.writeString(districtNameEN);
+//        dest.writeString(districtNameEN);
         dest.writeString(provinceName);
-        dest.writeString(provinceNameEN);
+//        dest.writeString(provinceNameEN);
         dest.writeString(postCode);
-        dest.writeString(fax);
+//        dest.writeString(fax);
         dest.writeString(telephone);
         dest.writeString(email);
-        dest.writeDouble(latitude);
-        dest.writeDouble(longitude);
-        dest.writeInt(stockOnHand);
+//        dest.writeDouble(latitude);
+//        dest.writeDouble(longitude);
+//        dest.writeInt(stockOnHand);
         dest.writeByte((byte) (isSelected ? 1 : 0));
     }
 
@@ -198,13 +198,6 @@ public class StoreList implements IViewType,Parcelable{
         this.storeName = storeName;
     }
 
-    public String getStoreNameEN() {
-        return storeNameEN;
-    }
-
-    public void setStoreNameEN(String storeNameEN) {
-        this.storeNameEN = storeNameEN;
-    }
 
     public String getOpenTime() {
         return openTime;
@@ -214,140 +207,12 @@ public class StoreList implements IViewType,Parcelable{
         this.openTime = openTime;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getStoreAddrNo() {
         return storeAddrNo;
     }
 
     public void setStoreAddrNo(String storeAddrNo) {
         this.storeAddrNo = storeAddrNo;
-    }
-
-    public String getStoreAddrNoEN() {
-        return storeAddrNoEN;
-    }
-
-    public void setStoreAddrNoEN(String storeAddrNoEN) {
-        this.storeAddrNoEN = storeAddrNoEN;
-    }
-
-    public String getStoreAddrVillages() {
-        return storeAddrVillages;
-    }
-
-    public void setStoreAddrVillages(String storeAddrVillages) {
-        this.storeAddrVillages = storeAddrVillages;
-    }
-
-    public String getStoreAddrVillagesEN() {
-        return storeAddrVillagesEN;
-    }
-
-    public void setStoreAddrVillagesEN(String storeAddrVillagesEN) {
-        this.storeAddrVillagesEN = storeAddrVillagesEN;
-    }
-
-    public String getStoreAddrStreet() {
-        return storeAddrStreet;
-    }
-
-    public void setStoreAddrStreet(String storeAddrStreet) {
-        this.storeAddrStreet = storeAddrStreet;
-    }
-
-    public String getStoreAddrStreetEN() {
-        return storeAddrStreetEN;
-    }
-
-    public void setStoreAddrStreetEN(String storeAddrStreetEN) {
-        this.storeAddrStreetEN = storeAddrStreetEN;
-    }
-
-    public String getStoreAddrSoi() {
-        return storeAddrSoi;
-    }
-
-    public void setStoreAddrSoi(String storeAddrSoi) {
-        this.storeAddrSoi = storeAddrSoi;
-    }
-
-    public String getStoreAddrSoiEN() {
-        return storeAddrSoiEN;
-    }
-
-    public void setStoreAddrSoiEN(String storeAddrSoiEN) {
-        this.storeAddrSoiEN = storeAddrSoiEN;
-    }
-
-    public String getSubDistrictName() {
-        return subDistrictName;
-    }
-
-    public void setSubDistrictName(String subDistrictName) {
-        this.subDistrictName = subDistrictName;
-    }
-
-    public String getSubDistrictNameEN() {
-        return subDistrictNameEN;
-    }
-
-    public void setSubDistrictNameEN(String subDistrictNameEN) {
-        this.subDistrictNameEN = subDistrictNameEN;
-    }
-
-    public String getDistrictName() {
-        return districtName;
-    }
-
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
-    }
-
-    public String getDistrictNameEN() {
-        return districtNameEN;
-    }
-
-    public void setDistrictNameEN(String districtNameEN) {
-        this.districtNameEN = districtNameEN;
-    }
-
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
-
-    public String getProvinceNameEN() {
-        return provinceNameEN;
-    }
-
-    public void setProvinceNameEN(String provinceNameEN) {
-        this.provinceNameEN = provinceNameEN;
-    }
-
-    public String getPostCode() {
-        return postCode;
-    }
-
-    public void setPostCode(String postCode) {
-        this.postCode = postCode;
-    }
-
-    public String getFax() {
-        return fax;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
     }
 
     public String getTelephone() {
@@ -366,28 +231,36 @@ public class StoreList implements IViewType,Parcelable{
         this.email = email;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public String getSubDistrictName() {
+        return subDistrictName;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setSubDistrictName(String subDistrictName) {
+        this.subDistrictName = subDistrictName;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public String getDistrictName() {
+        return districtName;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
     }
 
-    public int getStockOnHand() {
-        return stockOnHand;
+    public String getProvinceName() {
+        return provinceName;
     }
 
-    public void setStockOnHand(int stockOnHand) {
-        this.stockOnHand = stockOnHand;
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    public String getPostCode() {
+        return postCode;
+    }
+
+    public void setPostCode(String postCode) {
+        this.postCode = postCode;
     }
 
     public boolean isSelected() {
@@ -396,5 +269,13 @@ public class StoreList implements IViewType,Parcelable{
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public String getStoreAddrStreet() {
+        return storeAddrStreet;
+    }
+
+    public void setStoreAddrStreet(String storeAddrStreet) {
+        this.storeAddrStreet = storeAddrStreet;
     }
 }

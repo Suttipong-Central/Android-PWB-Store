@@ -1,93 +1,97 @@
 <resources>
-    <string name="app_name">PowerBuy-Store</string>
+    <string name="app_name">PowerBuy Store</string>
 
-    <string name="home">Home</string>
-    <string name="home_tv">TV &amp; Home Entertainment</string>
-    <string name="home_app">Home Appliances</string>
-    <string name="home_cooling">Cooling &amp; Heating</string>
-    <string name="home_small">Small Appliances</string>
-    <string name="home_kitchen">Kitchen</string>
-    <string name="home_health">Health &amp; Beauty</string>
-    <string name="home_life">Lifestyle Electronic</string>
-    <string name="home_wearable">Wearable &amp; Gadgets</string>
-    <string name="home_accessories">Accessories</string>
-    <string name="schedule">HDL Schedule</string>
-    <string name="compare">Compare</string>
-    <string name="change">Change Language to Thai</string>
-    <string name="help">Help</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="home_tv" translatable="false">TV &amp; Home Entertainment</string>
+    <string name="home_app" translatable="false">Home Appliances</string>
+    <string name="home_cooling" translatable="false">Cooling &amp; Heating</string>
+    <string name="home_small" translatable="false">Small Appliances</string>
+    <string name="home_kitchen" translatable="false">Kitchen</string>
+    <string name="home_health" translatable="false">Health &amp; Beauty</string>
+    <string name="home_life" translatable="false">Lifestyle Electronic</string>
+    <string name="home_wearable" translatable="false">Wearable &amp; Gadgets</string>
+    <string name="home_accessories" translatable="false">Accessories</string>
+    <string name="schedule" translatable="false">HDL Schedule</string>
+    <string name="compare" translatable="false">Compare</string>
+    <string name="change" translatable="false">Change Language to Thai</string>
+    <string name="help" translatable="false">Help</string>
 
     <!-- Category -->
-    <string name="category">SHOP BY CATEGORY</string>
+    <string name="category" translatable="false">SHOP BY CATEGORY</string>
     <!-- Search -->
-    <string name="search_hint">I\'m Looking for</string>
+    <string name="search_hint" translatable="false">I\'m Looking for</string>
     <!-- ProductList -->
-    <string name="baht">฿</string>
-    <string name="product_overview">Overview</string>
-    <string name="product_available">Available store</string>
-    <string name="product_compare">Add to Compare</string>
-    <string name="product_read">Read More >></string>
-    <string name="product_promotion">Promotion</string>
-    <string name="product_spec">Specification</string>
-    <string name="product_delivery">Delivery / Warranty / Refund</string>
-    <string name="product_stock">In Stock</string>
-    <string name="product_out_stock">Out Stock</string>
-    <string name="filter_count">(%1$s)</string>
+    <string name="baht" translatable="false">฿</string>
+    <string name="product_overview" translatable="false">Overview</string>
+    <string name="product_available" translatable="false">Available store</string>
+    <string name="product_compare" translatable="false">Add to Compare</string>
+    <string name="product_read" translatable="false">Read More >></string>
+    <string name="product_promotion" translatable="false">Promotion</string>
+    <string name="product_spec" translatable="false">Specification</string>
+    <string name="product_delivery" translatable="false">Delivery / Warranty / Refund</string>
+    <string name="product_stock" translatable="false">In Stock</string>
+    <string name="product_out_stock" translatable="false">Out Stock</string>
+    <string name="filter_count" translatable="false">(%1$s)</string>
 
     <!-- Product Detail -->
-    <string name="promotion_header">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
-    <string name="promotion_detail">ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560</string>
-    <string name="error_ssl_cert_invalid">คุณกำลังไปยังหน้าที่อาจจะไม่ปลอดภัย ต้องการดำเนินการต่อหรือไม่?</string>
-    <string name="spec_product">คุณสมบัติ</string>
-    <string name="book_time">จองเวลานัดส่งสินค้า</string>
-    <string name="hdl_url">http://hdl.powerbuy.co.th/Users/Login</string>
-    <string name="ok">OK</string>
-    <string name="cancel">CANCEL</string>
-    <string name="product_code">Product Code : </string>
-    <string name="the_1_card">Redeem your point %1$,d points</string>ฟ
-    <string name="alert_compare">มีการเพิ่มสินค้า</string>
-    <string name="alert_compare_yes">\nเรียบร้อยแล้ว</string>
-    <string name="alert_count">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
-    <string name="alert_stock">สินค้า Out Stock</string>
+    <string name="promotion_header" translatable="false">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
+    <string name="promotion_detail" translatable="false">ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560</string>
+    <string name="error_ssl_cert_invalid" translatable="false">คุณกำลังไปยังหน้าที่อาจจะไม่ปลอดภัย ต้องการดำเนินการต่อหรือไม่?</string>
+    <string name="spec_product" translatable="false">คุณสมบัติ</string>
+    <string name="book_time" translatable="false">จองเวลานัดส่งสินค้า</string>
+    <string name="hdl_url" translatable="false">http://hdl.powerbuy.co.th/Users/Login</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel" translatable="false">CANCEL</string>
+    <string name="product_code" translatable="false">Product Code : </string>
+    <string name="the_1_card" translatable="false">Redeem your point %1$,d points</string>ฟ
+    <string name="alert_compare" translatable="false">มีการเพิ่มสินค้า</string>
+    <string name="alert_compare_yes" translatable="false">\nเรียบร้อยแล้ว</string>
+    <string name="alert_count" translatable="false">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
+    <string name="alert_stock" translatable="false">สินค้า Out Stock</string>
     <!-- Compare -->
-    <string name="compare_header">Compare Product</string>
+    <string name="compare_header" translatable="false">Compare Product</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
     <!-- Search -->
-    <string name="clear_history">Clear History</string>
-    <string name="search_result_header">search result for</string>
+    <string name="clear_history" translatable="false">Clear History</string>
+    <string name="search_result_header" translatable="false">search result for</string>
 
     <!-- Store -->
-    <string name="select_store">Select store</string>
-    <string name="store_avaliable">Avaliable Store</string>
-    <string name="store">Store</string>
-    <string name="address">Address</string>
-    <string name="stock">Stock</string>
+    <string name="select_store" translatable="false">Select store</string>
+    <string name="store_avaliable" translatable="false">Avaliable Store</string>
+    <string name="store" translatable="false">Store</string>
+    <string name="address" translatable="false">Address</string>
+    <string name="stock" translatable="false">Stock</string>
 
     <!-- Drawer -->
-    <string name="drawer_delivery">Delivery Schedule</string>
-    <string name="drawer_compare">Compare Product</string>
-    <string name="drawer_change">Change Language</string>
-    <string name="drawer_help">Help</string>
+    <string name="drawer_delivery" translatable="false">Delivery Schedule</string>
+    <string name="drawer_compare" translatable="false">Compare Product</string>
+    <string name="drawer_change" translatable="false">Change Language</string>
+    <string name="drawer_help" translatable="false">Help</string>
 
     <!-- AppSecret -->
-    <string name="secret">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
-    <string name="url_hdl">http://10.5.0.31/HDLAPIDEV/Token/CreateToken</string>
+    <string name="secret" translatable="false">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
+    <string name="url_hdl" translatable="false">http://10.5.0.31/HDLAPIDEV/Token/CreateToken</string>
 
     <!-- Date -->
-    <string name="sun">SUN</string>
-    <string name="mon">MON</string>
-    <string name="tue">TUE</string>
-    <string name="wed">WED</string>
-    <string name="thu">THU</string>
-    <string name="fri">FRI</string>
-    <string name="sat">SAT</string>
-    <string name="last_date">30</string>
-    <string name="time_10am">09:00 - 09:30</string>
-    <string name="time_12pm">11:00 - 11:30</string>
-    <string name="time_14pm">13:00 - 13:30</string>
-    <string name="time_16pm">15:00 - 15:30</string>
-    <string name="time_18pm">17:00 - 17:30</string>
-    <string name="time_20pm">19:00 - 19:30</string>
+    <string name="sun" translatable="false">SUN</string>
+    <string name="mon" translatable="false">MON</string>
+    <string name="tue" translatable="false">TUE</string>
+    <string name="wed" translatable="false">WED</string>
+    <string name="thu" translatable="false">THU</string>
+    <string name="fri" translatable="false">FRI</string>
+    <string name="sat" translatable="false">SAT</string>
+    <string name="last_date" translatable="false">30</string>
+    <string name="time_10am" translatable="false">09:00 - 09:30</string>
+    <string name="time_12pm" translatable="false">11:00 - 11:30</string>
+    <string name="time_14pm" translatable="false">13:00 - 13:30</string>
+    <string name="time_16pm" translatable="false">15:00 - 15:30</string>
+    <string name="time_18pm" translatable="false">17:00 - 17:30</string>
+    <string name="time_20pm" translatable="false">19:00 - 19:30</string>
+
+    <!--API-->
+    <string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store]],total_count</string>
+    <string name="product_detail">id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store],media_gallery_entries</string>
 </resources>

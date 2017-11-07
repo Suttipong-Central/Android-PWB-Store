@@ -26,11 +26,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.AvaliableStoreAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreFilterHeaderBus;
-import cenergy.central.com.pwb_store.model.AvaliableStoreItem;
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.ProductFilterList;
-import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.StoreFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreFilterItem;
 import cenergy.central.com.pwb_store.model.StoreFilterList;
@@ -41,6 +37,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
  */
 
 public class AvaliableFragment extends Fragment {
+    public static final String ARG_AVALIABLEDAO = "ARG_AVALIABLEDAO";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -82,9 +79,10 @@ public class AvaliableFragment extends Fragment {
     }
 
     @SuppressWarnings("unused")
-    public static AvaliableFragment newInstance() {
+    public static AvaliableFragment newInstance(AvaliableStoreDao avaliableStoreDao) {
         AvaliableFragment fragment = new AvaliableFragment();
         Bundle args = new Bundle();
+        args.putParcelable(ARG_AVALIABLEDAO, avaliableStoreDao);
         fragment.setArguments(args);
         return fragment;
     }
@@ -108,23 +106,27 @@ public class AvaliableFragment extends Fragment {
 
     private void init(Bundle savedInstanceState) {
         // Init Fragment level's variable(s) here
-        List<AvaliableStoreItem> avaliableStoreItems = new ArrayList<>();
-        avaliableStoreItems.add(new AvaliableStoreItem("Rama 3","79/3 Sathupadit Chong Non Si Yannawa Bangkok 10120\n" +
-                "Call : 0-2673-6140, 0-2673-6147", 2));
-        avaliableStoreItems.add(new AvaliableStoreItem("Rama 9","79/3 9/9 (Room 427 FR.4) Central Plaza Rama9 Rama9 Huai Khwang Huaikhwang Bangkok 10310\n" +
-                "Call : 02-103-4983-4", 10));
-        avaliableStoreItems.add(new AvaliableStoreItem("Central Festival Samui","7209,209/1,209/2 Moo 2 (Room no.149,257 FL.1-2) Bo Phut Ko Samui Surat Thani 84320\n" +
-                "Call : 077-963 400-6", 4));
-        avaliableStoreItems.add(new AvaliableStoreItem("Central World","4,4/1-2,4/4 Central World FL.4 Zone D Rajadamri Pathumwan  Bangkok 10330\n" +
-                "Call : 0-2646-1222, 0-2646-1243", 8));
-        avaliableStoreItems.add(new AvaliableStoreItem("Bangna","585 Bangna-Trad Bangna Bangna Bangkok 10260\n" +
-                "Call : 0-2361-1060-2", 8));
-        avaliableStoreItems.add(new AvaliableStoreItem("Rama 2","7160 Central Plaza Rama 2 4th.,FL. Rama 2 Samae Dam Bangkhunthian Bangkok 10150\n" +
-                "Call : 0-2361-1060-2", 8));
-        avaliableStoreItems.add(new AvaliableStoreItem("Central Festival Pattaya Beach","333/99 Moo9,(Room No.336-337) Central Festival Pattaya Beach 3Fl. Nong Prue Bang Lamung Chonburi 20150\n" +
-                "Call : 038-043-303, 038-043-304", 4));
 
-        mAvaliableStoreDao = new AvaliableStoreDao(avaliableStoreItems);
+        if (getArguments() != null) {
+            mAvaliableStoreDao = getArguments().getParcelable(ARG_AVALIABLEDAO);
+        }
+//        List<AvaliableStoreItem> avaliableStoreItems = new ArrayList<>();
+//        avaliableStoreItems.add(new AvaliableStoreItem("Rama 3","79/3 Sathupadit Chong Non Si Yannawa Bangkok 10120\n" +
+//                "Call : 0-2673-6140, 0-2673-6147", 2));
+//        avaliableStoreItems.add(new AvaliableStoreItem("Rama 9","79/3 9/9 (Room 427 FR.4) Central Plaza Rama9 Rama9 Huai Khwang Huaikhwang Bangkok 10310\n" +
+//                "Call : 02-103-4983-4", 10));
+//        avaliableStoreItems.add(new AvaliableStoreItem("Central Festival Samui","7209,209/1,209/2 Moo 2 (Room no.149,257 FL.1-2) Bo Phut Ko Samui Surat Thani 84320\n" +
+//                "Call : 077-963 400-6", 4));
+//        avaliableStoreItems.add(new AvaliableStoreItem("Central World","4,4/1-2,4/4 Central World FL.4 Zone D Rajadamri Pathumwan  Bangkok 10330\n" +
+//                "Call : 0-2646-1222, 0-2646-1243", 8));
+//        avaliableStoreItems.add(new AvaliableStoreItem("Bangna","585 Bangna-Trad Bangna Bangna Bangkok 10260\n" +
+//                "Call : 0-2361-1060-2", 8));
+//        avaliableStoreItems.add(new AvaliableStoreItem("Rama 2","7160 Central Plaza Rama 2 4th.,FL. Rama 2 Samae Dam Bangkhunthian Bangkok 10150\n" +
+//                "Call : 0-2361-1060-2", 8));
+//        avaliableStoreItems.add(new AvaliableStoreItem("Central Festival Pattaya Beach","333/99 Moo9,(Room No.336-337) Central Festival Pattaya Beach 3Fl. Nong Prue Bang Lamung Chonburi 20150\n" +
+//                "Call : 038-043-303, 038-043-304", 4));
+
+//        mAvaliableStoreDao = new AvaliableStoreDao(avaliableStoreItems);
 
         // filter
         List<StoreFilterItem> storeFilterItems1 = new ArrayList<>();
