@@ -26,6 +26,10 @@ public class ExtensionProductDetail implements IViewType,Parcelable {
     @Expose
     private List<ProductDetailStore> mProductDetailStores = new ArrayList<>();
     private ProductDetailImage productImageList;
+    @SerializedName("promotion")
+    @Expose
+    private List<PromotionItem> mPromotionItems = new ArrayList<>();
+    private List<PromotionPaymentItem> mPromotionPaymentItems = new ArrayList<>();
 
     protected ExtensionProductDetail(Parcel in) {
         viewTypeId = in.readInt();
@@ -33,6 +37,8 @@ public class ExtensionProductDetail implements IViewType,Parcelable {
         imageUrl = in.readString();
         description = in.readString();
         productImageList = in.readParcelable(ProductDetailImage.class.getClassLoader());
+        mPromotionItems = in.createTypedArrayList(PromotionItem.CREATOR);
+        mPromotionPaymentItems = in.createTypedArrayList(PromotionPaymentItem.CREATOR);
     }
 
 
@@ -43,6 +49,8 @@ public class ExtensionProductDetail implements IViewType,Parcelable {
         dest.writeString(imageUrl);
         dest.writeString(description);
         dest.writeParcelable(productImageList, flags);
+        dest.writeTypedList(mPromotionItems);
+        dest.writeTypedList(mPromotionPaymentItems);
     }
 
 
@@ -110,5 +118,21 @@ public class ExtensionProductDetail implements IViewType,Parcelable {
             productImageList = new ProductDetailImage(4, productDetailImageItems);
         }
         return productImageList;
+    }
+
+    public List<PromotionItem> getPromotionItems() {
+        return mPromotionItems;
+    }
+
+    public void setPromotionItems(List<PromotionItem> promotionItems) {
+        mPromotionItems = promotionItems;
+    }
+
+    public List<PromotionPaymentItem> getPromotionPaymentItems() {
+        return mPromotionPaymentItems;
+    }
+
+    public void setPromotionPaymentItems(List<PromotionPaymentItem> promotionPaymentItems) {
+        mPromotionPaymentItems = promotionPaymentItems;
     }
 }

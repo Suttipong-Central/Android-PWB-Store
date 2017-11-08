@@ -94,4 +94,5 @@
     <!--API-->
     <string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store]],total_count</string>
     <string name="product_detail">id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store],media_gallery_entries</string>
+    <string name="url_image">https://prod.powerbuy.co.th/media/catalog/product</string>
 </resources>

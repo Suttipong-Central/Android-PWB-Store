@@ -175,14 +175,14 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             case VIEW_TYPE_ID_DETAIL_PROMOTION:
                 if (holder instanceof ProductPromotionViewHolder) {
                     ProductPromotionViewHolder productPromotionViewHolder = (ProductPromotionViewHolder) holder;
-                    productPromotionViewHolder.setViewHolder(mFragmentManager);
+                    productPromotionViewHolder.setViewHolder(mFragmentManager, mProductDetail);
                 }
                 break;
 
             case VIEW_TYPE_ID_DETAIL_DELIVERY:
                 if (holder instanceof ProductDeliveryViewHolder) {
                     ProductDeliveryViewHolder productDeliveryViewHolder = (ProductDeliveryViewHolder) holder;
-                    productDeliveryViewHolder.setViewHolder(mContext);
+                    productDeliveryViewHolder.setViewHolder(mContext, mProductDetail);
                 }
                 break;
 

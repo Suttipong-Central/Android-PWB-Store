@@ -28,11 +28,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:ellipsize="end"
-                android:maxLines="1"
+                android:inputType="textMultiLine"
                 android:padding="5dp"
                 android:textColor="@color/nameProductColor"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:typeFaceAsset="RobotoLight.ttf"
                 tools:text="Fuji Instax รุ่น Mini 90 สีดำ"/>

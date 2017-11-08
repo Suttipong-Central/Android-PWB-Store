@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by napabhat on 8/2/2017 AD.
  */
 
-public class PromotionItem implements IViewType,Parcelable {
+public class PromotionPaymentItem implements IViewType,Parcelable {
 
     private int viewTypeId;
     private String header;
@@ -26,22 +26,22 @@ public class PromotionItem implements IViewType,Parcelable {
     private String endDate;
     private PromotionDetailText mPromotionDetailText;
 
-    public PromotionItem(String detail,String startDate, String endDate, PromotionDetailText promotionDetailText){
+    public PromotionPaymentItem(String detail,String startDate, String endDate, PromotionDetailText promotionDetailText){
         this.detail = detail;
         this.startDate = startDate;
         this.endDate = endDate;
         this.mPromotionDetailText = promotionDetailText;
     }
 
-    public static final Creator<PromotionItem> CREATOR = new Creator<PromotionItem>() {
+    public static final Creator<PromotionPaymentItem> CREATOR = new Creator<PromotionPaymentItem>() {
         @Override
-        public PromotionItem createFromParcel(Parcel in) {
-            return new PromotionItem(in);
+        public PromotionPaymentItem createFromParcel(Parcel in) {
+            return new PromotionPaymentItem(in);
         }
 
         @Override
-        public PromotionItem[] newArray(int size) {
-            return new PromotionItem[size];
+        public PromotionPaymentItem[] newArray(int size) {
+            return new PromotionPaymentItem[size];
         }
     };
 
@@ -50,7 +50,7 @@ public class PromotionItem implements IViewType,Parcelable {
         return 0;
     }
 
-    protected PromotionItem(Parcel in) {
+    protected PromotionPaymentItem(Parcel in) {
         viewTypeId = in.readInt();
         header = in.readString();
         detail = in.readString();
@@ -129,4 +129,3 @@ public class PromotionItem implements IViewType,Parcelable {
         this.endDate = endDate;
     }
 }
-

@@ -5,13 +5,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import org.greenrobot.eventbus.EventBus;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
-import cenergy.central.com.pwb_store.model.PromotionItem;
+import cenergy.central.com.pwb_store.model.PromotionPaymentItem;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
@@ -34,17 +31,21 @@ public class PromotionItemPaymentViewHolder extends RecyclerView.ViewHolder impl
         ButterKnife.bind(this, itemView);
     }
 
-    public void setViewHolder(PromotionItem promotionItem){
-        header.setText(promotionItem.getHeader());
-        detail.setText(promotionItem.getDetail());
-        mLinearLayout.setTag(promotionItem);
+    public void setViewHolder(PromotionPaymentItem promotionPaymentItem){
+        header.setText(promotionPaymentItem.getDetail());
+        if (promotionPaymentItem.getStartDate().length() > 0){
+            detail.setText("ระยะเวลาโปรโมชั่น "+ promotionPaymentItem.getStartDate() + " ถึง " + promotionPaymentItem.getEndDate());
+        }else {
+            detail.setText("");
+        }
+        mLinearLayout.setTag(promotionPaymentItem);
         mLinearLayout.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        PromotionItem promotionItem = (PromotionItem) mLinearLayout.getTag();
-        EventBus.getDefault().post(new PromotionItemBus(promotionItem, v));
+        PromotionPaymentItem promotionPaymentItem = (PromotionPaymentItem) mLinearLayout.getTag();
+        //EventBus.getDefault().post(new PromotionItemBus(promotionItem, v));
         Log.d("Click :", "true");
     }
 }

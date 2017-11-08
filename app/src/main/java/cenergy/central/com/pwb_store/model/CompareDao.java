@@ -3,6 +3,9 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,11 @@ import java.util.List;
 public class CompareDao implements IViewType,Parcelable {
 
     private int viewTypeId;
+    @SerializedName("total")
+    @Expose
     private int total;
+    @SerializedName("compareHeader")
+    @Expose
     private List<CompareDetail> mCompareDetails = new ArrayList<>();
 
     public static final Creator<CompareDao> CREATOR = new Creator<CompareDao>() {

@@ -11,14 +11,10 @@ import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableDetailViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableTopicViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.CompareItemDetailViewHolder;
-import cenergy.central.com.pwb_store.model.AvaliableStoreItem;
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
-import cenergy.central.com.pwb_store.model.CompareDetailItem;
+import cenergy.central.com.pwb_store.model.AvaliableStoreItem;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ViewType;
 
 /**
  * Created by napabhat on 8/16/2017 AD.
@@ -26,11 +22,11 @@ import cenergy.central.com.pwb_store.model.ViewType;
 
 public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     //Static Members
-    private static final int VIEW_TYPE_ID_STORE_HEADER = 0;
+    //private static final int VIEW_TYPE_ID_STORE_HEADER = 0;
     private static final int VIEW_TYPE_ID_STORE_TOPIC = 1;
     private static final int VIEW_TYPE_ID_STORE_DETAIL = 2;
 
-    private static final ViewType VIEW_TYPE_STORE_HEADER = new ViewType(VIEW_TYPE_ID_STORE_HEADER);
+    //private static final ViewType VIEW_TYPE_STORE_HEADER = new ViewType(VIEW_TYPE_ID_STORE_HEADER);
     //private static final ViewType VIEW_TYPE_STORE_TOPIC = new ViewType(VIEW_TYPE_ID_STORE_TOPIC);
 
     //Data Members
@@ -40,8 +36,8 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @Override
         public int getSpanSize(int position) {
             switch (getItemViewType(position)) {
-                case VIEW_TYPE_ID_STORE_HEADER:
-                    return 4;
+//                case VIEW_TYPE_ID_STORE_HEADER:
+//                    return 4;
                 case VIEW_TYPE_ID_STORE_TOPIC:
                     return 4;
                 case VIEW_TYPE_ID_STORE_DETAIL:
@@ -59,12 +55,12 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case VIEW_TYPE_ID_STORE_HEADER:
-                return new AvaliableHeaderViewHolder(
-                        LayoutInflater
-                                .from(parent.getContext())
-                                .inflate(R.layout.list_item_avaliable_header, parent, false)
-                );
+//            case VIEW_TYPE_ID_STORE_HEADER:
+//                return new AvaliableHeaderViewHolder(
+//                        LayoutInflater
+//                                .from(parent.getContext())
+//                                .inflate(R.layout.list_item_avaliable_header, parent, false)
+//                );
             case VIEW_TYPE_ID_STORE_TOPIC:
                 return new AvaliableTopicViewHolder(
                         LayoutInflater
@@ -114,7 +110,7 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public void setCompareAvaliable(AvaliableStoreDao avaliableStoreDao){
 
-        mListViewType.add(VIEW_TYPE_STORE_HEADER);
+        //mListViewType.add(VIEW_TYPE_STORE_HEADER);
         avaliableStoreDao.setViewTypeId(VIEW_TYPE_ID_STORE_TOPIC);
         mListViewType.add(avaliableStoreDao);
 

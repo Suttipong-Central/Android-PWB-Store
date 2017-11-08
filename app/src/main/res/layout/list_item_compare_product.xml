@@ -14,8 +14,10 @@
     app:cardElevation="0dp">
 
     <RelativeLayout
+        android:id="@+id/layout_card"
         android:layout_width="match_parent"
-        android:layout_height="269dp">
+        android:layout_height="269dp"
+        android:background="?attr/selectableItemBackground">
         <!--android:layout_width="200dp"-->
         <!--android:layout_height="269dp">-->
 

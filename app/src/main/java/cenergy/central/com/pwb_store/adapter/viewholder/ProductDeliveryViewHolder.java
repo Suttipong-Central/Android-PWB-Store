@@ -27,6 +27,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.Delivery;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.TimeSlotItem;
 import cenergy.central.com.pwb_store.model.request.CartDataRequest;
@@ -84,6 +85,7 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
     private String thursday;
     private String friday;
     private String saturday;
+    private ProductDetail mProductDetail;
     final Callback<HDLResponse> CALLBACK_HDL = new Callback<HDLResponse>() {
         @Override
         public void onResponse(Call<HDLResponse> call, Response<HDLResponse> response) {
@@ -112,8 +114,9 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         this.mRealm = RealmController.getInstance().getRealm();
     }
 
-    public void setViewHolder(Context context) {
+    public void setViewHolder(Context context, ProductDetail productDetail) {
         this.mContext = context;
+        this.mProductDetail = productDetail;
         mCardView.setOnClickListener(this);
         showProgressDialog();
         getData(getMonth());
@@ -170,8 +173,18 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
                         1, "1", "00991", "", ""));
             }
         }
-        if (results != null) {
+        if (results.size() > 0) {
             storeList = UserInfoManager.getInstance().loadStore();
+            mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
+                    storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
+
+            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
+                    "application/json",
+                    mHDLRequest).enqueue(CALLBACK_HDL);
+        }else {
+            storeList = UserInfoManager.getInstance().loadStore();
+            cartDataRequests.add(new CartDataRequest(1, mProductDetail.getBarcode(), mProductDetail.getSku(),
+                    1, "1", "00991", "", ""));
             mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
                     storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
 

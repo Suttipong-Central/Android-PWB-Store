@@ -17,6 +17,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.PromotionProductAdapter;
+import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.Promotion;
 import cenergy.central.com.pwb_store.model.PromotionDetailText;
 import cenergy.central.com.pwb_store.model.PromotionItem;
@@ -26,6 +28,8 @@ import cenergy.central.com.pwb_store.model.PromotionItem;
  */
 
 public class PromotionProductFragment extends Fragment {
+    private static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
+    private static final String ARG_PROMOTION= "ARG_PROMOTION";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -33,15 +37,17 @@ public class PromotionProductFragment extends Fragment {
     private PromotionProductAdapter mProductAdapter;
     private GridLayoutManager mLayoutManager;
     private Promotion mPromotion;
+    private ProductDetail mProductDetail;
 
     public PromotionProductFragment() {
         super();
     }
 
     @SuppressWarnings("unused")
-    public static PromotionProductFragment newInstance() {
+    public static PromotionProductFragment newInstance(ProductDetail productDetail) {
         PromotionProductFragment fragment = new PromotionProductFragment();
         Bundle args = new Bundle();
+        args.putParcelable(ARG_PRODUCT_DETAIL, productDetail);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +71,24 @@ public class PromotionProductFragment extends Fragment {
 
     private void init(Bundle savedInstanceState) {
         // Init Fragment level's variable(s) here
+        if (getArguments() != null) {
+            mProductDetail = getArguments().getParcelable(ARG_PRODUCT_DETAIL);
+        }
+
+        if (mProductDetail != null){
+            ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
+            if (extensionProductDetail.getPromotionItems() != null){
+                mPromotion = new Promotion(extensionProductDetail.getPromotionItems());
+            }else {
+                mockData();
+            }
+        }else {
+            mockData();
+        }
+
+    }
+
+    private void mockData() {
         PromotionDetailText promotionDetailText = new PromotionDetailText("<html>\n" +
                 "<div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 tab-product-detail-wrapper\">\n" +
                 "      <section class=\"ckeditor ckeditor-productdetail\">\n" +
@@ -175,17 +199,12 @@ public class PromotionProductFragment extends Fragment {
                 "    </div>\n" +
                 "</html>\n", PromotionDetailText.MODE_DESCRIPTION);
         List<PromotionItem> promotionItems = new ArrayList<>();
-        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("ับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-
+        //promotionItems.add(new PromotionItem("", "","", promotionDetailText));
+        //promotionItems.add(new PromotionItem("ประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","23/07/2560", promotionDetailText));
+        //promotionItems.add(new PromotionItem("ประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","23/07/2560", promotionDetailText));
+        //promotionItems.add(new PromotionItem("ประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","23/07/2560", promotionDetailText));
+        //promotionItems.add(new PromotionItem("ประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","23/07/2560", promotionDetailText));
+        //promotionItems.add(new PromotionItem("ประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","23/07/2560", promotionDetailText));
         mPromotion = new Promotion(promotionItems);
     }
 
@@ -218,6 +237,8 @@ public class PromotionProductFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
+        outState.putParcelable(ARG_PRODUCT_DETAIL, mProductDetail);
+        outState.putParcelable(ARG_PROMOTION, mPromotion);
     }
 
     /*
@@ -226,6 +247,9 @@ public class PromotionProductFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
+        mProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL);
+        mPromotion = savedInstanceState.getParcelable(ARG_PROMOTION);
     }
 
 }
+

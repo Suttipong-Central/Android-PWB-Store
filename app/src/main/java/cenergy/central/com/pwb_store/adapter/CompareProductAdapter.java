@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.viewholder.CompareDetailViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareListProductViewHolder;
-import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareList;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ViewType;
@@ -26,7 +24,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     //Static Members
     private static final int VIEW_TYPE_ID_PRODUCT_LIST = 0;
     private static final int VIEW_TYPE_ID_COMPARE_HEADER = 1;
-    private static final int VIEW_TYPE_ID_COMPARE_DETAIL = 2;
+//    private static final int VIEW_TYPE_ID_COMPARE_DETAIL = 2;
 
     private static final ViewType VIEW_TYPE_COMPARE_HEADER = new ViewType(VIEW_TYPE_ID_COMPARE_HEADER);
 
@@ -41,8 +39,8 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     return 4;
                 case VIEW_TYPE_ID_COMPARE_HEADER:
                     return 4;
-                case VIEW_TYPE_ID_COMPARE_DETAIL:
-                    return 4;
+//                case VIEW_TYPE_ID_COMPARE_DETAIL:
+//                    return 4;
                 default:
                     return 1;
             }
@@ -69,12 +67,12 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                                 .from(parent.getContext())
                                 .inflate(R.layout.list_item_compare_product_header, parent, false)
                 );
-            case VIEW_TYPE_ID_COMPARE_DETAIL:
-                return new CompareDetailViewHolder(
-                        LayoutInflater
-                                .from(parent.getContext())
-                                .inflate(R.layout.list_item_grid_compare_detail, parent, false)
-                );
+//            case VIEW_TYPE_ID_COMPARE_DETAIL:
+//                return new CompareDetailViewHolder(
+//                        LayoutInflater
+//                                .from(parent.getContext())
+//                                .inflate(R.layout.list_item_grid_compare_detail, parent, false)
+//                );
         }
         return null;
     }
@@ -92,13 +90,13 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 }
                 break;
 
-            case VIEW_TYPE_ID_COMPARE_DETAIL:
-                if (viewType instanceof CompareDao && holder instanceof CompareDetailViewHolder){
-                    CompareDao compareDao = (CompareDao) viewType;
-                    CompareDetailViewHolder compareDetailViewHolder = (CompareDetailViewHolder) holder;
-                    compareDetailViewHolder.setViewHolder(mContext, compareDao);
-                }
-                break;
+//            case VIEW_TYPE_ID_COMPARE_DETAIL:
+//                if (viewType instanceof CompareDao && holder instanceof CompareDetailViewHolder){
+//                    CompareDao compareDao = (CompareDao) viewType;
+//                    CompareDetailViewHolder compareDetailViewHolder = (CompareDetailViewHolder) holder;
+//                    compareDetailViewHolder.setViewHolder(mContext, compareDao);
+//                }
+//                break;
         }
     }
 
@@ -118,11 +116,11 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
         mListViewType.add(compareList);
 
-        if (compareList.getCompareDao() != null){
-            CompareDao compareDao  = compareList.getCompareDao();
-            compareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
-            mListViewType.add(compareDao);
-        }
+//        if (compareList.getCompareDao() != null){
+//            CompareDao compareDao  = compareList.getCompareDao();
+//            compareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
+//            mListViewType.add(compareDao);
+//        }
 
         notifyDataSetChanged();
     }
@@ -136,11 +134,11 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
         mListViewType.add(compareList);
 
-        if (compareList.getCompareDao() != null){
-            CompareDao compareDao  = compareList.getCompareDao();
-            compareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
-            mListViewType.add(compareDao);
-        }
+//        if (compareList.getCompareDao() != null){
+//            CompareDao compareDao  = compareList.getCompareDao();
+//            compareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
+//            mListViewType.add(compareDao);
+//        }
 
         notifyDataSetChanged();
     }

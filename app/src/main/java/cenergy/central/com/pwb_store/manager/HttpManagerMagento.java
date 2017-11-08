@@ -33,6 +33,7 @@ public class HttpManagerMagento {
     private static final String CLIENT_MAGENTO = "Bearer ien5o19evja6n641s7s9kxrgpgy6tavt";
 
     private static final String BASE_URL_MAGENTO = "http://api.powerbuy.world";
+    private static final String BASE_URL_PRODUCT = "http://api.powerbuy.co.th";
     private static HttpManagerMagento instance;
     private Context mContext;
     private Retrofit retrofit;

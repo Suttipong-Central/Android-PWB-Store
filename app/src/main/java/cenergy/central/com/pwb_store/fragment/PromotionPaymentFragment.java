@@ -22,22 +22,27 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.PromotionPaymentAdapter;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
-import cenergy.central.com.pwb_store.model.Promotion;
+import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.PromotionDetailText;
-import cenergy.central.com.pwb_store.model.PromotionItem;
+import cenergy.central.com.pwb_store.model.PromotionPayment;
+import cenergy.central.com.pwb_store.model.PromotionPaymentItem;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
  */
 
 public class PromotionPaymentFragment extends Fragment {
+    private static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
+    private static final String ARG_PROMOTION_PAYMENT = "ARG_PROMOTION_PAYMENT";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     private PromotionPaymentAdapter mPaymentAdapter;
-    private Promotion mPromotion;
+    private PromotionPayment mPromotionPayment;
     private GridLayoutManager mLayoutManager;
+    private ProductDetail mProductDetail;
 
     public PromotionPaymentFragment() {
         super();
@@ -49,9 +54,10 @@ public class PromotionPaymentFragment extends Fragment {
     }
 
     @SuppressWarnings("unused")
-    public static PromotionPaymentFragment newInstance() {
+    public static PromotionPaymentFragment newInstance(ProductDetail productDetail) {
         PromotionPaymentFragment fragment = new PromotionPaymentFragment();
         Bundle args = new Bundle();
+        args.putParcelable(ARG_PRODUCT_DETAIL, productDetail);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,6 +81,80 @@ public class PromotionPaymentFragment extends Fragment {
 
     private void init(Bundle savedInstanceState) {
         // Init Fragment level's variable(s) here
+        if (getArguments() != null) {
+            mProductDetail = getArguments().getParcelable(ARG_PRODUCT_DETAIL);
+        }
+
+        if (mProductDetail != null){
+            ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
+            if (extensionProductDetail.getPromotionPaymentItems() != null){
+                mPromotionPayment = new PromotionPayment(extensionProductDetail.getPromotionPaymentItems());
+            }else {
+                mockData();
+            }
+        }else {
+            mockData();
+        }
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    private void initInstances(View rootView, Bundle savedInstanceState) {
+        // Init 'View' instance(s) with rootView.findViewById here
+        ButterKnife.bind(this, rootView);
+
+        mPaymentAdapter = new PromotionPaymentAdapter(getContext());
+        mLayoutManager = new GridLayoutManager(getContext(), 1, LinearLayoutManager.VERTICAL, false);
+        mLayoutManager.setSpanSizeLookup(mPaymentAdapter.getSpanSize());
+        mPaymentAdapter.setPromotionPayment(mPromotionPayment);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mPaymentAdapter);
+        mRecyclerView.setNestedScrollingEnabled(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        EventBus.getDefault().unregister(this);
+        super.onDetach();
+    }
+
+    /*
+     * Save Instance State Here
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save Instance State here
+        outState.putParcelable(ARG_PRODUCT_DETAIL, mProductDetail);
+        outState.putParcelable(ARG_PROMOTION_PAYMENT, mPromotionPayment);
+    }
+
+    /*
+     * Restore Instance State Here
+     */
+    @SuppressWarnings("UnusedParameters")
+    private void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Restore Instance State here
+        mProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL);
+        mPromotionPayment = savedInstanceState.getParcelable(ARG_PROMOTION_PAYMENT);
+    }
+
+    private void mockData(){
         PromotionDetailText promotionDetailText = new PromotionDetailText("<html>\n" +
                 "<div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 tab-product-detail-wrapper\">\n" +
                 "      <section class=\"ckeditor ckeditor-productdetail\">\n" +
@@ -184,72 +264,15 @@ public class PromotionPaymentFragment extends Fragment {
                 "</section>\n" +
                 "    </div>\n" +
                 "</html>\n", PromotionDetailText.MODE_DESCRIPTION);
-        List<PromotionItem> promotionItems = new ArrayList<>();
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
-//        promotionItems.add(new PromotionItem("รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560","", promotionDetailText));
+        List<PromotionPaymentItem> promotionItems = new ArrayList<>();
+        // promotionItems.add(new PromotionPaymentItem("เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","17/07/23/07/2560",promotionDetailText));
+        //promotionItems.add(new PromotionPaymentItem("", "","",promotionDetailText));
+        //promotionItems.add(new PromotionPaymentItem("เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","17/07/23/07/2560",promotionDetailText));
+        //promotionItems.add(new PromotionPaymentItem("เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","17/07/23/07/2560",promotionDetailText));
+        //promotionItems.add(new PromotionPaymentItem("เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","17/07/23/07/2560",promotionDetailText));
+        //promotionItems.add(new PromotionPaymentItem("เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน", "17/07/2560","17/07/23/07/2560",promotionDetailText));
 
-        mPromotion = new Promotion(promotionItems);
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    private void initInstances(View rootView, Bundle savedInstanceState) {
-        // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
-
-        mPaymentAdapter = new PromotionPaymentAdapter(getContext());
-        mLayoutManager = new GridLayoutManager(getContext(), 1, LinearLayoutManager.VERTICAL, false);
-        mLayoutManager.setSpanSizeLookup(mPaymentAdapter.getSpanSize());
-        mPaymentAdapter.setPromotionPayment(mPromotion);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mPaymentAdapter);
-        mRecyclerView.setNestedScrollingEnabled(true);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onDetach() {
-        EventBus.getDefault().unregister(this);
-        super.onDetach();
-    }
-
-    /*
-     * Save Instance State Here
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Save Instance State here
-    }
-
-    /*
-     * Restore Instance State Here
-     */
-    @SuppressWarnings("UnusedParameters")
-    private void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Restore Instance State here
+        mPromotionPayment = new PromotionPayment(promotionItems);
     }
 
 }

@@ -23,6 +23,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
  */
 
 public class ProductListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private static final String TAG = ProductListViewHolder.class.getSimpleName();
 
     @BindView(R.id.img_product)
     ImageView mImageView;
@@ -50,8 +51,11 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
         Extension extension = productList.getExtension();
         if (extension != null){
+
             for (ProductListStore productListStore : extension.getProductListStores()){
-                if (productListStore.getPrice().equalsIgnoreCase(productListStore.getSpecialPriceTo())){
+                float price = Float.parseFloat(productListStore.getPrice());
+                float specialPrice = Float.parseFloat(productListStore.getSpecialPrice());
+                if (price <= specialPrice){
                     oldPrice.setText(productListStore.getDisplayOldPrice(unit));
                     newPrice.setText("");
                 }else {
@@ -64,8 +68,9 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
             productDescription.setText(productList.getName());
 
             Glide.with(Contextor.getInstance().getContext())
-                    .load("http://api.powerbuy.world/media/catalog/product"+extension.getImageUrl())
-                    //.placeholder(R.drawable.ic_error_placeholder)
+                    //.load("http://api.powerbuy.world/media/catalog/product"+extension.getImageUrl())
+                    .load(Contextor.getInstance().getContext().getString(R.string.url_image)+extension.getImageUrl())
+                    .placeholder(R.drawable.ic_pwb_logo_detail)
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);

@@ -13,8 +13,9 @@ import java.util.List;
 public class CompareList implements IViewType,Parcelable {
     private int viewTypeId;
     private int total;
-    private List<ProductList> mProductLists = new ArrayList<>();
+    private List<ProductCompareList> mProductCompareLists = new ArrayList<>();
     private CompareDao mCompareDao;
+    private ExtensionCompare mExtensionCompare;
 
     public static final Creator<CompareList> CREATOR = new Creator<CompareList>() {
         @Override
@@ -28,17 +29,18 @@ public class CompareList implements IViewType,Parcelable {
         }
     };
 
-    public CompareList(int total, List<ProductList> productLists, CompareDao compareDao) {
+    public CompareList(int total, List<ProductCompareList> productLists, CompareDao compareDao) {
         this.total = total;
-        this.mProductLists = productLists;
+        this.mProductCompareLists = productLists;
         this.mCompareDao = compareDao;
     }
 
     protected CompareList(Parcel in) {
         viewTypeId = in.readInt();
         total = in.readInt();
-        mProductLists = in.createTypedArrayList(ProductList.CREATOR);
+        mProductCompareLists = in.createTypedArrayList(ProductCompareList.CREATOR);
         mCompareDao = in.readParcelable(CompareDao.class.getClassLoader());
+        mExtensionCompare = in.readParcelable(ExtensionCompare.class.getClassLoader());
     }
 
 
@@ -46,8 +48,9 @@ public class CompareList implements IViewType,Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
         dest.writeInt(total);
-        dest.writeTypedList(mProductLists);
+        dest.writeTypedList(mProductCompareLists);
         dest.writeParcelable(mCompareDao, flags);
+        dest.writeParcelable(mExtensionCompare, flags);
     }
 
 
@@ -74,12 +77,12 @@ public class CompareList implements IViewType,Parcelable {
         this.total = total;
     }
 
-    public List<ProductList> getProductLists() {
-        return mProductLists;
+    public List<ProductCompareList> getProductCompareLists() {
+        return mProductCompareLists;
     }
 
-    public void setProductLists(List<ProductList> productLists) {
-        mProductLists = productLists;
+    public void setProductCompareLists(List<ProductCompareList> productLists) {
+        mProductCompareLists = productLists;
     }
 
     public CompareDao getCompareDao() {
@@ -88,5 +91,13 @@ public class CompareList implements IViewType,Parcelable {
 
     public void setCompareDao(CompareDao compareDao) {
         mCompareDao = compareDao;
+    }
+
+    public ExtensionCompare getExtensionCompare() {
+        return mExtensionCompare;
+    }
+
+    public void setExtensionCompare(ExtensionCompare extensionCompare) {
+        mExtensionCompare = extensionCompare;
     }
 }

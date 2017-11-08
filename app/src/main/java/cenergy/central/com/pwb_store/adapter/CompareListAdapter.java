@@ -13,7 +13,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.CategoryFullFillerViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareProductViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ProductList;
+import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.model.ViewType;
 
 /**
@@ -74,10 +74,10 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_PRODUCT:
-                if (viewType instanceof ProductList && holder instanceof CompareProductViewHolder) {
-                    ProductList productList = (ProductList) viewType;
+                if (viewType instanceof ProductCompareList && holder instanceof CompareProductViewHolder) {
+                    ProductCompareList productCompareList = (ProductCompareList) viewType;
                     CompareProductViewHolder compareProductViewHolder = (CompareProductViewHolder) holder;
-                    compareProductViewHolder.setViewHolder(productList);
+                    compareProductViewHolder.setViewHolder(productCompareList);
                 }
                 break;
         }
@@ -93,11 +93,11 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mListViewType.get(position).getViewTypeId();
     }
 
-    public void setProductList(List<ProductList> productList) {
+    public void setproductCompareList(List<ProductCompareList> productCompareList) {
 
-        for (ProductList newProductList : productList){
-            newProductList.setViewTypeId(VIEW_TYPE_ID_PRODUCT);
-            mListViewType.add(newProductList);
+        for (ProductCompareList newproductCompareList : productCompareList){
+            newproductCompareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT);
+            mListViewType.add(newproductCompareList);
         }
 //
 //        if (productList.size() % 3 != 0) {
