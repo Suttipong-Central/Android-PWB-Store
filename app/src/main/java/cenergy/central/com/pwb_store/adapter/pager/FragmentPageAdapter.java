@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.fragment.PromotionPaymentFragment;
 import cenergy.central.com.pwb_store.fragment.PromotionProductFragment;
 import cenergy.central.com.pwb_store.model.FragmentType;
 import cenergy.central.com.pwb_store.model.IFragmentType;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 
 /**
  * Created by napabhat on 8/2/2017 AD.
@@ -29,9 +30,11 @@ public class FragmentPageAdapter extends FragmentPagerAdapter {
 
     //Data Members
     private List<IFragmentType> mFragmentTypeList = new ArrayList<>();
+    private ProductDetail mProductDetail;
 
-    public FragmentPageAdapter(FragmentManager fm) {
+    public FragmentPageAdapter(FragmentManager fm , ProductDetail productDetail) {
         super(fm);
+        this.mProductDetail = productDetail;
         mFragmentTypeList.add(new FragmentType(FRAGMENT_TYPE_ID_PROMOTION_PAYMENT, "Payment"));
         mFragmentTypeList.add(new FragmentType(FRAGMENT_TYPE_ID_PROMOTION_PRODUCT, "Product"));
     }
@@ -41,9 +44,9 @@ public class FragmentPageAdapter extends FragmentPagerAdapter {
         long fragmentId = getItemId(position);
 
         if (fragmentId == FRAGMENT_TYPE_ID_PROMOTION_PAYMENT){
-            return PromotionPaymentFragment.newInstance();
+            return PromotionPaymentFragment.newInstance(mProductDetail);
         } else if (fragmentId == FRAGMENT_TYPE_ID_PROMOTION_PRODUCT){
-            return PromotionProductFragment.newInstance();
+            return PromotionProductFragment.newInstance(mProductDetail);
         }
         Log.e(TAG, "getItem: No matching fragmentId");
         return FragmentTemplate.newInstance();

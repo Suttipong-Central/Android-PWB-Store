@@ -10,15 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderDetailViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.CompareItemDetailViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.PromotionItemPaymentViewHolder;
-import cenergy.central.com.pwb_store.model.CompareDao;
-import cenergy.central.com.pwb_store.model.CompareDetail;
-import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.Promotion;
-import cenergy.central.com.pwb_store.model.PromotionItem;
+import cenergy.central.com.pwb_store.model.PromotionPayment;
+import cenergy.central.com.pwb_store.model.PromotionPaymentItem;
 
 /**
  * Created by napabhat on 8/2/2017 AD.
@@ -65,10 +60,10 @@ public class PromotionPaymentAdapter extends RecyclerView.Adapter<RecyclerView.V
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_PROMOTION_ITEM:
-                if (viewType instanceof PromotionItem && holder instanceof PromotionItemPaymentViewHolder) {
-                    PromotionItem promotionItem = (PromotionItem) viewType;
+                if (viewType instanceof PromotionPaymentItem && holder instanceof PromotionItemPaymentViewHolder) {
+                    PromotionPaymentItem promotionPaymentItem = (PromotionPaymentItem) viewType;
                     PromotionItemPaymentViewHolder promotionItemPaymentViewHolder = (PromotionItemPaymentViewHolder) holder;
-                    promotionItemPaymentViewHolder.setViewHolder(promotionItem);
+                    promotionItemPaymentViewHolder.setViewHolder(promotionPaymentItem);
                 }
                 break;
 
@@ -84,11 +79,11 @@ public class PromotionPaymentAdapter extends RecyclerView.Adapter<RecyclerView.V
         return mListViewType.get(position).getViewTypeId();
     }
 
-    public void setPromotionPayment(Promotion promotion){
+    public void setPromotionPayment(PromotionPayment promotionPayment){
 
-        for (PromotionItem promotionItem : promotion.getPromotionItemList()) {
-            promotionItem.setViewTypeId(VIEW_TYPE_ID_PROMOTION_ITEM);
-            mListViewType.add(promotionItem);
+        for (PromotionPaymentItem promotionPaymentItem : promotionPayment.getPromotionPaymentItemList()) {
+            promotionPaymentItem.setViewTypeId(VIEW_TYPE_ID_PROMOTION_ITEM);
+            mListViewType.add(promotionPaymentItem);
         }
 
         notifyDataSetChanged();

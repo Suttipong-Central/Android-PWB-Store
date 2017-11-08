@@ -143,8 +143,8 @@ public class PowerBuyProductImageItemView extends FrameLayout {
 
             Glide.with(Contextor.getInstance().getContext())
                     .load(productDetailImageItem.getImgUrl())
-                    .error(R.drawable.ic_error_placeholder)
-                    .placeholder(R.drawable.ic_banner_placeholder)
+//                    .error(R.drawable.ic_error_placeholder)
+//                    .placeholder(R.drawable.ic_banner_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);

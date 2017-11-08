@@ -42,8 +42,8 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
 
         Glide.with(Contextor.getInstance().getContext())
                 .load("http://api.powerbuy.world/media/catalog/product"+productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
-                .error(R.drawable.ic_error_placeholder)
-                .placeholder(R.drawable.ic_banner_placeholder)
+                //.error(R.drawable.ic_error_placeholder)
+                .placeholder(R.drawable.ic_pwb_logo_detail)
                 .crossFade()
                 .fitCenter()
                 .into(mImageView);
@@ -51,9 +51,10 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
         for (ProductDetailImageItem productDetailImageItem : productDetailImage.getProductDetailImageItems()) {
             if (productDetailImageItem.isSelected()) {
                 Glide.with(Contextor.getInstance().getContext())
-                        .load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
-                        .error(R.drawable.ic_error_placeholder)
-                        .placeholder(R.drawable.ic_banner_placeholder)
+                        //.load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
+                        .load(Contextor.getInstance().getContext().getString(R.string.url_image)+productDetailImageItem.getImgUrl())
+                        //.error(R.drawable.ic_error_placeholder)
+                        .placeholder(R.drawable.ic_pwb_logo_detail)
                         .crossFade()
                         .fitCenter()
                         .into(mImageView);

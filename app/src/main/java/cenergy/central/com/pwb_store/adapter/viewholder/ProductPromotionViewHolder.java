@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.pager.FragmentPageAdapter;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.view.PowerBuyTabLayout;
 
 /**
@@ -43,15 +44,16 @@ public class ProductPromotionViewHolder extends RecyclerView.ViewHolder implemen
     ImageView right;
 
     private FragmentPageAdapter mPageAdapter;
-
+    private ProductDetail mProductDetail;
 
     public ProductPromotionViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this,itemView);
     }
 
-    public void setViewHolder(FragmentManager fragmentManager){
-        mPageAdapter = new FragmentPageAdapter(fragmentManager);
+    public void setViewHolder(FragmentManager fragmentManager, ProductDetail productDetail){
+        this.mProductDetail = productDetail;
+        mPageAdapter = new FragmentPageAdapter(fragmentManager, productDetail);
         mViewPager.setAdapter(mPageAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         left.setOnClickListener(this);

@@ -87,7 +87,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
         mProductName.setText(productDetail.getProductName());
-        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetail.getProductCode());
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetail.getSku());
         ExtensionProductDetail extensionProductDetail = productDetail.getExtensionProductDetail();
         if (extensionProductDetail != null){
             for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){

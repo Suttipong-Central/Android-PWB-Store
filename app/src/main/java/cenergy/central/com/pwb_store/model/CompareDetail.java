@@ -3,6 +3,9 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,11 @@ import java.util.List;
 public class CompareDetail implements IViewType,Parcelable {
 
     private int viewTypeId;
+    @SerializedName("compareHeader")
+    @Expose
     private String name;
+    @SerializedName("compareItem")
+    @Expose
     private List<CompareDetailItem> mCompareDetailItems = new ArrayList<>();
 
     public static final Creator<CompareDetail> CREATOR = new Creator<CompareDetail>() {

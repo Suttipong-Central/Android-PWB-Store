@@ -12,7 +12,6 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CompareListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.model.CompareList;
-import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
  * Created by napabhat on 7/26/2017 AD.
@@ -38,8 +37,7 @@ public class CompareListProductViewHolder extends RecyclerView.ViewHolder {
         mLayoutManager = new GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setReverseLayout(true);// Show Start Right.
         mRecyclerView.setHasFixedSize(true);
-        mCompareListAdapter.setProductList(compareList.getProductLists());
-
+        mCompareListAdapter.setproductCompareList(compareList.getProductCompareLists());
         mLayoutManager.setSpanSizeLookup(mCompareListAdapter.getSpanSize());
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
         mRecyclerView.setLayoutManager(mLayoutManager);

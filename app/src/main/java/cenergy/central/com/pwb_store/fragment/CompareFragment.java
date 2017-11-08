@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareDetail;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.CompareList;
-import cenergy.central.com.pwb_store.model.ProductList;
+import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import io.realm.Realm;
@@ -54,6 +55,8 @@ public class CompareFragment extends Fragment {
     private Realm mRealm;
     private RealmResults<AddCompare> results;
     private ProgressDialog mProgressDialog;
+    //private Map<String, String> skuOption = new HashMap<>();
+    private String sku = "";
 
     public CompareFragment() {
         super();
@@ -61,11 +64,11 @@ public class CompareFragment extends Fragment {
 
     @Subscribe
     public void onEvent(CompareDeleteBus compareDeleteBus){
-        ProductList productList = compareDeleteBus.getProductList();
+        ProductCompareList productList = compareDeleteBus.getProductCompareList();
         results = RealmController.with(this).deletedCompare(productList.getProductId());
-        List<ProductList> mProductListList = new ArrayList<>();
+        List<ProductCompareList> mProductCompareListList = new ArrayList<>();
         for (AddCompare addCompare : results){
-            mProductListList.add(new ProductList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
+            mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
                     addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
         }
 
@@ -107,7 +110,7 @@ public class CompareFragment extends Fragment {
         compareDetails.add(new CompareDetail("", compareDetailItems5));
 
         mCompareDao = new CompareDao(5, compareDetails);
-        mCompareList = new CompareList(4, mProductListList, mCompareDao);
+        mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
 
         mAdapter.setUpdateCompare(mCompareList);
 
@@ -158,19 +161,21 @@ public class CompareFragment extends Fragment {
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mAdapter);
 
+        sku = getSku();
+        Log.d(TAG, "skuString " + sku);
     }
 
     private void mockData(){
 
         results = RealmController.with(this).getCompares();
         if (results == null){
-            List<ProductList> mProductListList = new ArrayList<>();
-            mProductListList.add(new ProductList("1111","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
+            List<ProductCompareList> mProductCompareListList = new ArrayList<>();
+            mProductCompareListList.add(new ProductCompareList("1111","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
                     "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-            mProductListList.add(new ProductList("2222","http://www.mx7.com/i/0e5/oFp5mm.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
+            mProductCompareListList.add(new ProductCompareList("2222","http://www.mx7.com/i/0e5/oFp5mm.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
                     "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-            mProductListList.add(new ProductList("2345","http://www.mx7.com/i/1cb/TL8yVR.png","Lenovo","Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)",35000,30000));
-            mProductListList.add(new ProductList("1122","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
+            mProductCompareListList.add(new ProductCompareList("2345","http://www.mx7.com/i/1cb/TL8yVR.png","Lenovo","Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)",35000,30000));
+            mProductCompareListList.add(new ProductCompareList("1122","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
 
             List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
             compareDetailItems1.add(new CompareDetailItem(""));
@@ -210,11 +215,11 @@ public class CompareFragment extends Fragment {
             compareDetails.add(new CompareDetail("", compareDetailItems5));
 
             mCompareDao = new CompareDao(5, compareDetails);
-            mCompareList = new CompareList(4, mProductListList, mCompareDao);
+            mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
         }else {
-            List<ProductList> mProductListList = new ArrayList<>();
+            List<ProductCompareList> mProductCompareListList = new ArrayList<>();
             for (AddCompare addCompare : results){
-                mProductListList.add(new ProductList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
+                mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
                         addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
             }
 
@@ -256,7 +261,7 @@ public class CompareFragment extends Fragment {
             compareDetails.add(new CompareDetail("", compareDetailItems5));
 
             mCompareDao = new CompareDao(5, compareDetails);
-            mCompareList = new CompareList(4, mProductListList, mCompareDao);
+            mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
         }
 
 
@@ -308,6 +313,41 @@ public class CompareFragment extends Fragment {
         } else {
             mProgressDialog.show();
         }
+    }
+
+//    public Map<String, String> getSkuOptionMap() {
+//        results = RealmController.with(this).getCompares();
+//        Map<String, String> filterOptionMap = new HashMap<>();
+//        if (results != null){
+//            String skuOption;
+//            for (AddCompare addCompare :
+//                    results) {
+//                skuOption = addCompare.getProductSku();
+//                if (!TextUtils.isEmpty(skuOption)) {
+//                    filterOptionMap.put("", skuOption);
+//                }
+//            }
+//        }
+//        return filterOptionMap;
+//    }
+
+    public String getSku(){
+        String result = "";
+        String listString1 = "";
+        String listString2 = "";
+        results = RealmController.with(this).getCompares();
+        ArrayList<String> list = new ArrayList<String>();
+        if (results != null){
+            for (AddCompare addCompare :
+                    results) {
+                list.add(addCompare.getProductSku());
+            }
+            listString1 = list.toString();
+            listString2 = listString1.replace("[", "");
+            result = listString2.replace("]", "");
+        }
+
+        return result;
     }
 
 }
