@@ -16,10 +16,10 @@ import java.util.List;
 public class CompareDetail implements IViewType,Parcelable {
 
     private int viewTypeId;
-    @SerializedName("compareHeader")
+    @SerializedName("compare_header")
     @Expose
     private String name;
-    @SerializedName("compareItem")
+    @SerializedName("compare_item")
     @Expose
     private List<CompareDetailItem> mCompareDetailItems = new ArrayList<>();
 

@@ -24,7 +24,10 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CompareProductAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
+import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareDetail;
@@ -32,9 +35,13 @@ import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.CompareList;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
@@ -55,64 +62,124 @@ public class CompareFragment extends Fragment {
     private Realm mRealm;
     private RealmResults<AddCompare> results;
     private ProgressDialog mProgressDialog;
-    //private Map<String, String> skuOption = new HashMap<>();
     private String sku = "";
+    private boolean isDelete;
 
     public CompareFragment() {
         super();
     }
 
-    @Subscribe
-    public void onEvent(CompareDeleteBus compareDeleteBus){
-        ProductCompareList productList = compareDeleteBus.getProductCompareList();
-        results = RealmController.with(this).deletedCompare(productList.getProductId());
-        List<ProductCompareList> mProductCompareListList = new ArrayList<>();
-        for (AddCompare addCompare : results){
-            mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
-                    addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
+    final Callback<CompareList> CALLBACK_COMPARE = new Callback<CompareList>() {
+        @Override
+        public void onResponse(Call<CompareList> call, Response<CompareList> response) {
+            if (response.isSuccessful()){
+                //mProgressDialog.dismiss();
+                mCompareList = response.body();
+                HttpManagerMagento.getInstance().getCompareService().getCompareItem(sku).enqueue(CALLBACK_ITEM);
+
+            }else {
+                mProgressDialog.dismiss();
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                mockData();
+                mAdapter.setUpdateCompare(mCompareList);
+            }
         }
 
-        List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
-        compareDetailItems1.add(new CompareDetailItem(""));
-        compareDetailItems1.add(new CompareDetailItem(""));
-        compareDetailItems1.add(new CompareDetailItem(""));
-        compareDetailItems1.add(new CompareDetailItem(""));
+        @Override
+        public void onFailure(Call<CompareList> call, Throwable t) {
+            Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
+        }
+    };
 
-        List<CompareDetailItem> compareDetailItems2 = new ArrayList<>();
-        compareDetailItems2.add(new CompareDetailItem(""));
-        compareDetailItems2.add(new CompareDetailItem(""));
-        compareDetailItems2.add(new CompareDetailItem(""));
-        compareDetailItems2.add(new CompareDetailItem(""));
+    final Callback<List<CompareDao>> CALLBACK_ITEM = new Callback<List<CompareDao>>() {
+        @Override
+        public void onResponse(Call<List<CompareDao>> call, Response<List<CompareDao>> response) {
+            if (response.isSuccessful()){
+                mProgressDialog.dismiss();
+                mCompareDao = response.body().get(0);
+                mCompareList.setCompareDao(mCompareDao);
+                if (isDelete == true){
+                    mAdapter.setUpdateCompare(mCompareList);
+                }else {
+                    mAdapter.setCompare(mCompareList);
+                }
 
-        List<CompareDetailItem> compareDetailItems3 = new ArrayList<>();
-        compareDetailItems3.add(new CompareDetailItem(""));
-        compareDetailItems3.add(new CompareDetailItem(""));
-        compareDetailItems3.add(new CompareDetailItem(""));
-        compareDetailItems3.add(new CompareDetailItem(""));
+            }else {
+                mProgressDialog.dismiss();
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                mockData();
+                mAdapter.setUpdateCompare(mCompareList);
+            }
+        }
 
-        List<CompareDetailItem> compareDetailItems4 = new ArrayList<>();
-        compareDetailItems4.add(new CompareDetailItem(""));
-        compareDetailItems4.add(new CompareDetailItem(""));
-        compareDetailItems4.add(new CompareDetailItem(""));
-        compareDetailItems4.add(new CompareDetailItem(""));
+        @Override
+        public void onFailure(Call<List<CompareDao>> call, Throwable t) {
+            Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
+            mockData();
+        }
+    };
 
-        List<CompareDetailItem> compareDetailItems5 = new ArrayList<>();
-        compareDetailItems5.add(new CompareDetailItem(""));
-        compareDetailItems5.add(new CompareDetailItem(""));
-        compareDetailItems5.add(new CompareDetailItem(""));
-        compareDetailItems5.add(new CompareDetailItem(""));
+    @Subscribe
+    public void onEvent(CompareDeleteBus compareDeleteBus){
+        isDelete = true;
+        ProductCompareList productList = compareDeleteBus.getProductCompareList();
+        Log.d(TAG, "id" +productList.getProductId());
+        results = RealmController.with(this).deletedCompare(productList.getProductId());
+        showProgressDialog();
+        sku = getSku();
+        HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+                UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
+//        List<ProductCompareList> mProductCompareListList = new ArrayList<>();
+//        for (AddCompare addCompare : results){
+//            mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
+//                    addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
+//        }
+//
+//        List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
+//        compareDetailItems1.add(new CompareDetailItem(""));
+//        compareDetailItems1.add(new CompareDetailItem(""));
+//        compareDetailItems1.add(new CompareDetailItem(""));
+//        compareDetailItems1.add(new CompareDetailItem(""));
+//
+//        List<CompareDetailItem> compareDetailItems2 = new ArrayList<>();
+//        compareDetailItems2.add(new CompareDetailItem(""));
+//        compareDetailItems2.add(new CompareDetailItem(""));
+//        compareDetailItems2.add(new CompareDetailItem(""));
+//        compareDetailItems2.add(new CompareDetailItem(""));
+//
+//        List<CompareDetailItem> compareDetailItems3 = new ArrayList<>();
+//        compareDetailItems3.add(new CompareDetailItem(""));
+//        compareDetailItems3.add(new CompareDetailItem(""));
+//        compareDetailItems3.add(new CompareDetailItem(""));
+//        compareDetailItems3.add(new CompareDetailItem(""));
+//
+//        List<CompareDetailItem> compareDetailItems4 = new ArrayList<>();
+//        compareDetailItems4.add(new CompareDetailItem(""));
+//        compareDetailItems4.add(new CompareDetailItem(""));
+//        compareDetailItems4.add(new CompareDetailItem(""));
+//        compareDetailItems4.add(new CompareDetailItem(""));
+//
+//        List<CompareDetailItem> compareDetailItems5 = new ArrayList<>();
+//        compareDetailItems5.add(new CompareDetailItem(""));
+//        compareDetailItems5.add(new CompareDetailItem(""));
+//        compareDetailItems5.add(new CompareDetailItem(""));
+//        compareDetailItems5.add(new CompareDetailItem(""));
+//
+//        List<CompareDetail> compareDetails = new ArrayList<>();
+//        compareDetails.add(new CompareDetail("", compareDetailItems1));
+//        compareDetails.add(new CompareDetail("", compareDetailItems2));
+//        compareDetails.add(new CompareDetail("", compareDetailItems3));
+//        compareDetails.add(new CompareDetail("", compareDetailItems4));
+//        compareDetails.add(new CompareDetail("", compareDetailItems5));
+//
+//        mCompareDao = new CompareDao(5, compareDetails);
+//        mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
 
-        List<CompareDetail> compareDetails = new ArrayList<>();
-        compareDetails.add(new CompareDetail("", compareDetailItems1));
-        compareDetails.add(new CompareDetail("", compareDetailItems2));
-        compareDetails.add(new CompareDetail("", compareDetailItems3));
-        compareDetails.add(new CompareDetail("", compareDetailItems4));
-        compareDetails.add(new CompareDetail("", compareDetailItems5));
-
-        mCompareDao = new CompareDao(5, compareDetails);
-        mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
-
-        mAdapter.setUpdateCompare(mCompareList);
+//        mAdapter.setUpdateCompare(mCompareList);
 
     }
 
@@ -145,7 +212,7 @@ public class CompareFragment extends Fragment {
         // Init Fragment level's variable(s) here
         //get realm instance
         this.mRealm = RealmController.with(this).getRealm();
-        mockData();
+        isDelete = false;
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -156,13 +223,20 @@ public class CompareFragment extends Fragment {
         mAdapter = new CompareProductAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
-        mAdapter.setCompare(mCompareList);
+        //mAdapter.setCompare(mCompareList);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
+        if (savedInstanceState == null){
+            sku = getSku();
+            Log.d(TAG, "skuString " + sku);
+            showProgressDialog();
+            HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+                    UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
+        }else {
+            mockData();
+        }
         mRecyclerView.setAdapter(mAdapter);
 
-        sku = getSku();
-        Log.d(TAG, "skuString " + sku);
     }
 
     private void mockData(){
@@ -217,6 +291,7 @@ public class CompareFragment extends Fragment {
             mCompareDao = new CompareDao(5, compareDetails);
             mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
         }else {
+
             List<ProductCompareList> mProductCompareListList = new ArrayList<>();
             for (AddCompare addCompare : results){
                 mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
@@ -315,26 +390,11 @@ public class CompareFragment extends Fragment {
         }
     }
 
-//    public Map<String, String> getSkuOptionMap() {
-//        results = RealmController.with(this).getCompares();
-//        Map<String, String> filterOptionMap = new HashMap<>();
-//        if (results != null){
-//            String skuOption;
-//            for (AddCompare addCompare :
-//                    results) {
-//                skuOption = addCompare.getProductSku();
-//                if (!TextUtils.isEmpty(skuOption)) {
-//                    filterOptionMap.put("", skuOption);
-//                }
-//            }
-//        }
-//        return filterOptionMap;
-//    }
-
     public String getSku(){
         String result = "";
         String listString1 = "";
         String listString2 = "";
+        String detail = "";
         results = RealmController.with(this).getCompares();
         ArrayList<String> list = new ArrayList<String>();
         if (results != null){
@@ -344,7 +404,8 @@ public class CompareFragment extends Fragment {
             }
             listString1 = list.toString();
             listString2 = listString1.replace("[", "");
-            result = listString2.replace("]", "");
+            detail = listString2.replace("]", "");
+            result = detail.replace(" ", "");
         }
 
         return result;

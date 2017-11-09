@@ -3,6 +3,9 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +16,10 @@ import java.util.List;
 public class CompareList implements IViewType,Parcelable {
     private int viewTypeId;
     private int total;
+    @SerializedName("items")
+    @Expose
     private List<ProductCompareList> mProductCompareLists = new ArrayList<>();
     private CompareDao mCompareDao;
-    private ExtensionCompare mExtensionCompare;
 
     public static final Creator<CompareList> CREATOR = new Creator<CompareList>() {
         @Override
@@ -40,7 +44,6 @@ public class CompareList implements IViewType,Parcelable {
         total = in.readInt();
         mProductCompareLists = in.createTypedArrayList(ProductCompareList.CREATOR);
         mCompareDao = in.readParcelable(CompareDao.class.getClassLoader());
-        mExtensionCompare = in.readParcelable(ExtensionCompare.class.getClassLoader());
     }
 
 
@@ -50,7 +53,6 @@ public class CompareList implements IViewType,Parcelable {
         dest.writeInt(total);
         dest.writeTypedList(mProductCompareLists);
         dest.writeParcelable(mCompareDao, flags);
-        dest.writeParcelable(mExtensionCompare, flags);
     }
 
 
@@ -93,11 +95,4 @@ public class CompareList implements IViewType,Parcelable {
         mCompareDao = compareDao;
     }
 
-    public ExtensionCompare getExtensionCompare() {
-        return mExtensionCompare;
-    }
-
-    public void setExtensionCompare(ExtensionCompare extensionCompare) {
-        mExtensionCompare = extensionCompare;
-    }
 }

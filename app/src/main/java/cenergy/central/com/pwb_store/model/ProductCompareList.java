@@ -7,8 +7,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -42,27 +40,14 @@ public class ProductCompareList implements IViewType,Parcelable {
     private boolean canInstallment;
     private int t1CRedeemPoint;
     private int departmentId;
-//    @SerializedName("BrandId")
-//    @Expose
     private int brandId;
-//    @SerializedName("BrandName")
-//    @Expose
     private String brandName;
-//    @SerializedName("BrandNameEn")
-//    @Expose
     private String brandNameEN;
-//    @SerializedName("StoreId")
-//    @Expose
     private String storeId;
-//    @SerializedName("StockOnHand")
-//    @Expose
     private int stockOnHand;
     @SerializedName("extension_attributes")
     @Expose
-    private Extension mExtension;
-//    @SerializedName("custom_attributes")
-//    @Expose
-    private List<CustomAttributes> mCustomAttributes = new ArrayList<>();
+    private ExtensionCompare mExtensionCompare;
 
     public ProductCompareList(String productId, String imageUrl, String name, String description, double oldPrice, double newPrice) {
         this.productId = productId;
@@ -97,8 +82,7 @@ public class ProductCompareList implements IViewType,Parcelable {
         brandNameEN = in.readString();
         storeId = in.readString();
         stockOnHand = in.readInt();
-        mExtension = in.readParcelable(Extension.class.getClassLoader());
-        mCustomAttributes = in.createTypedArrayList(CustomAttributes.CREATOR);
+        mExtensionCompare = in.readParcelable(ExtensionCompare.class.getClassLoader());
     }
 
     @Override
@@ -126,8 +110,7 @@ public class ProductCompareList implements IViewType,Parcelable {
         dest.writeString(brandNameEN);
         dest.writeString(storeId);
         dest.writeInt(stockOnHand);
-        dest.writeParcelable(mExtension, flags);
-        dest.writeTypedList(mCustomAttributes);
+        dest.writeParcelable(mExtensionCompare, flags);
     }
 
     public static final Creator<ProductCompareList> CREATOR = new Creator<ProductCompareList>() {
@@ -342,19 +325,13 @@ public class ProductCompareList implements IViewType,Parcelable {
         this.newPrice = newPrice;
     }
 
-    public Extension getExtension() {
-        return mExtension;
+    public ExtensionCompare getExtensionCompare() {
+        return mExtensionCompare;
     }
 
-    public void setExtension(Extension extension) {
-        mExtension = extension;
+    public void setExtensionCompare(ExtensionCompare extension) {
+        mExtensionCompare = extension;
     }
 
-    public List<CustomAttributes> getCustomAttributes() {
-        return mCustomAttributes;
-    }
-
-    public void setCustomAttributes(List<CustomAttributes> customAttributes) {
-        mCustomAttributes = customAttributes;
-    }
+    
 }

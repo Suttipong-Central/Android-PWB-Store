@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.manager.service.CategoryService;
+import cenergy.central.com.pwb_store.manager.service.CompareService;
 import cenergy.central.com.pwb_store.manager.service.ProductService;
 import cenergy.central.com.pwb_store.manager.service.StoreService;
 import cenergy.central.com.pwb_store.manager.service.TokenService;
@@ -41,6 +42,7 @@ public class HttpManagerMagento {
     private CategoryService mCategoryService;
     private ProductService mProductService;
     private StoreService mStoreService;
+    private CompareService mCompareService;
     private String url;
 
     private HttpManagerMagento() {
@@ -72,6 +74,7 @@ public class HttpManagerMagento {
         mCategoryService = retrofit.create(CategoryService.class);
         mProductService = retrofit.create(ProductService.class);
         mStoreService = retrofit.create(StoreService.class);
+        mCompareService = retrofit.create(CompareService.class);
     }
 
     public static HttpManagerMagento getInstance() {
@@ -98,6 +101,10 @@ public class HttpManagerMagento {
 
     public StoreService getStoreService(){
         return  mStoreService;
+    }
+
+    public CompareService getCompareService(){
+        return mCompareService;
     }
 
 }
