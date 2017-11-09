@@ -16,10 +16,8 @@ import java.util.List;
 public class CompareDao implements IViewType,Parcelable {
 
     private int viewTypeId;
-    @SerializedName("total")
-    @Expose
     private int total;
-    @SerializedName("compareHeader")
+    @SerializedName("compare")
     @Expose
     private List<CompareDetail> mCompareDetails = new ArrayList<>();
 

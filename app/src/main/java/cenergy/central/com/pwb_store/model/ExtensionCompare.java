@@ -6,25 +6,35 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by napabhat on 11/8/2017 AD.
  */
 
 public class ExtensionCompare implements IViewType,Parcelable {
     private int viewTypeId;
-    @SerializedName("compare")
+
+
+    @SerializedName(value = "MediumFullUrl", alternate = "image")
     @Expose
-    private CompareDao mCompareDao;
+    private String imageUrl;
+
+    @SerializedName(value = "Description" , alternate = "description")
+    @Expose
+    private String description;
+    @SerializedName("by_store")
+    @Expose
+    private List<CompareListStore> mCompareListStores = new ArrayList<>();
 
     protected ExtensionCompare(Parcel in) {
         viewTypeId = in.readInt();
-        mCompareDao = in.readParcelable(CompareDao.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
-        dest.writeParcelable(mCompareDao, flags);
     }
 
     @Override
@@ -52,13 +62,5 @@ public class ExtensionCompare implements IViewType,Parcelable {
     @Override
     public void setViewTypeId(int id) {
         this.viewTypeId = id;
-    }
-
-    public CompareDao getCompareDao() {
-        return mCompareDao;
-    }
-
-    public void setCompareDao(CompareDao compareDao) {
-        mCompareDao = compareDao;
     }
 }

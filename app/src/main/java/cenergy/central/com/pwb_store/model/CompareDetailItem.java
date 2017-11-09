@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
 public class CompareDetailItem implements IViewType,Parcelable {
 
     private int viewTypeId;
-    @SerializedName("detailType")
+    @SerializedName("detail")
     @Expose
     private String type;
     public static final Creator<CompareDetailItem> CREATOR = new Creator<CompareDetailItem>() {
