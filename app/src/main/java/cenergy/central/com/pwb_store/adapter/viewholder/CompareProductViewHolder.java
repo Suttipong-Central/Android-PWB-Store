@@ -14,6 +14,9 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
+import cenergy.central.com.pwb_store.model.CompareList;
+import cenergy.central.com.pwb_store.model.CompareListStore;
+import cenergy.central.com.pwb_store.model.ExtensionCompare;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
@@ -45,32 +48,41 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     @BindView(R.id.layout_card)
     RelativeLayout cardLayout;
 
+    private CompareList mCompareList;
+
     public CompareProductViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
-    public void setViewHolder(ProductCompareList productCompareList) {
+    public void setViewHolder(CompareList compareList, ProductCompareList productCompareList) {
+        this.mCompareList = compareList;
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
-        Glide.with(Contextor.getInstance().getContext())
-                .load(Contextor.getInstance().getContext().getString(R.string.url_image) + productCompareList.getImageUrl())
-                .placeholder(R.drawable.ic_pwb_logo_detail)
-                .crossFade()
-                .fitCenter()
-                .into(imgProduct);
-
         productName.setText(productCompareList.getName());
-        productDescription.setText(productCompareList.getDescription());
-        double price = productCompareList.getOldPrice();
-        double specialPrice = productCompareList.getNewPrice();
-        if (price <= specialPrice) {
-            oldPrice.setText(productCompareList.getDisplayOldPrice(unit));
-            newPrice.setText("");
-        } else {
-            oldPrice.setText(productCompareList.getDisplayOldPrice(unit));
-            oldPrice.setEnableStrikeThrough(true);
-            newPrice.setText(productCompareList.getDisplayNewPrice(unit));
+        ExtensionCompare extensionCompare = productCompareList.getExtensionCompare();
+        if (extensionCompare != null){
+            Glide.with(Contextor.getInstance().getContext())
+                    .load(Contextor.getInstance().getContext().getString(R.string.url_image) + extensionCompare.getImageUrl())
+                    .placeholder(R.drawable.ic_pwb_logo_detail)
+                    .crossFade()
+                    .fitCenter()
+                    .into(imgProduct);
+
+            productDescription.setText(extensionCompare.getDescription());
+            for (CompareListStore compareListStore : extensionCompare.getCompareListStores()){
+                double price = Double.parseDouble(compareListStore.getPrice());
+                double specialPrice = Double.parseDouble(compareListStore.getSpecialPrice());
+                if (price <= specialPrice) {
+                    oldPrice.setText(compareListStore.getDisplayOldPrice(unit));
+                    newPrice.setText("");
+                } else {
+                    oldPrice.setText(compareListStore.getDisplayOldPrice(unit));
+                    oldPrice.setEnableStrikeThrough(true);
+                    newPrice.setText(compareListStore.getDisplayNewPrice(unit));
+                }
+            }
+
         }
 
         //itemView.setOnClickListener(this);

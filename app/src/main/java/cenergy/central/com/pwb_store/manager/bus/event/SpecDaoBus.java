@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.manager.bus.event;
 
 import android.view.View;
 
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.SpecDao;
 
 /**
@@ -11,6 +12,7 @@ import cenergy.central.com.pwb_store.model.SpecDao;
 public class SpecDaoBus {
     private View mView;
     private SpecDao mSpecDao;
+    private ProductDetail mProductDetail;
 
     public SpecDaoBus(View view, SpecDao specDao){
         this.mSpecDao = specDao;
@@ -23,5 +25,9 @@ public class SpecDaoBus {
 
     public SpecDao getSpecDao() {
         return mSpecDao;
+    }
+
+    public ProductDetail getProductDetail() {
+        return mProductDetail;
     }
 }

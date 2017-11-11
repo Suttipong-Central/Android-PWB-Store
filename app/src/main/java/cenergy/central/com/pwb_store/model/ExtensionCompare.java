@@ -63,4 +63,28 @@ public class ExtensionCompare implements IViewType,Parcelable {
     public void setViewTypeId(int id) {
         this.viewTypeId = id;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<CompareListStore> getCompareListStores() {
+        return mCompareListStores;
+    }
+
+    public void setCompareListStores(List<CompareListStore> compareListStores) {
+        mCompareListStores = compareListStores;
+    }
 }

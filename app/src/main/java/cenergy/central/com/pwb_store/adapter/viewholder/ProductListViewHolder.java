@@ -40,6 +40,9 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
     @BindView(R.id.txt_product_new_price)
     PowerBuyTextView newPrice;
 
+    @BindView(R.id.txt_product_brand)
+    PowerBuyTextView productBrand;
+
     public ProductListViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
@@ -74,6 +77,8 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);
+
+            productBrand.setText(extension.getBrand());
         }
 //        if (productList.getCustomAttributes() != null){
 //            for (CustomAttributes customAttributes : productList.getCustomAttributes()){

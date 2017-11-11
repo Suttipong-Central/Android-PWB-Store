@@ -28,7 +28,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
  */
 
 public class SearchActivity extends AppCompatActivity {
-    private static final String TAG = SearchActivity.class.getSimpleName();
+    public static final String TAG = SearchActivity.class.getSimpleName();
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;

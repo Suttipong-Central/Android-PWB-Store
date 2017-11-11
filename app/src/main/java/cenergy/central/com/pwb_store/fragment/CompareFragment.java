@@ -49,6 +49,11 @@ import retrofit2.Response;
 
 public class CompareFragment extends Fragment {
     private static final String TAG = CompareFragment.class.getSimpleName();
+    private static final String ARG_COMPARE_LIST = "ARG_COMPARE_LIST";
+    private static final String ARG_COMPARE_DAO = "ARG_COMPARE_DAO";
+    private static final String ARG_SKU = "ARG_SKU";
+    private static final String ARG_IS_DELETE = "ARG_IS_DELETE";
+    private static final String ARG_RESULTS = "ARG_RESULTS";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -371,6 +376,10 @@ public class CompareFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
+        outState.putParcelable(ARG_COMPARE_LIST, mCompareList);
+        outState.putParcelable(ARG_COMPARE_DAO, mCompareDao);
+        outState.putString(ARG_SKU, sku);
+        outState.putBoolean(ARG_IS_DELETE, isDelete);
     }
 
     /*
@@ -379,6 +388,10 @@ public class CompareFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
+        mCompareList = savedInstanceState.getParcelable(ARG_COMPARE_LIST);
+        mCompareDao = savedInstanceState.getParcelable(ARG_COMPARE_DAO);
+        sku = savedInstanceState.getString(ARG_SKU);
+        isDelete = savedInstanceState.getBoolean(ARG_IS_DELETE);
     }
 
     private void showProgressDialog() {

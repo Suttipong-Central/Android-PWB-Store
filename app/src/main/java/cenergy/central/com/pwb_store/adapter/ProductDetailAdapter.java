@@ -214,13 +214,13 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 //            mListViewType.add(productDetailImage);
 //        }
         //if (productDetail.getProductDetailImageItems() != null || productDetail.getProductImageList() != null) {
-        if (productDetail.getProductDetailImageItems() == null){
+        if (productDetail.getProductDetailImageItems() == null) {
             ProductDetailImage productDetailImage = productDetail.getExtensionProductDetail().getProductImageList();
             productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
             mListViewType.add(productDetailImage);
-        }else {
-            int i ;
-            for (i = 0; i < productDetail.getProductDetailImageItems().size(); i ++){
+        } else {
+            int i;
+            for (i = 0; i < productDetail.getProductDetailImageItems().size(); i++) {
                 Log.d(TAG, "total : " + i);
             }
             ProductDetailImage productDetailImage = new ProductDetailImage(i, productDetail.getProductDetailImageItems());
@@ -231,17 +231,18 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         productDetail.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
         mListViewType.add(productDetail);
 
-        if (productDetail.getExtensionProductDetail().getDescription() != null || productDetail.getReviewEN() != null){
+        if (productDetail.getExtensionProductDetail().getDescription() != null || productDetail.getReviewEN() != null) {
             ReviewDetailText reviewDetailText = new ReviewDetailText(productDetail.getExtensionProductDetail().getDescription(), ReviewDetailText.MODE_DESCRIPTION);
             reviewDetailText.setViewTypeId(VIEW_TYPE_ID_DETAIL_OVERVIEW);
             mListViewType.add(reviewDetailText);
-        }else {
+        } else {
             mListViewType.add(VIEW_TYPE_OVERVIEW);
         }
 
         SpecDao specDao = productDetail.getSpecDao();
         specDao.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);
         mListViewType.add(specDao);
+
         mListViewType.add(VIEW_TYPE_PROMOTION);
         mListViewType.add(VIEW_TYPE_DELIVERY);
 

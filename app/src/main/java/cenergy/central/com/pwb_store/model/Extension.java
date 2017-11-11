@@ -26,12 +26,16 @@ public class Extension implements IViewType,Parcelable {
     @SerializedName("by_store")
     @Expose
     private List<ProductListStore> mProductListStores = new ArrayList<>();
+//    @SerializedName("brand")
+//    @Expose
+    private String brand;
 
     protected Extension(Parcel in) {
         viewTypeId = in.readInt();
         mProductListStores = in.createTypedArrayList(ProductListStore.CREATOR);
         imageUrl = in.readString();
         description = in.readString();
+        brand = in.readString();
     }
 
 
@@ -41,6 +45,7 @@ public class Extension implements IViewType,Parcelable {
         dest.writeTypedList(mProductListStores);
         dest.writeString(imageUrl);
         dest.writeString(description);
+        dest.writeString(brand);
     }
 
 
@@ -93,5 +98,13 @@ public class Extension implements IViewType,Parcelable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 }
