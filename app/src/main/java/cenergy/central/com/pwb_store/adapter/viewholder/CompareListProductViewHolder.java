@@ -37,7 +37,7 @@ public class CompareListProductViewHolder extends RecyclerView.ViewHolder {
         mLayoutManager = new GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setReverseLayout(true);// Show Start Right.
         mRecyclerView.setHasFixedSize(true);
-        mCompareListAdapter.setproductCompareList(compareList.getProductCompareLists());
+        mCompareListAdapter.setProductCompareList(compareList,compareList.getProductCompareLists());
         mLayoutManager.setSpanSizeLookup(mCompareListAdapter.getSpanSize());
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
         mRecyclerView.setLayoutManager(mLayoutManager);

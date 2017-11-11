@@ -10,8 +10,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.SpecDao;
-import cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView;
 
 /**
  * Created by napabhat on 7/18/2017 AD.
@@ -22,13 +22,16 @@ public class ProductSpecViewHolder extends RecyclerView.ViewHolder implements Vi
     @BindView(R.id.layout_spec)
     LinearLayout mSpec;
 
+    private ProductDetail mProductDetail;
+
     public ProductSpecViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
     public void setViewHolder(SpecDao specDao){
-        mSpec.setTag(specDao);
+        itemView.setTag(specDao);
+        itemView.setOnClickListener(this);
         mSpec.setOnClickListener(this);
     }
 

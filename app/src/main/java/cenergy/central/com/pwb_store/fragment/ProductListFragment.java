@@ -119,7 +119,7 @@ public class ProductListFragment extends Fragment {
     // Page
     private boolean isLoadingMore;
     private int mPreviousTotal;
-    private int currentPage = 0;
+    private int currentPage;
     private int totalPage;
     private int totalItem;
     private Context mContext;
@@ -138,7 +138,7 @@ public class ProductListFragment extends Fragment {
                 mSortingList = mTempSortingList;
             }
             if (mProductFilterList != null) {
-                if (mProductFilterList.getProductFilterHeaders() != null){
+                if (mProductFilterList.getProductFilterHeaders() != null) {
                     for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()) {
                         productFilterHeader.setExpanded(false);
                     }
@@ -172,19 +172,18 @@ public class ProductListFragment extends Fragment {
                     && isStillHavePages()) {
 
                 //HttpManager.getInstance().getProductService().getProduct(departmentId, getNextPage(), PER_PAGE, storeId, sortName).enqueue(CALLBACK_PRODUCT);
-                if (isSearch == true){
-                    //showProgressDialog();
+                if (isSearch == true) {
                     HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
                             keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-                }else {
-                    //showProgressDialog();
+                } else {
                     HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                             "finset", PER_PAGE, getNextPage(), "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                    currentPage = getNextPage();
+                    if (mProductDao != null) {
+                        mProductDao.setCurrentPage(currentPage);
+                    }
                 }
-                currentPage = getNextPage();
-                if (mProductDao != null){
-                    mProductDao.setCurrentPage(currentPage);
-                }
+
                 isLoadingMore = true;
             }
         }
@@ -217,17 +216,25 @@ public class ProductListFragment extends Fragment {
                 mProductDao = response.body();
                 //TODO Test Total Page.
                 if (currentPage == 0) {
-                    mProductDao.setCurrentPage(1);
+                    currentPage = getNextPage();
+                    if (mProductDao != null) {
+                        mProductDao.setCurrentPage(currentPage);
+                    }
+                }else {
+                    currentPage = getNextPage();
+                    if (mProductDao != null) {
+                        mProductDao.setCurrentPage(currentPage);
+                    }
                 }
+
                 totalItem = mProductDao.getTotalElement();
                 totalPage = totalPageCal(totalItem);
-                Log.d(TAG, " totalPage :"+totalPage);
+                Log.d(TAG, " totalPage :" + totalPage);
                 if (mProductDao.getProductListList() != null) {
                     mProductListAdapter.setProduct(mProductDao);
-                } else if (mProductDao.getProductListList() == null){
+                } else if (mProductDao.getProductListList() == null) {
                     mProductListAdapter.setError();
-                }
-                else {
+                } else {
                     mProductListAdapter.setError();
                 }
                 setTextHeader(totalItem, title);
@@ -446,16 +453,16 @@ public class ProductListFragment extends Fragment {
         mRecyclerView.setAdapter(mProductListAdapter);
 
         if (savedInstanceState == null) {
-            if (isSearch == true){
+            if (isSearch == true) {
                 showProgressDialog();
                 HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container",
                         "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-            }else {
+            } else {
                 showProgressDialog();
                 HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                         "finset", PER_PAGE, 1, "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
-            if (mCategory != null){
+            if (mCategory != null) {
                 mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
             }
         } else {
@@ -476,6 +483,7 @@ public class ProductListFragment extends Fragment {
     }
 
     private void resetPage() {
+        // mProductDao.getProductListList().clear();
         currentPage = 0;
         totalPage = 1;
         isLoadingMore = true;
@@ -607,10 +615,10 @@ public class ProductListFragment extends Fragment {
         productCount.setText(name + " " + mContext.getString(R.string.filter_count, String.valueOf(total)));
     }
 
-    private int totalPageCal(int total){
+    private int totalPageCal(int total) {
         int num;
-        float x = ((float)total/20);
-        Log.d(TAG, "Calculator : "+ x);
+        float x = ((float) total / 20);
+        Log.d(TAG, "Calculator : " + x);
         num = (int) ceil(x);
         return num;
     }

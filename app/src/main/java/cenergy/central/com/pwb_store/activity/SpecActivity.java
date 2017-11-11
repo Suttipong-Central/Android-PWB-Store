@@ -12,8 +12,9 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.fragment.CompareFragment;
 import cenergy.central.com.pwb_store.fragment.SpecFragment;
+import cenergy.central.com.pwb_store.model.ProductDetail;
+import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
 import io.realm.Realm;
@@ -23,6 +24,8 @@ import io.realm.Realm;
  */
 
 public class SpecActivity extends AppCompatActivity implements PowerBuyCompareView.OnClickListener{
+    public static final String ARG_SPEC_DAO = "ARG_SPEC_DAO";
+    public static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -31,6 +34,8 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     PowerBuyCompareView mBuyCompareView;
 
     private Realm mRealm;
+    private SpecDao mSpecDao;
+    private ProductDetail mProductDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +44,27 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
 
         initView();
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container, SpecFragment.newInstance())
-                .commit();
+        Intent mIntent = getIntent();
+        Bundle extras = mIntent.getExtras();
+        if (extras != null) {
+            //extras.setClassLoader(SpecDao.class.getClassLoader());
+            mSpecDao = extras.getParcelable("ARG_SPEC_DAO");
+            //extras.setClassLoader(ProductDetail.class.getClassLoader());
+            //mProductDetail = extras.getParcelable("ARG_PRODUCT_DETAIL");
+        }
+        if (savedInstanceState != null){
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, SpecFragment.newInstance(mSpecDao, mProductDetail))
+                    .commit();
+        }
+ else {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, SpecFragment.newInstance(mSpecDao, mProductDetail))
+                    .commit();
+        }
+
     }
 
     private void initView() {
@@ -70,11 +92,13 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putParcelable(ARG_SPEC_DAO, mSpecDao);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        mSpecDao = savedInstanceState.getParcelable(ARG_SPEC_DAO);
     }
 
     @Override

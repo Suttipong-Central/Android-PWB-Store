@@ -37,7 +37,7 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.
     public void setViewHolder(Category category) {
         Glide.with(Contextor.getInstance().getContext())
                 //.load(category.getImageURL())
-                .load(Contextor.getInstance().getContext().getString(R.string.url_image) + category.getImageURL())
+                .load(category.getImageURL())
                 .placeholder(R.drawable.ic_circle_grey_placeholder)
                 .crossFade()
                 //.fitCenter()

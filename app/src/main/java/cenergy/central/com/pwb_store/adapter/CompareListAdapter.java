@@ -12,6 +12,7 @@ import java.util.List;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.CategoryFullFillerViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareProductViewHolder;
+import cenergy.central.com.pwb_store.model.CompareList;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.model.ViewType;
@@ -30,6 +31,7 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     //Data Members
     private Context mContext;
     private List<IViewType> mListViewType = new ArrayList<>();
+    private CompareList mCompareList;
     private final GridLayoutManager.SpanSizeLookup mSpanSize = new GridLayoutManager.SpanSizeLookup() {
         @Override
         public int getSpanSize(int position) {
@@ -77,7 +79,7 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (viewType instanceof ProductCompareList && holder instanceof CompareProductViewHolder) {
                     ProductCompareList productCompareList = (ProductCompareList) viewType;
                     CompareProductViewHolder compareProductViewHolder = (CompareProductViewHolder) holder;
-                    compareProductViewHolder.setViewHolder(productCompareList);
+                    compareProductViewHolder.setViewHolder(mCompareList,productCompareList);
                 }
                 break;
         }
@@ -93,11 +95,11 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mListViewType.get(position).getViewTypeId();
     }
 
-    public void setproductCompareList(List<ProductCompareList> productCompareList) {
-
-        for (ProductCompareList newproductCompareList : productCompareList){
-            newproductCompareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT);
-            mListViewType.add(newproductCompareList);
+    public void setProductCompareList(CompareList compareList, List<ProductCompareList> productCompareList) {
+        this.mCompareList = compareList;
+        for (ProductCompareList newProductCompareList : productCompareList){
+            newProductCompareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT);
+            mListViewType.add(newProductCompareList);
         }
 //
 //        if (productList.size() % 3 != 0) {
