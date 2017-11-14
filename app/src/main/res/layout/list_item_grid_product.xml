@@ -41,7 +41,7 @@
             android:weightSum="4">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/txt_product_name"
+                android:id="@+id/txt_product_brand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -58,7 +58,7 @@
                 tools:text="APPLE" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/txt_product_brand"
+                android:id="@+id/txt_product_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -69,10 +69,11 @@
                 android:maxLines="2"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/nameProductColor"
-                style="@style/textNameProduct"
+                style="@style/descriptionProduct"
                 android:padding="5dp"
                 app:typeFaceAsset="RobotoLight.ttf"
                 tools:text="APPLE" />
+
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_product_description"
