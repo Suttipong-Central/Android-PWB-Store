@@ -233,10 +233,15 @@ public class CompareFragment extends Fragment {
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
         if (savedInstanceState == null){
             sku = getSku();
-            Log.d(TAG, "skuString " + sku);
-            showProgressDialog();
-            HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
-                    UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
+            if (sku.equalsIgnoreCase("")){
+                sku = getSku();
+            }else {
+                showProgressDialog();
+                Log.d(TAG, "skuString " + sku);
+                HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+                        UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
+            }
+
         }else {
             mockData();
         }

@@ -32,6 +32,7 @@ public class HttpManagerMagento {
     private static final String CLIENT_APP_ID = "pwb-store";
     private static final String CLIENT_AUTH = "Basic cG93ZXJidXk6dWF0QHB3YiE=";
     private static final String CLIENT_MAGENTO = "Bearer ien5o19evja6n641s7s9kxrgpgy6tavt";
+    private static final String CLIENT_PRODUCT = "Bearer q8fx1239sgs79ssfn7opto3ivr8mmcqr";
 
     private static final String BASE_URL_MAGENTO = "http://api.powerbuy.world";
     private static final String BASE_URL_PRODUCT = "http://api.powerbuy.co.th";
@@ -57,7 +58,7 @@ public class HttpManagerMagento {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request().newBuilder()
-                                .addHeader(HEADER_AUTHORIZATION, CLIENT_MAGENTO)
+                                .addHeader(HEADER_AUTHORIZATION, CLIENT_PRODUCT)
                                 .build();
                         return chain.proceed(request);
                     }
@@ -66,7 +67,7 @@ public class HttpManagerMagento {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL_MAGENTO)
+                .baseUrl(BASE_URL_PRODUCT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build();

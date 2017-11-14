@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,12 +18,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.SpecDetailAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
+import cenergy.central.com.pwb_store.manager.bus.event.SpecAddToCompareBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
@@ -59,6 +62,29 @@ public class SpecFragment extends Fragment {
 
     public SpecFragment() {
         super();
+    }
+
+    @Subscribe
+    public void onEvent(SpecAddToCompareBus specAddToCompareBus){
+        if (specAddToCompareBus.isAdded() == true){
+            showProgressDialog();
+            long count = RealmController.with(this).getCount();
+            Log.d(TAG, "" + count);
+            if (count >= 4){
+                mProgressDialog.dismiss();
+                showAlertDialog(getContext().getResources().getString(R.string.alert_count));
+            }else {
+                String id = checkPrimary();
+                if (id.equalsIgnoreCase(mRealmProductDetail.getProductCode())){
+                    mProgressDialog.dismiss();
+                    showAlertDialog(getContext().getResources().getString(R.string.alert_compare)
+                            + "" + mRealmProductDetail.getProductName() + "" +
+                            getContext().getResources().getString(R.string.alert_compare_yes));
+                }else {
+                    insertCompare();
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unused")
@@ -260,18 +286,18 @@ public class SpecFragment extends Fragment {
         mRealmProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL);
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        EventBus.getDefault().register(this);
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        EventBus.getDefault().unregister(this);
-//        //mRealm.close();
-//        super.onDetach();
-//    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        EventBus.getDefault().unregister(this);
+        //mRealm.close();
+        super.onDetach();
+    }
 
     private void showAlertDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)

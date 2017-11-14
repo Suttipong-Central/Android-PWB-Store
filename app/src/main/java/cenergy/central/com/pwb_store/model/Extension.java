@@ -26,8 +26,8 @@ public class Extension implements IViewType,Parcelable {
     @SerializedName("by_store")
     @Expose
     private List<ProductListStore> mProductListStores = new ArrayList<>();
-//    @SerializedName("brand")
-//    @Expose
+    @SerializedName("brand")
+    @Expose
     private String brand;
 
     protected Extension(Parcel in) {

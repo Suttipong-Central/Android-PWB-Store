@@ -255,6 +255,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     public void onEvent(SpecDaoBus specDaoBus){
         Intent intent = new Intent(this, SpecActivity.class);
         intent.putExtra(SpecActivity.ARG_SPEC_DAO, specDaoBus.getSpecDao());
+        intent.putExtra(SpecActivity.ARG_PRODUCT_ID, productId);
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(specDaoBus.getView(), 0, 0, specDaoBus.getView().getWidth(), specDaoBus.getView().getHeight())
@@ -300,7 +301,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         if (savedInstanceState == null){
             if (!isBarcode){
                 showProgressDialog();
-                HttpManagerMagento.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(), getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
+                HttpManagerMagento.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+                        getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
             }else {
                 showProgressDialog();
                 HttpManagerMagento.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
@@ -545,6 +547,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        long count = RealmController.with(this).getCount();
+        mBuyCompareView.updateCartCount((int) count);
     }
 
     @Override
