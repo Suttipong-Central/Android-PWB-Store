@@ -101,6 +101,8 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
                     mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
                 }
 
+                mRegular.setText("Regular Price : " +productDetailStore.getDisplayOldPrice(unit));
+
                 if (Integer.parseInt(productDetailStore.getStockAvailable()) > 0){
                     mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
                 }else {

@@ -52,7 +52,7 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
             if (productDetailImageItem.isSelected()) {
                 Glide.with(Contextor.getInstance().getContext())
                         //.load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
-                        .load(Contextor.getInstance().getContext().getString(R.string.url_image)+productDetailImageItem.getImgUrl())
+                        .load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
                         //.error(R.drawable.ic_error_placeholder)
                         .placeholder(R.drawable.ic_pwb_logo_detail)
                         .crossFade()

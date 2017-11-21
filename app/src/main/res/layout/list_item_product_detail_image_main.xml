@@ -43,6 +43,8 @@
                 android:layout_height="300dp"
                 android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
                 tools:src="@mipmap/ic_launcher"/>
 
         </RelativeLayout>
@@ -50,7 +52,8 @@
         <FrameLayout
             android:id="@+id/shop_container"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="wrap_content"
+            android:padding="15dp">
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/view_pager_image_detail"

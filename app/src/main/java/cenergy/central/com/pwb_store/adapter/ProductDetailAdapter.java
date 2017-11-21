@@ -216,8 +216,17 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         //if (productDetail.getProductDetailImageItems() != null || productDetail.getProductImageList() != null) {
         if (productDetail.getProductDetailImageItems() == null) {
             ProductDetailImage productDetailImage = productDetail.getExtensionProductDetail().getProductImageList();
+//            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+//            mListViewType.add(productDetailImage);
+
+            int i;
+            for (i = 0; i < productDetailImage.getProductDetailImageItems().size(); i++) {
+                Log.d(TAG, "total : " + i);
+            }
+            ProductDetailImage productDetailImages = new ProductDetailImage(i, productDetailImage.getProductDetailImageItems());
             productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
-            mListViewType.add(productDetailImage);
+            mListViewType.add(productDetailImages);
+
         } else {
             int i;
             for (i = 0; i < productDetail.getProductDetailImageItems().size(); i++) {
