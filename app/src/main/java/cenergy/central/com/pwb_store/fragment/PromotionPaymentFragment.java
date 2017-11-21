@@ -88,7 +88,13 @@ public class PromotionPaymentFragment extends Fragment {
         if (mProductDetail != null){
             ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
             if (extensionProductDetail.getPromotionPaymentItems() != null){
-                mPromotionPayment = new PromotionPayment(extensionProductDetail.getPromotionPaymentItems());
+                if (extensionProductDetail.getPromotionPaymentItems().size() == 0){
+                    List<PromotionPaymentItem> promotionPaymentItems = new ArrayList<>();
+                    promotionPaymentItems.add(new PromotionPaymentItem("ไม่พบข้อมูลการจ่ายเงิน","",""));
+                    mPromotionPayment = new PromotionPayment(promotionPaymentItems);
+                }else {
+                    mPromotionPayment = new PromotionPayment(extensionProductDetail.getPromotionPaymentItems());
+                }
             }else {
                 mockData();
             }

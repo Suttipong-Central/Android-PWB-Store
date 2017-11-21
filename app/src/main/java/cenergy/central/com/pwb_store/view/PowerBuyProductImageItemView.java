@@ -142,7 +142,7 @@ public class PowerBuyProductImageItemView extends FrameLayout {
         if (productDetailImageItem != null) {
 
             Glide.with(Contextor.getInstance().getContext())
-                    .load(productDetailImageItem.getImgUrl())
+                    .load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
 //                    .error(R.drawable.ic_error_placeholder)
 //                    .placeholder(R.drawable.ic_banner_placeholder)
                     .crossFade()

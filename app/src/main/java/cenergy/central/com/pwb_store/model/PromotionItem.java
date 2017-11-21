@@ -26,11 +26,11 @@ public class PromotionItem implements IViewType,Parcelable {
     private String endDate;
     private PromotionDetailText mPromotionDetailText;
 
-    public PromotionItem(String detail,String startDate, String endDate, PromotionDetailText promotionDetailText){
+    public PromotionItem(String detail,String startDate, String endDate){
         this.detail = detail;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.mPromotionDetailText = promotionDetailText;
+        //this.mPromotionDetailText = promotionDetailText;
     }
 
     public static final Creator<PromotionItem> CREATOR = new Creator<PromotionItem>() {

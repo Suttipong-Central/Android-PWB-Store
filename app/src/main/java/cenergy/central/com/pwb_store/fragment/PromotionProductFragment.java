@@ -78,7 +78,13 @@ public class PromotionProductFragment extends Fragment {
         if (mProductDetail != null){
             ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
             if (extensionProductDetail.getPromotionItems() != null){
-                mPromotion = new Promotion(extensionProductDetail.getPromotionItems());
+                if (extensionProductDetail.getPromotionItems().size() == 0){
+                    List<PromotionItem> promotionItems = new ArrayList<>();
+                    promotionItems.add(new PromotionItem("ไม่พบข้อมูลโปรโมชั่น", "", ""));
+                    mPromotion = new Promotion(promotionItems);
+                }else {
+                    mPromotion = new Promotion(extensionProductDetail.getPromotionItems());
+                }
             }else {
                 mockData();
             }

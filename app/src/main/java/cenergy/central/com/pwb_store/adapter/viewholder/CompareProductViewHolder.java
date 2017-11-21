@@ -14,6 +14,7 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
+import cenergy.central.com.pwb_store.manager.bus.event.CompareDetailBus;
 import cenergy.central.com.pwb_store.model.CompareList;
 import cenergy.central.com.pwb_store.model.CompareListStore;
 import cenergy.central.com.pwb_store.model.ExtensionCompare;
@@ -89,7 +90,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
         imgCancel.setOnClickListener(this);
         imgCancel.setTag(productCompareList);
         cardLayout.setOnClickListener(this);
-        //cardLayout.setTag();
+        cardLayout.setTag(productCompareList);
     }
 
     @Override
@@ -97,6 +98,9 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
         if (v == imgCancel) {
             ProductCompareList productCompareList = (ProductCompareList) imgCancel.getTag();
             EventBus.getDefault().post(new CompareDeleteBus(productCompareList, true));
+        }else if (v == cardLayout){
+            ProductCompareList productCompareList = (ProductCompareList) cardLayout.getTag();
+            EventBus.getDefault().post(new CompareDetailBus(productCompareList, true, v));
         }
     }
 }
