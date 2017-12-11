@@ -110,13 +110,13 @@
     java.lang.Object readResolve();
 }
 
--keep class org.apache.http.** { *; }
--keep interface org.apache.http.** { *; }
--keep class * implements org.apache.http{*;}
--keep class org.apache.avalon.framework.logger.** { *; }
--dontwarn android.net.http.AndroidHttpClient
--dontwarn org.apache.http.**
--dontwarn org.apache.commons.**
+#-keep class org.apache.http.** { *; }
+#-keep interface org.apache.http.** { *; }
+#-keep class * implements org.apache.http{*;}
+#-keep class org.apache.avalon.framework.logger.** { *; }
+#-dontwarn android.net.http.AndroidHttpClient
+#-dontwarn org.apache.http.**
+#-dontwarn org.apache.commons.**
 
 #EventBus
 -keep class org.greenrobot.** {*;}
@@ -169,3 +169,10 @@
 -keep class io.realm.internal.Keep.** { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+
+-ignorewarnings
+
+-keep class * {
+    public private *;
+}
+
