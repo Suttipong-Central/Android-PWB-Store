@@ -10,6 +10,7 @@ import com.securepreferences.SecurePreferences;
 
 import java.util.UUID;
 
+import cenergy.central.com.pwb_store.model.StaffLogin;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
 
@@ -48,6 +49,7 @@ public class UserInfoManager {
     private String imei;
     private boolean isToken;
     private StoreList mStoreList;
+    private StaffLogin mStaffLogin;
 
     private UserInfoManager() {
         mContext = Contextor.getInstance().getContext();
@@ -291,6 +293,7 @@ public class UserInfoManager {
         editor.putString(KEY_IMEI, imei);
         editor.apply();
     }
+
 
 
 }

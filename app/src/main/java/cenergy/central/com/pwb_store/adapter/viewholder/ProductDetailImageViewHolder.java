@@ -41,7 +41,8 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
     public void setViewHolder(ProductDetailImage productDetailImage, FragmentManager fragmentManager){
 
         Glide.with(Contextor.getInstance().getContext())
-                .load("http://api.powerbuy.world/media/catalog/product"+productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
+                .load(productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
+                //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
                 //.error(R.drawable.ic_error_placeholder)
                 .placeholder(R.drawable.ic_pwb_logo_detail)
                 .crossFade()
@@ -51,8 +52,8 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
         for (ProductDetailImageItem productDetailImageItem : productDetailImage.getProductDetailImageItems()) {
             if (productDetailImageItem.isSelected()) {
                 Glide.with(Contextor.getInstance().getContext())
-                        //.load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
-                        .load("http://api.powerbuy.world/media/catalog/product"+productDetailImageItem.getImgUrl())
+                        .load(productDetailImageItem.getImgUrl())
+                        //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+productDetailImageItem.getImgUrl())
                         //.error(R.drawable.ic_error_placeholder)
                         .placeholder(R.drawable.ic_pwb_logo_detail)
                         .crossFade()

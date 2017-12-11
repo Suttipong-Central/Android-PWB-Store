@@ -186,13 +186,18 @@ public class ProductDetailFragment extends Fragment {
         //mRealm = Realm.getDefaultInstance();
 
         mAdapter = new ProductDetailAdapter(getContext(), getChildFragmentManager());
+        mAdapter.showLoading();
         mLayoutManager = new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new ProductGridSpacesItemDecoration(getContext(), R.dimen.product_item_spacing));
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setProductDetail(mProductDetail);
+        if (mProductDetail == null){
+            mAdapter.setError();
+        }else {
+            mAdapter.setProductDetail(mProductDetail);
+        }
 
         //mAdapter.setProductRecommend(mRecommend);
 

@@ -79,5 +79,6 @@ public interface ProductService {
             @Query("searchCriteria[filterGroups][0][filters][0][value]") String keyWord,
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage,
-            @Query("fields") String fields);
+            @Query("fields") String fields,
+            @Query("branch_id") String branchId);
 }

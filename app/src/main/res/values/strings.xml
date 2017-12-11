@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PowerBuy Store</string>
+    <!--<string name="app_name">PowerBuy Store</string>-->
 
     <string name="home" translatable="false">Home</string>
     <string name="home_tv" translatable="false">TV &amp; Home Entertainment</string>
@@ -95,4 +95,13 @@
     <string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>
     <string name="product_detail">id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,specifications,promotion,payment,brand]</string>
     <string name="url_image">https://prod.powerbuy.co.th/media/catalog/product</string>
+
+    <!--Login-->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="user">PwbUserName</string>
+    <string name="passwordDetail">Pwb1199</string>
+    <string name="error">พบข้อผิดพลาด</string>
+    <string name="error_login">Username/Password ไม่ถูกต้อง</string>
 </resources>

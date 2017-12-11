@@ -19,6 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -33,6 +37,7 @@ import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
@@ -45,7 +50,6 @@ import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
-import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
@@ -63,7 +67,7 @@ import static java.lang.Math.ceil;
  * Created by napabhat on 7/6/2017 AD.
  */
 
-public class ProductListFragment extends Fragment {
+public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks {
     private static final String TAG = ProductListFragment.class.getSimpleName();
     private static final String ARG_TITLE = "ARG_TITLE";
     private static final String ARG_SEARCH = "ARG_SEARCH";
@@ -73,14 +77,15 @@ public class ProductListFragment extends Fragment {
     private static final String ARG_PRODUCT_FILTER = "ARG_PRODUCT_FILTER";
     private static final String ARG_PRODUCT_FILTER_TEMP = "ARG_PRODUCT_FILTER_TEMP";
     private static final String ARG_SORT_NAME = "ARG_SORT_NAME";
+    private static final String ARG_SORT_TYPE = "ARG_SORT_TYPE";
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
     private static final String ARG_PAGE = "ARG_PAGE";
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
 
     //View Members
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view_list)
+    ObservableRecyclerView mRecyclerView;
 
     @BindView(R.id.txt_title_product)
     PowerBuyTextView productTitle;
@@ -124,6 +129,8 @@ public class ProductListFragment extends Fragment {
     private int totalItem;
     private Context mContext;
     private String keyWord;
+    private String sortType;
+    private List<ProductDao> mProductDaoList = new ArrayList<>();
 
     public ProductListFragment() {
         super();
@@ -153,86 +160,97 @@ public class ProductListFragment extends Fragment {
         }
     };
 
-    //Listeners
-    final RecyclerView.OnScrollListener SCROLL_LISTENER = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            int totalItemCount = mLayoutManger.getItemCount();
-            int visibleItemCount = mLayoutManger.getChildCount();
-            int firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition();
 
-            if (isLoadingMore && totalItemCount > mPreviousTotal) {
-                isLoadingMore = false;
-                mPreviousTotal = totalItemCount;
-            }
-            int visibleThreshold = 10;
-            if (!isLoadingMore
-                    && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
-                    && isStillHavePages()) {
+//    //Listeners
+//    final RecyclerView.OnScrollListener SCROLL_LISTENER = new RecyclerView.OnScrollListener() {
+//        @Override
+//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//            super.onScrolled(recyclerView, dx, dy);
+//            int totalItemCount = mLayoutManger.getItemCount();
+//            int visibleItemCount = mLayoutManger.getChildCount();
+//            int firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition();
+//
+//            if (isLoadingMore && totalItemCount > mPreviousTotal) {
+//                isLoadingMore = false;
+//                mPreviousTotal = totalItemCount;
+//            }
+//            int visibleThreshold = 10;
+//            if (!isLoadingMore
+//                    && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
+//                    && isStillHavePages()) {
+//
+//                if (isSearch == true) {
+//                    HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
+//                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
+//                } else {
+//                    HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+//                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+//                }
+//
+//                isLoadingMore = true;
+//            }
+//        }
+//    };
 
-                //HttpManager.getInstance().getProductService().getProduct(departmentId, getNextPage(), PER_PAGE, storeId, sortName).enqueue(CALLBACK_PRODUCT);
-                if (isSearch == true) {
-                    HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
-                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-                } else {
-                    HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                            "finset", PER_PAGE, getNextPage(), "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-                    currentPage = getNextPage();
-                    if (mProductDao != null) {
-                        mProductDao.setCurrentPage(currentPage);
-                    }
-                }
+final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        super.onScrolled(recyclerView, dx, dy);
+        int totalItemCount = mLayoutManger.getItemCount();
+        int visibleItemCount = mLayoutManger.getChildCount();
+        int firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition();
 
-                isLoadingMore = true;
-            }
+        if (isLoadingMore && totalItemCount > mPreviousTotal) {
+            isLoadingMore = false;
+            mPreviousTotal = totalItemCount;
         }
-    };
+        int visibleThreshold = 10;
+        if (!isLoadingMore
+                && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
+                && isStillHavePages()) {
 
-
-    final Callback<List<ProductList>> CALLBACK_PRODUCT_LIST = new Callback<List<ProductList>>() {
-        @Override
-        public void onResponse(Call<List<ProductList>> call, Response<List<ProductList>> response) {
-            if (response.isSuccessful()) {
-                mProductDao = new ProductDao(response.body());
-                mProductListAdapter.setProduct(mProductDao);
-                mProgressDialog.dismiss();
+            if (isSearch == true) {
+                HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
+                        keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
             } else {
-                mProductListAdapter.setError();
+                HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                        "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
-        }
 
-        @Override
-        public void onFailure(Call<List<ProductList>> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
+            isLoadingMore = true;
         }
-    };
-
+    }
+};
 
     final Callback<ProductDao> CALLBACK_PRODUCT = new Callback<ProductDao>() {
         @Override
         public void onResponse(Call<ProductDao> call, Response<ProductDao> response) {
             if (response.isSuccessful()) {
-                mProductDao = response.body();
+                //mProductDao = response.body();
+                ProductDao productDao = response.body();
                 //TODO Test Total Page.
-                if (currentPage == 0) {
-                    currentPage = getNextPage();
-                    if (mProductDao != null) {
-                        mProductDao.setCurrentPage(currentPage);
-                    }
-                }else {
-                    currentPage = getNextPage();
-                    if (mProductDao != null) {
-                        mProductDao.setCurrentPage(currentPage);
-                    }
-                }
+//                if (currentPage == 0) {
+//                    currentPage = getNextPage();
+//                    if (productDao != null) {
+//                        productDao.setCurrentPage(currentPage);
+//                    }
+//                } else {
+//                    currentPage = getNextPage();
+//                    if (productDao != null) {
+//                        productDao.setCurrentPage(currentPage);
+//                    }
+//                }
 
-                totalItem = mProductDao.getTotalElement();
+                totalItem = productDao.getTotalElement();
                 totalPage = totalPageCal(totalItem);
                 Log.d(TAG, " totalPage :" + totalPage);
-                if (mProductDao.getProductListList() != null) {
-                    mProductListAdapter.setProduct(mProductDao);
-                } else if (mProductDao.getProductListList() == null) {
+                if (productDao.getProductListList() != null) {
+                    currentPage = getNextPage();
+                    if (productDao != null) {
+                        productDao.setCurrentPage(currentPage);
+                    }
+                    mProductListAdapter.setProduct(productDao);
+                } else if (productDao.getProductListList() == null) {
                     mProductListAdapter.setError();
                 } else {
                     mProductListAdapter.setError();
@@ -284,7 +302,7 @@ public class ProductListFragment extends Fragment {
         showProgressDialog();
         isDoneFilter = true;
         ProductFilterHeader productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
-        callFilter(productFilterHeader.getId(), sortName);
+        callFilter(productFilterHeader.getId(), sortName, sortType);
         title = productFilterHeader.getName();
         departmentId = productFilterHeader.getId();
         mPowerBuyPopupWindow.setFilterItem(productFilterHeaderBus.getProductFilterHeader());
@@ -296,7 +314,7 @@ public class ProductListFragment extends Fragment {
         showProgressDialog();
         isDoneFilter = true;
         ProductFilterItem productFilterItem = productFilterItemBus.getProductFilterItem();
-        callFilter(productFilterItem.getId(), sortName);
+        callFilter(productFilterItem.getId(), sortName, sortType);
         title = productFilterItem.getFilterName();
         departmentId = productFilterItem.getId();
         mPowerBuyPopupWindow.updateSingleProductFilterItem(productFilterItem);
@@ -313,7 +331,7 @@ public class ProductListFragment extends Fragment {
         showProgressDialog();
         SortingItem sortingItem = sortingItemBus.getSortingItem();
         isDoneFilter = true;
-        callFilter(departmentId, sortingItem.getSlug());
+        callFilter(departmentId, sortingItem.getSlug(), sortingItem.getValue());
         mPowerBuyPopupWindow.updateSingleSortingItem(sortingItemBus.getSortingItem());
     }
 
@@ -344,7 +362,7 @@ public class ProductListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(savedInstanceState);
+        init();
 
         if (savedInstanceState != null)
             onRestoreInstanceState(savedInstanceState);
@@ -355,10 +373,11 @@ public class ProductListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_product_list, container, false);
         initInstances(rootView, savedInstanceState);
+        resetPage();
         return rootView;
     }
 
-    private void init(Bundle savedInstanceState) {
+    private void init() {
         // Init Fragment level's variable(s) here
         if (getArguments() != null) {
             title = getArguments().getString(ARG_TITLE);
@@ -414,12 +433,12 @@ public class ProductListFragment extends Fragment {
 
         // sorting
         List<SortingItem> sortingItems = new ArrayList<>();
-        sortingItems.add(new SortingItem(1, "Price : Low to High", "ASC", "ASC", "1", false));
-        sortingItems.add(new SortingItem(2, "Price : High to Low", "DESC", "DESC", "2", false));
-        sortingItems.add(new SortingItem(3, "Brand : Name(A-Z)", "ASC", "ASC", "3", false));
-        sortingItems.add(new SortingItem(4, "Brand : Name(Z-A)", "DESC", "DESC", "4", false));
-        sortingItems.add(new SortingItem(5, "Discount : Low to High", "ASC", "ASC", "5", false));
-        sortingItems.add(new SortingItem(6, "Discount : High to Low", "DESC", "DESC", "6", false));
+        sortingItems.add(new SortingItem(1, "Price : Low to High", "price", "ASC", "1", false));
+        sortingItems.add(new SortingItem(2, "Price : High to Low", "price", "DESC", "2", false));
+        sortingItems.add(new SortingItem(3, "Brand : Name(A-Z)", "brand", "ASC", "3", false));
+        sortingItems.add(new SortingItem(4, "Brand : Name(Z-A)", "brand", "DESC", "4", false));
+//        sortingItems.add(new SortingItem(5, "Discount : Low to High", "ASC", "ASC", "5", false));
+//        sortingItems.add(new SortingItem(6, "Discount : High to Low", "DESC", "DESC", "6", false));
 
         List<SortingHeader> sortingHeaders = new ArrayList<>();
         sortingHeaders.add(new SortingHeader("0", "Sorting", "sorting", "single", sortingItems));
@@ -450,23 +469,29 @@ public class ProductListFragment extends Fragment {
         mLayoutManger.setSpanSizeLookup(mProductListAdapter.getSpanSize());
         mRecyclerView.setLayoutManager(mLayoutManger);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
+        mRecyclerView.setScrollViewCallbacks(this);
         mRecyclerView.setAdapter(mProductListAdapter);
 
         if (savedInstanceState == null) {
             if (isSearch == true) {
                 showProgressDialog();
                 HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container",
-                        "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                        "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
             } else {
                 showProgressDialog();
                 HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                        "finset", PER_PAGE, 1, "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                        "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
             if (mCategory != null) {
                 mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
             }
-        } else {
-            mProductListAdapter.setProduct(mProductDao);
+        }
+////        else {
+////            mProductListAdapter.setProduct(mProductDao);
+////        }
+
+        if (mCategory != null) {
+            mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
         }
 
         int scrollPosition = 0;
@@ -477,9 +502,9 @@ public class ProductListFragment extends Fragment {
                     .findFirstCompletelyVisibleItemPosition();
         }
         mRecyclerView.scrollToPosition(scrollPosition);
-        mRecyclerView.addOnScrollListener(SCROLL_LISTENER);
+        mRecyclerView.addOnScrollListener(SCROLL);
 
-        Log.d(TAG, "start Page" + isDoneFilter);
+        //Log.d(TAG, "start Page" + isDoneFilter);
     }
 
     private void resetPage() {
@@ -488,7 +513,11 @@ public class ProductListFragment extends Fragment {
         totalPage = 1;
         isLoadingMore = true;
         mPreviousTotal = 0;
-        sortName = "ASC";
+        sortName = "name";
+        sortType = "ASC";
+        if (mProductDao != null){
+            mProductDao.getProductListList().clear();
+        }
     }
 
     private int getNextPage() {
@@ -545,6 +574,7 @@ public class ProductListFragment extends Fragment {
         outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
         outState.putString(ARG_DEPARTMENT_ID, departmentId);
         outState.putString(ARG_SORT_NAME, sortName);
+        outState.putString(ARG_SORT_TYPE, sortType);
         outState.putBoolean(ARG_IS_DONE, isDoneFilter);
         outState.putString(ARG_TITLE, title);
         outState.putInt(ARG_PAGE, currentPage);
@@ -563,6 +593,7 @@ public class ProductListFragment extends Fragment {
         mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
         departmentId = savedInstanceState.getString(ARG_DEPARTMENT_ID);
         sortName = savedInstanceState.getString(ARG_SORT_NAME);
+        sortType = savedInstanceState.getString(ARG_SORT_TYPE);
         isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE);
         title = savedInstanceState.getString(ARG_TITLE);
         currentPage = savedInstanceState.getInt(ARG_PAGE);
@@ -605,10 +636,10 @@ public class ProductListFragment extends Fragment {
         mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
     }
 
-    private void callFilter(String departmentId, String sortName) {
+    private void callFilter(String departmentId, String sortName, String sortType) {
         resetPage();
         HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                "finset", PER_PAGE, 1, "name", sortName, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
     }
 
     private void setTextHeader(int total, String name) {
@@ -623,4 +654,18 @@ public class ProductListFragment extends Fragment {
         return num;
     }
 
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+
+    }
 }

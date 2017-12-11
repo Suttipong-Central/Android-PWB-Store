@@ -27,6 +27,10 @@ public class ExtensionCompare implements IViewType,Parcelable {
     @SerializedName("by_store")
     @Expose
     private List<CompareListStore> mCompareListStores = new ArrayList<>();
+    @SerializedName("brand")
+    @Expose
+    private String brand;
+
 
     protected ExtensionCompare(Parcel in) {
         viewTypeId = in.readInt();
@@ -86,5 +90,13 @@ public class ExtensionCompare implements IViewType,Parcelable {
 
     public void setCompareListStores(List<CompareListStore> compareListStores) {
         mCompareListStores = compareListStores;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 }
