@@ -59,18 +59,17 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     public void setViewHolder(CompareList compareList, ProductCompareList productCompareList) {
         this.mCompareList = compareList;
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
-
-        productName.setText(productCompareList.getName());
         ExtensionCompare extensionCompare = productCompareList.getExtensionCompare();
         if (extensionCompare != null){
             Glide.with(Contextor.getInstance().getContext())
-                    .load(Contextor.getInstance().getContext().getString(R.string.url_image) + extensionCompare.getImageUrl())
+                    .load(extensionCompare.getImageUrl())
+                    //.load(Contextor.getInstance().getContext().getString(R.string.url_image) + extensionCompare.getImageUrl())
                     .placeholder(R.drawable.ic_pwb_logo_detail)
                     .crossFade()
                     .fitCenter()
                     .into(imgProduct);
 
-            productDescription.setText(extensionCompare.getDescription());
+            productDescription.setText(productCompareList.getName());
             for (CompareListStore compareListStore : extensionCompare.getCompareListStores()){
                 double price = Double.parseDouble(compareListStore.getPrice());
                 double specialPrice = Double.parseDouble(compareListStore.getSpecialPrice());
@@ -83,7 +82,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
                     newPrice.setText(compareListStore.getDisplayNewPrice(unit));
                 }
             }
-
+            productName.setText(extensionCompare.getBrand());
         }
 
         //itemView.setOnClickListener(this);

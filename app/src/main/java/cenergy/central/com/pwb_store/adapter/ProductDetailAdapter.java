@@ -18,6 +18,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.ProductDetailImageViewHo
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductOverviewViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductPromotionViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductSpecViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
@@ -41,17 +42,20 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final int VIEW_TYPE_ID_DETAIL_PROMOTION = 3;
     private static final int VIEW_TYPE_ID_DETAIL_SPEC = 4;
     private static final int VIEW_TYPE_ID_DETAIL_DELIVERY = 5;
+    private static final int VIEW_TYPE_ID_RESULT = 6;
     //private static final int VIEW_TYPE_ID_RECOMMEND_ITEM = 6;
 
     private static final ViewType VIEW_TYPE_OVERVIEW = new ViewType(VIEW_TYPE_ID_DETAIL_OVERVIEW);
     private static final ViewType VIEW_TYPE_PROMOTION = new ViewType(VIEW_TYPE_ID_DETAIL_PROMOTION);
     //private static final ViewType VIEW_TYPE_SPEC = new ViewType(VIEW_TYPE_ID_DETAIL_SPEC);
     private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DETAIL_DELIVERY);
+    private static final ViewType VIEW_TYPE_RESULT = new ViewType(VIEW_TYPE_ID_RESULT);
 
     //Data Members
     private Context mContext;
     private FragmentManager mFragmentManager;
     private ProductDetail mProductDetail;
+    private boolean isLoadingShow = false;
     private List<IViewType> mListViewType = new ArrayList<>();
     private final GridLayoutManager.SpanSizeLookup mSpanSize = new GridLayoutManager.SpanSizeLookup() {
         @Override
@@ -71,6 +75,8 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                     return 7;
 //                case VIEW_TYPE_ID_RECOMMEND_ITEM:
 //                    return 7;
+                case VIEW_TYPE_ID_RESULT:
+                    return 7;
                 default:
                     return 1;
             }
@@ -121,6 +127,13 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                         LayoutInflater
                                 .from(parent.getContext())
                                 .inflate(R.layout.list_item_product_detail_delivery, parent, false)
+                );
+
+            case VIEW_TYPE_ID_RESULT:
+                return new SearchResultViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_loading_result, parent, false)
                 );
 
 //            case VIEW_TYPE_ID_RECOMMEND_ITEM:
@@ -306,6 +319,29 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             mListViewType.set(adapterItem, productDetail);
             notifyItemChanged(adapterItem);
 
+        }
+    }
+
+    public void showLoading() {
+        //mListViewType.add(VIEW_TYPE_LOADING);
+        isLoadingShow = true;
+        //notifyItemInserted(0);
+    }
+
+    public void setError() {
+        if (isLoadingShow) {
+            isLoadingShow = false;
+            mListViewType.clear();
+            notifyDataSetChanged();
+            mListViewType.add(VIEW_TYPE_RESULT);
+            notifyItemInserted(0);
+            notifyItemRangeInserted(0, mListViewType.size());
+        }else {
+            mListViewType.clear();
+            notifyDataSetChanged();
+            mListViewType.add(VIEW_TYPE_RESULT);
+            notifyItemInserted(0);
+            notifyItemRangeInserted(0, mListViewType.size());
         }
     }
 

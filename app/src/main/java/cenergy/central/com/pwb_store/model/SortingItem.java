@@ -106,8 +106,8 @@ public class SortingItem implements IViewType, Parcelable {
     }
 
     public String getSlug() {
-        if (!TextUtils.isEmpty(value)) {
-            return value;
+        if (!TextUtils.isEmpty(slug)) {
+            return slug;
         }
 
         return slug;

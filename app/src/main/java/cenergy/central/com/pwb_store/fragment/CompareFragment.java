@@ -132,10 +132,10 @@ public class CompareFragment extends Fragment {
     public void onEvent(CompareDeleteBus compareDeleteBus){
         isDelete = true;
         ProductCompareList productList = compareDeleteBus.getProductCompareList();
-        Log.d(TAG, "id" +productList.getProductId());
         results = RealmController.with(this).deletedCompare(productList.getProductId());
-        showProgressDialog();
         sku = getSku();
+        Log.d(TAG, "id" +productList.getProductId());
+        showProgressDialog();
         HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
                 UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
 //        List<ProductCompareList> mProductCompareListList = new ArrayList<>();

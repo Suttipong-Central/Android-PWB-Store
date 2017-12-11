@@ -206,7 +206,11 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                             .commit();
                     mProgressDialog.dismiss();
                 }else {
-                    MockData();
+                    //MockData();
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction
+                            .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
+                            .commit();
                     mProgressDialog.dismiss();
                 }
             }else {
@@ -253,13 +257,18 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     @Subscribe
     public void onEvent(SpecDaoBus specDaoBus){
-        Intent intent = new Intent(this, SpecActivity.class);
-        intent.putExtra(SpecActivity.ARG_SPEC_DAO, specDaoBus.getSpecDao());
-        intent.putExtra(SpecActivity.ARG_PRODUCT_ID, productId);
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(specDaoBus.getView(), 0, 0, specDaoBus.getView().getWidth(), specDaoBus.getView().getHeight())
-                        .toBundle());
+        if (specDaoBus.getSpecDao().getSpecItems().size() == 0){
+            showAlertDialog("ไม่มีข้อมูล", false);
+        }else {
+            Intent intent = new Intent(this, SpecActivity.class);
+            intent.putExtra(SpecActivity.ARG_SPEC_DAO, specDaoBus.getSpecDao());
+            intent.putExtra(SpecActivity.ARG_PRODUCT_ID, productId);
+            ActivityCompat.startActivity(this, intent,
+                    ActivityOptionsCompat
+                            .makeScaleUpAnimation(specDaoBus.getView(), 0, 0, specDaoBus.getView().getWidth(), specDaoBus.getView().getHeight())
+                            .toBundle());
+        }
+
     }
 
     @Subscribe

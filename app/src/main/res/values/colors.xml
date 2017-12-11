@@ -31,4 +31,5 @@
 
     <color name="lightgray">#e7e7e7</color>
     <color name="lightgray02">#bfbfbf</color>
+    <color name="passwordIconColor">#FF9A9A9A</color>
 </resources>

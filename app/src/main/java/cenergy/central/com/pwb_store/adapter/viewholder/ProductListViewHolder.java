@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -56,23 +57,29 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         if (extension != null){
 
             for (ProductListStore productListStore : extension.getProductListStores()){
-                float price = Float.parseFloat(productListStore.getPrice());
-                float specialPrice = Float.parseFloat(productListStore.getSpecialPrice());
-                if (price <= specialPrice){
+                Log.d(TAG, "price : " + productListStore.getPrice());
+                Log.d(TAG, "specialPrice : " + productListStore.getSpecialPrice());
+                oldPrice.setText("");
+                oldPrice.setEnableStrikeThrough(false);
+                newPrice.setText("");
+                if (productListStore.getPrice().equals(productListStore.getSpecialPrice())){
+                    Log.d(TAG, "In if");
                     oldPrice.setText(productListStore.getDisplayOldPrice(unit));
                     newPrice.setText("");
                 }else {
+                    Log.d(TAG, "In else");
                     oldPrice.setText(productListStore.getDisplayOldPrice(unit));
                     oldPrice.setEnableStrikeThrough(true);
                     newPrice.setText(productListStore.getDisplayNewPrice(unit));
+                    Log.d(TAG, "new : " + productListStore.getDisplayNewPrice(unit));
                 }
             }
 
             productDescription.setText(productList.getName());
 
             Glide.with(Contextor.getInstance().getContext())
-                    //.load("http://api.powerbuy.world/media/catalog/product"+extension.getImageUrl())
-                    .load(Contextor.getInstance().getContext().getString(R.string.url_image)+extension.getImageUrl())
+                    .load(extension.getImageUrl())
+                    //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+extension.getImageUrl())
                     .placeholder(R.drawable.ic_pwb_logo_detail)
                     .crossFade()
                     .fitCenter()
@@ -80,25 +87,6 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
             productBrand.setText(extension.getBrand());
         }
-//        if (productList.getCustomAttributes() != null){
-//            for (CustomAttributes customAttributes : productList.getCustomAttributes()){
-//                if (customAttributes.getAttributeCode().equalsIgnoreCase("description")){
-//                    //for (String value : customAttributes.getValue()){
-//                        productDescription.setText(customAttributes.getValue());
-//                    //}
-//                }else if (customAttributes.getAttributeCode().equalsIgnoreCase("image")){
-//                    //for (String value : customAttributes.getValue()){
-//                        Glide.with(Contextor.getInstance().getContext())
-//                                .load("http://api.powerbuy.world/media/catalog/product"+ customAttributes.getValue())
-//                                //.placeholder(R.drawable.ic_error_placeholder)
-//                                .crossFade()
-//                                .fitCenter()
-//                                .into(mImageView);
-//                   // }
-//
-//                }
-//            }
-//        }
         productName.setText(productList.getName());
         itemView.setOnClickListener(this);
         itemView.setTag(productList);

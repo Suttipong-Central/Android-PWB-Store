@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -54,10 +55,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void getDeviceImeI() {
 
         mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = mTelephonyManager.getDeviceId();
+        @SuppressLint("MissingPermission") String deviceId = mTelephonyManager.getDeviceId();
         Log.d(TAG, "DeviceImei " + deviceId);
         UserInfoManager.getInstance().setKeyImei(deviceId);
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

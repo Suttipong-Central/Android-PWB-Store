@@ -11,14 +11,11 @@ import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductListViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductSortViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.ProductDao;
-import cenergy.central.com.pwb_store.model.TextHeader;
+import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.ViewType;
 
 /**
