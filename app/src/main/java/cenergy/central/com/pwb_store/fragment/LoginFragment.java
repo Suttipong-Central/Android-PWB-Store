@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -33,9 +32,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 public class LoginFragment extends Fragment {
     public static final String TAG = LoginFragment.class.getSimpleName();
 
-    private static final String INVALID_LICENSE = "-2";
-    private static final String LICENSE_FILE_ERROR = "-12";
-
     //View Members
     @BindView(R.id.layout_content)
     ViewGroup mLayoutContent;
@@ -56,8 +52,6 @@ public class LoginFragment extends Fragment {
     CardView mLoginButton;
 
     private ProgressDialog mProgressDialog;
-    private Handler mHandler;
-    private Runnable mIdPassportCheckRunnable;
 
 
     public LoginFragment() {
