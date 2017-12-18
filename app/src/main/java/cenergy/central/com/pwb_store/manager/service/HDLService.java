@@ -13,7 +13,7 @@ import retrofit2.http.POST;
 
 public interface HDLService {
 
-    @POST("/HDLAPIDEV/HomeDelivery/CheckTimeSlot")
+    @POST("/HDLAPI/HomeDelivery/CheckTimeSlot")
     Call<HDLResponse> checkTimeSlot(
             @Header("Authorization") String appSecret,
             @Header("Content-Type") String type,

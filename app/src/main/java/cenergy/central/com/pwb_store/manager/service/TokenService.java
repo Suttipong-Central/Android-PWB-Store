@@ -8,7 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 
 /**
  * Created by napabhat on 8/9/2017 AD.
@@ -24,7 +23,7 @@ public interface TokenService {
 //            @Query("store_code") String storeCode
 //    );
 
-    @POST("/HDLAPIDEV/Token/CreateToken")
+    @POST("/HDLAPI/Token/CreateToken")
     Call<TokenResponse> createToken(
             @Header("AppSecret") String appSecret,
             @Header("Content-Type") String type,
@@ -32,12 +31,12 @@ public interface TokenService {
             );
 
 
-    @POST("/HDLAPIDEV/Token/GetTokenInfo")
+    @POST("/HDLAPI/Token/GetTokenInfo")
     Call<CheckTokenResponse> checkToken(
             @Header("Authorization") String appSecret
     );
 
-    @POST("/HDLAPIDEV/Token/DisposeToken")
+    @POST("/HDLAPI/Token/DisposeToken")
     Call<CancelTokenResponse> cancelToken(
             @Header("Authorization") String appSecret
     );

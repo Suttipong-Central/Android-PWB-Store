@@ -82,6 +82,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private static final String ARG_PAGE = "ARG_PAGE";
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
+    private static final String ARG_IS_SORTING = "ARG_IS_SORTING";
 
     //View Members
     @BindView(R.id.recycler_view_list)
@@ -123,6 +124,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private static final int PER_PAGE = 20;
     // Page
     private boolean isLoadingMore;
+    private boolean isSorting = false;
     private int mPreviousTotal;
     private int currentPage;
     private int totalPage;
@@ -301,6 +303,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
     public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
         showProgressDialog();
         isDoneFilter = true;
+        isSorting = false;
         ProductFilterHeader productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
         callFilter(productFilterHeader.getId(), sortName, sortType);
         title = productFilterHeader.getName();
@@ -331,6 +334,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         showProgressDialog();
         SortingItem sortingItem = sortingItemBus.getSortingItem();
         isDoneFilter = true;
+        isSorting = true;
         callFilter(departmentId, sortingItem.getSlug(), sortingItem.getValue());
         mPowerBuyPopupWindow.updateSingleSortingItem(sortingItemBus.getSortingItem());
     }
@@ -513,8 +517,10 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         totalPage = 1;
         isLoadingMore = true;
         mPreviousTotal = 0;
-        sortName = "name";
-        sortType = "ASC";
+        if (isSorting == false){
+            sortName = "name";
+            sortType = "ASC";
+        }
         if (mProductDao != null){
             mProductDao.getProductListList().clear();
         }
@@ -580,6 +586,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         outState.putInt(ARG_PAGE, currentPage);
         outState.putString(ARG_KEY_WORD, keyWord);
         outState.putBoolean(ARG_SEARCH, isSearch);
+        outState.putBoolean(ARG_IS_SORTING, isSorting);
     }
 
     /*
@@ -599,6 +606,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         currentPage = savedInstanceState.getInt(ARG_PAGE);
         keyWord = savedInstanceState.getString(ARG_KEY_WORD);
         isSearch = savedInstanceState.getBoolean(ARG_SEARCH);
+        isSorting = savedInstanceState.getBoolean(ARG_IS_SORTING);
     }
 
     @OnClick(R.id.layout_title)
@@ -636,8 +644,10 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
     }
 
-    private void callFilter(String departmentId, String sortName, String sortType) {
+    private void callFilter(String departmentId, String sortNameT, String sortTypeT) {
         resetPage();
+        sortName = sortNameT;
+        sortType = sortTypeT;
         HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                 "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
     }

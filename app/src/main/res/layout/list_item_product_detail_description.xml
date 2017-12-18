@@ -79,8 +79,7 @@
                     android:layout_width="60dp"
                     android:layout_height="30dp"
                     android:layout_alignParentLeft="true"
-                    android:paddingTop="5dp"
-                    android:src="@mipmap/ic_launcher"/>
+                    android:paddingTop="5dp"/>
 
                 <ImageView
                     android:id="@+id/img_pro_second"
@@ -88,8 +87,7 @@
                     android:layout_height="30dp"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/img_pro_first"
-                    android:paddingTop="5dp"
-                    android:src="@mipmap/ic_launcher"/>
+                    android:paddingTop="5dp"/>
 
                 <ImageView
                     android:id="@+id/img_pro_third"
@@ -97,9 +95,7 @@
                     android:layout_height="30dp"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/img_pro_second"
-                    android:paddingTop="5dp"
-                    android:src="@mipmap/ic_launcher"
-                    />
+                    android:paddingTop="5dp"/>
             </LinearLayout>
 
             <LinearLayout

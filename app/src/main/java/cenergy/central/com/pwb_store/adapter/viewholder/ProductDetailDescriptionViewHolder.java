@@ -6,9 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
@@ -119,23 +116,23 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 //            mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
 //        }
 
-        Glide.with(Contextor.getInstance().getContext())
-                .load(R.drawable.newproduct)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .into(imgFirst);
-
-        Glide.with(Contextor.getInstance().getContext())
-                .load(R.drawable.bestseller)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .into(imgSecond);
-
-        Glide.with(Contextor.getInstance().getContext())
-                .load(R.drawable.relax)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .into(imgThird);
+//        Glide.with(Contextor.getInstance().getContext())
+//                .load(R.drawable.newproduct)
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .fitCenter()
+//                .into(imgFirst);
+//
+//        Glide.with(Contextor.getInstance().getContext())
+//                .load(R.drawable.bestseller)
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .fitCenter()
+//                .into(imgSecond);
+//
+//        Glide.with(Contextor.getInstance().getContext())
+//                .load(R.drawable.relax)
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .fitCenter()
+//                .into(imgThird);
 
 //        if (productDetail.getPrice() < productDetail.getOriginalPrice()){
 //            mSalePrice.setText(productDetail.getDisplayNewPrice(unit));

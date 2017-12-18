@@ -165,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
                             createTokenRequest).enqueue(CALLBACK_CREATE_TOKEN);
                 } else {
                     UserInfoManager.getInstance().setToken(false);
+//                    String token = UserInfoManager.getInstance().getUserToken();
+//                    Log.d(TAG, "UserToken : " + UserInfoManager.getInstance().getUserToken());
                 }
             } else {
                 APIError error = APIErrorUtils.parseError(response);

@@ -73,7 +73,7 @@
 
     <!-- AppSecret -->
     <string name="secret" translatable="false">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
-    <string name="url_hdl" translatable="false">http://10.5.0.31/HDLAPIDEV/Token/CreateToken</string>
+    <string name="url_hdl" translatable="false">http://10.5.0.31/HDLAPI/Token/CreateToken</string>
 
     <!-- Date -->
     <string name="sun" translatable="false">SUN</string>

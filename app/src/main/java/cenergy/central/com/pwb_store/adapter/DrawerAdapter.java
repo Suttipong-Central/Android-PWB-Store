@@ -201,10 +201,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             mListViewType.add(drawerItem);
         }
 
-        mListViewType.add(VIEW_TYPE_DELIVERY);
+        //mListViewType.add(VIEW_TYPE_DELIVERY);
         mListViewType.add(VIEW_TYPE_COMPARE);
-        mListViewType.add(VIEW_TYPE_CHANGE);
-        mListViewType.add(VIEW_TYPE_HELP);
+        //mListViewType.add(VIEW_TYPE_CHANGE);
+        //mListViewType.add(VIEW_TYPE_HELP);
 
         notifyDataSetChanged();
     }

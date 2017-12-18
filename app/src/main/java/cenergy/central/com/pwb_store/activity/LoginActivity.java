@@ -21,12 +21,14 @@ public class LoginActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(LoginSuccessBus loginSuccessBus) {
-        Intent intent = new Intent(this, MainActivity.class);
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeBasic()
-                        .toBundle());
-        finish();
+        if (loginSuccessBus.isSuccess() == true){
+            Intent intent = new Intent(this, MainActivity.class);
+            ActivityCompat.startActivity(this, intent,
+                    ActivityOptionsCompat
+                            .makeBasic()
+                            .toBundle());
+            finish();
+        }
     }
 
     @Override
