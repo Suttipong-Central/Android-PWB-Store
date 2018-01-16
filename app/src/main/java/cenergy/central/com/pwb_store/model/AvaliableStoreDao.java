@@ -12,6 +12,7 @@ import java.util.List;
 
 public class AvaliableStoreDao implements IViewType, Parcelable {
     private int viewTypeId;
+    private String sku;
     private List<AvaliableStoreItem> mAvaliableStoreItems = new ArrayList<>();
 
     public AvaliableStoreDao(List<AvaliableStoreItem> avaliableStoreItems) {

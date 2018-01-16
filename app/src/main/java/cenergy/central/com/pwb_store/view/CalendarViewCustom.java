@@ -1,24 +1,17 @@
 package cenergy.central.com.pwb_store.view;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,28 +23,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.HDLCalendarAdapter;
+import cenergy.central.com.pwb_store.adapter.ShippingCalendarAdapter;
 import cenergy.central.com.pwb_store.adapter.base.GridCellAdapter;
-import cenergy.central.com.pwb_store.manager.HttpManager;
-import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
-import cenergy.central.com.pwb_store.manager.UserInfoManager;
-import cenergy.central.com.pwb_store.model.APIError;
-import cenergy.central.com.pwb_store.model.AddCompare;
-import cenergy.central.com.pwb_store.model.StoreList;
-import cenergy.central.com.pwb_store.model.TimeSlotItem;
+import cenergy.central.com.pwb_store.model.ShippingItem;
 import cenergy.central.com.pwb_store.model.WeekSets;
-import cenergy.central.com.pwb_store.model.request.CartDataRequest;
-import cenergy.central.com.pwb_store.model.request.HDLRequest;
-import cenergy.central.com.pwb_store.model.response.HDLResponse;
-import cenergy.central.com.pwb_store.realm.RealmController;
-import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.CommonMethod;
-import cenergy.central.com.pwb_store.utils.DialogUtils;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by napabhat on 8/18/2017 AD.
@@ -133,7 +109,8 @@ public class CalendarViewCustom extends LinearLayout {
 
     private Calendar _calendar;
     private GridCellAdapter adapter;
-    private HDLCalendarAdapter mHDLCalendarAdapter;
+    //private HDLCalendarAdapter mHDLCalendarAdapter;
+    private ShippingCalendarAdapter mShippingCalendarAdapter;
     @SuppressLint("NewApi")
     private int month, year;
     @SuppressWarnings("unused")
@@ -149,7 +126,8 @@ public class CalendarViewCustom extends LinearLayout {
 
     public int weekDaysCount = 0;
     public ArrayList<WeekSets> weekDatas;
-    private List<TimeSlotItem> mTimeSlotItems;
+    //private List<TimeSlotItem> mTimeSlotItems;
+    private List<ShippingItem> mShippingItems;
     private OnItemClickListener mListener;
 
 
@@ -276,6 +254,21 @@ public class CalendarViewCustom extends LinearLayout {
         });
     }
 
+    public String[] getMonthDay() {
+
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        int delta = now.get(GregorianCalendar.DAY_OF_MONTH);
+        String[] days = new String[delta];
+        now.add(Calendar.DAY_OF_MONTH, delta);
+        for (int i = 0; i < delta; i++) {
+            days[i] = format.format(now.getTime());
+            now.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        return days;
+    }
+
     public String[] getWeekDay() {
 
         Calendar now = Calendar.getInstance();
@@ -289,7 +282,6 @@ public class CalendarViewCustom extends LinearLayout {
         }
 
         return days;
-
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -334,6 +326,8 @@ public class CalendarViewCustom extends LinearLayout {
 
     }
 
+
+
     public void showDate(String[] weekDays){
         NextPreWeekday = weekDays;
         firstDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[0]);
@@ -352,16 +346,19 @@ public class CalendarViewCustom extends LinearLayout {
 
     }
 
-    public void setTimeSlotItem(List<TimeSlotItem> timeSlotItems) {
-        this.mTimeSlotItems = timeSlotItems;
+    public void setTimeSlotItem(List<ShippingItem> shippingItems) {
+        this.mShippingItems = shippingItems;
 
         setInfo();
     }
 
     private void setInfo() {
-        mHDLCalendarAdapter = new HDLCalendarAdapter(getContext(), mTimeSlotItems);
-        mHDLCalendarAdapter.notifyDataSetChanged();
-        calendarGridView.setAdapter(mHDLCalendarAdapter);
+//        mHDLCalendarAdapter = new HDLCalendarAdapter(getContext(), mTimeSlotItems);
+//        mHDLCalendarAdapter.notifyDataSetChanged();
+//        calendarGridView.setAdapter(mHDLCalendarAdapter);
+        mShippingCalendarAdapter = new ShippingCalendarAdapter(getContext(), mShippingItems);
+        mShippingCalendarAdapter.notifyDataSetChanged();
+        calendarGridView.setAdapter(mShippingCalendarAdapter);
     }
 
 //    private void setUpCalendarAdapter(){

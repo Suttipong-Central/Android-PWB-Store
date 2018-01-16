@@ -1,6 +1,8 @@
 package cenergy.central.com.pwb_store.manager.service;
 
+import cenergy.central.com.pwb_store.model.ShippingDao;
 import cenergy.central.com.pwb_store.model.request.HDLRequest;
+import cenergy.central.com.pwb_store.model.request.ShippingRequest;
 import cenergy.central.com.pwb_store.model.response.HDLResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,4 +21,9 @@ public interface HDLService {
             @Header("Content-Type") String type,
             @Body HDLRequest hdlRequest
     );
+
+    @POST("/v1/logistics/shipment/list-shipping-slot")
+    Call<ShippingDao> checkShippingTime(
+            @Body ShippingRequest shippingRequest
+            );
 }
