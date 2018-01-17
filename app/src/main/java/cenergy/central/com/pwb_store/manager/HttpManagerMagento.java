@@ -48,7 +48,6 @@ public class HttpManagerMagento {
 
     private HttpManagerMagento() {
         mContext = Contextor.getInstance().getContext();
-
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient defaultHttpClient = new OkHttpClient.Builder()

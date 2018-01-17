@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.amazonaws.Request;
+import com.amazonaws.auth.AWS4Signer;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
@@ -26,15 +29,21 @@ import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AddCompare;
-import cenergy.central.com.pwb_store.model.Delivery;
 import cenergy.central.com.pwb_store.model.ProductDetail;
+import cenergy.central.com.pwb_store.model.Shipping;
+import cenergy.central.com.pwb_store.model.ShippingDao;
+import cenergy.central.com.pwb_store.model.ShippingItem;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.TimeSlotItem;
 import cenergy.central.com.pwb_store.model.request.CartDataRequest;
+import cenergy.central.com.pwb_store.model.request.CustomDetailRequest;
 import cenergy.central.com.pwb_store.model.request.HDLRequest;
+import cenergy.central.com.pwb_store.model.request.PeriodRequest;
+import cenergy.central.com.pwb_store.model.request.ShippingRequest;
+import cenergy.central.com.pwb_store.model.request.SkuDataRequest;
 import cenergy.central.com.pwb_store.model.response.HDLResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
-import cenergy.central.com.pwb_store.utils.APIErrorUtils;
+import cenergy.central.com.pwb_store.utils.APIErrorHDLUtils;
 import cenergy.central.com.pwb_store.utils.CommonMethod;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.CalendarViewCustom;
@@ -67,8 +76,6 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
     private HDLRequest mHDLRequest;
     private HDLResponse mHDLResponse;
     private StoreList storeList;
-    private Delivery delivery;
-    private ProgressDialog mProgressDialog;
     private List<TimeSlotItem> timeSlotItems = new ArrayList<>();
     private List<TimeSlotItem> timeSlotItemsA = new ArrayList<>();
     private List<TimeSlotItem> timeSlotItemsB = new ArrayList<>();
@@ -76,8 +83,24 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
     private List<TimeSlotItem> timeSlotItemsD = new ArrayList<>();
     private List<TimeSlotItem> timeSlotItemsE = new ArrayList<>();
     private List<TimeSlotItem> timeSlotItemsF = new ArrayList<>();
-    private List<TimeSlotItem> timeSlotItemsG = new ArrayList<>();
+    //Time Slot Not RIS
+    private ShippingRequest mShippingRequest;
+    private ShippingDao mShippingDao;
+    private List<SkuDataRequest> mSkuDataRequests = new ArrayList<>();
+    private PeriodRequest mPeriodRequest;
+    private CustomDetailRequest mCustomDetailRequest;
+    private List<ShippingItem> shippingItems = new ArrayList<>();
+    private List<ShippingItem> shippingItemsA = new ArrayList<>();
+    private List<ShippingItem> shippingItemsB = new ArrayList<>();
+    private List<ShippingItem> shippingItemsC = new ArrayList<>();
+    private List<ShippingItem> shippingItemsD = new ArrayList<>();
+    private List<ShippingItem> shippingItemsE = new ArrayList<>();
+    private List<ShippingItem> shippingItemsF = new ArrayList<>();
+    private final AWS4Signer signer = new AWS4Signer();
+    private Request<?> aws;
+    private ProgressDialog mProgressDialog;
     public String[] NextPreWeekday;
+    public String[] monthPreday;
     private String sunday;
     private String monday;
     private String tuesday;
@@ -86,23 +109,46 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
     private String friday;
     private String saturday;
     private ProductDetail mProductDetail;
-    final Callback<HDLResponse> CALLBACK_HDL = new Callback<HDLResponse>() {
+//    final Callback<HDLResponse> CALLBACK_HDL = new Callback<HDLResponse>() {
+//        @Override
+//        public void onResponse(Call<HDLResponse> call, Response<HDLResponse> response) {
+//            if (response.isSuccessful()) {
+//                mProgressDialog.dismiss();
+//                mHDLResponse = response.body();
+//                createData(mHDLResponse);
+//            } else {
+//                APIError error = APIErrorUtils.parseError(response);
+//                Log.e(TAG, "onResponse: " + error.getErrorUserMessage());
+//                showAlertDialog(error.getErrorUserMessage());
+//                mProgressDialog.dismiss();
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call<HDLResponse> call, Throwable t) {
+//            Log.e(TAG, "onFailure: ", t);
+//            mProgressDialog.dismiss();
+//        }
+//    };
+
+    final Callback<ShippingDao> CALLBACK_SHIPPING = new Callback<ShippingDao>() {
         @Override
-        public void onResponse(Call<HDLResponse> call, Response<HDLResponse> response) {
+        public void onResponse(Call<ShippingDao> call, Response<ShippingDao> response) {
             if (response.isSuccessful()) {
+                mShippingDao = response.body();
+                createShippingData(mShippingDao);
                 mProgressDialog.dismiss();
-                mHDLResponse = response.body();
-                createData(mHDLResponse);
             } else {
-                APIError error = APIErrorUtils.parseError(response);
+                APIError error = APIErrorHDLUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorUserMessage());
                 showAlertDialog(error.getErrorUserMessage());
                 mProgressDialog.dismiss();
+
             }
         }
 
         @Override
-        public void onFailure(Call<HDLResponse> call, Throwable t) {
+        public void onFailure(Call<ShippingDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
         }
@@ -119,37 +165,11 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         this.mProductDetail = productDetail;
         mCardView.setOnClickListener(this);
         showProgressDialog();
-        getData(getMonth());
+        //getData(getMonth());
+        getDataSlot(getMonth());
         mCalendarView.setListener(this);
         //getMonth();
 //        NextPreWeekday = mCalendarView.getWeekDay();
-//        List<TimeSlotItem> timeSlotItems = new ArrayList<>();
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09-09:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "11:00-11:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//        timeSlotItems.add(new TimeSlotItem(1, "09:09:00:30", 1));
-//
-//        //mCalendarView.getData();
-//        mCalendarView.setTimeSlotItem(timeSlotItems);
 
     }
 
@@ -164,40 +184,347 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
 
     }
 
-    public void getData(String mount) {
+//    public void getData(String mount) {
+//        results = RealmController.getInstance().getCompares();
+//        for (AddCompare addCompare : results) {
+//            for (int i = 0; i < results.size(); i++) {
+//                i++;
+//                cartDataRequests.add(new CartDataRequest(i, addCompare.getBarcode(), addCompare.getProductSku(),
+//                        1, "1", "00991", "", ""));
+//            }
+//        }
+//        if (results.size() > 0) {
+//            storeList = UserInfoManager.getInstance().loadStore();
+//            mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
+//                    storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
+//
+//            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
+//                    "application/json",
+//                    mHDLRequest).enqueue(CALLBACK_HDL);
+//        }else {
+//            storeList = UserInfoManager.getInstance().loadStore();
+//            cartDataRequests.add(new CartDataRequest(1, mProductDetail.getBarcode(), mProductDetail.getSku(),
+//                    1, "1", "00991", "", ""));
+//            mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
+//                    storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
+//
+//            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
+//                    "application/json",
+//                    mHDLRequest).enqueue(CALLBACK_HDL);
+//        }
+//
+//    }
+
+    public void getDataSlot(String mount) {
         results = RealmController.getInstance().getCompares();
-        for (AddCompare addCompare : results) {
-            for (int i = 0; i < results.size(); i++) {
-                i++;
-                cartDataRequests.add(new CartDataRequest(i, addCompare.getBarcode(), addCompare.getProductSku(),
-                        1, "1", "00991", "", ""));
-            }
-        }
+        storeList = UserInfoManager.getInstance().loadStore();
         if (results.size() > 0) {
-            storeList = UserInfoManager.getInstance().loadStore();
-            mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
-                    storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
+            for (AddCompare addCompare : results) {
+                for (int i = 0; i < results.size(); i++) {
+                    i++;
+                    mSkuDataRequests.add(new SkuDataRequest(addCompare.getBarcode(), 1, addCompare.getProductSku(), 1, storeList.getStoreId(), ""));
+                }
+            }
+            String[] separated = mount.split("-");
+            String year = separated[0];
+            String month = separated[1];
+            mPeriodRequest = new PeriodRequest(Integer.parseInt(year), Integer.parseInt(month));
+            mCustomDetailRequest = new CustomDetailRequest("1", "", "");
+            mShippingRequest = new ShippingRequest(storeList.getPostCode(), mSkuDataRequests, mPeriodRequest, mCustomDetailRequest);
 
-            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
-                    "application/json",
-                    mHDLRequest).enqueue(CALLBACK_HDL);
-        }else {
-            storeList = UserInfoManager.getInstance().loadStore();
-            cartDataRequests.add(new CartDataRequest(1, mProductDetail.getBarcode(), mProductDetail.getSku(),
-                    1, "1", "00991", "", ""));
-            mHDLRequest = new HDLRequest(storeList.getSubDistrictName(), storeList.getDistrictName(),
-                    storeList.getProvinceName(), storeList.getPostCode(), mount, cartDataRequests);
+//            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
+//                    "application/json",
+//                    mHDLRequest).enqueue(CALLBACK_HDL);
+            HttpManagerHDL.getInstance().getHDLService().checkShippingTime(
+                    mShippingRequest).enqueue(CALLBACK_SHIPPING);
 
-            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
-                    "application/json",
-                    mHDLRequest).enqueue(CALLBACK_HDL);
+        } else {
+            mSkuDataRequests.add(new SkuDataRequest(mProductDetail.getExtensionProductDetail().getProductDetailStores().get(0).getBarCode()
+                    , 1, mProductDetail.getSku(), 1, storeList.getStoreId(), ""));
+            String[] separated = mount.split("-");
+            String year = separated[0];
+            String month = separated[1];
+            mPeriodRequest = new PeriodRequest(Integer.parseInt(year), Integer.parseInt(month));
+            mCustomDetailRequest = new CustomDetailRequest("1", "", "");
+            mShippingRequest = new ShippingRequest(storeList.getPostCode(), mSkuDataRequests, mPeriodRequest, mCustomDetailRequest);
+
+            HttpManagerHDL.getInstance().getHDLService().checkShippingTime(
+                    mShippingRequest).enqueue(CALLBACK_SHIPPING);
         }
 
     }
 
-    private void createData(HDLResponse hdlResponse) {
+//    private void createData(HDLResponse hdlResponse) {
+//        if (NextPreWeekday == null) {
+//            NextPreWeekday = mCalendarView.getWeekDay();
+//        }
+//        sunday = NextPreWeekday[0];
+//        monday = NextPreWeekday[1];
+//        tuesday = NextPreWeekday[2];
+//        wednesday = NextPreWeekday[3];
+//        thursday = NextPreWeekday[4];
+//        friday = NextPreWeekday[5];
+//        saturday = NextPreWeekday[6];
+//        for (Delivery delivery : hdlResponse.getDeliveryList()) {
+//            String deliveryDate = delivery.getDeliveryDate();
+//
+//            if (sunday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//
+//            } else if (monday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//
+//            }
+//            if (tuesday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//            } else if (wednesday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//            } else if (thursday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//            } else if (friday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//            } else if (saturday.equalsIgnoreCase(deliveryDate)) {
+//                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
+//                    String slotTime = timeSlotItem.getSlotLabel();
+//                    switch (slotTime) {
+//                        case "09:00-09:30":
+//                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "11:00-11:30":
+//                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "13:00-13:30":
+//                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "15:00-15:30":
+//                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "17:00-17:30":
+//                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        case "19:00-19:30":
+//                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+//                            break;
+//                        default:
+//                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
+//                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
+//                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
+//                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
+//                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
+//                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+//                    }
+//                }
+//
+//            }
+//        }
+//
+//        for (TimeSlotItem timeSlotItemA : timeSlotItemsA) {
+//            timeSlotItems.add(new TimeSlotItem(timeSlotItemA.getSlotId(), timeSlotItemA.getSlotLabel(), timeSlotItemA.getAvailabel()));
+//        }
+//
+//        for (TimeSlotItem timeSlotItemB : timeSlotItemsB) {
+//            timeSlotItems.add(new TimeSlotItem(timeSlotItemB.getSlotId(), timeSlotItemB.getSlotLabel(), timeSlotItemB.getAvailabel()));
+//        }
+//
+//        for (TimeSlotItem timeSlotItemC : timeSlotItemsC) {
+//            timeSlotItems.add(new TimeSlotItem(timeSlotItemC.getSlotId(), timeSlotItemC.getSlotLabel(), timeSlotItemC.getAvailabel()));
+//        }
+//
+//        for (TimeSlotItem timeSlotItemD : timeSlotItemsD) {
+//            timeSlotItems.add(new TimeSlotItem(timeSlotItemD.getSlotId(), timeSlotItemD.getSlotLabel(), timeSlotItemD.getAvailabel()));
+//        }
+//
+//        for (TimeSlotItem timeSlotItemE : timeSlotItemsE) {
+//            timeSlotItems.add(new TimeSlotItem(timeSlotItemE.getSlotId(), timeSlotItemE.getSlotLabel(), timeSlotItemE.getAvailabel()));
+//        }
+//
+//        for (TimeSlotItem timeSlotItemF : timeSlotItemsF) {
+//            timeSlotItems.add(new TimeSlotItem(timeSlotItemF.getSlotId(), timeSlotItemF.getSlotLabel(), timeSlotItemF.getAvailabel()));
+//        }
+//
+//        mCalendarView.setTimeSlotItem(timeSlotItems);
+//
+//    }
+
+    private void createShippingData(ShippingDao shippingDao) {
         if (NextPreWeekday == null) {
             NextPreWeekday = mCalendarView.getWeekDay();
+            monthPreday = mCalendarView.getMonthDay();
+            Log.d(TAG, "day of month:" + monthPreday.toString());
         }
         sunday = NextPreWeekday[0];
         monday = NextPreWeekday[1];
@@ -206,258 +533,256 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         thursday = NextPreWeekday[4];
         friday = NextPreWeekday[5];
         saturday = NextPreWeekday[6];
-        for (Delivery delivery : hdlResponse.getDeliveryList()) {
-            String deliveryDate = delivery.getDeliveryDate();
-
-            if (sunday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
+        for (Shipping shipping : shippingDao.getShippings()) {
+            String shippingDate = shipping.getShippingDate();
+            if (sunday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
                     switch (slotTime) {
                         case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
                     }
                 }
 
-            } else if (monday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
+            } else if (monday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
                     switch (slotTime) {
                         case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
                             break;
                         default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
-                    }
-                }
-
-            }
-            if (tuesday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
-                    switch (slotTime) {
-                        case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
-                    }
-                }
-            } else if (wednesday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
-                    switch (slotTime) {
-                        case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
-                    }
-                }
-            } else if (thursday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
-                    switch (slotTime) {
-                        case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
-                    }
-                }
-            } else if (friday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
-                    switch (slotTime) {
-                        case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
-                    }
-                }
-            } else if (saturday.equalsIgnoreCase(deliveryDate)) {
-                for (TimeSlotItem timeSlotItem : delivery.getTimeSlotItems()) {
-                    String slotTime = timeSlotItem.getSlotLabel();
-                    switch (slotTime) {
-                        case "09:00-09:30":
-                            timeSlotItemsA.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "11:00-11:30":
-                            timeSlotItemsB.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "13:00-13:30":
-                            timeSlotItemsC.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "15:00-15:30":
-                            timeSlotItemsD.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "17:00-17:30":
-                            timeSlotItemsE.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        case "19:00-19:30":
-                            timeSlotItemsF.add(new TimeSlotItem(timeSlotItem.getSlotId(), timeSlotItem.getSlotLabel(), timeSlotItem.getAvailabel()));
-                            break;
-                        default:
-                            timeSlotItemsA.add(new TimeSlotItem(1, "FULL", 0));
-                            timeSlotItemsB.add(new TimeSlotItem(2, "FULL", 0));
-                            timeSlotItemsC.add(new TimeSlotItem(3, "FULL", 0));
-                            timeSlotItemsD.add(new TimeSlotItem(6, "FULL", 0));
-                            timeSlotItemsE.add(new TimeSlotItem(7, "FULL", 0));
-                            timeSlotItemsF.add(new TimeSlotItem(8, "FULL", 0));
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
                     }
                 }
 
             }
+            if (tuesday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
+                    switch (slotTime) {
+                        case "09:00-09:30":
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "11:00-11:30":
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "13:00-13:30":
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "15:00-15:30":
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "17:00-17:30":
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "19:00-19:30":
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        default:
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
+                    }
+                }
+            } else if (wednesday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
+                    switch (slotTime) {
+                        case "09:00-09:30":
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "11:00-11:30":
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "13:00-13:30":
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "15:00-15:30":
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "17:00-17:30":
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "19:00-19:30":
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        default:
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
+                    }
+                }
+            } else if (thursday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
+                    switch (slotTime) {
+                        case "09:00-09:30":
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "11:00-11:30":
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "13:00-13:30":
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "15:00-15:30":
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "17:00-17:30":
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "19:00-19:30":
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        default:
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
+                    }
+                }
+            } else if (friday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
+                    switch (slotTime) {
+                        case "09:00-09:30":
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "11:00-11:30":
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "13:00-13:30":
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "15:00-15:30":
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "17:00-17:30":
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "19:00-19:30":
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        default:
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
+                    }
+                }
+            } else if (saturday.equalsIgnoreCase(shippingDate)) {
+                for (ShippingItem shippingItem : shipping.getShippingItems()) {
+                    String slotTime = shippingItem.getDescription();
+                    switch (slotTime) {
+                        case "09:00-09:30":
+                            shippingItemsA.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "11:00-11:30":
+                            shippingItemsB.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "13:00-13:30":
+                            shippingItemsC.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "15:00-15:30":
+                            shippingItemsD.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "17:00-17:30":
+                            shippingItemsE.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        case "19:00-19:30":
+                            shippingItemsF.add(new ShippingItem(shippingItem.getId(), shippingItem.getDescription()));
+                            break;
+                        default:
+                            shippingItemsA.add(new ShippingItem(1, "FULL"));
+                            shippingItemsB.add(new ShippingItem(2, "FULL"));
+                            shippingItemsC.add(new ShippingItem(3, "FULL"));
+                            shippingItemsD.add(new ShippingItem(6, "FULL"));
+                            shippingItemsE.add(new ShippingItem(7, "FULL"));
+                            shippingItemsF.add(new ShippingItem(8, "FULL"));
+                    }
+                }
+            }
         }
 
-        for (TimeSlotItem timeSlotItemA : timeSlotItemsA) {
-            timeSlotItems.add(new TimeSlotItem(timeSlotItemA.getSlotId(), timeSlotItemA.getSlotLabel(), timeSlotItemA.getAvailabel()));
+        for (ShippingItem shippingItemA : shippingItemsA) {
+            shippingItems.add(new ShippingItem(shippingItemA.getId(), shippingItemA.getDescription()));
         }
 
-        for (TimeSlotItem timeSlotItemB : timeSlotItemsB) {
-            timeSlotItems.add(new TimeSlotItem(timeSlotItemB.getSlotId(), timeSlotItemB.getSlotLabel(), timeSlotItemB.getAvailabel()));
+        for (ShippingItem shippingItemB : shippingItemsB) {
+            shippingItems.add(new ShippingItem(shippingItemB.getId(), shippingItemB.getDescription()));
         }
 
-        for (TimeSlotItem timeSlotItemC : timeSlotItemsC) {
-            timeSlotItems.add(new TimeSlotItem(timeSlotItemC.getSlotId(), timeSlotItemC.getSlotLabel(), timeSlotItemC.getAvailabel()));
+        for (ShippingItem shippingItemC : shippingItemsC) {
+            shippingItems.add(new ShippingItem(shippingItemC.getId(), shippingItemC.getDescription()));
         }
 
-        for (TimeSlotItem timeSlotItemD : timeSlotItemsD) {
-            timeSlotItems.add(new TimeSlotItem(timeSlotItemD.getSlotId(), timeSlotItemD.getSlotLabel(), timeSlotItemD.getAvailabel()));
+        for (ShippingItem shippingItemD : shippingItemsD) {
+            shippingItems.add(new ShippingItem(shippingItemD.getId(), shippingItemD.getDescription()));
         }
 
-        for (TimeSlotItem timeSlotItemE : timeSlotItemsE) {
-            timeSlotItems.add(new TimeSlotItem(timeSlotItemE.getSlotId(), timeSlotItemE.getSlotLabel(), timeSlotItemE.getAvailabel()));
+        for (ShippingItem shippingItemE : shippingItemsE) {
+            shippingItems.add(new ShippingItem(shippingItemE.getId(), shippingItemE.getDescription()));
         }
 
-        for (TimeSlotItem timeSlotItemF : timeSlotItemsF) {
-            timeSlotItems.add(new TimeSlotItem(timeSlotItemF.getSlotId(), timeSlotItemF.getSlotLabel(), timeSlotItemF.getAvailabel()));
+        for (ShippingItem shippingItemF : shippingItemsF) {
+            shippingItems.add(new ShippingItem(shippingItemF.getId(), shippingItemF.getDescription()));
         }
 
-        mCalendarView.setTimeSlotItem(timeSlotItems);
+        mCalendarView.setTimeSlotItem(shippingItems);
 
     }
 
@@ -494,7 +819,8 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         showProgressDialog();
         NextPreWeekday = days;
         String month = CommonMethod.convertMonth(NextPreWeekday[0]);
-        getData(month);
+        //getData(month);
+        getDataSlot(month);
     }
 
     @Override
@@ -502,6 +828,8 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         showProgressDialog();
         NextPreWeekday = days;
         String month = CommonMethod.convertMonth(NextPreWeekday[0]);
-        getData(month);
+        //getData(month);
+        getDataSlot(month);
     }
+
 }

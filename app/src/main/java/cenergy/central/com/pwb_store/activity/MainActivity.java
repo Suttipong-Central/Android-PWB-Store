@@ -17,7 +17,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -38,7 +37,6 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
-import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
@@ -56,7 +54,6 @@ import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
-import cenergy.central.com.pwb_store.model.request.CreateTokenRequest;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -92,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     private CategoryDao mCategoryDao;
     private String storeId;
     private ProgressDialog mProgressDialog;
-    private TelephonyManager mTelephonyManager;
 
     final Callback<List<Category>> CALLBACK_CATEGORY = new Callback<List<Category>>() {
         @Override
@@ -151,23 +147,23 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
                 mProgressDialog.dismiss();
 
-                if (UserInfoManager.getInstance().getUserToken().equalsIgnoreCase("")){
-                    UserInfoManager.getInstance().setToken(true);
+//                if (UserInfoManager.getInstance().getUserToken().equalsIgnoreCase("")){
+//                    UserInfoManager.getInstance().setToken(true);
+////                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
+////                            UserInfoManager.getInstance().getImei(),
+////                            UserInfoManager.getInstance().getImei(),
+////                            UserInfoManager.getInstance().getUserId())
+////                            .enqueue(CALLBACK_CREATE_TOKEN);
+//                    CreateTokenRequest createTokenRequest = new CreateTokenRequest(UserInfoManager.getInstance().getImei(),
+//                            UserInfoManager.getInstance().getImei(), "", UserInfoManager.getInstance().getUserId());
 //                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
-//                            UserInfoManager.getInstance().getImei(),
-//                            UserInfoManager.getInstance().getImei(),
-//                            UserInfoManager.getInstance().getUserId())
-//                            .enqueue(CALLBACK_CREATE_TOKEN);
-                    CreateTokenRequest createTokenRequest = new CreateTokenRequest(UserInfoManager.getInstance().getImei(),
-                            UserInfoManager.getInstance().getImei(), "", UserInfoManager.getInstance().getUserId());
-                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
-                            "application/json",
-                            createTokenRequest).enqueue(CALLBACK_CREATE_TOKEN);
-                } else {
-                    UserInfoManager.getInstance().setToken(false);
-//                    String token = UserInfoManager.getInstance().getUserToken();
-//                    Log.d(TAG, "UserToken : " + UserInfoManager.getInstance().getUserToken());
-                }
+//                            "application/json",
+//                            createTokenRequest).enqueue(CALLBACK_CREATE_TOKEN);
+//                } else {
+//                    UserInfoManager.getInstance().setToken(false);
+////                    String token = UserInfoManager.getInstance().getUserToken();
+////                    Log.d(TAG, "UserToken : " + UserInfoManager.getInstance().getUserToken());
+//                }
             } else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -188,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
         public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
             if (response.isSuccessful()){
                 mStoreDao = new StoreDao(response.body());
-
                 HttpManagerMagento.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
             }else {
                 APIError error = APIErrorUtils.parseError(response);
@@ -267,13 +262,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(SearchEventBus searchEventBus){
-       // hideSoftKeyboard(searchEventBus.getView());
-//        if (searchEventBus.isClick() == true){
-//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction
-//                    .replace(R.id.container, SearchSuggestionFragment.newInstance())
-//                    .commit();
-//        }
         if (searchEventBus.getKeyword().length() > 0){
             Intent intent = new Intent(this, ProductListActivity.class);
             intent.putExtra(ProductListActivity.ARG_KEY_WORD, searchEventBus.getKeyword());

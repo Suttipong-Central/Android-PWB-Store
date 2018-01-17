@@ -13,7 +13,6 @@ import retrofit2.http.Path;
  */
 
 public interface StoreService {
-        //@GET("/api/Stores")
         @GET("/rest/V2/stores")
         Call<List<StoreList>> getStore();
 

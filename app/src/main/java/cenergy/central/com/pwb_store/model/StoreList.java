@@ -12,114 +12,53 @@ import com.google.gson.annotations.SerializedName;
 
 public class StoreList implements IViewType,Parcelable{
     private int viewTypeId;
-    @SerializedName(value = "StoreId", alternate = "store_code")
+    @SerializedName("store_code")
     @Expose
     private String storeId;
-    @SerializedName(value = "StoreName", alternate = "name")
+    @SerializedName("name")
     @Expose
     private String storeName;
-//    @SerializedName("StoreNameEN")
-//    @Expose
-//    private String storeNameEN;
-    @SerializedName(value = "OpenTime", alternate = "open_time")
+    @SerializedName("open_time")
     @Expose
     private String openTime;
-//    @SerializedName("Description")
-//    @Expose
-//    private String description;
-    @SerializedName(value = "StoreAddrNo", alternate = "address")
+    @SerializedName("address")
     @Expose
     private String storeAddrNo;
-//    @SerializedName("StoreAddrNoEN")
-//    @Expose
-//    private String storeAddrNoEN;
-//    @SerializedName("StoreAddrVillages")
-//    @Expose
-//    private String storeAddrVillages;
-//    @SerializedName("StoreAddrVillagesEN")
-//    @Expose
-//    private String storeAddrVillagesEN;
-    @SerializedName(value = "StoreAddrStreet", alternate = "street")
+    @SerializedName("street")
     @Expose
     private String storeAddrStreet;
-//    @SerializedName("StoreAddrStreetEN")
-//    @Expose
-//    private String storeAddrStreetEN;
-//    @SerializedName("StoreAddrSoi")
-//    @Expose
-//    private String storeAddrSoi;
-//    @SerializedName("StoreAddrSoiEN")
-//    @Expose
-//    private String storeAddrSoiEN;
-    @SerializedName(value = "SubdistrictName", alternate = "sub_district")
+    @SerializedName("sub_district")
     @Expose
     private String subDistrictName;
-//    @SerializedName("SubdistrictNameEN")
-//    @Expose
-//    private String subDistrictNameEN;
-    @SerializedName(value = "DistrictName", alternate = "district")
+    @SerializedName("district")
     @Expose
     private String districtName;
-//    @SerializedName("DistrictNameEN")
-//    @Expose
-//    private String districtNameEN;
-    @SerializedName(value = "ProvinceName", alternate = "province")
+    @SerializedName("province")
     @Expose
     private String provinceName;
-//    @SerializedName("ProvinceNameEN")
-//    @Expose
-//    private String provinceNameEN;
-    @SerializedName(value = "Postcode", alternate = "postcode")
+    @SerializedName("postcode")
     @Expose
     private String postCode;
-//    @SerializedName("Fax")
-//    @Expose
-//    private String fax;
-    @SerializedName(value = "Telephone", alternate = "telephone")
+    @SerializedName("telephone")
     @Expose
     private String telephone;
-    @SerializedName(value = "EMail", alternate = "email")
+    @SerializedName("email")
     @Expose
     private String email;
-//    @SerializedName("Latitude")
-//    @Expose
-//    private double latitude;
-//    @SerializedName("Longitude")
-//    @Expose
-//    private double longitude;
-//    @SerializedName("StockOnHand")
-//    @Expose
-//    private int stockOnHand;
     private boolean isSelected;
 
     protected StoreList(Parcel in) {
         viewTypeId = in.readInt();
         storeId = in.readString();
         storeName = in.readString();
-        //storeNameEN = in.readString();
         openTime = in.readString();
-        //description = in.readString();
         storeAddrNo = in.readString();
-//        storeAddrNoEN = in.readString();
-//        storeAddrVillages = in.readString();
-//        storeAddrVillagesEN = in.readString();
-//        storeAddrStreet = in.readString();
-//        storeAddrStreetEN = in.readString();
-//        storeAddrSoi = in.readString();
-//        storeAddrSoiEN = in.readString();
         subDistrictName = in.readString();
-//        subDistrictNameEN = in.readString();
         districtName = in.readString();
-//        districtNameEN = in.readString();
         provinceName = in.readString();
-//        provinceNameEN = in.readString();
         postCode = in.readString();
-//        fax = in.readString();
         telephone = in.readString();
         email = in.readString();
-//        latitude = in.readDouble();
-//        longitude = in.readDouble();
-//        stockOnHand = in.readInt();
         isSelected = in.readByte() != 0;
     }
 
@@ -128,30 +67,14 @@ public class StoreList implements IViewType,Parcelable{
         dest.writeInt(viewTypeId);
         dest.writeString(storeId);
         dest.writeString(storeName);
-        //dest.writeString(storeNameEN);
         dest.writeString(openTime);
-        //dest.writeString(description);
         dest.writeString(storeAddrNo);
-//        dest.writeString(storeAddrNoEN);
-//        dest.writeString(storeAddrVillages);
-//        dest.writeString(storeAddrVillagesEN);
-//        dest.writeString(storeAddrStreet);
-//        dest.writeString(storeAddrStreetEN);
-//        dest.writeString(storeAddrSoi);
-//        dest.writeString(storeAddrSoiEN);
         dest.writeString(subDistrictName);
-//        dest.writeString(subDistrictNameEN);
         dest.writeString(districtName);
-//        dest.writeString(districtNameEN);
         dest.writeString(provinceName);
-//        dest.writeString(provinceNameEN);
         dest.writeString(postCode);
-//        dest.writeString(fax);
         dest.writeString(telephone);
         dest.writeString(email);
-//        dest.writeDouble(latitude);
-//        dest.writeDouble(longitude);
-//        dest.writeInt(stockOnHand);
         dest.writeByte((byte) (isSelected ? 1 : 0));
     }
 

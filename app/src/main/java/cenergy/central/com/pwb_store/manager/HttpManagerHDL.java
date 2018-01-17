@@ -2,14 +2,15 @@ package cenergy.central.com.pwb_store.manager;
 
 import android.content.Context;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import cenergy.central.com.pwb_store.BuildConfig;
-import cenergy.central.com.pwb_store.manager.service.CategoryService;
 import cenergy.central.com.pwb_store.manager.service.HDLService;
-import cenergy.central.com.pwb_store.manager.service.ProductService;
-import cenergy.central.com.pwb_store.manager.service.StoreService;
 import cenergy.central.com.pwb_store.manager.service.TokenService;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -26,18 +27,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HttpManagerHDL {
     //Specific Header
     private static final String HEADER_AUTHORIZATION = "Authorization";
-    private static final String HEADER_CONTENT = "Content-Type";
-    private static final String HEADER_TYPE = "datatype";
     //Specific Client
-    private static final String CLIENT_ANDROID = "Android";
-    private static final String CLIENT_LANGUAGE = "th";
-    private static final String CLIENT_APP_ID = "pwb-store";
+    private static final String CLIENT_SERVICENAME = "execute-api";
+    private static final String CLIENT_REGION = "ap-southeast-1";
+    private static final String CLIENT_X_API_KEY = "V9MwQAF6eX3soBR38nuNiajzXWvkI00pax22X14W";//"4KtWVSnAdm3kFuHygoWAo1dssKPMHGmd5pU1b00E";
     private static final String CLIENT_AUTH = "Basic cG93ZXJidXk6dWF0QHB3YiE=";
-    private static final String CLIENT_CONTENT = "application/json";
-    private static final String CLIENT_TYPE = "json";
 
     private static final String BASE_URL_DEV = "http://10.5.0.31";
-    private static final String BASE_URL_UAT = "http://uat-api.powerbuy.co.th";
+    private static final String BASE_URL = "https://sit-api.central.tech";
 
     private static HttpManagerHDL instance;
     private Context mContext;
@@ -48,7 +45,9 @@ public class HttpManagerHDL {
 
     private HttpManagerHDL() {
         mContext = Contextor.getInstance().getContext();
-
+        Session session = auth();
+        AWSCredentialsProvider awsCredentialsProvider = new MyAWSCredentialsProvider(session);
+        AwsInterceptor awsInterceptor = new AwsInterceptor(awsCredentialsProvider, CLIENT_SERVICENAME, CLIENT_REGION, CLIENT_X_API_KEY);
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient defaultHttpClient = new OkHttpClient.Builder()
@@ -58,18 +57,18 @@ public class HttpManagerHDL {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request().newBuilder()
-                                //.addHeader(HEADER_AUTHORIZATION, CLIENT_AUTH)
-                                //.addHeader(HEADER_CONTENT, CLIENT_CONTENT)
-                                .addHeader(HEADER_TYPE, CLIENT_TYPE)
+                                //.addHeader(HEADER_AWS, CLIENT_AWS)
                                 .build();
+
                         return chain.proceed(request);
                     }
                 })
+                .addInterceptor(awsInterceptor)
                 .addInterceptor(interceptor)
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL_DEV)
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build();
@@ -94,4 +93,37 @@ public class HttpManagerHDL {
     public HDLService getHDLService() {
         return mHDLService;
     }
+
+    private static class MyAWSCredentialsProvider implements AWSCredentialsProvider {
+        private final Session session;
+
+        MyAWSCredentialsProvider(Session session) {
+            this.session = session;
+        }
+
+        @Override
+        public AWSCredentials getCredentials() {
+            return new BasicAWSCredentials(session.accessKey, session.secretKey);
+            //return new BasicSessionCredentials(session.access_key_id, session.secret_access_key, session.session_token);
+        }
+
+        @Override
+        public void refresh() {
+
+        }
+    }
+
+    private Session auth() {
+        Session auth = new Session();
+        auth.accessKey = "AKIAILUQVZ5TERXPIMUA";
+        auth.secretKey = "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";
+
+        return auth;
+    }
+
+    private class Session {
+        String accessKey;
+        String secretKey;
+    }
+
 }

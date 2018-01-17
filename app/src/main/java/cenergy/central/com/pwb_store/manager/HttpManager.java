@@ -38,9 +38,9 @@ public class HttpManager {
     private static final String CLIENT_LANGUAGE = "th";
     private static final String CLIENT_APP_ID = "pwb-store";
     private static final String CLIENT_AUTH = "Basic cG93ZXJidXk6dWF0QHB3YiE=";
-    private static final String CLIENT_MAGENTO = "Bearer ien5o19evja6n641s7s9kxrgpgy6tavt";
+    private static final String CLIENT_MAGENTO = "Bearer q8fx1239sgs79ssfn7opto3ivr8mmcqr";
 
-    private static final String BASE_URL_MAGENTO = "http://api.powerbuy.world";
+    private static final String BASE_URL_MAGENTO = "http://api.powerbuy.co.th";
     private static final String BASE_URL_UAT = "http://uat-api.powerbuy.co.th";
     private static HttpManager instance;
     private Context mContext;
@@ -63,7 +63,7 @@ public class HttpManager {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request().newBuilder()
-                                .addHeader(HEADER_AUTHORIZATION, CLIENT_AUTH)
+                                .addHeader(HEADER_AUTHORIZATION, CLIENT_MAGENTO)
                                 .build();
                         return chain.proceed(request);
                     }
@@ -72,7 +72,7 @@ public class HttpManager {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL_UAT)
+                .baseUrl(BASE_URL_MAGENTO)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build();
