@@ -34,14 +34,13 @@ public class HttpManagerHDL {
     private static final String CLIENT_AUTH = "Basic cG93ZXJidXk6dWF0QHB3YiE=";
 
     private static final String BASE_URL_DEV = "http://10.5.0.31";
-    private static final String BASE_URL = "https://sit-api.central.tech";
+    private static final String BASE_URL = "https://sit-api.central.tech/";
 
     private static HttpManagerHDL instance;
     private Context mContext;
     private Retrofit retrofit;
     private TokenService mTokenService;
     private HDLService mHDLService;
-    private String url;
 
     private HttpManagerHDL() {
         mContext = Contextor.getInstance().getContext();
@@ -57,7 +56,6 @@ public class HttpManagerHDL {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request().newBuilder()
-                                //.addHeader(HEADER_AWS, CLIENT_AWS)
                                 .build();
 
                         return chain.proceed(request);

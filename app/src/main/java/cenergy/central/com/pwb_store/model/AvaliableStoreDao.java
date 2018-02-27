@@ -3,6 +3,9 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,22 +15,24 @@ import java.util.List;
 
 public class AvaliableStoreDao implements IViewType, Parcelable {
     private int viewTypeId;
-    private String sku;
-    private List<AvaliableStoreItem> mAvaliableStoreItems = new ArrayList<>();
-
-    public AvaliableStoreDao(List<AvaliableStoreItem> avaliableStoreItems) {
-        this.mAvaliableStoreItems = avaliableStoreItems;
-    }
+    @SerializedName("products")
+    @Expose
+    private List<AvaliableProduct> mAvaliableProducts = new ArrayList<>();
 
     protected AvaliableStoreDao(Parcel in) {
         viewTypeId = in.readInt();
-        mAvaliableStoreItems = in.createTypedArrayList(AvaliableStoreItem.CREATOR);
+        mAvaliableProducts = in.createTypedArrayList(AvaliableProduct.CREATOR);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
-        dest.writeTypedList(mAvaliableStoreItems);
+        dest.writeTypedList(mAvaliableProducts);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<AvaliableStoreDao> CREATOR = new Creator<AvaliableStoreDao>() {
@@ -43,12 +48,6 @@ public class AvaliableStoreDao implements IViewType, Parcelable {
     };
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-
-    @Override
     public int getViewTypeId() {
         return viewTypeId;
     }
@@ -58,11 +57,11 @@ public class AvaliableStoreDao implements IViewType, Parcelable {
         this.viewTypeId = id;
     }
 
-    public List<AvaliableStoreItem> getAvaliableStoreItems() {
-        return mAvaliableStoreItems;
+    public List<AvaliableProduct> getAvaliableProducts() {
+        return mAvaliableProducts;
     }
 
-    public void setAvaliableStoreItems(List<AvaliableStoreItem> avaliableStoreItems) {
-        mAvaliableStoreItems = avaliableStoreItems;
+    public void setAvaliableProducts(List<AvaliableProduct> avaliableProducts) {
+        mAvaliableProducts = avaliableProducts;
     }
 }

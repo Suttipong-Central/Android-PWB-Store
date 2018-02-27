@@ -17,10 +17,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.AvaliableFragment;
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
-import cenergy.central.com.pwb_store.model.AvaliableStoreItem;
+import cenergy.central.com.pwb_store.model.StoreDao;
+import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import retrofit2.Call;
@@ -42,29 +44,78 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 
     private String sku;
     private AvaliableStoreDao mAvaliableStoreDao;
+    private StoreDao mStoreDao;
     private ProgressDialog mProgressDialog;
 
-    final Callback<List<AvaliableStoreItem>> CALLBACK_AVALIABLE = new Callback<List<AvaliableStoreItem>>() {
+//    final Callback<List<AvaliableStoreItem>> CALLBACK_AVALIABLE = new Callback<List<AvaliableStoreItem>>() {
+//        @Override
+//        public void onResponse(Call<List<AvaliableStoreItem>> call, Response<List<AvaliableStoreItem>> response) {
+//            if (response.isSuccessful()){
+//                mAvaliableStoreDao = new AvaliableStoreDao(response.body());
+//                mProgressDialog.dismiss();
+//
+//                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                fragmentTransaction
+//                        .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao))
+//                        .commit();
+//            }else {
+//                    APIError error = APIErrorUtils.parseError(response);
+//                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
+//                    showAlertDialog(error.getErrorMessage(), false);
+//                    mProgressDialog.dismiss();
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call<List<AvaliableStoreItem>> call, Throwable t) {
+//            Log.e(TAG, "onFailure: ", t);
+//            mProgressDialog.dismiss();
+//        }
+//    };
+
+    final Callback<AvaliableStoreDao> CALLBACK_AVALIABLE = new Callback<AvaliableStoreDao>() {
         @Override
-        public void onResponse(Call<List<AvaliableStoreItem>> call, Response<List<AvaliableStoreItem>> response) {
+        public void onResponse(Call<AvaliableStoreDao> call, Response<AvaliableStoreDao> response) {
             if (response.isSuccessful()){
-                mAvaliableStoreDao = new AvaliableStoreDao(response.body());
+                mAvaliableStoreDao = response.body();
                 mProgressDialog.dismiss();
 
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
-                        .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao))
+                        .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao, mStoreDao))
                         .commit();
             }else {
-                    APIError error = APIErrorUtils.parseError(response);
-                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                    showAlertDialog(error.getErrorMessage(), false);
-                    mProgressDialog.dismiss();
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                showAlertDialog(error.getErrorMessage(), false);
+                mProgressDialog.dismiss();
+            }
+
+        }
+
+        @Override
+        public void onFailure(Call<AvaliableStoreDao> call, Throwable t) {
+            Log.e(TAG, "onFailure: ", t);
+            mProgressDialog.dismiss();
+        }
+    };
+
+    final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
+        @Override
+        public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
+            if (response.isSuccessful()){
+                mProgressDialog.dismiss();
+                mStoreDao = new StoreDao(response.body());
+                HttpManagerHDL.getInstance().getHDLService().getStore(sku).enqueue(CALLBACK_AVALIABLE);
+            }else {
+                APIError error = APIErrorUtils.parseError(response);
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                mProgressDialog.dismiss();
             }
         }
 
         @Override
-        public void onFailure(Call<List<AvaliableStoreItem>> call, Throwable t) {
+        public void onFailure(Call<List<StoreList>> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
         }
@@ -86,11 +137,12 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 
         if (savedInstanceState == null){
             showProgressDialog();
-            HttpManagerMagento.getInstance().getStoreService().getAvailableStock(sku).enqueue(CALLBACK_AVALIABLE);
+            //HttpManagerMagento.getInstance().getStoreService().getAvailableStock(sku).enqueue(CALLBACK_AVALIABLE);
+            HttpManagerMagento.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
-                    .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao))
+                    .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao, mStoreDao))
                     .commit();
         }
 

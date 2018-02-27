@@ -114,11 +114,18 @@ public class AwsInterceptor implements Interceptor {
     @NonNull
     private HttpUrl ensureTrailingSlash(@NonNull Request.Builder builder, @NonNull HttpUrl url) {
         String lastPathSegment = url.pathSegments().get(url.pathSize() - 1);
+
         if (!lastPathSegment.isEmpty()) {
-            url = url.newBuilder().addPathSegment("").build();
+//            if (lastPathSegment.equalsIgnoreCase("list-stock")){
+//                url = url.newBuilder().scheme("https")
+//                        .host(url.host())
+//                        //.addPathSegment("list-stock")
+//                        .build();
+//            }else {
+                url = url.newBuilder().addPathSegment("").build();
+//            }
             builder.url(url);
         }
-
         return url;
     }
 

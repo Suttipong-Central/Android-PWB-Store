@@ -15,6 +15,8 @@ import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableTopicViewHolder
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
 import cenergy.central.com.pwb_store.model.AvaliableStoreItem;
 import cenergy.central.com.pwb_store.model.IViewType;
+import cenergy.central.com.pwb_store.model.StoreDao;
+import cenergy.central.com.pwb_store.model.StoreList;
 
 /**
  * Created by napabhat on 8/16/2017 AD.
@@ -31,6 +33,7 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     //Data Members
     private Context mContext;
+    private StoreDao mStoreDao;
     private List<IViewType> mListViewType = new ArrayList<>();
     private final GridLayoutManager.SpanSizeLookup mSpanSize = new GridLayoutManager.SpanSizeLookup() {
         @Override
@@ -48,8 +51,9 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     };
 
-    public AvaliableStoreAdapter(Context mContext) {
+    public AvaliableStoreAdapter(Context mContext, StoreDao storeDao) {
         this.mContext = mContext;
+        this.mStoreDao = storeDao;
     }
 
     @Override
@@ -93,7 +97,7 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 if (viewType instanceof AvaliableStoreItem && holder instanceof AvaliableDetailViewHolder) {
                     AvaliableStoreItem avaliableStoreItem = (AvaliableStoreItem) viewType;
                     AvaliableDetailViewHolder avaliableDetailViewHolder = (AvaliableDetailViewHolder) holder;
-                    avaliableDetailViewHolder.setViewHolder(avaliableStoreItem);
+                    avaliableDetailViewHolder.setViewHolder(avaliableStoreItem, mStoreDao);
                 }
                 break;
         }
@@ -114,9 +118,19 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         avaliableStoreDao.setViewTypeId(VIEW_TYPE_ID_STORE_TOPIC);
         mListViewType.add(avaliableStoreDao);
 
-        for (AvaliableStoreItem avaliableStoreItem : avaliableStoreDao.getAvaliableStoreItems()) {
-            avaliableStoreItem.setViewTypeId(VIEW_TYPE_ID_STORE_DETAIL);
-            mListViewType.add(avaliableStoreItem);
+        List<AvaliableStoreItem> makeAvaliableStoreItems = new ArrayList<>();
+
+        for (AvaliableStoreItem avaliableStoreItem : avaliableStoreDao.getAvaliableProducts().get(0).getAvaliableStoreItems()) {
+            for (StoreList storeList : mStoreDao.getStoreLists()){
+                if (avaliableStoreItem.getStoreName().equals(storeList.getStoreId())){
+                    makeAvaliableStoreItems.add(new AvaliableStoreItem(avaliableStoreItem.getStoreName(), storeList.getStoreAddrNo(), avaliableStoreItem.getStock()));
+                }
+            }
+        }
+
+        for (AvaliableStoreItem avaliableStoreItemShow : makeAvaliableStoreItems){
+            avaliableStoreItemShow.setViewTypeId(VIEW_TYPE_ID_STORE_DETAIL);
+            mListViewType.add(avaliableStoreItemShow);
         }
 
         notifyDataSetChanged();

@@ -13,27 +13,26 @@ import com.google.gson.annotations.SerializedName;
 public class AvaliableStoreItem implements IViewType,Parcelable {
 
     private int viewTypeId;
-    @SerializedName("name")
+    @SerializedName("storeCode")
     @Expose
     private String storeName;
-    @SerializedName("address")
-    @Expose
     private String address;
-    @SerializedName("stock_available")
+    @SerializedName("quantity")
     @Expose
-    private String stock;
+    private int stock;
 
-    public AvaliableStoreItem(String storeName, String address, String stock) {
+    public AvaliableStoreItem(String storeName, String address, int stock){
         this.storeName = storeName;
         this.address = address;
         this.stock = stock;
+
     }
 
     protected AvaliableStoreItem(Parcel in) {
         viewTypeId = in.readInt();
         storeName = in.readString();
         address = in.readString();
-        stock = in.readString();
+        stock = in.readInt();
     }
 
     @Override
@@ -41,7 +40,12 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         dest.writeInt(viewTypeId);
         dest.writeString(storeName);
         dest.writeString(address);
-        dest.writeString(stock);
+        dest.writeInt(stock);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<AvaliableStoreItem> CREATOR = new Creator<AvaliableStoreItem>() {
@@ -55,11 +59,6 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
             return new AvaliableStoreItem[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     @Override
     public int getViewTypeId() {
@@ -87,11 +86,11 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         this.address = address;
     }
 
-    public String getStock() {
+    public int getStock() {
         return stock;
     }
 
-    public void setStock(String stock) {
+    public void setStock(int stock) {
         this.stock = stock;
     }
 }
