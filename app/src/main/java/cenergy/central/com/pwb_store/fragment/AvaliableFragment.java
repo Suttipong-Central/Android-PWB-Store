@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,11 +26,14 @@ import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.AvaliableStoreAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
+import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreFilterHeaderBus;
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
+import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreFilterItem;
 import cenergy.central.com.pwb_store.model.StoreFilterList;
+import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 
 /**
@@ -37,7 +41,8 @@ import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
  */
 
 public class AvaliableFragment extends Fragment {
-    public static final String ARG_AVALIABLEDAO = "ARG_AVALIABLEDAO";
+    public static final String ARG_AVALIABLE_DAO = "ARG_AVALIABLEDAO";
+    public static final String ARG_STORE_DAO = "ARG_STORE_DAO";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -53,6 +58,8 @@ public class AvaliableFragment extends Fragment {
     private GridLayoutManager mLayoutManager;
     private PowerBuyPopupWindow mPowerBuyPopupWindow;
     private boolean isDoneFilter;
+    private StoreDao mStoreDao;
+    private ProgressDialog mProgressDialog;
 
     public AvaliableFragment() {
         super();
@@ -64,7 +71,7 @@ public class AvaliableFragment extends Fragment {
             if (!isDoneFilter) {
                 mStoreFilterList = mTempStoreFilterList;
             }
-            if (mStoreFilterList != null){
+            if (mStoreFilterList != null) {
                 for (StoreFilterHeader storeFilterHeader : mStoreFilterList.getStoreFilterHeaders()) {
                     storeFilterHeader.setExpanded(false);
                 }
@@ -74,15 +81,17 @@ public class AvaliableFragment extends Fragment {
     };
 
     @Subscribe
-    public void onEvent(StoreFilterHeaderBus storeFilterHeaderBus){
+    public void onEvent(StoreFilterHeaderBus storeFilterHeaderBus) {
         mPowerBuyPopupWindow.setStoreItem(storeFilterHeaderBus.getStoreFilterHeader());
     }
 
+
     @SuppressWarnings("unused")
-    public static AvaliableFragment newInstance(AvaliableStoreDao avaliableStoreDao) {
+    public static AvaliableFragment newInstance(AvaliableStoreDao avaliableStoreDao, StoreDao storeDao) {
         AvaliableFragment fragment = new AvaliableFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_AVALIABLEDAO, avaliableStoreDao);
+        args.putParcelable(ARG_AVALIABLE_DAO, avaliableStoreDao);
+        args.putParcelable(ARG_STORE_DAO, storeDao);
         fragment.setArguments(args);
         return fragment;
     }
@@ -108,7 +117,8 @@ public class AvaliableFragment extends Fragment {
         // Init Fragment level's variable(s) here
 
         if (getArguments() != null) {
-            mAvaliableStoreDao = getArguments().getParcelable(ARG_AVALIABLEDAO);
+            mAvaliableStoreDao = getArguments().getParcelable(ARG_AVALIABLE_DAO);
+            mStoreDao = getArguments().getParcelable(ARG_STORE_DAO);
         }
 //        List<AvaliableStoreItem> avaliableStoreItems = new ArrayList<>();
 //        avaliableStoreItems.add(new AvaliableStoreItem("Rama 3","79/3 Sathupadit Chong Non Si Yannawa Bangkok 10120\n" +
@@ -204,7 +214,7 @@ public class AvaliableFragment extends Fragment {
         // Init 'View' instance(s) with rootView.findViewById here
         ButterKnife.bind(this, rootView);
         popUpShow();
-        mAdapter = new AvaliableStoreAdapter(getContext());
+        mAdapter = new AvaliableStoreAdapter(getContext(), mStoreDao);
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
         mAdapter.setCompareAvaliable(mAvaliableStoreDao);
@@ -253,10 +263,10 @@ public class AvaliableFragment extends Fragment {
     }
 
     @OnClick(R.id.layout_store)
-    public void onStoreClick(LinearLayout linearLayout){
-        if (mStoreFilterList == null){
+    public void onStoreClick(LinearLayout linearLayout) {
+        if (mStoreFilterList == null) {
             mPowerBuyPopupWindow.dismiss();
-        }else {
+        } else {
             mTempStoreFilterList = new StoreFilterList(mStoreFilterList);
             mPowerBuyPopupWindow.setRecyclerViewStore(mStoreFilterList);
             mPowerBuyPopupWindow.showAsDropDown(linearLayout);
@@ -268,5 +278,14 @@ public class AvaliableFragment extends Fragment {
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mPowerBuyPopupWindow = new PowerBuyPopupWindow(getActivity(), layoutInflater);
         mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtils.createProgressDialog(Contextor.getInstance().getContext());
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.show();
+        }
     }
 }

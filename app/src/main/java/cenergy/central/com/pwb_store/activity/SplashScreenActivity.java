@@ -59,6 +59,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         Log.d(TAG, "DeviceImei " + deviceId);
         UserInfoManager.getInstance().setKeyImei(deviceId);
         Intent intent = new Intent(this, LoginActivity.class);
+        //Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
