@@ -58,8 +58,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         @SuppressLint("MissingPermission") String deviceId = mTelephonyManager.getDeviceId();
         Log.d(TAG, "DeviceImei " + deviceId);
         UserInfoManager.getInstance().setKeyImei(deviceId);
-        //Intent intent = new Intent(this, LoginActivity.class);
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
+        //Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
