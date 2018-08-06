@@ -14,10 +14,13 @@ import retrofit2.http.Query;
 
 public interface CategoryService {
     //@GET("/api/Categories")
-    @GET("/rest/V2/categories")
-    Call<List<Category>> getCategories();
+//    @GET("/rest/V2/categories")
+//    Call<List<Category>> getCategories();
 
     @GET("api/Categories")
     Call<List<ProductFilterHeader>> getProductFilter(
             @Query("parentId") int parentId);
+
+    @GET("/rest/V1/categories")
+    Call<Category> getCategories();
 }

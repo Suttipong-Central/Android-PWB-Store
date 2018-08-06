@@ -13,14 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
-import cenergy.central.com.pwb_store.manager.HttpManager;
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
@@ -54,10 +56,10 @@ public class CategoryFragment extends Fragment {
     final Callback<List<Category>> CALLBACK_CATEGORY = new Callback<List<Category>>() {
         @Override
         public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 mCategoryDao = new CategoryDao(response.body());
                 mAdapter.setCategory(mCategoryDao);
-            }else {
+            } else {
                 //mockData();
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -119,12 +121,27 @@ public class CategoryFragment extends Fragment {
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
 
         if (mCategoryDao == null) {
-            HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
+//            HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
+            retrieveCategories();
         } else {
             mAdapter.setCategory(mCategoryDao);
         }
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void retrieveCategories() {
+        HttpManagerMagento.Companion.getInstance().retrieveCategories(new ApiResponseCallback<Category>() {
+            @Override
+            public void success(@Nullable Category category) {
+                mAdapter.setCategory(category);
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                showAlertDialog(error.getErrorMessage(), false);
+            }
+        });
     }
 
 //    private void mockData(){

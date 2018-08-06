@@ -27,6 +27,8 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,8 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
@@ -71,15 +75,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.drawer_layout)
-    DrawerLayout mDrawer;
-
-    @BindView(R.id.nav_view)
-    NavigationView mNavigationView;
-
-    @BindView(R.id.recycler_view_menu)
-    RecyclerView mRecyclerViewMenu;
-
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
@@ -93,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     final Callback<List<Category>> CALLBACK_CATEGORY = new Callback<List<Category>>() {
         @Override
         public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 mCategoryDao = new CategoryDao(response.body());
                 if (mDrawerItemList.size() == 0) {
                     for (Category category : mCategoryDao.getCategoryList()) {
@@ -106,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
                     mDrawerDao = new DrawerDao(mDrawerItemList);
                     mDrawerDao.setStoreDao(mStoreDao);
                     if (UserInfoManager.getInstance().getUserId() == null ||
-                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")){
+                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
                         Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId().toString());
-                            storeId = "00096";
+                        storeId = "00096";
                         UserInfoManager.getInstance().setUserIdLogin(storeId);
-                        for (StoreList storeList : mStoreDao.getStoreLists()){
-                            if (storeList.getStoreId().equalsIgnoreCase(storeId)){
+                        for (StoreList storeList : mStoreDao.getStoreLists()) {
+                            if (storeList.getStoreId().equalsIgnoreCase(storeId)) {
                                 UserInfoManager.getInstance().setStore(storeList);
                             }
                         }
@@ -124,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                    }else {
+                    } else {
                         Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId().toString());
-                            storeId = UserInfoManager.getInstance().getUserId();
+                        storeId = UserInfoManager.getInstance().getUserId();
                         if (!mStoreDao.isStoreEmpty()) {
                             if (mStoreDao.isStoreListItemListAvailable()) {
                                 List<StoreList> storeLists = mStoreDao.getStoreLists();
@@ -182,10 +177,11 @@ public class MainActivity extends AppCompatActivity {
     final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
         @Override
         public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 mStoreDao = new StoreDao(response.body());
-                HttpManagerMagentoOld.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
-            }else {
+//                HttpManagerMagentoOld.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
+                retrieveCategories();
+            } else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
                 showAlertDialog(error.getErrorMessage(), false);
@@ -203,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
-        Toast.makeText(this,""+ drawItemBus.getDrawerItem().getTitle(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "" + drawItemBus.getDrawerItem().getTitle(), Toast.LENGTH_SHORT).show();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container, ProductListFragment.newInstance(drawerItem.getTitle(), false,
@@ -212,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(HomeBus homeBus){
+    public void onEvent(HomeBus homeBus) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
@@ -220,18 +216,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(CategoryBus categoryBus){
-        if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Change Language to Thai")){
+    public void onEvent(CategoryBus categoryBus) {
+        if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Change Language to Thai")) {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
                     .commit();
-        }else if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Compare")){
+        } else if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Compare")) {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
                     .commit();
-        }else {
+        } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, ProductListFragment.newInstance(categoryBus.getCategory().getDepartmentName(), false,
@@ -242,8 +238,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(ProductBackBus productBackBus){
-        if (productBackBus.isHome() == true){
+    public void onEvent(ProductBackBus productBackBus) {
+        if (productBackBus.isHome() == true) {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
@@ -252,8 +248,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(BarcodeBus barcodeBus){
-        if (barcodeBus.isBarcode() == true){
+    public void onEvent(BarcodeBus barcodeBus) {
+        if (barcodeBus.isBarcode() == true) {
             IntentIntegrator integrator = new IntentIntegrator(MainActivity.this).setCaptureActivity(BarcodeScanActivity.class);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
             integrator.initiateScan();
@@ -261,8 +257,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(SearchEventBus searchEventBus){
-        if (searchEventBus.getKeyword().length() > 0){
+    public void onEvent(SearchEventBus searchEventBus) {
+        if (searchEventBus.getKeyword().length() > 0) {
             Intent intent = new Intent(this, ProductListActivity.class);
             intent.putExtra(ProductListActivity.ARG_KEY_WORD, searchEventBus.getKeyword());
             intent.putExtra(ProductListActivity.ARG_SEARCH, searchEventBus.isClick());
@@ -271,8 +267,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(BackSearchBus backSearchBus){
-        if (backSearchBus.isClick() == true){
+    public void onEvent(BackSearchBus backSearchBus) {
+        if (backSearchBus.isClick() == true) {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
@@ -281,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEvent(CompareMenuBus compareMenuBus){
+    public void onEvent(CompareMenuBus compareMenuBus) {
         Intent intent = new Intent(this, CompareActivity.class);
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
@@ -292,11 +288,11 @@ public class MainActivity extends AppCompatActivity {
     final Callback<TokenResponse> CALLBACK_CREATE_TOKEN = new Callback<TokenResponse>() {
         @Override
         public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 TokenResponse tokenResponse = response.body();
-                if (tokenResponse.getResultStatus() != null){
+                if (tokenResponse.getResultStatus() != null) {
                     UserInfoManager.getInstance().setCreateToken(tokenResponse);
-                }else {
+                } else {
                     APIError error = APIErrorUtils.parseError(response);
                     Log.e(TAG, "onResponse: " + error.getErrorMessage());
                     showAlertDialog(error.getErrorMessage(), false);
@@ -320,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             showProgressDialog();
             HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
 
@@ -344,21 +340,22 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new DrawerAdapter(getApplicationContext());
         mLayoutManager = new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false);
-        mRecyclerViewMenu.setLayoutManager(mLayoutManager);
-        mRecyclerViewMenu.setAdapter(mAdapter);
+        RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
+        recyclerViewMenu.setLayoutManager(mLayoutManager);
+        recyclerViewMenu.setAdapter(mAdapter);
 
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mDrawer,
+                MainActivity.this,
+                drawer,
                 mToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(mDrawerToggle);
+        drawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        mNavigationView.setItemIconTintList(null);
-
-
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
     }
 
 //    private void initHeaderView() {
@@ -456,6 +453,66 @@ public class MainActivity extends AppCompatActivity {
         } else {
             supportFinishAfterTransition();
         }
+    }
+
+    private void retrieveCategories() {
+        HttpManagerMagento.Companion.getInstance().retrieveCategories(new ApiResponseCallback<Category>() {
+            @Override
+            public void success(@Nullable Category category) {
+                if (mDrawerItemList.size() == 0 && category != null) {
+                    mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), category.getId(), category));
+                    Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+                    mDrawerDao = new DrawerDao(mDrawerItemList);
+                    mDrawerDao.setStoreDao(mStoreDao);
+                    if (UserInfoManager.getInstance().getUserId() == null ||
+                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
+                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
+                        storeId = "00096";
+                        UserInfoManager.getInstance().setUserIdLogin(storeId);
+                        for (StoreList storeList : mStoreDao.getStoreLists()) {
+                            if (storeList.getStoreId().equalsIgnoreCase(storeId)) {
+                                UserInfoManager.getInstance().setStore(storeList);
+                            }
+                        }
+                        if (!mStoreDao.isStoreEmpty()) {
+                            if (mStoreDao.isStoreListItemListAvailable()) {
+                                List<StoreList> storeLists = mStoreDao.getStoreLists();
+                                for (StoreList headerStore :
+                                        storeLists) {
+                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
+                                }
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
+                        storeId = UserInfoManager.getInstance().getUserId();
+                        if (!mStoreDao.isStoreEmpty()) {
+                            if (mStoreDao.isStoreListItemListAvailable()) {
+                                List<StoreList> storeLists = mStoreDao.getStoreLists();
+                                for (StoreList headerStore :
+                                        storeLists) {
+                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
+                                }
+                            }
+                        }
+                    }
+                    mAdapter.setDrawItem(mDrawerDao);
+                } else {
+                    mAdapter.setDrawItem(mDrawerDao);
+                }
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction
+                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                        .commit();
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                mProgressDialog.dismiss();
+            }
+        });
     }
 
     private void showAlertDialog(String message, final boolean shouldCloseActivity) {

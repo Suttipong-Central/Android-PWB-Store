@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.SubHeaderProductActivity;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.Category;
+import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
@@ -22,29 +23,27 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    @BindView(R.id.image_view)
-    ImageView mImageView;
+    ImageView mImageView = itemView.findViewById(R.id.image_view);
 
-    @BindView(R.id.txt_view)
-    PowerBuyTextView mTextView;
+    PowerBuyTextView mTextView = itemView.findViewById(R.id.txt_view);
 
     public CategoryViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
-    public void setViewHolder(Category category) {
+    public void setViewHolder(ProductFilterHeader categoryHeader) {
         Glide.with(Contextor.getInstance().getContext())
                 //.load(category.getImageURL())
-                .load(category.getImageURL())
+                .load(categoryHeader.getUrlName())
                 .placeholder(R.drawable.ic_circle_grey_placeholder)
                 .crossFade()
                 //.fitCenter()
                 .bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
                 .into(mImageView);
 
-        mTextView.setText(category.getDepartmentName());
-        itemView.setTag(category);
+        mTextView.setText(categoryHeader.getName());
+        itemView.setTag(categoryHeader);
         itemView.setOnClickListener(this);
     }
 

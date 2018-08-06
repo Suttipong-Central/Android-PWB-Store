@@ -15,8 +15,6 @@ import java.util.List;
 
 public class Category implements IViewType, Parcelable {
     private int viewTypeId;
-    @SerializedName("entity_id")
-    @Expose
     private String id;
     @SerializedName("level")
     @Expose
@@ -27,7 +25,7 @@ public class Category implements IViewType, Parcelable {
     @SerializedName("image")
     @Expose
     private String imageURL;
-    @SerializedName("children")
+    @SerializedName("children_data")
     @Expose
     private List<ProductFilterHeader> mFilterHeaders = new ArrayList<>();
 

@@ -487,7 +487,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
                         "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
             if (mCategory != null) {
-                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
+//                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
             }
         }
 ////        else {
@@ -495,7 +495,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
 ////        }
 
         if (mCategory != null) {
-            mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
+//            mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
         }
 
         int scrollPosition = 0;

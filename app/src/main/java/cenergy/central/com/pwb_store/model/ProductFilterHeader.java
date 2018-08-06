@@ -34,14 +34,14 @@ public class ProductFilterHeader implements IViewType, Parcelable {
     @SerializedName("level")
     @Expose
     private String level;
-    @SerializedName(value = "DepartmentName", alternate = "name")
+    @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName(value = "UrlName", alternate = "image")
+    @SerializedName("image")
     @Expose
     private String urlName;
     private String type;
-    @SerializedName(value = "Children", alternate = "children")
+    @SerializedName("children_data")
     @Expose
     private List<ProductFilterItem> mProductFilterItemList = new ArrayList<>();
     private boolean isExpanded;

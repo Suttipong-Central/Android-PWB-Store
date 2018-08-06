@@ -20,6 +20,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.TextBannerViewHolder;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.IViewType;
+import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.TextBanner;
 import cenergy.central.com.pwb_store.model.ViewType;
 
@@ -105,12 +106,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_CATEGORY:
-                if (viewType instanceof Category && holder instanceof CategoryViewHolder) {
-                    Category category = (Category) viewType;
-
-                    Log.d("TESTEST", category.getId());
+                if (viewType instanceof ProductFilterHeader && holder instanceof CategoryViewHolder) {
+                    ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
-                    categoryViewHolder.setViewHolder(category);
+                    categoryViewHolder.setViewHolder(categoryHeader);
                 }
                 break;
 
@@ -151,6 +150,31 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (categoryDao.getCategoryList().size() % 3 != 0) {
             int fullFillerNo = 3 - categoryDao.getCategoryList().size() % 3;
+            for (int i = 0; i < fullFillerNo; i++) {
+                mListViewType.add(VIEW_TYPE_FULL_FILLER);
+            }
+        }
+
+        notifyDataSetChanged();
+
+    }
+
+    public void setCategory(Category category) {
+
+        //mListViewType.clear();
+        mListViewType.add(VIEW_TYPE_SEARCH);
+        TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
+        textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
+        mListViewType.add(textBanner);
+
+        //int startPosition = mListViewType.size();
+        for (ProductFilterHeader header : category.getFilterHeaders()) {
+            category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
+            mListViewType.add(header);
+        }
+
+        if (category.getFilterHeaders().size() % 3 != 0) {
+            int fullFillerNo = 3 -  category.getFilterHeaders().size() % 3;
             for (int i = 0; i < fullFillerNo; i++) {
                 mListViewType.add(VIEW_TYPE_FULL_FILLER);
             }

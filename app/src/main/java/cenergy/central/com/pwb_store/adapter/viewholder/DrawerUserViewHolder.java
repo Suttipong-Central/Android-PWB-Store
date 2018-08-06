@@ -30,8 +30,7 @@ public class DrawerUserViewHolder extends RecyclerView.ViewHolder{
     @BindView(R.id.txt_view_full_name)
     PowerBuyTextView fullName;
 
-    @BindView(R.id.txt_store)
-    PowerBuyTextView storeName;
+    private PowerBuyTextView storeName = itemView.findViewById(R.id.txt_store);
 
     private Context mContext;
     private PowerBuyListDialog mPowerBuyListDialog;

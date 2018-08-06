@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -49,6 +50,19 @@ public class APIError implements Parcelable {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
         this.errorUserMessage = errorUserMessage;
+    }
+
+    public APIError(Throwable e) {
+        if (e instanceof ApiException) {
+            ApiException error = (ApiException) e;
+
+            errorCode = String.valueOf(error.getStatusCode());
+            errorMessage = error.getMessage();
+            errorUserMessage = error.getLocalizedMessage();
+        } else {
+            errorMessage = e.getMessage();
+            errorUserMessage = e.getLocalizedMessage();
+        }
     }
 
     protected APIError(Parcel in) {
