@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.AvaliableFragment;
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
 import cenergy.central.com.pwb_store.model.StoreDao;
@@ -138,7 +138,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         if (savedInstanceState == null){
             showProgressDialog();
             //HttpManagerMagento.getInstance().getStoreService().getAvailableStock(sku).enqueue(CALLBACK_AVALIABLE);
-            HttpManagerMagento.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
+            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction

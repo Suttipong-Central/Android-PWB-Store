@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.SpecFragment;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.model.APIError;
@@ -117,7 +117,7 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
         }
         if (savedInstanceState == null){
             showProgressDialog();
-            HttpManagerMagento.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
                     getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
 
         } else {
@@ -126,7 +126,7 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
 //                    .replace(R.id.container, SpecFragment.newInstance(mSpecDao, mProductDetail))
 //                    .commit();
             showProgressDialog();
-            HttpManagerMagento.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
                     getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
         }
 

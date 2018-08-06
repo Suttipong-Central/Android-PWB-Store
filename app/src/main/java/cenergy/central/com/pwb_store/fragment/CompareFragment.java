@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CompareProductAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
 import cenergy.central.com.pwb_store.model.APIError;
@@ -80,7 +80,7 @@ public class CompareFragment extends Fragment {
             if (response.isSuccessful()){
                 //mProgressDialog.dismiss();
                 mCompareList = response.body();
-                HttpManagerMagento.getInstance().getCompareService().getCompareItem(sku).enqueue(CALLBACK_ITEM);
+                HttpManagerMagentoOld.getInstance().getCompareService().getCompareItem(sku).enqueue(CALLBACK_ITEM);
 
             }else {
                 mProgressDialog.dismiss();
@@ -136,7 +136,7 @@ public class CompareFragment extends Fragment {
         sku = getSku();
         Log.d(TAG, "id" +productList.getProductId());
         showProgressDialog();
-        HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+        HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
                 UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
 //        List<ProductCompareList> mProductCompareListList = new ArrayList<>();
 //        for (AddCompare addCompare : results){
@@ -238,7 +238,7 @@ public class CompareFragment extends Fragment {
             }else {
                 showProgressDialog();
                 Log.d(TAG, "skuString " + sku);
-                HttpManagerMagento.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+                HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
                         UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
             }
 

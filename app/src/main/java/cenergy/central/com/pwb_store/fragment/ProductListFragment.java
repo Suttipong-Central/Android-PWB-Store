@@ -36,7 +36,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
@@ -212,10 +212,10 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
                 && isStillHavePages()) {
 
             if (isSearch == true) {
-                HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
+                HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
                         keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
             } else {
-                HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                         "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
 
@@ -479,11 +479,11 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         if (savedInstanceState == null) {
             if (isSearch == true) {
                 showProgressDialog();
-                HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container",
+                HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container",
                         "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
             } else {
                 showProgressDialog();
-                HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                         "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
             if (mCategory != null) {
@@ -648,7 +648,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         resetPage();
         sortName = sortNameT;
         sortType = sortTypeT;
-        HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+        HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                 "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
     }
 

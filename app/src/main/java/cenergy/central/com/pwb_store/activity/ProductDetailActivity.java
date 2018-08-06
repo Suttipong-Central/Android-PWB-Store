@@ -26,7 +26,7 @@ import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductDetailFragment;
 import cenergy.central.com.pwb_store.fragment.WebViewFragment;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
@@ -310,11 +310,11 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         if (savedInstanceState == null){
             if (!isBarcode){
                 showProgressDialog();
-                HttpManagerMagento.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+                HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
                         getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
             }else {
                 showProgressDialog();
-                HttpManagerMagento.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
+                HttpManagerMagentoOld.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
                         "finset", "barcode", productId, "eq", "name", 10, 1).enqueue(CALLBACK_BARCODE);
             }
         }else {

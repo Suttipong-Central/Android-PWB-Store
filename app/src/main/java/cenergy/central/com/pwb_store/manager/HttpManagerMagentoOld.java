@@ -23,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by napabhat on 8/9/2017 AD.
  */
 
-public class HttpManagerMagento {
+public class HttpManagerMagentoOld {
     //Specific Header
     private static final String HEADER_AUTHORIZATION = "Authorization";
     //Specific Client
@@ -36,7 +36,7 @@ public class HttpManagerMagento {
 
     private static final String BASE_URL_MAGENTO = "http://api.powerbuy.world";
     private static final String BASE_URL_PRODUCT = "http://api.powerbuy.co.th";
-    private static HttpManagerMagento instance;
+    private static HttpManagerMagentoOld instance;
     private Context mContext;
     private Retrofit retrofit;
     private TokenService mTokenService;
@@ -46,7 +46,7 @@ public class HttpManagerMagento {
     private CompareService mCompareService;
     private String url;
 
-    private HttpManagerMagento() {
+    private HttpManagerMagentoOld() {
         mContext = Contextor.getInstance().getContext();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -77,9 +77,9 @@ public class HttpManagerMagento {
         mCompareService = retrofit.create(CompareService.class);
     }
 
-    public static HttpManagerMagento getInstance() {
+    public static HttpManagerMagentoOld getInstance() {
         if (instance == null)
-            instance = new HttpManagerMagento();
+            instance = new HttpManagerMagentoOld();
         return instance;
     }
 

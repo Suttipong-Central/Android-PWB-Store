@@ -37,7 +37,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
             if (response.isSuccessful()){
                 mStoreDao = new StoreDao(response.body());
-                HttpManagerMagento.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
+                HttpManagerMagentoOld.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
             }else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null){
             showProgressDialog();
-            HttpManagerMagento.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
+            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
 
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

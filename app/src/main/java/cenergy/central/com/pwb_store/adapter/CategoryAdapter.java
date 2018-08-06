@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -106,6 +107,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_ID_CATEGORY:
                 if (viewType instanceof Category && holder instanceof CategoryViewHolder) {
                     Category category = (Category) viewType;
+
+                    Log.d("TESTEST", category.getId());
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
                     categoryViewHolder.setViewHolder(category);
                 }
