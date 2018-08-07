@@ -68,10 +68,6 @@
             android:name="cenergy.central.com.pwb_store.activity.LoginActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name="cenergy.central.com.pwb_store.activity.SubHeaderProductActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

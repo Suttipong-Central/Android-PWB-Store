@@ -124,25 +124,25 @@ public class LoginFragment extends Fragment {
     @OnClick(R.id.card_view_login)
     public void onCardViewLoginClick(CardView cardView) {
         hideSoftKeyboard(cardView);
-        showProgressDialog();
-        try {
-            String username = mUserNameWrapper.getEditText().getText().toString();
-            String password = mPasswordWrapper.getEditText().getText().toString();
-
-            if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) &&
-                    password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))){
-                EventBus.getDefault().post(new LoginSuccessBus(true));
-                mProgressDialog.dismiss();
-            }else {
-                mProgressDialog.dismiss();
-                showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
-            }
-
-        } catch (NullPointerException ex) {
-            mProgressDialog.dismiss();
-            Log.e(TAG, "onCardViewLoginClick: ", ex);
-        }
-
+//        showProgressDialog();
+//        try {
+//            String username = mUserNameWrapper.getEditText().getText().toString();
+//            String password = mPasswordWrapper.getEditText().getText().toString();
+//
+//            if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) &&
+//                    password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))){
+//                EventBus.getDefault().post(new LoginSuccessBus(true));
+//                mProgressDialog.dismiss();
+//            }else {
+//                mProgressDialog.dismiss();
+//                showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
+//            }
+//
+//        } catch (NullPointerException ex) {
+//            mProgressDialog.dismiss();
+//            Log.e(TAG, "onCardViewLoginClick: ", ex);
+//        }
+        EventBus.getDefault().post(new LoginSuccessBus(true));
     }
 
     private void showAlertDialog(String title, String message) {

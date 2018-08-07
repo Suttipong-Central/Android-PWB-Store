@@ -7,11 +7,14 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.activity.SubHeaderProductActivity;
+import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.manager.bus.event.CategoryBus;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -49,9 +52,7 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.
 
     @Override
     public void onClick(View view) {
-//        Category category = (Category) itemView.getTag();
-//        EventBus.getDefault().post(new CategoryBus(category, itemView));
-        Intent intent = new Intent(Contextor.getInstance().getContext(), SubHeaderProductActivity.class);
-        itemView.getContext().startActivity(intent);
+        ProductFilterHeader category = (ProductFilterHeader) itemView.getTag();
+        EventBus.getDefault().post(new CategoryBus(category, itemView));
     }
 }

@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.manager.bus.event;
 import android.view.View;
 
 import cenergy.central.com.pwb_store.model.Category;
+import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 
 /**
  * Created by napabhat on 9/12/2016 AD.
@@ -10,10 +11,10 @@ import cenergy.central.com.pwb_store.model.Category;
 
 public class CategoryBus {
     private View view;
-    private Category category;
+    private ProductFilterHeader productFilterHeader;
 
-    public CategoryBus(Category category, View view) {
-        this.category = category;
+    public CategoryBus(ProductFilterHeader productFilterHeader, View view) {
+        this.productFilterHeader = productFilterHeader;
         this.view = view;
     }
 
@@ -21,7 +22,7 @@ public class CategoryBus {
         return view;
     }
 
-    public Category getCategory() {
-        return category;
+    public ProductFilterHeader getCategoryHeader() {
+        return productFilterHeader;
     }
 }

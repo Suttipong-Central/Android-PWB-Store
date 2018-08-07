@@ -17,6 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:src="@mipmap/ic_launcher"
         tools:src="@mipmap/ic_launcher" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
