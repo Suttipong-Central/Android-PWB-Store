@@ -15,6 +15,7 @@ public class CategoryDao implements IViewType, Parcelable {
     private int viewTypeId;
 
     private List<Category> mCategoryList = new ArrayList<>();
+    private Category category;
 
     public static final Creator<CategoryDao> CREATOR = new Creator<CategoryDao>() {
         @Override
@@ -30,6 +31,10 @@ public class CategoryDao implements IViewType, Parcelable {
 
     public CategoryDao(List<Category> categoryList) {
         this.mCategoryList = categoryList;
+    }
+
+    public CategoryDao(Category category) {
+        mCategoryList.add(category);
     }
 
     protected CategoryDao(Parcel in) {

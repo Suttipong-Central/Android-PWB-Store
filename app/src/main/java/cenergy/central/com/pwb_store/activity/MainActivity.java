@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Event from onClick category item
     @Subscribe
     public void onEvent(ProductFilterHeaderBus header) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -469,10 +470,14 @@ public class MainActivity extends AppCompatActivity {
         HttpManagerMagento.Companion.getInstance().retrieveCategories(new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
+                mCategoryDao = new CategoryDao(category);
+                mDrawerDao = new DrawerDao(mDrawerItemList);
+
                 if (mDrawerItemList.size() == 0 && category != null) {
-                    mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), category.getId(), category));
-                    Log.d(TAG, "Detail : " + mDrawerItemList.toString());
-                    mDrawerDao = new DrawerDao(mDrawerItemList);
+                    for (Category item : mCategoryDao.getCategoryList()) {
+                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), item.getId(), item));
+                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+                    }
                     mDrawerDao.setStoreDao(mStoreDao);
                     if (UserInfoManager.getInstance().getUserId() == null ||
                             UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {

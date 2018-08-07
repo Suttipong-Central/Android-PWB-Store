@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -136,6 +135,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setCategory(CategoryDao categoryDao) {
 
+        if (categoryDao.getCategoryList().size() == 1 &&
+                categoryDao.getCategoryList().get(0).getDepartmentName().equals("Default Category")) {
+
+            setCategory(categoryDao.getCategoryList().get(0));
+            return;
+        }
+
         //mListViewType.clear();
         mListViewType.add(VIEW_TYPE_SEARCH);
         TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
@@ -156,7 +162,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         notifyDataSetChanged();
-
     }
 
     public void setCategory(Category category) {
@@ -172,16 +177,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
             mListViewType.add(header);
         }
-
-        if (category.getFilterHeaders().size() % 3 != 0) {
-            int fullFillerNo = 3 -  category.getFilterHeaders().size() % 3;
-            for (int i = 0; i < fullFillerNo; i++) {
-                mListViewType.add(VIEW_TYPE_FULL_FILLER);
-            }
-        }
-
         notifyDataSetChanged();
-
     }
 
     public GridLayoutManager.SpanSizeLookup getSpanSize() {

@@ -22,8 +22,8 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private ImageView mImageView = itemView.findViewById(R.id.image_view);
-    private PowerBuyTextView mTextView = itemView.findViewById(R.id.txt_view);
+    ImageView mImageView = itemView.findViewById(R.id.image_view);
+    PowerBuyTextView mTextView = itemView.findViewById(R.id.txt_view);
 
     public CategoryViewHolder(View itemView) {
         super(itemView);
