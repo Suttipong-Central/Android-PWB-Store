@@ -10,8 +10,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
+import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
@@ -37,16 +39,16 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder imple
         mImgFilterHeader.setBackgroundResource(R.drawable.ic_keyboard_arrow_right);
     }
 
-    public void setViewHolder(ProductFilterHeader productFilterHeader) {
-        String filter = countFilter(productFilterHeader);
+    public void setViewHolder(ProductFilterSubHeader productFilterSubHeader) {
+        String filter = countFilter(productFilterSubHeader);
         mTxtHeader.setText(filter);
-        itemView.setTag(productFilterHeader);
+        itemView.setTag(productFilterSubHeader);
         itemView.setOnClickListener(this);
-        syncIndicator(productFilterHeader);
+        syncIndicator(productFilterSubHeader);
     }
 
-    private void syncIndicator(ProductFilterHeader productFilterHeader) {
-        if (!productFilterHeader.isExpanded()) {
+    private void syncIndicator(ProductFilterSubHeader productFilterSubHeader) {
+        if (!productFilterSubHeader.isExpanded()) {
             mImgFilterHeader.setBackgroundResource(R.drawable.ic_keyboard_arrow_right);
             mImgBack.setBackgroundResource(R.drawable.background_popup_window);
         } else {
@@ -57,27 +59,27 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder imple
 
     @Override
     public void onClick(View view) {
-        ProductFilterHeader productFilterHeader = (ProductFilterHeader) itemView.getTag();
+        ProductFilterSubHeader productFilterSubHeader = (ProductFilterSubHeader) itemView.getTag();
 
-        if (!productFilterHeader.isExpanded()) {
-            productFilterHeader.setExpanded(true);
+        if (!productFilterSubHeader.isExpanded()) {
+            productFilterSubHeader.setExpanded(true);
             mImgFilterHeader.setBackgroundResource(R.drawable.background_popup_window);
             mImgBack.setBackgroundResource(R.drawable.ic_keyboard_arrow_left);
-            EventBus.getDefault().post(new ProductFilterHeaderBus(productFilterHeader, getAdapterPosition()));
+            EventBus.getDefault().post(new ProductFilterSubHeaderBus(productFilterSubHeader, getAdapterPosition()));
         } else {
-            productFilterHeader.setExpanded(false);
+            productFilterSubHeader.setExpanded(false);
             mImgFilterHeader.setBackgroundResource(R.drawable.ic_keyboard_arrow_right);
             mImgBack.setBackgroundResource(R.drawable.background_popup_window);
-            EventBus.getDefault().post(new ProductFilterHeaderBus(productFilterHeader, getAdapterPosition()));
+            EventBus.getDefault().post(new ProductFilterSubHeaderBus(productFilterSubHeader, getAdapterPosition()));
         }
     }
 
-    private String countFilter(ProductFilterHeader productFilterHeader) {
+    private String countFilter(ProductFilterSubHeader productFilterSubHeader) {
         String filter;
         int checkCount = 0;
 
         for (ProductFilterItem productFilterItem :
-                productFilterHeader.getProductFilterItemList()) {
+                productFilterSubHeader.getProductFilterItemList()) {
             if (productFilterItem.isSelected()) {
                 checkCount++;
             }
@@ -85,9 +87,9 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder imple
 
 
         if (checkCount <= 0) {
-            filter = productFilterHeader.getName();
+            filter = productFilterSubHeader.getName();
         } else {
-            filter = productFilterHeader.getName() + " (" + checkCount + ")";
+            filter = productFilterSubHeader.getName() + " (" + checkCount + ")";
         }
 
         return filter;

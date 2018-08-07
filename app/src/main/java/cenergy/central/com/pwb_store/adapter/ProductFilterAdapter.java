@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
+import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 
 /**
  * Created by napabhat on 7/13/2017 AD.
@@ -30,7 +31,7 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
     //Data Members
     private Context mContext;
     private List<IViewType> mListViewType = new ArrayList<>();
-    private List<ProductFilterHeader> mProductFilterHeaders = new ArrayList<>();
+    private List<ProductFilterSubHeader> mProductFilterSubHeaders = new ArrayList<>();
 
     public ProductFilterAdapter(Context mContext) {
         this.mContext = mContext;
@@ -62,10 +63,10 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_FILTER_HEADER:
-                if (viewType instanceof ProductFilterHeader && holder instanceof ProductFilterHeaderViewHolder) {
-                    ProductFilterHeader productFilterHeader = (ProductFilterHeader) viewType;
+                if (viewType instanceof ProductFilterSubHeader && holder instanceof ProductFilterHeaderViewHolder) {
+                    ProductFilterSubHeader productFilterSubHeader = (ProductFilterSubHeader) viewType;
                     ProductFilterHeaderViewHolder productFilterHeaderViewHolder = (ProductFilterHeaderViewHolder) holder;
-                    productFilterHeaderViewHolder.setViewHolder(productFilterHeader);
+                    productFilterHeaderViewHolder.setViewHolder(productFilterSubHeader);
                 }
                 break;
             case VIEW_TYPE_ID_FILTER_ITEM:
@@ -90,10 +91,10 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     public void setProductFilter(ProductFilterList productFilterList) {
-        this.mProductFilterHeaders = productFilterList.getProductFilterHeaders();
+        this.mProductFilterSubHeaders = productFilterList.getProductFilterSubHeaders();
         mListViewType.clear();
-        for (ProductFilterHeader productFilterHeader :
-                productFilterList.getProductFilterHeaders()) {
+        for (ProductFilterSubHeader productFilterHeader :
+                productFilterList.getProductFilterSubHeaders()) {
                 productFilterHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
                 mListViewType.add(productFilterHeader);
 
@@ -102,23 +103,23 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
         notifyDataSetChanged();
     }
 
-    public void addProductLevel2(ProductFilterHeader productFilterHeader) {
-        List<ProductFilterItem> productFilterItemList = productFilterHeader.getProductFilterItemList();
+    public void addProductLevel2(ProductFilterSubHeader productFilterSubHeader) {
+        List<ProductFilterItem> productFilterItemList = productFilterSubHeader.getProductFilterItemList();
         mListViewType.clear();
-        productFilterHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
-        mListViewType.add(productFilterHeader);
+        productFilterSubHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
+        mListViewType.add(productFilterSubHeader);
 
         for (ProductFilterItem productFilterItem :
-                productFilterHeader.getProductFilterItemList()) {
+                productFilterSubHeader.getProductFilterItemList()) {
             //productFilterItem.setParentId(productFilterHeader.getId());
             productFilterItem.setViewTypeId(VIEW_TYPE_ID_FILTER_ITEM);
         }
 
         int positionAdded = -1;
         for (int i = 0; i < mListViewType.size(); i++) {
-            if (mListViewType.get(i) instanceof ProductFilterHeader) {
-                ProductFilterHeader filterHeader = (ProductFilterHeader) mListViewType.get(i);
-                if (filterHeader.getId() == productFilterHeader.getId()) {
+            if (mListViewType.get(i) instanceof ProductFilterSubHeader) {
+                ProductFilterSubHeader filterHeader = (ProductFilterSubHeader) mListViewType.get(i);
+                if (filterHeader.getId().equals(productFilterSubHeader.getId())) {
                     mListViewType.addAll(i + 1, productFilterItemList);
                     positionAdded = i;
                     break;
@@ -137,10 +138,10 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void removeProductLevel3(ProductFilterList productFilterList) {
         mListViewType.clear();
-        for (ProductFilterHeader productFilterHeader :
-                productFilterList.getProductFilterHeaders()) {
-            productFilterHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
-            mListViewType.add(productFilterHeader);
+        for (ProductFilterSubHeader productFilterSubHeader :
+                productFilterList.getProductFilterSubHeaders()) {
+            productFilterSubHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
+            mListViewType.add(productFilterSubHeader);
         }
 
         notifyDataSetChanged();
@@ -148,11 +149,11 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void  updateSingleProductFilterItem(ProductFilterItem productFilterItem) {
         int parentId = Integer.parseInt(productFilterItem.getId());
-        for (ProductFilterHeader productFilterHeader : mProductFilterHeaders) {
-            if (parentId == Integer.parseInt(productFilterHeader.getId())) {
-                if (!productFilterHeader.isMultipleType()) {
-                    if (productFilterHeader.isProductFilterItemListAvailable()) {
-                        List<ProductFilterItem> productFilterItemList = productFilterHeader.getProductFilterItemList();
+        for (ProductFilterSubHeader productFilterSubHeader : mProductFilterSubHeaders) {
+            if (parentId == Integer.parseInt(productFilterSubHeader.getId())) {
+                if (!productFilterSubHeader.isMultipleType()) {
+                    if (productFilterSubHeader.isProductFilterItemListAvailable()) {
+                        List<ProductFilterItem> productFilterItemList = productFilterSubHeader.getProductFilterItemList();
                         for (ProductFilterItem headerProductFilterItem :
                                 productFilterItemList) {
                             headerProductFilterItem.setSelected(headerProductFilterItem.getId() == productFilterItem.getId());

@@ -24,6 +24,7 @@ import cenergy.central.com.pwb_store.adapter.SortingAdapter;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
+import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
@@ -104,9 +105,9 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
 //        }
 //    }
 
-    public void setFilterItem(ProductFilterHeader productFilterHeader) {
-        if (productFilterHeader.isExpanded()) {
-            mProductFilterAdapter.addProductLevel2(productFilterHeader);
+    public void setFilterItem(ProductFilterSubHeader productFilterSubHeader) {
+        if (productFilterSubHeader.isExpanded()) {
+            mProductFilterAdapter.addProductLevel2(productFilterSubHeader);
         } else {
             mProductFilterAdapter.removeProductLevel3(mProductFilterList);
         }

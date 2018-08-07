@@ -28,32 +28,32 @@ public class ProductFilterList  implements IViewType, Parcelable {
     };
     private int viewTypeId;
     private int total;
-    private List<ProductFilterHeader> mProductFilterHeaders;
+    private List<ProductFilterSubHeader> mProductFilterSubHeaders;
 
-    public ProductFilterList(List<ProductFilterHeader> productFilterHeaders) {
-        this.mProductFilterHeaders = productFilterHeaders;
+    public ProductFilterList(List<ProductFilterSubHeader> productFilterSubHeaders) {
+        this.mProductFilterSubHeaders = productFilterSubHeaders;
     }
 
     public ProductFilterList(ProductFilterList productFilterList) {
         if (productFilterList != null){
             this.total = productFilterList.getTotal();
-            List<ProductFilterHeader> productFilterHeaderList = new ArrayList<>();
+            List<ProductFilterSubHeader> productFilterSubHeaderList = new ArrayList<>();
 
             if (productFilterList.isProductFilterListAvailable()) {
-                for (ProductFilterHeader productFilterHeader :
-                        productFilterList.getProductFilterHeaders()) {
-                    productFilterHeaderList.add(new ProductFilterHeader(productFilterHeader));
+                for (ProductFilterSubHeader productFilterSubHeader :
+                        productFilterList.getProductFilterSubHeaders()) {
+                    productFilterSubHeaderList.add(new ProductFilterSubHeader(productFilterSubHeader));
                 }
             }
 
-            this.mProductFilterHeaders = productFilterHeaderList;
+            this.mProductFilterSubHeaders = productFilterSubHeaderList;
         }
 
     }
 
     protected ProductFilterList(Parcel in) {
         viewTypeId = in.readInt();
-        mProductFilterHeaders = in.createTypedArrayList(ProductFilterHeader.CREATOR);
+        mProductFilterSubHeaders = in.createTypedArrayList(ProductFilterSubHeader.CREATOR);
         total = in.readInt();
     }
 
@@ -65,7 +65,7 @@ public class ProductFilterList  implements IViewType, Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
-        dest.writeList(mProductFilterHeaders);
+        dest.writeList(mProductFilterSubHeaders);
         dest.writeInt(total);
     }
 
@@ -79,12 +79,12 @@ public class ProductFilterList  implements IViewType, Parcelable {
         this.viewTypeId = id;
     }
 
-    public List<ProductFilterHeader> getProductFilterHeaders() {
-        return mProductFilterHeaders;
+    public List<ProductFilterSubHeader> getProductFilterSubHeaders() {
+        return mProductFilterSubHeaders;
     }
 
-    public void setProductFilterHeaders(List<ProductFilterHeader> productFilterHeaders) {
-        mProductFilterHeaders = productFilterHeaders;
+    public void setProductFilterSubHeaders(List<ProductFilterSubHeader> productFilterSubHeaders) {
+        mProductFilterSubHeaders = productFilterSubHeaders;
     }
 
     public void updateProductFilter(ProductFilterList productFilterList, boolean isPreserveSelection) {
@@ -93,19 +93,19 @@ public class ProductFilterList  implements IViewType, Parcelable {
     }
 
     private void removeNonExistingFilterItem(ProductFilterList productFilterList, boolean isPreserveSelection) {
-        List<ProductFilterHeader> loadedProductFilterHeaderList = productFilterList.getProductFilterHeaders();
+        List<ProductFilterSubHeader> loadedProductFilterSubHeaderList = productFilterList.getProductFilterSubHeaders();
         List<String> indexList = new ArrayList<>();
-        for (ProductFilterHeader productFilterHeader :
-                loadedProductFilterHeaderList) {
-            indexList.add(productFilterHeader.getName());
+        for (ProductFilterSubHeader productFilterSubHeader :
+                loadedProductFilterSubHeaderList) {
+            indexList.add(productFilterSubHeader.getName());
         }
 
-        ListIterator<ProductFilterHeader> it = this.mProductFilterHeaders.listIterator();
+        ListIterator<ProductFilterSubHeader> it = this.mProductFilterSubHeaders.listIterator();
         while (it.hasNext()) {
-            ProductFilterHeader productFilterHeader = it.next();
-            if (indexList.contains(productFilterHeader.getName())) {
-                int matchIndex = indexList.indexOf(productFilterHeader.getName());
-                productFilterHeader.replaceExisting(loadedProductFilterHeaderList.get(matchIndex), isPreserveSelection);
+            ProductFilterSubHeader productFilterSubHeader = it.next();
+            if (indexList.contains(productFilterSubHeader.getName())) {
+                int matchIndex = indexList.indexOf(productFilterSubHeader.getName());
+                productFilterSubHeader.replaceExisting(loadedProductFilterSubHeaderList.get(matchIndex), isPreserveSelection);
             } else {
                 it.remove();
             }
@@ -114,43 +114,43 @@ public class ProductFilterList  implements IViewType, Parcelable {
 
     private void addNewFilterItem(ProductFilterList productFilterList) {
         List<String> indexList = new ArrayList<>();
-        for (ProductFilterHeader loadedProductFilterHeader :
-                this.mProductFilterHeaders) {
-            indexList.add(loadedProductFilterHeader.getName());
+        for (ProductFilterSubHeader loadedProductFilterSubHeader :
+                this.mProductFilterSubHeaders) {
+            indexList.add(loadedProductFilterSubHeader.getName());
         }
 
-        for (ProductFilterHeader loadedProductFilterHeader :
-                productFilterList.getProductFilterHeaders()) {
-            if (!indexList.contains(loadedProductFilterHeader.getName())) {
-                this.mProductFilterHeaders.add(loadedProductFilterHeader);
+        for (ProductFilterSubHeader loadedProductFilterSubHeader :
+                productFilterList.getProductFilterSubHeaders()) {
+            if (!indexList.contains(loadedProductFilterSubHeader.getName())) {
+                this.mProductFilterSubHeaders.add(loadedProductFilterSubHeader);
             }
         }
     }
 
 //    public void updateSortOption(ProductSortList productSortList, boolean isPreserveSelection) {
-//        ProductFilterHeader productSortHeader = new ProductFilterHeader(0, productSortList.getName(), productSortList.getSlug(), "single", productSortList.getProductFilterItems());
+//        ProductFilterSubHeader productSortHeader = new ProductFilterSubHeader(0, productSortList.getName(), productSortList.getSlug(), "single", productSortList.getProductFilterItems());
 //        if (isProductFilterListAvailable()) {
 //            boolean isFound = false;
-//            for (ProductFilterHeader productFilterHeader :
-//                    mProductFilterHeaders) {
-//                if (productFilterHeader.getSlug().equalsIgnoreCase(productSortList.getSlug())) {
-//                    productFilterHeader.replaceSortHeader(productSortHeader, isPreserveSelection);
+//            for (ProductFilterSubHeader productFilterSubHeader :
+//                    mProductFilterSubHeaders) {
+//                if (productFilterSubHeader.getSlug().equalsIgnoreCase(productSortList.getSlug())) {
+//                    productFilterSubHeader.replaceSortHeader(productSortHeader, isPreserveSelection);
 //                    isFound = true;
 //                    break;
 //                }
 //            }
 //
 //            if (!isFound) {
-//                mProductFilterHeaders.add(productSortHeader);
+//                mProductFilterSubHeaders.add(productSortHeader);
 //            }
 //        } else {
-//            mProductFilterHeaders = new ArrayList<>();
-//            mProductFilterHeaders.add(productSortHeader);
+//            mProductFilterSubHeaders = new ArrayList<>();
+//            mProductFilterSubHeaders.add(productSortHeader);
 //        }
 //    }
 
     public boolean isProductFilterListAvailable() {
-        return mProductFilterHeaders != null && !mProductFilterHeaders.isEmpty();
+        return mProductFilterSubHeaders != null && !mProductFilterSubHeaders.isEmpty();
     }
 
     public int getTotal() {
@@ -162,20 +162,20 @@ public class ProductFilterList  implements IViewType, Parcelable {
     }
 
     public void clearAllSelectedFilters() {
-        for (ProductFilterHeader productFilterHeader :
-                mProductFilterHeaders) {
-            productFilterHeader.clearAllSelectedFilterOptions();
+        for (ProductFilterSubHeader productFilterSubHeader :
+                mProductFilterSubHeaders) {
+            productFilterSubHeader.clearAllSelectedFilterOptions();
         }
     }
 
     public Map<String, String> getFilterOptionMap() {
         Map<String, String> filterOptionMap = new HashMap<>();
         String productFilterOption;
-        for (ProductFilterHeader productFilterHeader :
-                mProductFilterHeaders) {
-            productFilterOption = productFilterHeader.getSelectedProductFilterOptionIfAvailable();
+        for (ProductFilterSubHeader productFilterSubHeader :
+                mProductFilterSubHeaders) {
+            productFilterOption = productFilterSubHeader.getSelectedProductFilterOptionIfAvailable();
             if (!TextUtils.isEmpty(productFilterOption)) {
-                filterOptionMap.put(productFilterHeader.getName(), productFilterOption);
+                filterOptionMap.put(productFilterSubHeader.getName(), productFilterOption);
             }
         }
 

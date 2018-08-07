@@ -24,11 +24,11 @@ class SubHeaderProductFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.activity_sub_header_product, container, false)
-        initInstances(rootView)
+        setupView(rootView)
         return rootView
     }
 
-    private fun initInstances(rootView: View) {
+    private fun setupView(rootView: View) {
         val subHeaderRecycler = rootView.findViewById<RecyclerView>(R.id.sub_header_recycler)
         val subHeaderTitle = rootView.findViewById<PowerBuyTextView>(R.id.sub_header_title_text)
         subHeaderTitle.text = productFilterHeader?.name

@@ -58,7 +58,6 @@ import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;

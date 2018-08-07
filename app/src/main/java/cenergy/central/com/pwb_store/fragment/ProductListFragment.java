@@ -42,6 +42,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
 import cenergy.central.com.pwb_store.model.APIError;
@@ -50,6 +51,7 @@ import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
+import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
@@ -147,8 +149,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 mSortingList = mTempSortingList;
             }
             if (mProductFilterList != null) {
-                if (mProductFilterList.getProductFilterHeaders() != null) {
-                    for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()) {
+                if (mProductFilterList.getProductFilterSubHeaders() != null) {
+                    for (ProductFilterSubHeader productFilterHeader : mProductFilterList.getProductFilterSubHeaders()) {
                         productFilterHeader.setExpanded(false);
                     }
                 }
@@ -300,15 +302,15 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
 //    };
 
     @Subscribe
-    public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
+    public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {
         showProgressDialog();
         isDoneFilter = true;
         isSorting = false;
-        ProductFilterHeader productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
+        ProductFilterSubHeader productFilterHeader = productFilterSubHeaderBus.getProductFilterSubHeader();
         callFilter(productFilterHeader.getId(), sortName, sortType);
         title = productFilterHeader.getName();
         departmentId = productFilterHeader.getId();
-        mPowerBuyPopupWindow.setFilterItem(productFilterHeaderBus.getProductFilterHeader());
+        mPowerBuyPopupWindow.setFilterItem(productFilterSubHeaderBus.getProductFilterSubHeader());
         Log.d(TAG, "productFilterHeaderBus" + isDoneFilter);
     }
 
