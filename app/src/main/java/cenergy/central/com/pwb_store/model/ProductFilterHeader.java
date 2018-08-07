@@ -41,6 +41,7 @@ public class ProductFilterHeader implements IViewType, Parcelable {
     @Expose
     private String urlName;
     private String type;
+    private int position;
     @SerializedName("children_data")
     @Expose
     private List<ProductFilterSubHeader> mProductFilterSubHeaders = new ArrayList<>();
@@ -159,6 +160,14 @@ public class ProductFilterHeader implements IViewType, Parcelable {
 
     public String getType() {
         return type;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public void setType(String type) {

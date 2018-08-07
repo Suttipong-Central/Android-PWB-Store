@@ -6,6 +6,7 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Category
+import cenergy.central.com.pwb_store.model.ProductFilterHeader
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,10 +16,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-
-/**
- * Created by napabhat on 8/9/2017 AD.
- */
 
 class HttpManagerMagento {
     private val mContext: Context = Contextor.getInstance().context
@@ -70,7 +67,19 @@ class HttpManagerMagento {
 
                 override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
                     if (response != null) {
-                        callback.success(response.body())
+                        //TODO: keep just position less than 15
+                        val category = response.body()
+                        val categoryHeader = category?.filterHeaders
+                        if (categoryHeader != null) {
+                            val toRemove = arrayListOf<ProductFilterHeader>()
+                            for (header in categoryHeader) {
+                                if (header.position > 15) {
+                                    toRemove.add(header)
+                                }
+                            }
+                            category.filterHeaders.removeAll(toRemove)
+                        }
+                        callback.success(category)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
                     }
