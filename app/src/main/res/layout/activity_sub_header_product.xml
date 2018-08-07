@@ -6,70 +6,70 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <ImageView
-        android:id="@+id/sub_header_search_img"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/search_hint"
-        android:src="@drawable/ic_search"
-        app:layout_constraintEnd_toStartOf="@id/sub_header_search_input"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!--<ImageView-->
+        <!--android:id="@+id/sub_header_search_img"-->
+        <!--android:layout_width="24dp"-->
+        <!--android:layout_height="24dp"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:layout_marginRight="16dp"-->
+        <!--android:layout_marginStart="16dp"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:contentDescription="@string/search_hint"-->
+        <!--android:src="@drawable/ic_search"-->
+        <!--app:layout_constraintEnd_toStartOf="@id/sub_header_search_input"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    <cenergy.central.com.pwb_store.view.PowerBuyEditText
-        android:id="@+id/sub_header_search_input"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/transparent"
-        android:gravity="center_vertical"
-        android:hint="@string/search_hint"
-        android:imeOptions="actionSearch"
-        android:inputType="textFilter"
-        android:maxLines="1"
-        android:textAllCaps="true"
-        android:textColor="@color/headerTextColor"
-        android:textColorHint="@color/hintColor"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@id/sub_header_barcode_img"
-        app:layout_constraintStart_toEndOf="@id/sub_header_search_img"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!--<cenergy.central.com.pwb_store.view.PowerBuyEditText-->
+        <!--android:id="@+id/sub_header_search_input"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:hint="@string/search_hint"-->
+        <!--android:imeOptions="actionSearch"-->
+        <!--android:inputType="textFilter"-->
+        <!--android:maxLines="1"-->
+        <!--android:textAllCaps="true"-->
+        <!--android:textColor="@color/headerTextColor"-->
+        <!--android:textColorHint="@color/hintColor"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintEnd_toStartOf="@id/sub_header_barcode_img"-->
+        <!--app:layout_constraintStart_toEndOf="@id/sub_header_search_img"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    <ImageView
-        android:id="@+id/sub_header_barcode_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/search_hint"
-        android:src="@drawable/ic_barcode_scan"
-        app:layout_constraintLeft_toRightOf="@+id/sub_header_search_input"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!--<ImageView-->
+        <!--android:id="@+id/sub_header_barcode_img"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:layout_marginRight="16dp"-->
+        <!--android:layout_marginStart="16dp"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:contentDescription="@string/search_hint"-->
+        <!--android:src="@drawable/ic_barcode_scan"-->
+        <!--app:layout_constraintLeft_toRightOf="@+id/sub_header_search_input"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/sub_header_title_text"
-        style="@style/textSize22Sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        android:padding="25dp"
-        android:textAllCaps="true"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sub_header_search_input"
-        app:typeFaceAsset="RobotoLight.ttf"
-        tools:text="@string/category" />
+    <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+        <!--android:id="@+id/sub_header_title_text"-->
+        <!--style="@style/textSize22Sp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:gravity="center"-->
+        <!--android:padding="25dp"-->
+        <!--android:textAllCaps="true"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/sub_header_search_input"-->
+        <!--app:typeFaceAsset="RobotoLight.ttf"-->
+        <!--tools:text="@string/category" />-->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/sub_header_recycler"

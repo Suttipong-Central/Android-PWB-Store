@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
+    private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
+    private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
     //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     @BindView(R.id.toolbar)
@@ -240,10 +242,12 @@ public class MainActivity extends AppCompatActivity {
 
     // Event from onClick category item
     @Subscribe
-    public void onEvent(ProductFilterHeaderBus header) {
+    public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
-                .replace(R.id.container, SubHeaderProductFragment.Companion.newInstance(header.getProductFilterHeader()))
+                .replace(R.id.container,
+                        SubHeaderProductFragment.Companion.newInstance(productFilterHeaderBus.getProductFilterHeader()),
+                        TAG_FRAGMENT_SUB_HEADER)
                 .commit();
     }
 
@@ -461,7 +465,14 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             super.onBackPressed();
         } else {
-            supportFinishAfterTransition();
+            if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SUB_HEADER) != null) {
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.container,
+                        CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                        .commit();
+            } else {
+                supportFinishAfterTransition();
+            }
         }
     }
 
@@ -516,7 +527,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
-                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
                         .commit();
                 mProgressDialog.dismiss();
             }

@@ -20,6 +20,7 @@ import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
+import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.TextBanner;
 import cenergy.central.com.pwb_store.model.ViewType;
 
@@ -109,6 +110,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
                     categoryViewHolder.setViewHolder(categoryHeader);
+                } else if (viewType instanceof ProductFilterSubHeader && holder instanceof CategoryViewHolder){
+                    ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) viewType;
+                    CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
+                    categoryViewHolder.setViewHolder(categorySubHeader);
                 }
                 break;
 
@@ -176,6 +181,22 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         for (ProductFilterHeader header : category.getFilterHeaders()) {
             category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
             mListViewType.add(header);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void setCategoryHeader(ProductFilterHeader productFilterHeader) {
+
+        //mListViewType.clear();
+        mListViewType.add(VIEW_TYPE_SEARCH);
+        TextBanner textBanner = new TextBanner(productFilterHeader.getName());
+        textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
+        mListViewType.add(textBanner);
+
+        //int startPosition = mListViewType.size();
+        for (ProductFilterSubHeader subHeader : productFilterHeader.getProductFilterSubHeaders()) {
+            productFilterHeader.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
+            mListViewType.add(subHeader);
         }
         notifyDataSetChanged();
     }

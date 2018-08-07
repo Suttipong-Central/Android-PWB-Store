@@ -5,13 +5,13 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.NewCategoryAdapter
+import cenergy.central.com.pwb_store.adapter.CategoryAdapter
 import cenergy.central.com.pwb_store.model.ProductFilterHeader
-import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class SubHeaderProductFragment : Fragment() {
 
@@ -30,10 +30,13 @@ class SubHeaderProductFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         val subHeaderRecycler = rootView.findViewById<RecyclerView>(R.id.sub_header_recycler)
-        val subHeaderTitle = rootView.findViewById<PowerBuyTextView>(R.id.sub_header_title_text)
-        subHeaderTitle.text = productFilterHeader?.name
-        val adapter = NewCategoryAdapter()
+//        val subHeaderTitle = rootView.findViewById<PowerBuyTextView>(R.id.sub_header_title_text)
+//        subHeaderTitle.text = productFilterHeader?.name
+        val adapter = CategoryAdapter(context)
+        Log.d("productFilterHeader", "${productFilterHeader?.productFilterSubHeaders?.size}")
+        adapter.setCategoryHeader(productFilterHeader)
         val gridLayoutManager = GridLayoutManager(rootView.context, 3, LinearLayoutManager.VERTICAL, false)
+        gridLayoutManager.spanSizeLookup = adapter.spanSize
         subHeaderRecycler.layoutManager = gridLayoutManager
         subHeaderRecycler.adapter = adapter
     }
