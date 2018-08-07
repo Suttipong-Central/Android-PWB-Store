@@ -52,6 +52,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
@@ -249,6 +250,29 @@ public class MainActivity extends AppCompatActivity {
                         SubHeaderProductFragment.Companion.newInstance(productFilterHeaderBus.getProductFilterHeader()),
                         TAG_FRAGMENT_SUB_HEADER)
                 .commit();
+    }
+
+    // Event from onClick product filter sub header item
+    @Subscribe
+    public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {
+        if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Change Language to Thai")) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                    .commit();
+        } else if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Compare")) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                    .commit();
+        } else {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, ProductListFragment.newInstance(productFilterSubHeaderBus.getProductFilterSubHeader().getName()
+                            , false, productFilterSubHeaderBus.getProductFilterSubHeader().getId(),
+                            storeId, "", productFilterSubHeaderBus.getProductFilterSubHeader()))
+                    .commit();
+        }
     }
 
     @Subscribe

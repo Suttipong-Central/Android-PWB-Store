@@ -7,8 +7,8 @@ import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
  */
 
 public class ProductFilterSubHeaderBus {
-    private ProductFilterSubHeader mProductFilterSubHeader;
-    private int position;
+    public ProductFilterSubHeader mProductFilterSubHeader;
+    public int position;
 
     public ProductFilterSubHeaderBus(ProductFilterSubHeader mProductFilterSubHeader, int position) {
         this.mProductFilterSubHeader = mProductFilterSubHeader;

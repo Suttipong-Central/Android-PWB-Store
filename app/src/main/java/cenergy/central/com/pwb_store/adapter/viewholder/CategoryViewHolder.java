@@ -11,7 +11,9 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.manager.bus.event.CategoryBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -23,12 +25,13 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder{
 
-    ImageView mImageView = itemView.findViewById(R.id.image_view);
-    PowerBuyTextView mTextView = itemView.findViewById(R.id.txt_view);
+    ImageView mImageView;
+    PowerBuyTextView mTextView;
 
     public CategoryViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mImageView = itemView.findViewById(R.id.image_view);
+        mTextView = itemView.findViewById(R.id.txt_view);
     }
 
     public void setViewHolder(ProductFilterHeader categoryHeader) {
@@ -64,12 +67,12 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder{
 
         mTextView.setText(categorySubHeader.getName());
         itemView.setTag(categorySubHeader);
-//        itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ProductFilterHeader categoryHeader = (ProductFilterHeader) itemView.getTag();
-//                EventBus.getDefault().post(new ProductFilterHeaderBus(categoryHeader, getAdapterPosition()));
-//            }
-//        });
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) itemView.getTag();
+                EventBus.getDefault().post(new ProductFilterSubHeaderBus(categorySubHeader, getAdapterPosition()));
+            }
+        });
     }
 }

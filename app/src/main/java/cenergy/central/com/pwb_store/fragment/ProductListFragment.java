@@ -40,7 +40,6 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
@@ -48,7 +47,6 @@ import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductDao;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -83,6 +81,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
     private static final String ARG_PAGE = "ARG_PAGE";
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
+    private static final String ARG_PRODUCT_FILTER_SUB_HEADER = "ARG_PRODUCT_FILTER_SUB_HEADER";
     private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
     private static final String ARG_IS_SORTING = "ARG_IS_SORTING";
 
@@ -122,6 +121,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private String storeId;
     private String sortName;
     private Category mCategory;
+    private ProductFilterSubHeader mProductFilterSubHeader;
     //Pagination
     private static final int PER_PAGE = 20;
     // Page
@@ -196,35 +196,35 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 //        }
 //    };
 
-final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
-    @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        super.onScrolled(recyclerView, dx, dy);
-        int totalItemCount = mLayoutManger.getItemCount();
-        int visibleItemCount = mLayoutManger.getChildCount();
-        int firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition();
+    final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int totalItemCount = mLayoutManger.getItemCount();
+            int visibleItemCount = mLayoutManger.getChildCount();
+            int firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition();
 
-        if (isLoadingMore && totalItemCount > mPreviousTotal) {
-            isLoadingMore = false;
-            mPreviousTotal = totalItemCount;
-        }
-        int visibleThreshold = 10;
-        if (!isLoadingMore
-                && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
-                && isStillHavePages()) {
-
-            if (isSearch == true) {
-                HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
-                        keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
-            } else {
-                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                        "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+            if (isLoadingMore && totalItemCount > mPreviousTotal) {
+                isLoadingMore = false;
+                mPreviousTotal = totalItemCount;
             }
+            int visibleThreshold = 10;
+            if (!isLoadingMore
+                    && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
+                    && isStillHavePages()) {
 
-            isLoadingMore = true;
+                if (isSearch == true) {
+                    HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
+                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
+                } else {
+                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                }
+
+                isLoadingMore = true;
+            }
         }
-    }
-};
+    };
 
     final Callback<ProductDao> CALLBACK_PRODUCT = new Callback<ProductDao>() {
         @Override
@@ -306,10 +306,10 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         showProgressDialog();
         isDoneFilter = true;
         isSorting = false;
-        ProductFilterSubHeader productFilterHeader = productFilterSubHeaderBus.getProductFilterSubHeader();
-        callFilter(productFilterHeader.getId(), sortName, sortType);
-        title = productFilterHeader.getName();
-        departmentId = productFilterHeader.getId();
+        ProductFilterSubHeader productFilterSubHeader = productFilterSubHeaderBus.getProductFilterSubHeader();
+        callFilter(productFilterSubHeader.getId(), sortName, sortType);
+        title = productFilterSubHeader.getName();
+        departmentId = productFilterSubHeader.getId();
         mPowerBuyPopupWindow.setFilterItem(productFilterSubHeaderBus.getProductFilterSubHeader());
         Log.d(TAG, "productFilterHeaderBus" + isDoneFilter);
     }
@@ -352,7 +352,8 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
     }
 
     @SuppressWarnings("unused")
-    public static ProductListFragment newInstance(String title, boolean search, String departmentId, String storeId, Category category, String keyWord) {
+    public static ProductListFragment newInstance(String title, boolean search, String departmentId,
+                                                  String storeId, Category category, String keyWord) {
         ProductListFragment fragment = new ProductListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TITLE, title);
@@ -360,6 +361,20 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         args.putString(ARG_DEPARTMENT_ID, departmentId);
         args.putString(ARG_STORE_ID, storeId);
         args.putParcelable(ARG_CATEGORY, category);
+        args.putString(ARG_KEY_WORD, keyWord);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ProductListFragment newInstance(String title, boolean search, String departmentId,
+                                                  String storeId, String keyWord, ProductFilterSubHeader productFilterSubHeader) {
+        ProductListFragment fragment = new ProductListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_TITLE, title);
+        args.putBoolean(ARG_SEARCH, search);
+        args.putString(ARG_DEPARTMENT_ID, departmentId);
+        args.putString(ARG_STORE_ID, storeId);
+        args.putParcelable(ARG_PRODUCT_FILTER_SUB_HEADER, productFilterSubHeader);
         args.putString(ARG_KEY_WORD, keyWord);
         fragment.setArguments(args);
         return fragment;
@@ -390,7 +405,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
             isSearch = getArguments().getBoolean(ARG_SEARCH);
             departmentId = getArguments().getString(ARG_DEPARTMENT_ID);
             storeId = getArguments().getString(ARG_STORE_ID);
-            mCategory = getArguments().getParcelable(ARG_CATEGORY);
+            mProductFilterSubHeader = getArguments().getParcelable(ARG_PRODUCT_FILTER_SUB_HEADER);
             keyWord = getArguments().getString(ARG_KEY_WORD);
         }
         resetPage();
@@ -488,7 +503,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
                 HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
                         "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
             }
-            if (mCategory != null) {
+            if (mProductFilterSubHeader != null) {
 //                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
             }
         }
@@ -496,7 +511,7 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
 ////            mProductListAdapter.setProduct(mProductDao);
 ////        }
 
-        if (mCategory != null) {
+        if (mProductFilterSubHeader != null) {
 //            mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
         }
 
@@ -519,11 +534,11 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
         totalPage = 1;
         isLoadingMore = true;
         mPreviousTotal = 0;
-        if (isSorting == false){
+        if (isSorting == false) {
             sortName = "name";
             sortType = "ASC";
         }
-        if (mProductDao != null){
+        if (mProductDao != null) {
             mProductDao.getProductListList().clear();
         }
     }
@@ -614,6 +629,11 @@ final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener()
     @OnClick(R.id.layout_title)
     public void onTitleClick(LinearLayout linearLayout) {
         EventBus.getDefault().post(new ProductBackBus(true));
+    }
+
+    @OnClick(R.id.img_icon)
+    public void onBackImageClick(){
+
     }
 
     @OnClick(R.id.layout_product)
