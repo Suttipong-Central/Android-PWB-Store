@@ -11,10 +11,10 @@ import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 
 public class CategoryBus {
     private View view;
-    private ProductFilterHeader productFilterHeader;
+    private Category category;
 
-    public CategoryBus(ProductFilterHeader productFilterHeader, View view) {
-        this.productFilterHeader = productFilterHeader;
+    public CategoryBus(Category category, View view) {
+        this.category = category;
         this.view = view;
     }
 
@@ -22,7 +22,7 @@ public class CategoryBus {
         return view;
     }
 
-    public ProductFilterHeader getCategoryHeader() {
-        return productFilterHeader;
+    public Category getCategory() {
+        return category;
     }
 }

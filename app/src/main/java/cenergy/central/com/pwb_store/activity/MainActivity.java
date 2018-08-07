@@ -51,12 +51,14 @@ import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
+import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
@@ -218,27 +220,30 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(CategoryBus categoryBus) {
-//        if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Change Language to Thai")) {
-//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction
-//                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-//                    .commit();
-//        } else if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Compare")) {
-//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction
-//                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-//                    .commit();
-//        } else {
-//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction
-//                    .replace(R.id.container, ProductListFragment.newInstance(categoryBus.getCategory().getDepartmentName(), false,
-//                            categoryBus.getCategory().getId(), storeId, categoryBus.getCategory(), ""))
-//                    .commit();
-//        }
+        if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Change Language to Thai")) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                    .commit();
+        } else if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Compare")) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                    .commit();
+        } else {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, ProductListFragment.newInstance(categoryBus.getCategory().getDepartmentName(), false,
+                            categoryBus.getCategory().getId(), storeId, categoryBus.getCategory(), ""))
+                    .commit();
+        }
+    }
 
+    @Subscribe
+    public void onEvent(ProductFilterHeaderBus header) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
-                .replace(R.id.container, SubHeaderProductFragment.Companion.newInstance(categoryBus.getCategoryHeader()))
+                .replace(R.id.container, SubHeaderProductFragment.Companion.newInstance(header.getProductFilterHeader()))
                 .commit();
     }
 

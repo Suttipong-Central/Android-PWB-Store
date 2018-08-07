@@ -51,8 +51,8 @@ class HttpManagerMagento {
         private const val HEADER_AUTHORIZATION = "Authorization"
         //Specific Client
         private const val CLIENT_MAGENTO = "Bearer ba102y6thpckeoqgo196u82tllvlf50q"
-
         private const val BASE_URL_MAGENTO = "https://staging.powerbuy.co.th/"
+
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
 
