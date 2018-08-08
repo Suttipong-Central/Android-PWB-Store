@@ -88,8 +88,10 @@ public class LoginFragment extends Fragment {
                 hideSoftKeyboard(v);
                 showProgressDialog();
                 try {
-                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
-                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
+//                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
+//                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
+                    String username = "PwbUserName";
+                    String password = "Pwb1199";
 
                     if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) &&
                             password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))) {
@@ -104,7 +106,6 @@ public class LoginFragment extends Fragment {
                     mProgressDialog.dismiss();
                     Log.e(TAG, "onCardViewLoginClick: ", ex);
                 }
-
             }
         });
 

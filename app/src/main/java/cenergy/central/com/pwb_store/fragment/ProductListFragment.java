@@ -29,8 +29,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
@@ -67,7 +65,7 @@ import static java.lang.Math.ceil;
  * Created by napabhat on 7/6/2017 AD.
  */
 
-public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks {
+public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks, View.OnClickListener {
     private static final String TAG = ProductListFragment.class.getSimpleName();
     private static final String ARG_TITLE = "ARG_TITLE";
     private static final String ARG_SEARCH = "ARG_SEARCH";
@@ -86,23 +84,14 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private static final String ARG_IS_SORTING = "ARG_IS_SORTING";
 
     //View Members
-    @BindView(R.id.recycler_view_list)
     ObservableRecyclerView mRecyclerView;
-
-    @BindView(R.id.txt_title_product)
-    PowerBuyTextView productTitle;
-
-    @BindView(R.id.layout_filter)
-    RelativeLayout layoutFilter;
-
-    @BindView(R.id.txt_product_count)
     PowerBuyTextView productCount;
 
-    @BindView(R.id.layout_product)
-    LinearLayout productLayout;
-
-    @BindView(R.id.layout_sort)
-    LinearLayout sortLayout;
+//    @BindView(R.id.layout_product)
+//    LinearLayout productLayout;
+//
+//    @BindView(R.id.layout_sort)
+//    LinearLayout sortLayout;
 
     //Data Member
     private ProductListAdapter mProductListAdapter;
@@ -471,16 +460,61 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.layout_title:
+                EventBus.getDefault().post(new ProductBackBus(true));
+                break;
+            case R.id.layout_product:
+                if (mProductFilterList == null) {
+                    mPowerBuyPopupWindow.dismiss();
+                } else {
+                    mTempProductFilterList = new ProductFilterList(mProductFilterList);
+                    mPowerBuyPopupWindow.setRecyclerViewFilter(mProductFilterList);
+                    mPowerBuyPopupWindow.showAsDropDown(v);
+                    mTempSortingList = new SortingList(mSortingList);
+                }
+                break;
+            case R.id.layout_sort:
+                if (mSortingList == null) {
+                    mPowerBuyPopupWindow.dismiss();
+                } else {
+                    mTempSortingList = new SortingList(mSortingList);
+                    mPowerBuyPopupWindow.setRecyclerViewSorting(mSortingList);
+                    mPowerBuyPopupWindow.showAsDropDown(v);
+                    mTempProductFilterList = new ProductFilterList(mProductFilterList);
+                }
+                break;
+        }
+    }
+
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
         // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
+//        ButterKnife.bind(this, rootView);
         mProductListAdapter = new ProductListAdapter(getContext());
         mProductListAdapter.showLoading();
+
+        // setup widget view
+        PowerBuyTextView productTitle = rootView.findViewById(R.id.txt_title_product);
+        RelativeLayout layoutFilter = rootView.findViewById(R.id.layout_filter);
+        productCount = rootView.findViewById(R.id.txt_product_count);
+        mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
+
         productTitle.setText(title);
         productCount.setText(title);
 
-        if (isSearch == true) {
+        // setup onClick
+        LinearLayout titleLayout = rootView.findViewById(R.id.layout_title);
+        LinearLayout productLayout = rootView.findViewById(R.id.layout_product);
+        LinearLayout sortLayout = rootView.findViewById(R.id.layout_sort);
+
+        titleLayout.setOnClickListener(this);
+        productLayout.setOnClickListener(this);
+        sortLayout.setOnClickListener(this);
+
+        if (isSearch) {
             layoutFilter.setVisibility(View.GONE);
         }
 
@@ -494,7 +528,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         mRecyclerView.setAdapter(mProductListAdapter);
 
         if (savedInstanceState == null) {
-            if (isSearch == true) {
+            if (isSearch) {
                 showProgressDialog();
                 HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container",
                         "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
@@ -624,40 +658,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         keyWord = savedInstanceState.getString(ARG_KEY_WORD);
         isSearch = savedInstanceState.getBoolean(ARG_SEARCH);
         isSorting = savedInstanceState.getBoolean(ARG_IS_SORTING);
-    }
-
-    @OnClick(R.id.layout_title)
-    public void onTitleClick(LinearLayout linearLayout) {
-        EventBus.getDefault().post(new ProductBackBus(true));
-    }
-
-    @OnClick(R.id.img_icon)
-    public void onBackImageClick(){
-
-    }
-
-    @OnClick(R.id.layout_product)
-    public void onProductFilterClick(LinearLayout linearLayout) {
-        if (mProductFilterList == null) {
-            mPowerBuyPopupWindow.dismiss();
-        } else {
-            mTempProductFilterList = new ProductFilterList(mProductFilterList);
-            mPowerBuyPopupWindow.setRecyclerViewFilter(mProductFilterList);
-            mPowerBuyPopupWindow.showAsDropDown(linearLayout);
-            mTempSortingList = new SortingList(mSortingList);
-        }
-    }
-
-    @OnClick(R.id.layout_sort)
-    public void onSortClick(LinearLayout linearLayout) {
-        if (mSortingList == null) {
-            mPowerBuyPopupWindow.dismiss();
-        } else {
-            mTempSortingList = new SortingList(mSortingList);
-            mPowerBuyPopupWindow.setRecyclerViewSorting(mSortingList);
-            mPowerBuyPopupWindow.showAsDropDown(linearLayout);
-            mTempProductFilterList = new ProductFilterList(mProductFilterList);
-        }
     }
 
     private void popUpShow() {
