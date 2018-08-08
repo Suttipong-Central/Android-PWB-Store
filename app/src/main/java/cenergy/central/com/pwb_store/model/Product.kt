@@ -2,6 +2,8 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.text.NumberFormat
+import java.util.*
 
 class Product() : Parcelable,IViewType {
 
@@ -51,5 +53,10 @@ class Product() : Parcelable,IViewType {
         override fun newArray(size: Int): Array<Product?> {
             return arrayOfNulls(size)
         }
+    }
+
+    fun getDisplayOldPrice(unit: String): String {
+        //return String.format(Locale.getDefault(), "%s %s", NumberFormat.getInstance(Locale.getDefault()).format(oldPrice), unit);
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(java.lang.Double.parseDouble(price.toString())))
     }
 }

@@ -89,7 +89,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
     public void setViewHolder(Product product){
 
-//        String unit = Contextor.getInstance().getContext().getString(R.string.baht);
+        String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 //
 //        Extension extension = productList.getExtension();
 //        if (extension != null){
@@ -126,7 +126,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 //            productBrand.setText(extension.getBrand());
 //        }
         productName.setText(product.getName());
-        oldPrice.setText(String.valueOf(product.getPrice()));
+        oldPrice.setText(product.getDisplayOldPrice(unit));
         itemView.setOnClickListener(this);
         itemView.setTag(product);
     }
