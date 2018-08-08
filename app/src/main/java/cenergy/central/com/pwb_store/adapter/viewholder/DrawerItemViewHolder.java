@@ -21,13 +21,8 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 public class DrawerItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    @BindView(R.id.icon)
-    ImageView mIcon;
-
     public DrawerItemViewHolder(View itemView) {
         super(itemView);
-
-        ButterKnife.bind(this, itemView);
     }
 
     public void setViewHolder(DrawerItem drawerItem) {

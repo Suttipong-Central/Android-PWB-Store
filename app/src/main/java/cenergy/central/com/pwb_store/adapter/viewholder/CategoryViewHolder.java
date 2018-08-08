@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -64,7 +65,6 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder{
                 //.fitCenter()
                 .bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
                 .into(mImageView);
-
         mTextView.setText(categorySubHeader.getName());
         itemView.setTag(categorySubHeader);
         itemView.setOnClickListener(new View.OnClickListener() {

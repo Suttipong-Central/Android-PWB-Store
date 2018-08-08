@@ -5,9 +5,9 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.service.CategoryService
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.Category
-import cenergy.central.com.pwb_store.model.ProductFilterHeader
+import cenergy.central.com.pwb_store.manager.service.ProductService
+import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import okhttp3.OkHttpClient
@@ -105,6 +105,29 @@ class HttpManagerMagento {
                 }
 
                 override fun onFailure(call: Call<Category>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+                }
+            })
+        }
+    }
+
+    fun retrieveProductList(category: String, categoryId: String, conditionType: String,
+                            pageSize: Int, currentPage: Int, typeSearch: String, fields: String,
+                            callback: ApiResponseCallback<ProductResponse?>){
+        retrofit?.let { retrofit ->
+            val productService = retrofit.create(ProductService::class.java)
+            productService.getProductList(category, categoryId, conditionType, pageSize,
+                    currentPage, typeSearch, fields).enqueue(object : Callback<ProductResponse>{
+                override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                    if (response != null) {
+                        val productDao = response.body()
+                        callback.success(productDao)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
                     callback.failure(APIError(t))
                 }
             })

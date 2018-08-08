@@ -3,8 +3,11 @@ package cenergy.central.com.pwb_store.manager.service;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
+import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -28,19 +31,19 @@ public interface ProductService {
             @Query("StoreId") String storeId,
             @Query("SortBy") String sortBy);
 
-    @GET("/rest/V1/products")
-    Call<ProductDao> getProductList(
-            @Query("searchCriteria[filterGroups][0][filters][0][field]") String category,
-            @Query("searchCriteria[filterGroups][0][filters][0][value]") String categoryId,
-            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String in,
-            @Query("searchCriteria[filterGroups][1][filters][0][field]") String inStore,
-            @Query("searchCriteria[filterGroups][1][filters][0][value]") String storeId,
-            @Query("searchCriteria[filterGroups][1][filters][0][conditionType]") String type,
-            @Query("searchCriteria[pageSize]") int pageSize,
-            @Query("searchCriteria[currentPage]") int currentPage,
-            @Query("searchCriteria[sortOrders][0][field]") String name,
-            @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
-            @Query("fields") String fields);
+//    @GET("/rest/V1/products")
+//    Call<ProductDao> getProductList(
+//            @Query("searchCriteria[filterGroups][0][filters][0][field]") String category,
+//            @Query("searchCriteria[filterGroups][0][filters][0][value]") String categoryId,
+//            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String in,
+//            @Query("searchCriteria[filterGroups][1][filters][0][field]") String inStore,
+//            @Query("searchCriteria[filterGroups][1][filters][0][value]") String storeId,
+//            @Query("searchCriteria[filterGroups][1][filters][0][conditionType]") String type,
+//            @Query("searchCriteria[pageSize]") int pageSize,
+//            @Query("searchCriteria[currentPage]") int currentPage,
+//            @Query("searchCriteria[sortOrders][0][field]") String name,
+//            @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
+//            @Query("fields") String fields);
 
     @GET("/api/Products/{id}")
     Call<ProductDetail> getProductDetail(
@@ -81,4 +84,15 @@ public interface ProductService {
             @Query("searchCriteria[currentPage]") int currentPage,
             @Query("fields") String fields,
             @Query("branch_id") String branchId);
+
+//    @Headers("Accept: Application/json")
+    @GET("/rest/V1/products")
+    Call<ProductResponse> getProductList(
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String category,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") String categoryId,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String in,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
+            @Query("fields") String fields);
 }

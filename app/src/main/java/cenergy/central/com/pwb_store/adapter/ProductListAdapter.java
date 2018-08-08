@@ -14,9 +14,11 @@ import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductListViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.ViewType;
+import cenergy.central.com.pwb_store.model.response.ProductResponse;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
@@ -124,6 +126,11 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     productListViewHolder.setViewHolder(productList);
 
                 }
+                if( viewType instanceof Product && holder instanceof ProductListViewHolder ){
+                    Product product = (Product) viewType;
+                    ProductListViewHolder productListViewHolder = (ProductListViewHolder) holder;
+                    productListViewHolder.setViewHolder(product);
+                }
                 break;
         }
     }
@@ -136,6 +143,34 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         return mListViewType.get(position).getViewTypeId();
+    }
+
+    public void setProduct(ProductResponse productResponse){
+
+        if (productResponse.isFirstPage()) {
+            mListViewType.clear();
+            notifyDataSetChanged();
+        }
+        // Add deal paginated
+        int startPosition = mListViewType.size();
+        for (Product product : productResponse.getItems()) {
+            product.setAttributeID(VIEW_TYPE_ID_GRID_VIEW);
+            mListViewType.add(product);
+        }
+
+        if (isLoadingShow) {
+            isLoadingShow = false;
+            if (productResponse.getItems().size() == 0) {
+                mListViewType.clear();
+                notifyDataSetChanged();
+                mListViewType.add(VIEW_TYPE_RESULT);
+                notifyItemInserted(0);
+            }
+            notifyItemChanged(0);
+            notifyItemRangeInserted(0, mListViewType.size());
+        } else {
+            notifyItemRangeInserted(startPosition, productResponse.getItems().size());
+        }
     }
 
     public void setProduct(ProductDao productDao){

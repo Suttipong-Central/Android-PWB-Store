@@ -3,7 +3,8 @@
     <string name="app_name">PowerBuy Store</string>
 
     <!--API-->
-    <string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>
+    <!--<string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>-->
+    <string name="product_list">items[id,sku,name,attribute_set_id,price,status,created_at_updated_at],total_count</string>
     <string name="product_detail">id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,specifications,promotion,payment,brand]</string>
     <string name="url_image">https://prod.powerbuy.co.th/media/catalog/product</string>
 

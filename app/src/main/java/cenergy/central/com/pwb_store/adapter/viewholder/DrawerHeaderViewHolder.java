@@ -22,7 +22,6 @@ public class DrawerHeaderViewHolder extends RecyclerView.ViewHolder implements V
     }
 
     public void setViewHolder() {
-        ButterKnife.bind(this, itemView);
         itemView.findViewById(R.id.layout_header_home).setOnClickListener(this);
     }
 

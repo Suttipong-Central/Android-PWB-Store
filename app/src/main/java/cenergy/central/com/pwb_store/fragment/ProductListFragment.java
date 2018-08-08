@@ -25,6 +25,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
@@ -51,6 +54,7 @@ import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
+import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
@@ -206,14 +210,69 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
                             keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                 } else {
-                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+//                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+//                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                    getProductList();
                 }
 
                 isLoadingMore = true;
             }
         }
     };
+
+    private void getProductList() {
+        HttpManagerMagento.Companion.getInstance().retrieveProductList(
+                "category_id",
+                departmentId,
+                "in",
+                PER_PAGE,
+                getNextPage(),
+                sortType,
+                getString(R.string.product_list),
+                new ApiResponseCallback<ProductResponse>() {
+                    @Override
+                    public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                        if (response != null) {
+                            //mProductDao = response.body();
+                            ProductResponse productResponse = response;
+                            //TODO Test Total Page.
+//                if (currentPage == 0) {
+//                    currentPage = getNextPage();
+//                    if (productDao != null) {
+//                        productDao.setCurrentPage(currentPage);
+//                    }
+//                } else {
+//                    currentPage = getNextPage();
+//                    if (productDao != null) {
+//                        productDao.setCurrentPage(currentPage);
+//                    }
+//                }
+
+                            totalItem = productResponse.getItems().size();
+                            totalPage = totalPageCal(totalItem);
+                            Log.d(TAG, " totalPage :" + totalPage);
+                            currentPage = getNextPage();
+                            productResponse.setCurrentPage(currentPage);
+                            mProductListAdapter.setProduct(productResponse);
+                            setTextHeader(totalItem, title);
+                            mProgressDialog.dismiss();
+                        } else {
+                            mProductListAdapter.setError();
+                            setTextHeader(totalItem, title);
+//                            APIError error = APIErrorUtils.parseError(response);
+//                            Log.e(TAG, "onResponse: " + error.getErrorMessage());
+//                showAlertDialog(error.getErrorMessage(), false);
+                            mProgressDialog.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void failure(@NotNull APIError error) {
+                        Log.d("productDaoResponse", error.toString());
+                    }
+                }
+        );
+    }
 
     final Callback<ProductDao> CALLBACK_PRODUCT = new Callback<ProductDao>() {
         @Override
@@ -534,8 +593,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
             } else {
                 showProgressDialog();
-                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                        "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+//                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+//                        "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                getProductList();
             }
             if (mProductFilterSubHeader != null) {
 //                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
@@ -670,8 +730,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         resetPage();
         sortName = sortNameT;
         sortType = sortTypeT;
-        HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-                "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+//        HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
+//                "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+        getProductList();
     }
 
     private void setTextHeader(int total, String name) {
