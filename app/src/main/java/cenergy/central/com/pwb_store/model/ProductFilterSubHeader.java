@@ -24,8 +24,6 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
     };
     private static final String TAG = "ProductFilterSubHeader";
     private int viewTypeId;
-    @SerializedName("entity_id")
-    @Expose
     private String id;
     @SerializedName("level")
     @Expose
