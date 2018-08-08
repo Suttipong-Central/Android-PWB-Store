@@ -40,10 +40,6 @@ public class CategoryFragment extends Fragment {
 
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
 
-    //View Members
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-
     //Data Members
     private CategoryAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
@@ -114,24 +110,23 @@ public class CategoryFragment extends Fragment {
     private void initInstances(View rootView, Bundle savedInstanceState) {
         // Init 'View' instance(s) with rootView.findViewById here
 
-        ButterKnife.bind(this, rootView);
-
         mAdapter = new CategoryAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 3, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
 
         if (mCategoryDao == null) {
 //            HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
-            retrieveCategories();
+            retrieveCategories(); // force retrieve category
         } else {
             mAdapter.setCategory(mCategoryDao);
         }
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setAdapter(mAdapter);
     }
 
     private void retrieveCategories() {
-        HttpManagerMagento.Companion.getInstance().retrieveCategories(new ApiResponseCallback<Category>() {
+        HttpManagerMagento.Companion.getInstance().retrieveCategories(true ,new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
                 mAdapter.setCategory(category);

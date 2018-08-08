@@ -24,9 +24,6 @@ public class DrawerItemViewHolder extends RecyclerView.ViewHolder implements Vie
     @BindView(R.id.icon)
     ImageView mIcon;
 
-    @BindView(R.id.title)
-    PowerBuyTextView mTitle;
-
     public DrawerItemViewHolder(View itemView) {
         super(itemView);
 
@@ -34,7 +31,7 @@ public class DrawerItemViewHolder extends RecyclerView.ViewHolder implements Vie
     }
 
     public void setViewHolder(DrawerItem drawerItem) {
-        mTitle.setText(drawerItem.getTitle());
+        ((TextView)itemView.findViewById(R.id.title)).setText(drawerItem.getTitle());
         itemView.setTag(drawerItem);
         itemView.setOnClickListener(this);
     }

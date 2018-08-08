@@ -2,9 +2,15 @@ package cenergy.central.com.pwb_store.realm;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
+import java.util.Date;
+
 import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.model.CachedEndpoint;
+import cenergy.central.com.pwb_store.model.Category;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -19,6 +25,10 @@ public class RealmController {
     private final Realm realm;
 
     public RealmController(Application application) {
+        realm = Realm.getDefaultInstance();
+    }
+
+    public RealmController () {
         realm = Realm.getDefaultInstance();
     }
 
@@ -46,14 +56,20 @@ public class RealmController {
         return instance;
     }
 
+    public static RealmController with(Context context) {
+        if (instance == null) {
+            instance = new RealmController();
+        }
+        return instance;
+    }
+
     public static RealmController getInstance() {
 
         return instance;
     }
 
     public Realm getRealm() {
-
-        return realm;
+        return realm != null ? realm : Realm.getDefaultInstance();
     }
 
     public AddCompare getCompare(String id) {
@@ -84,4 +100,61 @@ public class RealmController {
 
         return realm.where(AddCompare.class).findAll();
     }
+
+    // region category
+    public void saveCategory(final Category category) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                // delete category
+                realm.delete(Category.class);
+                // store category
+                realm.insertOrUpdate(category);
+            }
+        });
+    }
+
+    public Category getCategory() {
+        Realm realm = getRealm();
+        Category category = realm.where(Category.class).findFirst();
+        return category;
+    }
+    // endregion
+
+    // region caching
+    public void updateCachedEndpoint(String endpoint) {
+        final CachedEndpoint cachedEndpoint = new CachedEndpoint();
+        cachedEndpoint.setEndpoint(endpoint);
+        cachedEndpoint.setLastUpdated(new Date());
+
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(cachedEndpoint);
+            }
+        });
+    }
+
+    public void clearCachedEndpoint(final String endpoint) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(CachedEndpoint.class).like("endpoint", endpoint).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+
+    public boolean hasFreshlyCachedEndpoint(String endpoint) {
+        return hasFreshlyCachedEndpoint(endpoint, 1);
+    }
+
+    private boolean hasFreshlyCachedEndpoint(String endpoint, int hours) {
+        Realm realm = getRealm();
+        CachedEndpoint cachedEndpoint = realm.where(CachedEndpoint.class).equalTo("endpoint", endpoint).findFirst();
+        return cachedEndpoint != null && cachedEndpoint.getLastUpdated().after(new Date(System.currentTimeMillis() - (hours * 60 * 60 * 1000)));
+    }
+    // end region
 }

@@ -2,19 +2,21 @@ package cenergy.central.com.pwb_store.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 
 /**
  * Created by napabhat on 7/13/2017 AD.
  */
 
-public class ProductFilterHeader implements IViewType, Parcelable {
+public class ProductFilterHeader extends RealmObject implements IViewType, Parcelable {
     public static final Creator<ProductFilterHeader> CREATOR = new Creator<ProductFilterHeader>() {
         @Override
         public ProductFilterHeader createFromParcel(Parcel in) {
@@ -27,6 +29,7 @@ public class ProductFilterHeader implements IViewType, Parcelable {
         }
     };
     private static final String TAG = "ProductFilterHeader";
+    @Ignore
     private int viewTypeId;
     @SerializedName("entity_id")
     @Expose
@@ -44,7 +47,7 @@ public class ProductFilterHeader implements IViewType, Parcelable {
     private int position;
     @SerializedName("children_data")
     @Expose
-    private List<ProductFilterSubHeader> mProductFilterSubHeaders = new ArrayList<>();
+    private RealmList<ProductFilterSubHeader> mProductFilterSubHeaders;
     private boolean isExpanded;
 
 //    public ProductFilterHeader(int departmentId, int rootDeptId, int id, String name, String nameEN, String slug,
@@ -64,11 +67,14 @@ public class ProductFilterHeader implements IViewType, Parcelable {
 //        this.urlNameEN = urlNameEN;
 //    }
 
+    public ProductFilterHeader () {
+
+    }
+
     public ProductFilterHeader(String id, String name, String level, String urlName, String type, List<ProductFilterSubHeader> productFilterSubHeaders) {
         this.id = id;
         this.name = name;
         this.level = level;
-        this.mProductFilterSubHeaders = productFilterSubHeaders;
         this.isExpanded = false;
         this.urlName = urlName;
         this.type = type;
@@ -80,7 +86,6 @@ public class ProductFilterHeader implements IViewType, Parcelable {
         id = in.readString();
         name = in.readString();
         type = in.readString();
-        mProductFilterSubHeaders = in.createTypedArrayList(ProductFilterSubHeader.CREATOR);
         isExpanded = in.readByte() != 0;
         urlName = in.readString();
     }
@@ -90,7 +95,6 @@ public class ProductFilterHeader implements IViewType, Parcelable {
         dest.writeInt(viewTypeId);
         dest.writeString(id);
         dest.writeString(name);
-        dest.writeTypedList(mProductFilterSubHeaders);
         dest.writeByte((byte) (isExpanded ? 1 : 0));
         dest.writeString(urlName);
     }
@@ -130,7 +134,7 @@ public class ProductFilterHeader implements IViewType, Parcelable {
         return mProductFilterSubHeaders;
     }
 
-    public void setProductFilterSubHeaders(List<ProductFilterSubHeader> mProductFilterSubHeaders) {
+    public void setProductFilterSubHeaders(RealmList<ProductFilterSubHeader> mProductFilterSubHeaders) {
         this.mProductFilterSubHeaders = mProductFilterSubHeaders;
     }
 

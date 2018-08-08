@@ -10,7 +10,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductFilterSubHeader implements IViewType, Parcelable {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+
+public class ProductFilterSubHeader extends RealmObject implements IViewType, Parcelable {
     public static final Creator<ProductFilterSubHeader> CREATOR = new Creator<ProductFilterSubHeader>() {
         @Override
         public ProductFilterSubHeader createFromParcel(Parcel in) {
@@ -23,6 +27,7 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
         }
     };
     private static final String TAG = "ProductFilterSubHeader";
+    @Ignore
     private int viewTypeId;
     private String id;
     @SerializedName("level")
@@ -37,17 +42,10 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
     private String type;
     @SerializedName("children_data")
     @Expose
-    private List<ProductFilterItem> mProductFilterItemList;
+    private RealmList<ProductFilterItem> mProductFilterItemList;
     private boolean isExpanded;
 
-    public ProductFilterSubHeader(String id, String name, String level, String urlName, String type, List<ProductFilterItem> mProductFilterItemList) {
-        this.id = id;
-        this.name = name;
-        this.level = level;
-        this.mProductFilterItemList = mProductFilterItemList;
-        this.isExpanded = false;
-        this.urlName = urlName;
-        this.type = type;
+    public ProductFilterSubHeader() {
     }
 
     public ProductFilterSubHeader(ProductFilterSubHeader productFilterSubHeader) {
@@ -63,7 +61,8 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
                 productFilterItemList.add(new ProductFilterItem(productFilterItem));
             }
 
-        this.mProductFilterItemList = productFilterItemList;
+        this.mProductFilterItemList.clear();
+        this.mProductFilterItemList.addAll(productFilterItemList);
         this.isExpanded = false;
     }
 
@@ -72,7 +71,6 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
         id = in.readString();
         name = in.readString();
         type = in.readString();
-        mProductFilterItemList = in.createTypedArrayList(ProductFilterItem.CREATOR);
         isExpanded = in.readByte() != 0;
         urlName = in.readString();
     }
@@ -122,7 +120,7 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
         return mProductFilterItemList;
     }
 
-    public void setProductFilterItemList(List<ProductFilterItem> productFilterItemList) {
+    public void setProductFilterItemList(RealmList<ProductFilterItem> productFilterItemList) {
         this.mProductFilterItemList = productFilterItemList;
     }
 
@@ -196,7 +194,8 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
             }
         }
 
-        this.mProductFilterItemList = productFilterSubHeader.getProductFilterItemList();
+        this.mProductFilterItemList.clear();
+        this.mProductFilterItemList.addAll(productFilterSubHeader.getProductFilterItemList());
     }
 
     public void replaceExisting(ProductFilterSubHeader loadedProductFilterSubHeader, boolean isPreserveSelection) {
@@ -218,7 +217,8 @@ public class ProductFilterSubHeader implements IViewType, Parcelable {
             }
         }
 
-        this.mProductFilterItemList = loadedProductFilterSubHeader.getProductFilterItemList();
+        this.mProductFilterItemList.clear();
+        this.mProductFilterItemList.addAll(loadedProductFilterSubHeader.getProductFilterItemList());
     }
 
     public String getSelectedProductFilterOptionIfAvailable() {

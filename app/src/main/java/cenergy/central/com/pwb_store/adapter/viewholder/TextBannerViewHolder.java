@@ -19,15 +19,13 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 public class TextBannerViewHolder extends RecyclerView.ViewHolder{
 
-    @BindView(R.id.card_view)
     CardView mCardView;
-
-    @BindView(R.id.txt_view)
     PowerBuyTextView mTextView;
 
     public TextBannerViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mTextView = itemView.findViewById(R.id.txt_view);
+        mCardView = itemView.findViewById(R.id.card_view);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

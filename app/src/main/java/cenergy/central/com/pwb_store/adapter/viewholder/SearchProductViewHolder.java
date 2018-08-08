@@ -25,17 +25,15 @@ import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 public class SearchProductViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnFocusChangeListener{
     private static final String TAG = SearchProductViewHolder.class.getSimpleName();
 
-    @BindView(R.id.edit_text_search)
     PowerBuyEditText mSearchView;
-
-    @BindView(R.id.image_view_barcode)
     ImageView mBarCode;
 
     private boolean isSearch;
 
     public SearchProductViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mSearchView = itemView.findViewById(R.id.edit_text_search);
+        mBarCode = itemView.findViewById(R.id.image_view_barcode);
         mBarCode.setOnClickListener(this);
         //mSearchView.setOnFocusChangeListener(this);
         mSearchView.setOnEditorActionListener(new SearchOnEditorActionListener());

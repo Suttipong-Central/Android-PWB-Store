@@ -7,11 +7,14 @@ import android.text.TextUtils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+
 /**
  * Created by napabhat on 7/13/2017 AD.
  */
 
-public class ProductFilterItem implements IViewType, Parcelable {
+public class ProductFilterItem extends RealmObject implements IViewType, Parcelable {
     public static final Creator<ProductFilterItem> CREATOR = new Creator<ProductFilterItem>() {
         @Override
         public ProductFilterItem createFromParcel(Parcel in) {
@@ -24,6 +27,7 @@ public class ProductFilterItem implements IViewType, Parcelable {
         }
     };
     private static final String TAG = "ProductFilterItem";
+    @Ignore
     private int viewTypeId;
     @SerializedName("entity_id")
     @Expose
@@ -47,6 +51,9 @@ public class ProductFilterItem implements IViewType, Parcelable {
     private boolean isSelected;
 
     private int filterId;
+
+    public ProductFilterItem() {
+    }
 
     public ProductFilterItem(ProductFilterItem productFilterItem) {
         this.filterId = productFilterItem.getFilterId();

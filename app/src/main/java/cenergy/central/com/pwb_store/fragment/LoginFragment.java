@@ -16,12 +16,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
@@ -78,8 +78,36 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_login, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_login, container, false);
         initInstances(rootView, savedInstanceState);
+
+        // setup onClick login
+        rootView.findViewById(R.id.card_view_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideSoftKeyboard(v);
+                showProgressDialog();
+                try {
+                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
+                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
+
+                    if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) &&
+                            password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))) {
+                        EventBus.getDefault().post(new LoginSuccessBus(true));
+                        mProgressDialog.dismiss();
+                    } else {
+                        mProgressDialog.dismiss();
+                        showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
+                    }
+
+                } catch (NullPointerException ex) {
+                    mProgressDialog.dismiss();
+                    Log.e(TAG, "onCardViewLoginClick: ", ex);
+                }
+
+            }
+        });
+
         return rootView;
     }
 
@@ -119,29 +147,6 @@ public class LoginFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
-    }
-
-    @OnClick(R.id.card_view_login)
-    public void onCardViewLoginClick(CardView cardView) {
-        hideSoftKeyboard(cardView);
-        showProgressDialog();
-        try {
-            String username = mUserNameWrapper.getEditText().getText().toString();
-            String password = mPasswordWrapper.getEditText().getText().toString();
-
-            if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) &&
-                    password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))) {
-                EventBus.getDefault().post(new LoginSuccessBus(true));
-                mProgressDialog.dismiss();
-            } else {
-                mProgressDialog.dismiss();
-                showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
-            }
-
-        } catch (NullPointerException ex) {
-            mProgressDialog.dismiss();
-            Log.e(TAG, "onCardViewLoginClick: ", ex);
-        }
     }
 
     private void showAlertDialog(String title, String message) {

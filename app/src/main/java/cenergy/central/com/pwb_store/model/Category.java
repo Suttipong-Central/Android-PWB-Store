@@ -6,14 +6,18 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 
 /**
  * Created by napabhat on 7/5/2017 AD.
  */
 
-public class Category implements IViewType, Parcelable {
+public class Category extends RealmObject implements IViewType, Parcelable {
+    @Ignore
     private int viewTypeId;
     private String id;
     @SerializedName("level")
@@ -27,7 +31,19 @@ public class Category implements IViewType, Parcelable {
     private String imageURL;
     @SerializedName("children_data")
     @Expose
-    private List<ProductFilterHeader> mFilterHeaders = new ArrayList<>();
+    private RealmList<ProductFilterHeader> mFilterHeaders;
+
+    public Category () {
+
+    }
+
+    protected Category(Parcel in) {
+        viewTypeId = in.readInt();
+        id = in.readString();
+        level = in.readString();
+        departmentName = in.readString();
+        imageURL = in.readString();
+    }
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {
         @Override
@@ -41,33 +57,18 @@ public class Category implements IViewType, Parcelable {
         }
     };
 
-    public Category(String imageURL, String title) {
-        this.imageURL = imageURL;
-        this.departmentName = title;
-    }
-
-    protected Category(Parcel in) {
-        viewTypeId = in.readInt();
-        imageURL = in.readString();
-        id = in.readString();
-        level = in.readString();
-        departmentName = in.readString();
-        mFilterHeaders = in.createTypedArrayList(ProductFilterHeader.CREATOR);
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
-        dest.writeString(imageURL);
-        dest.writeString(departmentName);
         dest.writeString(id);
         dest.writeString(level);
-        dest.writeTypedList(mFilterHeaders);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        dest.writeString(departmentName);
+        dest.writeString(imageURL);
     }
 
     @Override
@@ -116,7 +117,7 @@ public class Category implements IViewType, Parcelable {
         return mFilterHeaders;
     }
 
-    public void setFilterHeaders(List<ProductFilterHeader> filterHeaders) {
+    public void setFilterHeaders(RealmList<ProductFilterHeader> filterHeaders) {
         mFilterHeaders = filterHeaders;
     }
 }

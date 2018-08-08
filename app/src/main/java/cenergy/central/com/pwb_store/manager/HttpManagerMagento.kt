@@ -2,11 +2,13 @@ package cenergy.central.com.pwb_store.manager
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Category
 import cenergy.central.com.pwb_store.model.ProductFilterHeader
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -60,7 +62,17 @@ class HttpManagerMagento {
         }
     }
 
-    fun retrieveCategories(callback: ApiResponseCallback<Category?>) {
+    fun retrieveCategories(force:Boolean,callback: ApiResponseCallback<Category?>) {
+        // If already cached then do
+        val endpointName = "/rest/V1/categories"
+        val database = RealmController.with(mContext)
+        if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
+            Log.i("PBE", "retrieveCategories: using cached")
+            callback.success(database.category)
+            return
+        }
+
+        Log.i("PBE", "retrieveCategories: calling endpoint")
         retrofit?.let {
             val categoryService = it.create(CategoryService::class.java)
             categoryService.categories.enqueue(object : Callback<Category> {
@@ -79,6 +91,13 @@ class HttpManagerMagento {
                             }
                             category.filterHeaders.removeAll(toRemove)
                         }
+
+                        // Store to database
+                        database.saveCategory(category)
+
+                        // Update cached endpoint
+                        database.updateCachedEndpoint(endpointName)
+
                         callback.success(category)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))

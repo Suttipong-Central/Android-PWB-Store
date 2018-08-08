@@ -17,16 +17,13 @@ import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
 
 public class DrawerHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    @BindView(R.id.layout_header_home)
-    LinearLayout mLinearLayout;
-
     public DrawerHeaderViewHolder(View itemView) {
         super(itemView);
     }
 
     public void setViewHolder() {
         ButterKnife.bind(this, itemView);
-        mLinearLayout.setOnClickListener(this);
+        itemView.findViewById(R.id.layout_header_home).setOnClickListener(this);
     }
 
     @Override
