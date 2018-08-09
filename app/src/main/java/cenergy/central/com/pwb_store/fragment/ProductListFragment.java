@@ -392,7 +392,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     @Subscribe
     public void onEvent(ProductDetailBus productDetailBus) {
         Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, productDetailBus.getProductId());
+        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, productDetailBus.getProductId());
         ActivityCompat.startActivity(getContext(), intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())

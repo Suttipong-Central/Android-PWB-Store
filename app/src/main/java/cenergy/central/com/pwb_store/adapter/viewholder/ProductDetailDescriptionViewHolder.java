@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.annotation.SuppressLint;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetail;
+import cenergy.central.com.pwb_store.model.ProductDetailNew;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -26,6 +28,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView;
  * Created by napabhat on 7/18/2017 AD.
  */
 
+@SuppressLint("SetTextI18n")
 public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     @BindView(R.id.txt_view_product_name)
@@ -77,7 +80,13 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
     public ProductDetailDescriptionViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+//        ButterKnife.bind(this, itemView);
+        namePrice = itemView.findViewById(R.id.txt_name_price);
+        mProductName = itemView.findViewById(R.id.txt_view_product_name);
+        mProductCode = itemView.findViewById(R.id.txt_view_product_code);
+        mSalePrice = itemView.findViewById(R.id.txt_sale_price);
+        mStock = itemView.findViewById(R.id.txt_stock);
+        mRegular = itemView.findViewById(R.id.txt_regular);
     }
 
     public void setViewHolder(ProductDetail productDetail){
@@ -179,6 +188,39 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         mCardViewStore.setOnClickListener(this);
         mCardViewCompare.setTag(productDetail);
         mCardViewCompare.setOnClickListener(this);
+    }
+
+    public void setViewHolder(ProductDetailNew productDetailNew){
+        String unit = Contextor.getInstance().getContext().getString(R.string.baht);
+
+        mProductName.setText(productDetailNew.getName());
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetailNew.getSku());
+//        namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+        mRegular.setText("Regular Price : " + productDetailNew.getDisplayOldPrice(unit));
+
+//        ExtensionProductDetail extensionProductDetail = productDetailNew.getExtensionProductDetail();
+//        if (extensionProductDetail != null){
+//            for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
+//                float oldPrice = Float.parseFloat(productDetailStore.getPrice());
+//                float newPrice = Float.parseFloat(productDetailStore.getSpecialPrice());
+//                if (oldPrice > newPrice){
+//                    mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
+//                }else {
+//                    mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
+//                    namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+//                    mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
+//                }
+//
+//                mRegular.setText("Regular Price : " +productDetailStore.getDisplayOldPrice(unit));
+//
+//                if (Integer.parseInt(productDetailStore.getStockAvailable()) > 0){
+//                    mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
+//                }else {
+//                    mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
+//                    mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+//                }
+//            }
+//        }
     }
 
     @Override

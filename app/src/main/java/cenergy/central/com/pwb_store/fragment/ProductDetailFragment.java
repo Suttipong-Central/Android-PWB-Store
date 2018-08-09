@@ -39,6 +39,7 @@ import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
+import cenergy.central.com.pwb_store.model.ProductDetailNew;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.model.Recommend;
@@ -53,17 +54,19 @@ import io.realm.Realm;
 public class ProductDetailFragment extends Fragment {
     private static final String TAG = ProductDetailFragment.class.getSimpleName();
     private static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
+    private static final String ARG_PRODUCT_DETAIL_NEW = "ARG_PRODUCT_DETAIL_NEW";
     private static final String ARG_RECOMMEND = "ARG_RECOMMEND";
     private static final String ARG_PRODUCT_REALM = "ARG_PRODUCT_REALM";
 
     //View Members
-    @BindView(R.id.recycler_view)
+//    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     //Data Member
     private ProductDetailAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
-    private ProductDetail mProductDetail;
+//    private ProductDetail mProductDetail;
+    private ProductDetailNew mProductDetailNew;
     private Recommend mRecommend;
     private ProductDetail mRealmProductDetail;
     // Realm
@@ -78,13 +81,13 @@ public class ProductDetailFragment extends Fragment {
         super();
     }
 
-    @Subscribe
-    public void onEvent(ProductDetailOptionItemBus productDetailOptionItemBus) {
-        ProductDetailOptionItem productDetailOptionItem = productDetailOptionItemBus.getProductDetailOptionItem();
-        mProductDetail.getProductDetailOption().setSelectedProductDetailOptionItem(productDetailOptionItem);
-        mProductDetail.replaceProduct(productDetailOptionItem);
-        mAdapter.updateProductDetailOption(mProductDetail, productDetailOptionItem, productDetailOptionItemBus.getAdapterPosition());
-    }
+//    @Subscribe
+//    public void onEvent(ProductDetailOptionItemBus productDetailOptionItemBus) {
+//        ProductDetailOptionItem productDetailOptionItem = productDetailOptionItemBus.getProductDetailOptionItem();
+//        mProductDetail.getProductDetailOption().setSelectedProductDetailOptionItem(productDetailOptionItem);
+//        mProductDetail.replaceProduct(productDetailOptionItem);
+//        mAdapter.updateProductDetailOption(mProductDetail, productDetailOptionItem, productDetailOptionItemBus.getAdapterPosition());
+//    }
 
     @Subscribe
     public void onEvent(StoreAvaliableBus storeAvaliableBus){
@@ -149,6 +152,14 @@ public class ProductDetailFragment extends Fragment {
         return fragment;
     }
 
+    public static ProductDetailFragment newInstance(ProductDetailNew productDetailNew) {
+        ProductDetailFragment fragment = new ProductDetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_PRODUCT_DETAIL_NEW, productDetailNew);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +181,8 @@ public class ProductDetailFragment extends Fragment {
         // Init Fragment level's variable(s) here
         if (getArguments() != null) {
             //productId = getArguments().getString(ARG_PRODUCT_ID);
-            mProductDetail = getArguments().getParcelable(ARG_PRODUCT_DETAIL);
+//            mProductDetail = getArguments().getParcelable(ARG_PRODUCT_DETAIL);
+            mProductDetailNew = getArguments().getParcelable(ARG_PRODUCT_DETAIL_NEW);
             mRecommend = getArguments().getParcelable(ARG_RECOMMEND);
         }
         mHandler = new Handler();
@@ -179,8 +191,8 @@ public class ProductDetailFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
         // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
-
+//        ButterKnife.bind(this, rootView);
+        mRecyclerView = rootView.findViewById(R.id.recycler_view);
         //get realm instance
         this.mRealm = RealmController.with(this).getRealm();
         //mRealm = Realm.getDefaultInstance();
@@ -193,10 +205,10 @@ public class ProductDetailFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new ProductGridSpacesItemDecoration(getContext(), R.dimen.product_item_spacing));
         mRecyclerView.setAdapter(mAdapter);
-        if (mProductDetail == null){
+        if (mProductDetailNew == null){
             mAdapter.setError();
         }else {
-            mAdapter.setProductDetail(mProductDetail);
+            mAdapter.setProductDetail(mProductDetailNew);
         }
 
         //mAdapter.setProductRecommend(mRecommend);
@@ -335,7 +347,8 @@ public class ProductDetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
-        outState.putParcelable(ARG_PRODUCT_DETAIL, mProductDetail);
+//        outState.putParcelable(ARG_PRODUCT_DETAIL, mProductDetail);
+        outState.putParcelable(ARG_PRODUCT_DETAIL_NEW, mProductDetailNew);
         outState.putParcelable(ARG_RECOMMEND, mRecommend);
         outState.putParcelable(ARG_PRODUCT_REALM, mRealmProductDetail);
     }
@@ -346,7 +359,8 @@ public class ProductDetailFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
-        mProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL);
+//        mProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL);
+        mProductDetailNew = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL_NEW);
         mRecommend = savedInstanceState.getParcelable(ARG_RECOMMEND);
         mRealmProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_REALM);
     }

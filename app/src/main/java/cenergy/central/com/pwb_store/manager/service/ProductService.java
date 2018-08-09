@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.manager.service;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
+import cenergy.central.com.pwb_store.model.ProductDetailNew;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -45,11 +46,11 @@ public interface ProductService {
 //            @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
 //            @Query("fields") String fields);
 
-    @GET("/api/Products/{id}")
-    Call<ProductDetail> getProductDetail(
-            @Path("id") String productId,
-            @Query("storeid") String storeId
-    );
+//    @GET("/api/Products/{id}")
+//    Call<ProductDetail> getProductDetail(
+//            @Path("id") String productId,
+//            @Query("storeid") String storeId
+//    );
 
     @GET("/rest/V1/products/{sku}")
     Call<ProductDetail> getProductDetailMagento(
@@ -94,5 +95,10 @@ public interface ProductService {
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage,
             @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
+            @Query("fields") String fields);
+
+    @GET("/rest/V1/products/{id}")
+    Call<ProductDetailNew> getProductDetail(
+            @Path("id") String productId,
             @Query("fields") String fields);
 }

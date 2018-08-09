@@ -31,7 +31,6 @@ public class PromotionProductFragment extends Fragment {
     private static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
     private static final String ARG_PROMOTION= "ARG_PROMOTION";
 
-    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     private PromotionProductAdapter mProductAdapter;
@@ -217,7 +216,8 @@ public class PromotionProductFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
         // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
+        mRecyclerView = rootView.findViewById(R.id.recycler_view);
+
         mProductAdapter = new PromotionProductAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 1, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mProductAdapter.getSpanSize());

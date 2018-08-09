@@ -23,6 +23,7 @@ import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
+import cenergy.central.com.pwb_store.model.ProductDetailNew;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ReviewDetailText;
 import cenergy.central.com.pwb_store.model.SpecDao;
@@ -55,6 +56,7 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private Context mContext;
     private FragmentManager mFragmentManager;
     private ProductDetail mProductDetail;
+    private ProductDetailNew mProductDetailNew;
     private boolean isLoadingShow = false;
     private List<IViewType> mListViewType = new ArrayList<>();
     private final GridLayoutManager.SpanSizeLookup mSpanSize = new GridLayoutManager.SpanSizeLookup() {
@@ -166,7 +168,11 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                     ProductDetailDescriptionViewHolder productDetailDescriptionViewHolder = (ProductDetailDescriptionViewHolder) holder;
                     productDetailDescriptionViewHolder.setViewHolder(productDetail);
                 }
-
+                if (viewType instanceof ProductDetailNew && holder instanceof ProductDetailDescriptionViewHolder) {
+                    ProductDetailNew productDetailNew = (ProductDetailNew) viewType;
+                    ProductDetailDescriptionViewHolder productDetailDescriptionViewHolder = (ProductDetailDescriptionViewHolder) holder;
+                    productDetailDescriptionViewHolder.setViewHolder(productDetailNew);
+                }
                 break;
 
             case VIEW_TYPE_ID_DETAIL_OVERVIEW:
@@ -267,6 +273,59 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         mListViewType.add(VIEW_TYPE_PROMOTION);
         mListViewType.add(VIEW_TYPE_DELIVERY);
+
+        notifyDataSetChanged();
+
+    }
+
+    public void setProductDetail(ProductDetailNew productDetailNew) {
+        this.mProductDetailNew = productDetailNew;
+//        if (productDetail.getProductImageList() != null) {
+            ProductDetailImage productDetailImage = productDetailNew.getProductImageList();
+            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+            mListViewType.add(productDetailImage);
+//        }
+        //if (productDetail.getProductDetailImageItems() != null || productDetail.getProductImageList() != null) {
+//        if (productDetailNew.getProductDetailImageItems() == null) {
+//            ProductDetailImage productDetailImage = productDetailNew.getExtensionProductDetail().getProductImageList();
+////            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+////            mListViewType.add(productDetailImage);
+//
+//            int i;
+//            for (i = 0; i < productDetailImage.getProductDetailImageItems().size(); i++) {
+//                Log.d(TAG, "total : " + i);
+//            }
+//            ProductDetailImage productDetailImages = new ProductDetailImage(i, productDetailImage.getProductDetailImageItems());
+//            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+//            mListViewType.add(productDetailImages);
+//
+//        } else {
+//            int i;
+//            for (i = 0; i < productDetailNew.getProductDetailImageItems().size(); i++) {
+//                Log.d(TAG, "total : " + i);
+//            }
+//            ProductDetailImage productDetailImage = new ProductDetailImage(i, productDetailNew.getProductDetailImageItems());
+//            productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
+//            mListViewType.add(productDetailImage);
+//        }
+
+        productDetailNew.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+        mListViewType.add(productDetailNew);
+
+//        if (productDetailNew.getExtensionProductDetail().getDescription() != null || productDetailNew.getReviewEN() != null) {
+//            ReviewDetailText reviewDetailText = new ReviewDetailText(productDetailNew.getExtensionProductDetail().getDescription(), ReviewDetailText.MODE_DESCRIPTION);
+//            reviewDetailText.setViewTypeId(VIEW_TYPE_ID_DETAIL_OVERVIEW);
+//            mListViewType.add(reviewDetailText);
+//        } else {
+            mListViewType.add(VIEW_TYPE_OVERVIEW);
+//        }
+
+//        SpecDao specDao = productDetailNew.getSpecDao();
+//        specDao.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);
+//        mListViewType.add(specDao);
+//
+        mListViewType.add(VIEW_TYPE_PROMOTION);
+//        mListViewType.add(VIEW_TYPE_DELIVERY);
 
         notifyDataSetChanged();
 

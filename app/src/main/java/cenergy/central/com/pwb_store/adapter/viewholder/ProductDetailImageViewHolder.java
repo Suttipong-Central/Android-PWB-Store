@@ -25,17 +25,14 @@ import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
 
 public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    @BindView(R.id.image_view)
-    ImageView mImageView;
-
-    @BindView(R.id.view_pager_image_detail)
-    ViewPager mViewPager;
-
+    private ImageView mImageView;
+    private ViewPager mViewPager;
     private ProductDetailPagerAdapter mAdapter;
 
     public ProductDetailImageViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mImageView = itemView.findViewById(R.id.image_view);
+        mViewPager = itemView.findViewById(R.id.view_pager_image_detail);
     }
 
     public void setViewHolder(ProductDetailImage productDetailImage, FragmentManager fragmentManager){

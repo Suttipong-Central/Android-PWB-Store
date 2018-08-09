@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,8 @@ import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductDetailFragment;
 import cenergy.central.com.pwb_store.fragment.WebViewFragment;
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
@@ -41,6 +46,7 @@ import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
+import cenergy.central.com.pwb_store.model.ProductDetailNew;
 import cenergy.central.com.pwb_store.model.ProductDetailOption;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailPromotion;
@@ -66,12 +72,10 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private static final String TAG = ProductDetailActivity.class.getSimpleName();
 
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
+    public static final String ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU";
     public static final String ARG_IS_BARCODE = "ARG_IS_BARCODE";
 
-    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-
-    @BindView(R.id.button_compare)
     PowerBuyCompareView mBuyCompareView;
 
     private ProductDetail mProductDetail;
@@ -299,8 +303,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         Intent mIntent = getIntent();
         Bundle extras = mIntent.getExtras();
         if (extras != null) {
-            productId = extras.getString(ARG_PRODUCT_ID);
-            //productId = "0366977";
+            productId = extras.getString(ARG_PRODUCT_SKU);
+//            productId = "231839";
             isBarcode = extras.getBoolean(ARG_IS_BARCODE);
         }
 
@@ -310,8 +314,29 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         if (savedInstanceState == null){
             if (!isBarcode){
                 showProgressDialog();
-                HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
-                        getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
+//                HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+//                        getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
+                HttpManagerMagento.Companion.getInstance().retrieveProductDetail(productId,
+                        getString(R.string.product_detail), new ApiResponseCallback<ProductDetailNew>() {
+                            @Override
+                            public void success(@Nullable ProductDetailNew response) {
+                                if (response != null){
+                                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                                    fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
+                                    mProgressDialog.dismiss();
+                                }else {
+//                                    APIError error = APIErrorUtils.parseError(response);
+//                                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
+//                                    showAlertDialog(error.getErrorMessage(), false);
+                                    mProgressDialog.dismiss();
+                                }
+                            }
+
+                            @Override
+                            public void failure(@NotNull APIError error) {
+
+                            }
+                        });
             }else {
                 showProgressDialog();
                 HttpManagerMagentoOld.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
@@ -327,7 +352,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void initView() {
-        ButterKnife.bind(this);
+        mToolbar = findViewById(R.id.toolbar);
+        mBuyCompareView = findViewById(R.id.button_compare);
 
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {

@@ -140,7 +140,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         //new intent for product
         if(itemView.getTag() instanceof Product){
             Product product = (Product) itemView.getTag();
-            EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getId()), v));
+            EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getSku()), v));
         }
     }
 }

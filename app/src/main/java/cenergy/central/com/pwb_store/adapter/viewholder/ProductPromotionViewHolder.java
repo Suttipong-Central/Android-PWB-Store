@@ -25,30 +25,24 @@ import cenergy.central.com.pwb_store.view.PowerBuyTabLayout;
 
 public class ProductPromotionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    @BindView(R.id.layout_promotion)
-    LinearLayout mPromotion;
-
-    @BindView(R.id.tab_layout)
-    PowerBuyTabLayout mTabLayout;
-
-    @BindView(R.id.viewpager_main)
-    ViewPager mViewPager;
-
-    @BindView(R.id.nest_scroll)
-    NestedScrollView mNestedScrollView;
-
-    @BindView(R.id.left_nav)
-    ImageView left;
-
-    @BindView(R.id.right_nav)
-    ImageView right;
+    private LinearLayout mPromotion;
+    private PowerBuyTabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private NestedScrollView mNestedScrollView;
+    private ImageView left;
+    private ImageView right;
 
     private FragmentPageAdapter mPageAdapter;
     private ProductDetail mProductDetail;
 
     public ProductPromotionViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this,itemView);
+        mPromotion = itemView.findViewById(R.id.layout_promotion);
+        mTabLayout = itemView.findViewById(R.id.tab_layout);
+        mViewPager = itemView.findViewById(R.id.viewpager_main);
+        mNestedScrollView = itemView.findViewById(R.id.nest_scroll);
+        left = itemView.findViewById(R.id.left_nav);
+        right = itemView.findViewById(R.id.right_nav);
     }
 
     public void setViewHolder(FragmentManager fragmentManager, ProductDetail productDetail){

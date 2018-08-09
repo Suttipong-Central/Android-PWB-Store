@@ -33,11 +33,9 @@ import cenergy.central.com.pwb_store.model.PromotionPaymentItem;
  */
 
 public class PromotionPaymentFragment extends Fragment {
+
     private static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
     private static final String ARG_PROMOTION_PAYMENT = "ARG_PROMOTION_PAYMENT";
-
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
 
     private PromotionPaymentAdapter mPaymentAdapter;
     private PromotionPayment mPromotionPayment;
@@ -106,7 +104,7 @@ public class PromotionPaymentFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
         // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
+        RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view);
 
         mPaymentAdapter = new PromotionPaymentAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 1, LinearLayoutManager.VERTICAL, false);
