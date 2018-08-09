@@ -23,8 +23,6 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.AvaliableStoreActivity;
 import cenergy.central.com.pwb_store.activity.WebViewActivity;
@@ -32,15 +30,13 @@ import cenergy.central.com.pwb_store.adapter.ProductDetailAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.ProductGridSpacesItemDecoration;
 import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailOptionItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
-import cenergy.central.com.pwb_store.model.ProductDetailNew;
-import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.model.Recommend;
 import cenergy.central.com.pwb_store.realm.RealmController;
@@ -66,7 +62,7 @@ public class ProductDetailFragment extends Fragment {
     private ProductDetailAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
 //    private ProductDetail mProductDetail;
-    private ProductDetailNew mProductDetailNew;
+    private Product mProduct;
     private Recommend mRecommend;
     private ProductDetail mRealmProductDetail;
     // Realm
@@ -152,10 +148,10 @@ public class ProductDetailFragment extends Fragment {
         return fragment;
     }
 
-    public static ProductDetailFragment newInstance(ProductDetailNew productDetailNew) {
+    public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PRODUCT_DETAIL_NEW, productDetailNew);
+        args.putParcelable(ARG_PRODUCT_DETAIL_NEW, product);
         fragment.setArguments(args);
         return fragment;
     }
@@ -182,7 +178,7 @@ public class ProductDetailFragment extends Fragment {
         if (getArguments() != null) {
             //productId = getArguments().getString(ARG_PRODUCT_ID);
 //            mProductDetail = getArguments().getParcelable(ARG_PRODUCT_DETAIL);
-            mProductDetailNew = getArguments().getParcelable(ARG_PRODUCT_DETAIL_NEW);
+            mProduct = getArguments().getParcelable(ARG_PRODUCT_DETAIL_NEW);
             mRecommend = getArguments().getParcelable(ARG_RECOMMEND);
         }
         mHandler = new Handler();
@@ -205,10 +201,10 @@ public class ProductDetailFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new ProductGridSpacesItemDecoration(getContext(), R.dimen.product_item_spacing));
         mRecyclerView.setAdapter(mAdapter);
-        if (mProductDetailNew == null){
+        if (mProduct == null){
             mAdapter.setError();
         }else {
-            mAdapter.setProductDetail(mProductDetailNew);
+            mAdapter.setProductDetail(mProduct);
         }
 
         //mAdapter.setProductRecommend(mRecommend);
@@ -348,7 +344,7 @@ public class ProductDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
         // Save Instance State here
 //        outState.putParcelable(ARG_PRODUCT_DETAIL, mProductDetail);
-        outState.putParcelable(ARG_PRODUCT_DETAIL_NEW, mProductDetailNew);
+        outState.putParcelable(ARG_PRODUCT_DETAIL_NEW, mProduct);
         outState.putParcelable(ARG_RECOMMEND, mRecommend);
         outState.putParcelable(ARG_PRODUCT_REALM, mRealmProductDetail);
     }
@@ -360,7 +356,7 @@ public class ProductDetailFragment extends Fragment {
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
 //        mProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL);
-        mProductDetailNew = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL_NEW);
+        mProduct = savedInstanceState.getParcelable(ARG_PRODUCT_DETAIL_NEW);
         mRecommend = savedInstanceState.getParcelable(ARG_RECOMMEND);
         mRealmProductDetail = savedInstanceState.getParcelable(ARG_PRODUCT_REALM);
     }

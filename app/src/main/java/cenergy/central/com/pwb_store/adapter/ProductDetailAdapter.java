@@ -23,7 +23,7 @@ import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
-import cenergy.central.com.pwb_store.model.ProductDetailNew;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ReviewDetailText;
 import cenergy.central.com.pwb_store.model.SpecDao;
@@ -56,7 +56,7 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private Context mContext;
     private FragmentManager mFragmentManager;
     private ProductDetail mProductDetail;
-    private ProductDetailNew mProductDetailNew;
+    private Product mProduct;
     private boolean isLoadingShow = false;
     private List<IViewType> mListViewType = new ArrayList<>();
     private final GridLayoutManager.SpanSizeLookup mSpanSize = new GridLayoutManager.SpanSizeLookup() {
@@ -168,10 +168,10 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                     ProductDetailDescriptionViewHolder productDetailDescriptionViewHolder = (ProductDetailDescriptionViewHolder) holder;
                     productDetailDescriptionViewHolder.setViewHolder(productDetail);
                 }
-                if (viewType instanceof ProductDetailNew && holder instanceof ProductDetailDescriptionViewHolder) {
-                    ProductDetailNew productDetailNew = (ProductDetailNew) viewType;
+                if (viewType instanceof Product && holder instanceof ProductDetailDescriptionViewHolder) {
+                    Product product = (Product) viewType;
                     ProductDetailDescriptionViewHolder productDetailDescriptionViewHolder = (ProductDetailDescriptionViewHolder) holder;
-                    productDetailDescriptionViewHolder.setViewHolder(productDetailNew);
+                    productDetailDescriptionViewHolder.setViewHolder(product);
                 }
                 break;
 
@@ -278,10 +278,10 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     }
 
-    public void setProductDetail(ProductDetailNew productDetailNew) {
-        this.mProductDetailNew = productDetailNew;
+    public void setProductDetail(Product product) {
+        this.mProduct = product;
 //        if (productDetail.getProductImageList() != null) {
-            ProductDetailImage productDetailImage = productDetailNew.getProductImageList();
+            ProductDetailImage productDetailImage = product.getProductImageList();
             productDetailImage.setViewTypeId(VIEW_TYPE_ID_IMAGE);
             mListViewType.add(productDetailImage);
 //        }
@@ -309,8 +309,8 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 //            mListViewType.add(productDetailImage);
 //        }
 
-        productDetailNew.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
-        mListViewType.add(productDetailNew);
+        product.setViewTypeId(VIEW_TYPE_ID_DETAIL_ITEM);
+        mListViewType.add(product);
 
 //        if (productDetailNew.getExtensionProductDetail().getDescription() != null || productDetailNew.getReviewEN() != null) {
 //            ReviewDetailText reviewDetailText = new ReviewDetailText(productDetailNew.getExtensionProductDetail().getDescription(), ReviewDetailText.MODE_DESCRIPTION);

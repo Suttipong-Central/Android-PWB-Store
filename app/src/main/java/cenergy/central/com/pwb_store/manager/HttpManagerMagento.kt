@@ -6,7 +6,10 @@ import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
-import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.Category
+import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.ProductFilterHeader
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
@@ -134,12 +137,12 @@ class HttpManagerMagento {
         }
     }
 
-    fun retrieveProductDetail(productId: String, string: String, callback: ApiResponseCallback<ProductDetailNew?>) {
+    fun retrieveProductDetail(productId: String, string: String, callback: ApiResponseCallback<Product?>) {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
             productService.getProductDetail(productId, string)
-            .enqueue(object : Callback<ProductDetailNew>{
-                override fun onResponse(call: Call<ProductDetailNew>?, response: Response<ProductDetailNew>?) {
+            .enqueue(object : Callback<Product>{
+                override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
                     if (response != null) {
                         val productDetailNew = response.body()
                         callback.success(productDetailNew)
@@ -148,10 +151,35 @@ class HttpManagerMagento {
                     }
                 }
 
-                override fun onFailure(call: Call<ProductDetailNew>?, t: Throwable?) {
+                override fun onFailure(call: Call<Product>?, t: Throwable?) {
                     callback.failure(APIError(t))
                 }
             })
+        }
+    }
+
+    fun getProductFromBarcode(filterBarcode: String, barcode: String, eq: String, orderBy: String,
+                              pageSize: Int, currentPage: Int, callback: ApiResponseCallback<Product?>) {
+        retrofit?.let {
+            val productService = it.create(ProductService::class.java)
+            productService.getProductFromBarcode(filterBarcode, barcode, eq, orderBy, pageSize, currentPage)
+                    .enqueue(object : Callback<ProductResponse> {
+
+                        override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                            if (response != null) {
+                                val productResponse = response.body()
+                                if (productResponse?.products!!.size > 0) {
+                                    callback.success(productResponse.products[0])
+                                }
+                            } else {
+                                callback.failure(APIErrorUtils.parseError(response))
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                            callback.failure(APIError(t))
+                        }
+                    })
         }
     }
 }

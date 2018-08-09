@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.activity;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,16 +22,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductDetailFragment;
 import cenergy.central.com.pwb_store.fragment.WebViewFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
-import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.RecommendBus;
@@ -46,7 +40,7 @@ import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
-import cenergy.central.com.pwb_store.model.ProductDetailNew;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetailOption;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailPromotion;
@@ -312,48 +306,71 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 //        MockData();
 
         if (savedInstanceState == null){
-            if (!isBarcode){
-                showProgressDialog();
+            showProgressDialog();
+            if (!isBarcode) {
 //                HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
 //                        getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
-                HttpManagerMagento.Companion.getInstance().retrieveProductDetail(productId,
-                        getString(R.string.product_detail), new ApiResponseCallback<ProductDetailNew>() {
-                            @Override
-                            public void success(@Nullable ProductDetailNew response) {
-                                if (response != null){
-                                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                                    fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
-                                    mProgressDialog.dismiss();
-                                }else {
-//                                    APIError error = APIErrorUtils.parseError(response);
-//                                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
-//                                    showAlertDialog(error.getErrorMessage(), false);
-                                    mProgressDialog.dismiss();
-                                }
-                            }
-
-                            @Override
-                            public void failure(@NotNull APIError error) {
-
-                            }
-                        });
-            }else {
-                showProgressDialog();
-                HttpManagerMagentoOld.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
-                        "finset", "barcode", productId, "eq", "name", 10, 1).enqueue(CALLBACK_BARCODE);
+                retrieveProduct(productId);
+            } else {
+//                HttpManagerMagentoOld.getInstance().getProductService().getSearchBarcodeMagento("in_stores", UserInfoManager.getInstance().getUserId(),
+//                        "finset", "barcode", productId, "eq", "name", 10, 1).enqueue(CALLBACK_BARCODE);
+                retrieveProductFromBarcode(mIntent.getStringExtra(ARG_PRODUCT_ID));
             }
-        }else {
+        } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
                     .commit();
         }
-
     }
+
+    // region retrieve product
+    private void retrieveProductFromBarcode(String barcode) {
+        HttpManagerMagento.Companion.getInstance().getProductFromBarcode("barcode", barcode, "eq", "name", 10, 1, new ApiResponseCallback<Product>() {
+            @Override
+            public void success(@Nullable Product response) {
+                if (response != null){
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
+                    mProgressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                showAlertDialog(error.getErrorUserMessage(), false);
+                mProgressDialog.dismiss();
+            }
+        });
+    }
+
+    private void retrieveProduct(String sku) {
+        HttpManagerMagento.Companion.getInstance().retrieveProductDetail(sku,
+                getString(R.string.product_detail), new ApiResponseCallback<Product>() {
+                    @Override
+                    public void success(@Nullable Product response) {
+                        if (response != null){
+                            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
+                            mProgressDialog.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void failure(@NotNull APIError error) {
+                        Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                        showAlertDialog(error.getErrorUserMessage(), false);
+                        mProgressDialog.dismiss();
+                    }
+                });
+    }
+    // end region
 
     private void initView() {
         mToolbar = findViewById(R.id.toolbar);
         mBuyCompareView = findViewById(R.id.button_compare);
+        ImageView searchImageView = findViewById(R.id.img_search);
 
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -365,6 +382,18 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                 finish();
             }
         });
+
+        searchImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProductDetailActivity.this, SearchActivity.class);
+                ActivityCompat.startActivity(ProductDetailActivity.this, intent,
+                        ActivityOptionsCompat
+                                .makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight())
+                                .toBundle());
+            }
+        });
+
 
         //get realm instance
         this.mRealm = RealmController.with(this).getRealm();
@@ -619,15 +648,6 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
-                        .toBundle());
-    }
-
-    @OnClick(R.id.img_search)
-    public void onSearchClick(ImageView imageView) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(imageView, 0, 0, imageView.getWidth(), imageView.getHeight())
                         .toBundle());
     }
 

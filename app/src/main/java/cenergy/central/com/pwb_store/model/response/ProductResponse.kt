@@ -3,15 +3,15 @@ package cenergy.central.com.pwb_store.model.response
 import android.os.Parcel
 import android.os.Parcelable
 import cenergy.central.com.pwb_store.model.Product
+import com.google.gson.annotations.SerializedName
 
 class ProductResponse() : Parcelable{
 
-    var items: ArrayList<Product> = arrayListOf()
+    @SerializedName("items")
+    var products: ArrayList<Product> = arrayListOf()
     var currentPage: Int = 0
 
-    constructor(parcel: Parcel) : this() {
-
-    }
+    constructor(parcel: Parcel) : this()
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
 

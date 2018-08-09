@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
@@ -248,7 +247,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 //                    }
 //                }
 
-                            totalItem = productResponse.getItems().size();
+                            totalItem = productResponse.getProducts().size();
                             totalPage = totalPageCal(totalItem);
                             Log.d(TAG, " totalPage :" + totalPage);
                             currentPage = getNextPage();

@@ -8,12 +8,13 @@ import java.util.*
 class Product() : Parcelable,IViewType {
 
     var id: Int = 0
-    var viewTypeID: Int = 0
     var sku: String = ""
     var name: String = ""
     var attributeID: Int = 0
     var price: Int = 0
     var status: Int = 0
+    var viewTypeID: Int = 0
+    private var productImageList: ProductDetailImage? = null
 
     constructor(parcel: Parcel) : this() {
         id = parcel.readInt()
@@ -22,14 +23,6 @@ class Product() : Parcelable,IViewType {
         attributeID = parcel.readInt()
         price = parcel.readInt()
         status = parcel.readInt()
-    }
-
-    override fun getViewTypeId(): Int {
-        return viewTypeID
-    }
-
-    override fun setViewTypeId(id: Int) {
-        this.viewTypeID = id
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -45,6 +38,14 @@ class Product() : Parcelable,IViewType {
         return 0
     }
 
+    override fun getViewTypeId(): Int {
+        return viewTypeID
+    }
+
+    override fun setViewTypeId(viewTypeID: Int) {
+        this.viewTypeID = viewTypeID
+    }
+
     companion object CREATOR : Parcelable.Creator<Product> {
         override fun createFromParcel(parcel: Parcel): Product {
             return Product(parcel)
@@ -58,5 +59,24 @@ class Product() : Parcelable,IViewType {
     fun getDisplayOldPrice(unit: String): String {
         //return String.format(Locale.getDefault(), "%s %s", NumberFormat.getInstance(Locale.getDefault()).format(oldPrice), unit);
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(java.lang.Double.parseDouble(price.toString())))
+    }
+
+    fun getProductImageList(): ProductDetailImage {
+        if (productImageList == null) {
+            val productDetailImageItems = ArrayList<ProductDetailImageItem>()
+            productDetailImageItems.add(ProductDetailImageItem("1", ""))
+            productDetailImageItems.add(ProductDetailImageItem("2", ""))
+            productDetailImageItems.add(ProductDetailImageItem("3", ""))
+            productDetailImageItems.add(ProductDetailImageItem("4", ""))
+            productDetailImageItems.add(ProductDetailImageItem("5", ""))
+            productDetailImageItems.add(ProductDetailImageItem("6", ""))
+
+            productImageList = ProductDetailImage(4, productDetailImageItems)
+        }
+        return productImageList as ProductDetailImage
+    }
+
+    fun setProductImageList(productImageList: ProductDetailImage) {
+        this.productImageList = productImageList
     }
 }

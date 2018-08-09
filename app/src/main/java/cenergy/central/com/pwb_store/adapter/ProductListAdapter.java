@@ -153,14 +153,14 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         // Add deal paginated
         int startPosition = mListViewType.size();
-        for (Product product : productResponse.getItems()) {
+        for (Product product : productResponse.getProducts()) {
             product.setAttributeID(VIEW_TYPE_ID_GRID_VIEW);
             mListViewType.add(product);
         }
 
         if (isLoadingShow) {
             isLoadingShow = false;
-            if (productResponse.getItems().size() == 0) {
+            if (productResponse.getProducts().size() == 0) {
                 mListViewType.clear();
                 notifyDataSetChanged();
                 mListViewType.add(VIEW_TYPE_RESULT);
@@ -169,7 +169,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             notifyItemChanged(0);
             notifyItemRangeInserted(0, mListViewType.size());
         } else {
-            notifyItemRangeInserted(startPosition, productResponse.getItems().size());
+            notifyItemRangeInserted(startPosition, productResponse.getProducts().size());
         }
     }
 

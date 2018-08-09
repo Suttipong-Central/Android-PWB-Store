@@ -3,12 +3,10 @@ package cenergy.central.com.pwb_store.manager.service;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
-import cenergy.central.com.pwb_store.model.ProductDetailNew;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -86,7 +84,7 @@ public interface ProductService {
             @Query("fields") String fields,
             @Query("branch_id") String branchId);
 
-//    @Headers("Accept: Application/json")
+    // region new api
     @GET("/rest/V1/products")
     Call<ProductResponse> getProductList(
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String category,
@@ -98,7 +96,17 @@ public interface ProductService {
             @Query("fields") String fields);
 
     @GET("/rest/V1/products/{id}")
-    Call<ProductDetailNew> getProductDetail(
+    Call<Product> getProductDetail(
             @Path("id") String productId,
             @Query("fields") String fields);
+
+    @GET("/rest/V1/products")
+    Call<ProductResponse> getProductFromBarcode(
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String barCodeName,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") String barCode,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String eq,
+            @Query("searchCriteria[sortOrders][0][field]") String name,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage);
+    // end region
 }

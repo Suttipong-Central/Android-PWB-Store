@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.ProductDetailOptionItemAdapter;
 import cenergy.central.com.pwb_store.manager.Contextor;
@@ -18,7 +17,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetail;
-import cenergy.central.com.pwb_store.model.ProductDetailNew;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -190,13 +189,13 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         mCardViewCompare.setOnClickListener(this);
     }
 
-    public void setViewHolder(ProductDetailNew productDetailNew){
+    public void setViewHolder(Product product){
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
-        mProductName.setText(productDetailNew.getName());
-        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetailNew.getSku());
+        mProductName.setText(product.getName());
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ product.getSku());
 //        namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
-        mRegular.setText("Regular Price : " + productDetailNew.getDisplayOldPrice(unit));
+        mRegular.setText("Regular Price : " + product.getDisplayOldPrice(unit));
 
 //        ExtensionProductDetail extensionProductDetail = productDetailNew.getExtensionProductDetail();
 //        if (extensionProductDetail != null){
