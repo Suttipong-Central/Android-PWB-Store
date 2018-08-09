@@ -229,7 +229,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:contentDescription="@string/add_to_cart"
-                    android:src="@drawable/ic_add_to_cart" />
+                    android:src="@drawable/ic_shopping_cart" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     style="@style/RaisedButton"

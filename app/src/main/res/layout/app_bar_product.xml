@@ -12,8 +12,8 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/colorPrimary"
         android:theme="@style/ToolbarBack"
         app:contentInsetEnd="0dp"
         app:contentInsetLeft="0dp"
@@ -33,10 +33,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_gravity="end"
+            android:layout_gravity="end|center_vertical"
             android:layout_marginRight="10dp"
             android:src="@drawable/ic_search_bar"
-            android:background="?attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             />
 
         <cenergy.central.com.pwb_store.view.PowerBuyCompareView
@@ -44,9 +44,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_gravity="end"
+            android:layout_gravity="end|center_vertical"
             android:layout_marginRight="15dp"
             />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginRight="15dp">
+
+        </cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView>
+
     </android.support.v7.widget.Toolbar>
+
 </android.support.design.widget.AppBarLayout>
 
