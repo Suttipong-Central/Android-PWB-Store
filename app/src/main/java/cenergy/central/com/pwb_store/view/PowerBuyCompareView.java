@@ -25,10 +25,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.BundleSavedState;
 import cenergy.central.com.pwb_store.model.CompareCount;
-import cenergy.central.com.pwb_store.realm.RealmController;
 import io.realm.Realm;
 
 /**
@@ -43,11 +41,8 @@ public class PowerBuyCompareView extends FrameLayout {
     private static final String ARG_COMPARE_COUNT = "compareCount";
 
     //View Members
-    @BindView(R.id.layout_cart)
     RelativeLayout mLayoutCart;
-    @BindView(R.id.layout_badge)
     ViewGroup mLayoutBadge;
-    @BindView(R.id.txt_view_badge_compare)
     TickerView mBadgeCart;
 
     //Data Members
@@ -84,11 +79,23 @@ public class PowerBuyCompareView extends FrameLayout {
 
     private void initInflate() {
         //Inflate Layout
-        inflate(getContext(), R.layout.view_button_compare, this);
+        View view = inflate(getContext(), R.layout.view_button_compare, this);
+
+        // bind view
+        mLayoutBadge = view.findViewById(R.id.layout_badge);
+        mLayoutCart = view.findViewById(R.id.layout_cart);
+        mBadgeCart = view.findViewById(R.id.txt_view_badge_compare);
+        view.findViewById(R.id.image_view_compare).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onShoppingBagClick(v);
+                }
+            }
+        });
     }
 
     private void initInstance() {
-        ButterKnife.bind(this);
         mBadgeCart.setCharacterList(TickerUtils.getDefaultNumberList());
         //this.mRealm = RealmController.getInstance().getRealm();
     }
@@ -265,13 +272,6 @@ public class PowerBuyCompareView extends FrameLayout {
 
     public void setListener(OnClickListener listener) {
         this.mListener = listener;
-    }
-
-    @OnClick(R.id.image_view_compare)
-    public void onImageViewCartClick(ImageView imageView) {
-        if (mListener != null) {
-            mListener.onShoppingBagClick(imageView);
-        }
     }
 
     public interface OnClickListener {
