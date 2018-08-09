@@ -1,289 +1,334 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="0dp">
 
     <!--<ScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="25dp"
+        android:orientation="vertical">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_view_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:inputType="textMultiLine"
+            android:padding="5dp"
+            android:textColor="@color/nameProductColor"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Fuji Instax รุ่น Mini 90 สีดำ" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="25dp"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="5dp">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/txt_view_product_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:inputType="textMultiLine"
-                android:padding="5dp"
-                android:textColor="@color/nameProductColor"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:typeFaceAsset="RobotoLight.ttf"
-                tools:text="Fuji Instax รุ่น Mini 90 สีดำ"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_view_product_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginRight="10dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textColor="@color/nameProductColor"
-                    android:textSize="18sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
-                    android:text="Product Code : "/>
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_stock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:layout_marginLeft="30dp"
-                    android:textSize="18sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
-                    android:textColor="@color/inStockColor"
-                    tools:text="In Stock"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <ImageView
-                    android:id="@+id/img_pro_first"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentLeft="true"
-                    android:paddingTop="5dp"/>
-
-                <ImageView
-                    android:id="@+id/img_pro_second"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/img_pro_first"
-                    android:paddingTop="5dp"/>
-
-                <ImageView
-                    android:id="@+id/img_pro_third"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/img_pro_second"
-                    android:paddingTop="5dp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_name_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:textSize="16sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
-                    android:textColor="@color/salePriceColor"
-                    android:text="Price : "/>
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_sale_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:textSize="20sp"
-                    app:typeFaceAsset="Roboto-Medium.ttf"
-                    android:textColor="@color/salePriceColor"
-                    tools:text="฿2,890"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:textColor="@color/nameProductColor"
-                    android:textSize="18sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
-                    tools:text="Regular Price : ฿4,200"
-                    />
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_save"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:textColor="@color/powerBuyPurple"
-                    android:textSize="18sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
-                    tools:text="Save : ฿1,310 (30%)"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/image_view_logo"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_icon_t1c"/>
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_redeem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:text="Redeem your point 23,120 point"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    app:typeFaceAsset="RobotoLight.ttf"
-                    />
-
-            </LinearLayout>
-
-            <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/txt_how_to"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="@color/grayTextColor"
-                app:typeFaceAsset="RobotoLight.ttf"
-                tools:text="How to redeem The 1 Card points."
-                android:background="?attr/selectableItemBackground"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/viewColor"
-                android:padding="5dp"/>
-
-            <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/txt_color"
+                android:id="@+id/txt_view_product_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:text="Color : "
-                android:textSize="16sp"
-                app:typeFaceAsset="RobotoLight.ttf"/>
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Product Code : "
+                android:textColor="@color/nameProductColor"
+                android:textSize="18sp"
+                app:typeFaceAsset="RobotoLight.ttf" />
 
-            <cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView
-                android:id="@+id/grid_view"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:stretchMode="columnWidth">
-            </cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView>
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_stock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:maxLines="1"
+                android:textColor="@color/inStockColor"
+                android:textSize="18sp"
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="In Stock" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/img_pro_first"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:paddingTop="5dp" />
+
+            <ImageView
+                android:id="@+id/img_pro_second"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/img_pro_first"
+                android:paddingTop="5dp" />
+
+            <ImageView
+                android:id="@+id/img_pro_third"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/img_pro_second"
+                android:paddingTop="5dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_name_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Price : "
+                android:textColor="@color/salePriceColor"
+                android:textSize="16sp"
+                app:typeFaceAsset="RobotoLight.ttf" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_sale_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textColor="@color/salePriceColor"
+                android:textSize="20sp"
+                app:typeFaceAsset="Roboto-Medium.ttf"
+                tools:text="฿2,890" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textColor="@color/nameProductColor"
+                android:textSize="18sp"
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="Regular Price : ฿4,200" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textColor="@color/powerBuyPurple"
+                android:textSize="18sp"
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="Save : ฿1,310 (30%)" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/image_view_logo"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:padding="5dp"
+                android:src="@drawable/ic_icon_t1c" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_redeem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Redeem your point 23,120 point"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:typeFaceAsset="RobotoLight.ttf" />
+
+        </LinearLayout>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_how_to"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/grayTextColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="How to redeem The 1 Card points." />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/viewColor"
+            android:padding="5dp" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:text="Color : "
+            android:textSize="16sp"
+            app:typeFaceAsset="RobotoLight.ttf" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView
+            android:id="@+id/grid_view"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:stretchMode="columnWidth"></cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view_cart"
+            style="@style/RaisedButtonCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/powerBuyPurple">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.CardView
-                    android:id="@+id/card_view_store"
-                    style="@style/RaisedButtonCard"
+                <ImageView
+                    android:id="@+id/img_cart"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/add_to_cart"
+                    android:src="@drawable/ic_add_to_cart" />
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/RaisedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="1dp"
-                    android:layout_alignParentLeft="true"
+                    android:text="@string/add_to_cart"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    app:typeFaceAsset="RobotoLight.ttf" />
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_store"
+                style="@style/RaisedButtonCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_marginEnd="3dp"
+                android:layout_marginRight="3dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/categoryColor">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardBackgroundColor="@color/categoryColor">
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/img_icon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_gravity="left|center_vertical"
-                        android:src="@drawable/ic_store_white"
-                        android:layout_marginLeft="5dp"/>
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="@string/product_available"
+                        android:src="@drawable/ic_store_white" />
 
-                        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                            style="@style/RaisedButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="5dp"
-                            android:paddingStart="30dp"
-                            android:text="@string/product_available"
-                            android:textSize="16sp"
-                            android:textColor="@android:color/white"
-                            app:typeFaceAsset="RobotoLight.ttf"/>
-                    </android.support.v7.widget.CardView>
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        style="@style/RaisedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_available"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        app:typeFaceAsset="RobotoLight.ttf" />
 
-                <android.support.v7.widget.CardView
-                    android:id="@+id/card_view_add_compare"
-                    style="@style/RaisedButtonCard"
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_add_compare"
+                style="@style/RaisedButtonCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_marginStart="3dp"
+                android:layout_marginLeft="3dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/categoryColor">
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/card_view_store"
-                    android:layout_marginLeft="5dp"
                     android:layout_gravity="center_horizontal"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardBackgroundColor="@color/categoryColor">
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/img_compare"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_gravity="left|center_vertical"
-                        android:src="@drawable/ic_compare_bar"
-                        android:layout_marginLeft="5dp"/>
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="@string/product_compare"
+                        android:src="@drawable/ic_compare_bar" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
                         style="@style/RaisedButton"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:paddingLeft="5dp"
-                        android:paddingStart="30dp"
+                        android:layout_height="wrap_content"
                         android:text="@string/product_compare"
-                        android:textSize="16sp"
                         android:textColor="@android:color/white"
-                        app:typeFaceAsset="RobotoLight.ttf"/>
-                </android.support.v7.widget.CardView>
+                        android:textSize="16sp"
+                        app:typeFaceAsset="RobotoLight.ttf" />
+
                 </LinearLayout>
 
-            </LinearLayout>
-        <!--</ScrollView>-->
-    </android.support.v7.widget.CardView>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--</ScrollView>-->
+</android.support.v7.widget.CardView>
