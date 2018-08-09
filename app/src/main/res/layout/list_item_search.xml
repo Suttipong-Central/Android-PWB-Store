@@ -102,5 +102,5 @@
         android:layout_marginRight="10dp"
         android:padding="6dp"
         android:src="@drawable/ic_barcode_scan"
-        android:background="?attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"/>
 </RelativeLayout>
