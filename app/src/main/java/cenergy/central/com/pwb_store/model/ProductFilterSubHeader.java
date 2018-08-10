@@ -36,9 +36,12 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("image")
+    @SerializedName("category_tablet_icon")
     @Expose
     private String urlName;
+    @SerializedName("include_in_menu")
+    @Expose
+    private String includeInMenu;
     private String type;
     @SerializedName("children_data")
     @Expose
@@ -53,6 +56,7 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
         this.name = productFilterSubHeader.getName();
         this.type = "single";
         this.urlName = productFilterSubHeader.getUrlName();
+        this.includeInMenu = productFilterSubHeader.getIncludeInMenu();
 
         List<ProductFilterItem> productFilterItemList = new ArrayList<>();
         if (productFilterSubHeader.isProductFilterItemListAvailable())
@@ -73,6 +77,7 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
         type = in.readString();
         isExpanded = in.readByte() != 0;
         urlName = in.readString();
+        includeInMenu = in.readString();
     }
 
     @Override
@@ -83,6 +88,7 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
         dest.writeTypedList(mProductFilterItemList);
         dest.writeByte((byte) (isExpanded ? 1 : 0));
         dest.writeString(urlName);
+        dest.writeString(includeInMenu);
     }
 
     @Override
@@ -168,6 +174,13 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
         this.urlName = urlName;
     }
 
+    public void setIncludeInMenu(String includeInMenu) {
+        this.includeInMenu = includeInMenu;
+    }
+
+    public String getIncludeInMenu() {
+        return includeInMenu;
+    }
 
     public void clearAllSelectedFilterOptions() {
         for (ProductFilterItem productFilterItem :
