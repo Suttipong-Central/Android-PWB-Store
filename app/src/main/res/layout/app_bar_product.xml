@@ -53,7 +53,7 @@
             android:layout_height="48dp"
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="15dp">
+            android:layout_marginRight="10dp">
 
         </cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView>
 
