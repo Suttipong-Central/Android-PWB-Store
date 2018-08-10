@@ -33,12 +33,11 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.model.AddCompare;
-import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
-import cenergy.central.com.pwb_store.model.ProductDetail;
-import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
+import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
-import cenergy.central.com.pwb_store.model.ProductDetailStore;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.Recommend;
+import cenergy.central.com.pwb_store.realm.DatabaseListener;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import io.realm.Realm;
@@ -109,33 +108,74 @@ public class ProductDetailFragment extends Fragment {
                         .toBundle());
     }
 
+//    @Subscribe
+//    public void onEvent(ProductBus productBus){
+//        mRealmProductDetail = productBus.getProductDetail();
+//        showProgressDialog();
+//        long count = RealmController.with(this).getCount();
+//        Log.d(TAG, "" + count);
+////        if (mRealmProductDetail.getStockAvailable() == 0){
+////            mProgressDialog.dismiss();
+////            showAlertDialog(getContext().getResources().getString(R.string.alert_stock));
+////        }else {
+//            if (count >= 4){
+//                mProgressDialog.dismiss();
+//                showAlertDialog(getContext().getResources().getString(R.string.alert_count));
+//            }else {
+//                String id = checkPrimary();
+//                if (id.equalsIgnoreCase(mRealmProductDetail.getProductCode())){
+//                    mProgressDialog.dismiss();
+//                    showAlertDialog(getContext().getResources().getString(R.string.alert_compare)
+//                            + "" + mRealmProductDetail.getProductName() + "" +
+//                            getContext().getResources().getString(R.string.alert_compare_yes));
+//                }else {
+//                    insertCompare();
+//                }
+//            }
+//    //    }
+//    }
+
     @Subscribe
     public void onEvent(ProductBus productBus){
-        mRealmProductDetail = productBus.getProductDetail();
+        Product product = productBus.getProduct();
         showProgressDialog();
-        long count = RealmController.with(this).getCount();
+        RealmController database = RealmController.with(this);
+        long count = database.getCompareProduts().size();
         Log.d(TAG, "" + count);
-//        if (mRealmProductDetail.getStockAvailable() == 0){
-//            mProgressDialog.dismiss();
-//            showAlertDialog(getContext().getResources().getString(R.string.alert_stock));
-//        }else {
-            if (count >= 4){
+        if (count >= 4) {
+            mProgressDialog.dismiss();
+            showAlertDialog(getString(R.string.alert_count));
+        } else {
+            CompareProduct compareProduct = database.getCompareProduct(product.getSku());
+            if (compareProduct != null) {
                 mProgressDialog.dismiss();
-                showAlertDialog(getContext().getResources().getString(R.string.alert_count));
-            }else {
-                String id = checkPrimary();
-                if (id.equalsIgnoreCase(mRealmProductDetail.getProductCode())){
-                    mProgressDialog.dismiss();
-                    showAlertDialog(getContext().getResources().getString(R.string.alert_compare)
-                            + "" + mRealmProductDetail.getProductName() + "" +
-                            getContext().getResources().getString(R.string.alert_compare_yes));
-                }else {
-                    insertCompare();
-                }
+                showAlertDialog(getString(R.string.alert_compare)
+                        + "" + compareProduct.getName() + "" + getString(R.string.alert_compare_yes));
+            } else {
+                // store compare product to database
+                saveCompareProduct(product);
             }
-    //    }
+        }
     }
 
+    private void saveCompareProduct(Product product) {
+        RealmController.with(this).saveCompareProduct(product, new DatabaseListener() {
+            @Override
+            public void onSuccessfully() {
+                EventBus.getDefault().post(new UpdateBageBus(true));
+                mProgressDialog.dismiss();
+                Toast.makeText(getContext(), "Generate compare complete.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@Nullable Throwable error) {
+                mProgressDialog.dismiss();
+                if (error != null) {
+                    Log.d(TAG, "" + error.getMessage());
+                }
+            }
+        });
+    }
 
 
     @SuppressWarnings("unused")
@@ -211,88 +251,88 @@ public class ProductDetailFragment extends Fragment {
 
     }
 
-    private void insertCompare() {
-
-        if (runOnUiThread != null) {
-            mHandler.removeCallbacks(runOnUiThread);
-        }
-
-        runOnUiThread = new Runnable() {
-            @Override
-            public void run() {
-                mRealm.executeTransactionAsync(
-                        new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                if (mRealmProductDetail != null){
-                                    addCompare = new AddCompare();
-
-                                    addCompare.setProductId(mRealmProductDetail.getProductCode());
-                                    addCompare.setProductName(mRealmProductDetail.getProductName());
-                                    addCompare.setProductNameEN(mRealmProductDetail.getProductNameEN());
-                                    addCompare.setDescription(mRealmProductDetail.getDescription());
-                                    addCompare.setDescriptionEN(mRealmProductDetail.getDescriptionEN());
-                                    ExtensionProductDetail extensionProductDetail = mRealmProductDetail.getExtensionProductDetail();
-                                    if (extensionProductDetail != null){
-                                        for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
-                                            addCompare.setBarcode(productDetailStore.getBarCode());
-                                            addCompare.setOriginalPrice(Double.parseDouble(productDetailStore.getPrice()));
-                                            addCompare.setPrice(Double.parseDouble(productDetailStore.getSpecialPrice()));
-                                            addCompare.setStoreId(productDetailStore.getStoreId());
-                                            addCompare.setStockAvailable(Integer.parseInt(productDetailStore.getStockAvailable()));
-                                            addCompare.setUrlName(mRealmProductDetail.getExtensionProductDetail().getImageUrl());
-                                            addCompare.setUrlNameEN(mRealmProductDetail.getExtensionProductDetail().getImageUrl());
-                                        }
-                                    }
-                                    addCompare.setReview(mRealmProductDetail.getReview());
-                                    addCompare.setReviewEN(mRealmProductDetail.getReviewEN());
-                                    addCompare.setNumOfImage(mRealmProductDetail.getNumOfImage());
-                                    addCompare.setCanInstallment(mRealmProductDetail.isCanInstallment());
-                                    addCompare.setT1cPoint(mRealmProductDetail.getT1cPoint());
-                                    addCompare.setProductSku(mRealmProductDetail.getSku());
-                                    //addCompare.setDepartmentId(mRealmProductDetail.getDepartmentId());
-                                    addCompare.setDepartmentId(Integer.parseInt(mRealmProductDetail.getSku()));
-                                    addCompare.setBrandId(mRealmProductDetail.getBrandId());
-                                    addCompare.setBrand(mRealmProductDetail.getBrand());
-                                    addCompare.setBrandEN(mRealmProductDetail.getBrandEN());
-                                    if (mRealmProductDetail.getProductDetailImageItems() != null){
-                                        for (ProductDetailImageItem productDetailImageItem :
-                                                mRealmProductDetail.getProductDetailImageItems()) {
-                                            addCompare.setUrl(productDetailImageItem.getImgUrl());
-                                        }
-                                    }
-
-                                }
-
-                            }
-                        }, new Realm.Transaction.OnSuccess() {
-                            @Override
-                            public void onSuccess() {
-                                mRealm.beginTransaction();
-                                //mRealm.copyToRealm(addCompare);
-                                mRealm.copyToRealmOrUpdate(addCompare);
-                                mRealm.commitTransaction();
-                                EventBus.getDefault().post(new UpdateBageBus(true));
-                                mProgressDialog.dismiss();
-                                Toast.makeText(getContext(), "Generate compare complete.", Toast.LENGTH_SHORT).show();
-
-                            }
-
-                        }, new Realm.Transaction.OnError() {
-                            @Override
-                            public void onError(Throwable error) {
-                                error.printStackTrace();
-                                mProgressDialog.dismiss();
-                                Toast.makeText(getContext(), "" + error.getMessage(), Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, "" + error.getMessage());
-                            }
-                        });
-            }
-        };
-
-        mHandler.postDelayed(runOnUiThread, 1000);
-
-    }
+//    private void insertCompare() {
+//
+//        if (runOnUiThread != null) {
+//            mHandler.removeCallbacks(runOnUiThread);
+//        }
+//
+//        runOnUiThread = new Runnable() {
+//            @Override
+//            public void run() {
+//                mRealm.executeTransactionAsync(
+//                        new Realm.Transaction() {
+//                            @Override
+//                            public void execute(Realm realm) {
+//                                if (mRealmProductDetail != null){
+//                                    addCompare = new AddCompare();
+//
+//                                    addCompare.setProductId(mRealmProductDetail.getProductCode());
+//                                    addCompare.setProductName(mRealmProductDetail.getProductName());
+//                                    addCompare.setProductNameEN(mRealmProductDetail.getProductNameEN());
+//                                    addCompare.setDescription(mRealmProductDetail.getDescription());
+//                                    addCompare.setDescriptionEN(mRealmProductDetail.getDescriptionEN());
+//                                    ExtensionProductDetail extensionProductDetail = mRealmProductDetail.getExtensionProductDetail();
+//                                    if (extensionProductDetail != null){
+//                                        for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
+//                                            addCompare.setBarcode(productDetailStore.getBarCode());
+//                                            addCompare.setOriginalPrice(Double.parseDouble(productDetailStore.getPrice()));
+//                                            addCompare.setPrice(Double.parseDouble(productDetailStore.getSpecialPrice()));
+//                                            addCompare.setStoreId(productDetailStore.getStoreId());
+//                                            addCompare.setStockAvailable(Integer.parseInt(productDetailStore.getStockAvailable()));
+//                                            addCompare.setUrlName(mRealmProductDetail.getExtensionProductDetail().getImageUrl());
+//                                            addCompare.setUrlNameEN(mRealmProductDetail.getExtensionProductDetail().getImageUrl());
+//                                        }
+//                                    }
+//                                    addCompare.setReview(mRealmProductDetail.getReview());
+//                                    addCompare.setReviewEN(mRealmProductDetail.getReviewEN());
+//                                    addCompare.setNumOfImage(mRealmProductDetail.getNumOfImage());
+//                                    addCompare.setCanInstallment(mRealmProductDetail.isCanInstallment());
+//                                    addCompare.setT1cPoint(mRealmProductDetail.getT1cPoint());
+//                                    addCompare.setProductSku(mRealmProductDetail.getSku());
+//                                    //addCompare.setDepartmentId(mRealmProductDetail.getDepartmentId());
+//                                    addCompare.setDepartmentId(Integer.parseInt(mRealmProductDetail.getSku()));
+//                                    addCompare.setBrandId(mRealmProductDetail.getBrandId());
+//                                    addCompare.setBrand(mRealmProductDetail.getBrand());
+//                                    addCompare.setBrandEN(mRealmProductDetail.getBrandEN());
+//                                    if (mRealmProductDetail.getProductDetailImageItems() != null){
+//                                        for (ProductDetailImageItem productDetailImageItem :
+//                                                mRealmProductDetail.getProductDetailImageItems()) {
+//                                            addCompare.setUrl(productDetailImageItem.getImgUrl());
+//                                        }
+//                                    }
+//
+//                                }
+//
+//                            }
+//                        }, new Realm.Transaction.OnSuccess() {
+//                            @Override
+//                            public void onSuccess() {
+//                                mRealm.beginTransaction();
+//                                //mRealm.copyToRealm(addCompare);
+//                                mRealm.copyToRealmOrUpdate(addCompare);
+//                                mRealm.commitTransaction();
+//                                EventBus.getDefault().post(new UpdateBageBus(true));
+//                                mProgressDialog.dismiss();
+//                                Toast.makeText(getContext(), "Generate compare complete.", Toast.LENGTH_SHORT).show();
+//
+//                            }
+//
+//                        }, new Realm.Transaction.OnError() {
+//                            @Override
+//                            public void onError(Throwable error) {
+//                                error.printStackTrace();
+//                                mProgressDialog.dismiss();
+//                                Toast.makeText(getContext(), "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+//                                Log.d(TAG, "" + error.getMessage());
+//                            }
+//                        });
+//            }
+//        };
+//
+//        mHandler.postDelayed(runOnUiThread, 1000);
+//
+//    }
 
     private void clearCompare() {
         mRealm.beginTransaction();
@@ -300,18 +340,18 @@ public class ProductDetailFragment extends Fragment {
         mRealm.commitTransaction();
     }
 
-    private String checkPrimary(){
-        String result;
-        String id = mRealmProductDetail.getProductCode();
-        addCompare = RealmController.with(this).getCompare(id);
-        if (addCompare == null){
-            result = "";
-        }else {
-            result = addCompare.getProductId();
-        }
-
-        return result;
-    }
+//    private String checkPrimary(){
+//        String result;
+//        String id = mRealmProductDetail.getProductCode();
+//        addCompare = RealmController.with(this).getCompare(id);
+//        if (addCompare == null){
+//            result = "";
+//        }else {
+//            result = addCompare.getProductId();
+//        }
+//
+//        return result;
+//    }
 
     @Override
     public void onStart() {

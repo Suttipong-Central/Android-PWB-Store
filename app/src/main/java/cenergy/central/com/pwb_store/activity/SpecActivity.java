@@ -96,8 +96,9 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
 
     @Subscribe
     public void onEvent(UpdateBageBus updateBageBus){
-        if (updateBageBus.isUpdate() == true){
-            long count = RealmController.with(this).getCount();
+        if (updateBageBus.isUpdate()){
+//            long count = RealmController.with(this).getCount();
+            long count = RealmController.with(this).getCompareProduts().size();
             mBuyCompareView.updateCartCount((int) count);
         }
     }
@@ -147,10 +148,10 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
 
         //get realm instance
         this.mRealm = RealmController.with(this).getRealm();
-        long count = RealmController.with(this).getCount();
+        int count = RealmController.with(this).getCompareProduts().size();
 
         mBuyCompareView.setListener(this);
-        mBuyCompareView.updateCartCount((int) count);
+        mBuyCompareView.updateCartCount(count);
 
     }
 
@@ -170,8 +171,8 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-        long count = RealmController.with(this).getCount();
-        mBuyCompareView.updateCartCount((int) count);
+        int count = RealmController.with(this).getCompareProduts().size();
+        mBuyCompareView.updateCartCount(count);
     }
 
     @Override

@@ -7,10 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import java.util.Date;
+import java.util.List;
 
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
 import cenergy.central.com.pwb_store.model.Category;
+import cenergy.central.com.pwb_store.model.CompareProduct;
+import cenergy.central.com.pwb_store.model.Product;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -117,8 +120,43 @@ public class RealmController {
 
     public Category getCategory() {
         Realm realm = getRealm();
-        Category category = realm.where(Category.class).findFirst();
-        return category;
+        return realm.where(Category.class).findFirst();
+    }
+    // endregion
+
+    // region compare product
+    public void saveCompareProduct(final Product product, final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                CompareProduct compareProduct =  CompareProduct.asCompareProduct(product);
+                realm.copyToRealmOrUpdate(compareProduct);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+
+            @Override
+            public void onSuccess() {
+                if (listener != null) {
+                    listener.onSuccessfully();
+                }
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(@NonNull Throwable error) {
+                if (listener != null) {
+                    listener.onFailure(error);
+                }
+            }
+        });
+    }
+
+    public List<CompareProduct> getCompareProduts() {
+        return realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
+    }
+
+    public CompareProduct getCompareProduct(String sku) {
+        return realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findFirst();
     }
     // endregion
 

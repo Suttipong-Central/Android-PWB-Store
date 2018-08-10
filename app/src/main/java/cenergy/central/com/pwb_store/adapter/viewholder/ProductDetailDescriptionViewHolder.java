@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.ProductDetailOptionItemAdapter;
 import cenergy.central.com.pwb_store.manager.Contextor;
@@ -79,13 +81,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
     public ProductDetailDescriptionViewHolder(View itemView) {
         super(itemView);
-//        ButterKnife.bind(this, itemView);
-        namePrice = itemView.findViewById(R.id.txt_name_price);
-        mProductName = itemView.findViewById(R.id.txt_view_product_name);
-        mProductCode = itemView.findViewById(R.id.txt_view_product_code);
-        mSalePrice = itemView.findViewById(R.id.txt_sale_price);
-        mStock = itemView.findViewById(R.id.txt_stock);
-        mRegular = itemView.findViewById(R.id.txt_regular);
+        ButterKnife.bind(this, itemView);
     }
 
     public void setViewHolder(ProductDetail productDetail){
@@ -220,16 +216,20 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 //                }
 //            }
 //        }
+        mCardViewStore.setTag(product);
+        mCardViewStore.setOnClickListener(this);
+        mCardViewCompare.setTag(product);
+        mCardViewCompare.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         if (view == mCardViewStore){
-            ProductDetail productDetail = (ProductDetail) mCardViewStore.getTag();
-            EventBus.getDefault().post(new StoreAvaliableBus(view, productDetail.getSku()));
+            Product product = (Product) mCardViewStore.getTag();
+            EventBus.getDefault().post(new StoreAvaliableBus(view, product.getSku()));
         }else if (view == mCardViewCompare){
-            ProductDetail productDetail = (ProductDetail) mCardViewCompare.getTag();
-            EventBus.getDefault().post(new ProductBus(productDetail));
+            Product product = (Product) mCardViewCompare.getTag();
+            EventBus.getDefault().post(new ProductBus(product));
         }
     }
 }
