@@ -14,6 +14,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareDetailViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareListProductViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.CompareShoppingCartViewHolder;
 import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareDetail;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
@@ -32,8 +33,10 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private static final int VIEW_TYPE_ID_PRODUCT_LIST = 0;
     private static final int VIEW_TYPE_ID_COMPARE_HEADER = 1;
     private static final int VIEW_TYPE_ID_COMPARE_DETAIL = 2;
+    private static final int VIEW_TYPE_ID_SHOPPING_CART = 3;
 
     private static final ViewType VIEW_TYPE_COMPARE_HEADER = new ViewType(VIEW_TYPE_ID_COMPARE_HEADER);
+    private static final ViewType VIEW_TYPE_SHOPPING_CART = new ViewType(VIEW_TYPE_ID_SHOPPING_CART);
 
     //Data Members
     private Context mContext;
@@ -49,6 +52,8 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 case VIEW_TYPE_ID_COMPARE_HEADER:
                     return 4;
                 case VIEW_TYPE_ID_COMPARE_DETAIL:
+                    return 4;
+                case  VIEW_TYPE_ID_SHOPPING_CART:
                     return 4;
                 default:
                     return 1;
@@ -82,6 +87,12 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                                 .from(parent.getContext())
                                 .inflate(R.layout.list_item_grid_compare_detail, parent, false)
                 );
+            case VIEW_TYPE_ID_SHOPPING_CART:
+                return new CompareShoppingCartViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_compare_schopping_cart, parent, false)
+                );
         }
         return null;
     }
@@ -104,6 +115,12 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     CompareDao compareDao = (CompareDao) viewType;
                     CompareDetailViewHolder compareDetailViewHolder = (CompareDetailViewHolder) holder;
                     compareDetailViewHolder.setViewHolder(mContext, compareDao);
+                }
+                break;
+            case VIEW_TYPE_ID_SHOPPING_CART:
+                if (holder instanceof CompareShoppingCartViewHolder) {
+                    CompareShoppingCartViewHolder compareDetailViewHolder = (CompareShoppingCartViewHolder) holder;
+                    compareDetailViewHolder.setViewHolder(mContext);
                 }
                 break;
         }
@@ -152,7 +169,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             mCompareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
             mListViewType.add(mCompareDao);
         }
-
+        mListViewType.add(VIEW_TYPE_SHOPPING_CART);
         notifyDataSetChanged();
     }
 
@@ -198,7 +215,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             mCompareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
             mListViewType.add(mCompareDao);
         }
-
+        mListViewType.add(VIEW_TYPE_SHOPPING_CART);
         notifyDataSetChanged();
     }
 
@@ -209,7 +226,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mListViewType.add(VIEW_TYPE_COMPARE_HEADER);
         compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
         mListViewType.add(compareList);
-
+        mListViewType.add(VIEW_TYPE_SHOPPING_CART);
         notifyDataSetChanged();
     }
 

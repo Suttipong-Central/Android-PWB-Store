@@ -9,6 +9,10 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
         android:background="@color/powerBuyWhite">
 
     </android.support.v7.widget.RecyclerView>
