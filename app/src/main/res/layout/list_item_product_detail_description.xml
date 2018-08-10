@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     app:cardBackgroundColor="@android:color/white"
@@ -17,16 +16,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/txt_view_product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:inputType="textMultiLine"
             android:padding="5dp"
             android:textColor="@color/nameProductColor"
@@ -45,20 +46,19 @@
                 android:id="@+id/txt_view_product_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Product Code : "
                 android:textColor="@color/nameProductColor"
                 android:textSize="18sp"
-                app:typeFaceAsset="RobotoLight.ttf" />
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="Product Code : " />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_stock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginStart="40dp"
                 android:maxLines="1"
                 android:textColor="@color/inStockColor"
                 android:textSize="18sp"
@@ -77,24 +77,23 @@
                 android:id="@+id/img_pro_first"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
-                android:layout_alignParentLeft="true"
+                android:contentDescription="@string/product_detail"
                 android:paddingTop="5dp" />
 
             <ImageView
                 android:id="@+id/img_pro_second"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/img_pro_first"
+                android:contentDescription="@string/product_detail"
                 android:paddingTop="5dp" />
 
             <ImageView
                 android:id="@+id/img_pro_third"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/img_pro_second"
+                android:contentDescription="@string/product_detail"
                 android:paddingTop="5dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -107,10 +106,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Price : "
                 android:textColor="@color/salePriceColor"
                 android:textSize="16sp"
-                app:typeFaceAsset="RobotoLight.ttf" />
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="Price : "/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_sale_price"
@@ -162,6 +161,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
+                android:contentDescription="@string/product_detail"
                 android:padding="5dp"
                 android:src="@drawable/ic_icon_t1c" />
 
@@ -170,10 +170,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="Redeem your point 23,120 point"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                app:typeFaceAsset="RobotoLight.ttf" />
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="Redeem your point 23,120 point" />
 
         </LinearLayout>
 
@@ -199,15 +199,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:text="Color : "
             android:textSize="16sp"
-            app:typeFaceAsset="RobotoLight.ttf" />
+            android:visibility="invisible"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Color : "/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView
             android:id="@+id/grid_view"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:stretchMode="columnWidth"></cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView>
+            android:stretchMode="columnWidth"
+            android:visibility="invisible">
+
+        </cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView>
 
         <android.support.v7.widget.CardView
             android:id="@+id/card_view_cart"
@@ -237,7 +241,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/add_to_cart"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     app:typeFaceAsset="RobotoLight.ttf" />
 
             </LinearLayout>
@@ -257,9 +261,9 @@
                 style="@style/RaisedButtonCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
                 android:layout_marginEnd="3dp"
                 android:layout_marginRight="3dp"
+                android:layout_weight="0.5"
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardBackgroundColor="@color/categoryColor">
 
@@ -283,7 +287,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/product_available"
                         android:textColor="@android:color/white"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         app:typeFaceAsset="RobotoLight.ttf" />
 
                 </LinearLayout>
@@ -295,9 +299,9 @@
                 style="@style/RaisedButtonCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:layout_marginStart="3dp"
                 android:layout_marginLeft="3dp"
+                android:layout_marginStart="3dp"
+                android:layout_weight="0.5"
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardBackgroundColor="@color/categoryColor">
 
@@ -321,14 +325,15 @@
                         android:layout_height="wrap_content"
                         android:text="@string/product_compare"
                         android:textColor="@android:color/white"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         app:typeFaceAsset="RobotoLight.ttf" />
 
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
+
         </LinearLayout>
 
     </LinearLayout>
-    <!--</ScrollView>-->
+
 </android.support.v7.widget.CardView>

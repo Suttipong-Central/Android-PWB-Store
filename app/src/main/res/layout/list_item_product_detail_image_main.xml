@@ -12,16 +12,17 @@
     <LinearLayout
         android:id="@+id/layout_image_view"
         android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
             <!--<cenergy.central.com.powerbuy_store.view.PowerBuyTextView-->
                 <!--android:id="@+id/txt_sale"-->
@@ -37,17 +38,23 @@
                 <!--android:textSize="20sp"-->
                 <!--app:typeFaceAsset="RobotoLight.ttf"/>-->
 
-            <ImageView
-                android:id="@+id/image_view"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                tools:src="@mipmap/ic_launcher"/>
+            <!--<ImageView-->
+                <!--android:id="@+id/image_view"-->
+                <!--android:layout_width="300dp"-->
+                <!--android:layout_height="300dp"-->
+                <!--android:scaleType="fitCenter"-->
+                <!--tools:src="@mipmap/ic_launcher"/>-->
 
-        </RelativeLayout>
+        <!--</RelativeLayout>-->
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitCenter"
+            tools:src="@mipmap/ic_launcher"
+            android:contentDescription="@string/product_detail" />
 
         <FrameLayout
             android:id="@+id/shop_container"
@@ -59,7 +66,6 @@
                 android:id="@+id/view_pager_image_detail"
                 android:layout_width="match_parent"
                 android:layout_height="107dp"
-                android:layout_alignBottom="@+id/image_view"
                 app:cardBackgroundColor="@android:color/white"
                 android:layout_gravity="center_vertical"/>
         </FrameLayout>
