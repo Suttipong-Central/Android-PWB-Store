@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.CategoryFullFillerViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareProductViewHolder;
 import cenergy.central.com.pwb_store.model.CompareList;
+import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.model.ViewType;
@@ -81,6 +82,13 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     CompareProductViewHolder compareProductViewHolder = (CompareProductViewHolder) holder;
                     compareProductViewHolder.setViewHolder(mCompareList,productCompareList);
                 }
+
+                // TBD- For example
+                if (viewType instanceof CompareProduct && holder instanceof CompareProductViewHolder) {
+                    CompareProduct compareProduct = (CompareProduct) viewType;
+                    CompareProductViewHolder compareProductViewHolder = (CompareProductViewHolder) holder;
+                    compareProductViewHolder.bindItem(compareProduct);
+                }
                 break;
         }
     }
@@ -109,6 +117,14 @@ public class CompareListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 //            }
 //        }
 
+        notifyDataSetChanged();
+    }
+
+    public void setCompareProducts(List<CompareProduct> compareProducts) {
+        for (CompareProduct compareProduct : compareProducts){
+            compareProduct.setViewTypeId(VIEW_TYPE_ID_PRODUCT);
+            mListViewType.add(compareProduct);
+        }
         notifyDataSetChanged();
     }
 

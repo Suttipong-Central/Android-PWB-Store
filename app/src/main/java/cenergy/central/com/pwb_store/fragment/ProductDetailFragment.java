@@ -140,7 +140,7 @@ public class ProductDetailFragment extends Fragment {
         Product product = productBus.getProduct();
         showProgressDialog();
         RealmController database = RealmController.with(this);
-        long count = database.getCompareProduts().size();
+        long count = database.getCompareProducts().size();
         Log.d(TAG, "" + count);
         if (count >= 4) {
             mProgressDialog.dismiss();

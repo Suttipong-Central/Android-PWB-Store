@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -274,7 +273,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     public void onEvent(UpdateBageBus updateBageBus){
         if (updateBageBus.isUpdate()){
 //            long count = RealmController.with(this).getCount();
-            long count = RealmController.with(this).getCompareProduts().size();
+            long count = RealmController.with(this).getCompareProducts().size();
             mBuyCompareView.updateCartCount((int) count);
         }
     }
@@ -399,7 +398,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
         //get realm instance
         this.mRealm = RealmController.with(this).getRealm();
-        int count = RealmController.with(this).getCompareProduts().size();
+        int count = RealmController.with(this).getCompareProducts().size();
 
         mBuyCompareView.setListener(this);
         mBuyCompareView.updateCartCount(count);
@@ -613,7 +612,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-        long count = RealmController.with(this).getCompareProduts().size();
+        long count = RealmController.with(this).getCompareProducts().size();
         mBuyCompareView.updateCartCount((int) count);
     }
 

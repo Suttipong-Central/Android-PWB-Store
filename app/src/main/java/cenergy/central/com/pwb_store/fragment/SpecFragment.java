@@ -68,7 +68,7 @@ public class SpecFragment extends Fragment {
     public void onEvent(SpecAddToCompareBus specAddToCompareBus){
         if (specAddToCompareBus.isAdded() == true){
             showProgressDialog();
-            long count = RealmController.with(this).getCompareProduts().size();
+            long count = RealmController.with(this).getCompareProducts().size();
             Log.d(TAG, "" + count);
             if (count >= 4){
                 mProgressDialog.dismiss();

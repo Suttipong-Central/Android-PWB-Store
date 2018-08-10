@@ -151,8 +151,9 @@ public class RealmController {
         });
     }
 
-    public List<CompareProduct> getCompareProduts() {
-        return realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
+    public List<CompareProduct> getCompareProducts() {
+       RealmResults<CompareProduct> realmCompareProducts =  realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
+        return realmCompareProducts == null ? null : realm.copyFromRealm(realmCompareProducts);
     }
 
     public CompareProduct getCompareProduct(String sku) {

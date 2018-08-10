@@ -18,6 +18,7 @@ import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareDetail;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.CompareList;
+import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ViewType;
 
@@ -197,6 +198,17 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             mCompareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
             mListViewType.add(mCompareDao);
         }
+
+        notifyDataSetChanged();
+    }
+
+    public void updateCompareProducts(List<CompareProduct> compareProducts) {
+        // TBD- for show product
+        CompareList compareList = new CompareList(compareProducts);
+        mListViewType.clear();
+        mListViewType.add(VIEW_TYPE_COMPARE_HEADER);
+        compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
+        mListViewType.add(compareList);
 
         notifyDataSetChanged();
     }

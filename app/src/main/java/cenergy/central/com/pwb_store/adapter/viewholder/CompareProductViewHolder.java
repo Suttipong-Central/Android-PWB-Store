@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDetailBus;
 import cenergy.central.com.pwb_store.model.CompareList;
 import cenergy.central.com.pwb_store.model.CompareListStore;
+import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.ExtensionCompare;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -90,6 +91,27 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
         imgCancel.setTag(productCompareList);
         cardLayout.setOnClickListener(this);
         cardLayout.setTag(productCompareList);
+    }
+
+
+    public void bindItem(CompareProduct compareProduct) {
+        String unit = itemView.getContext().getString(R.string.baht);
+        oldPrice.setText(compareProduct.normalPrice(unit));
+        productName.setText("Brand");
+        productDescription.setText(compareProduct.getName());
+
+        imgCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        cardLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override

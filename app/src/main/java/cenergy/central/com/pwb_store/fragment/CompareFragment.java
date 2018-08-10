@@ -33,6 +33,7 @@ import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareDetail;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.CompareList;
+import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
@@ -231,21 +232,25 @@ public class CompareFragment extends Fragment {
         //mAdapter.setCompare(mCompareList);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
-        if (savedInstanceState == null){
-            sku = getSku();
-            if (sku.equalsIgnoreCase("")){
-                sku = getSku();
-            }else {
-                showProgressDialog();
-                Log.d(TAG, "skuString " + sku);
-                HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
-                        UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
-            }
-
-        }else {
-            mockData();
-        }
+//        if (savedInstanceState == null){
+//            sku = getSku();
+//            if (sku.equalsIgnoreCase("")){
+//                sku = getSku();
+//            }else {
+//                showProgressDialog();
+//                Log.d(TAG, "skuString " + sku);
+//                HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+//                        UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
+//            }
+//
+//        }else {
+//            mockData();
+//        }
         mRecyclerView.setAdapter(mAdapter);
+
+        // TDB- example
+       List<CompareProduct> compareProducts =  RealmController.getInstance().getCompareProducts();
+       mAdapter.updateCompareProducts(compareProducts);
 
     }
 

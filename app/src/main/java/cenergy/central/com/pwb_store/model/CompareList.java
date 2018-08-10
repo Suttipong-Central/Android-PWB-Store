@@ -21,6 +21,9 @@ public class CompareList implements IViewType,Parcelable {
     private List<ProductCompareList> mProductCompareLists = new ArrayList<>();
     private CompareDao mCompareDao;
 
+    // TBD- for mockup display product
+    private List<CompareProduct> compareProducts = null;
+
     public static final Creator<CompareList> CREATOR = new Creator<CompareList>() {
         @Override
         public CompareList createFromParcel(Parcel in) {
@@ -38,6 +41,11 @@ public class CompareList implements IViewType,Parcelable {
         this.mProductCompareLists = productLists;
         this.mCompareDao = compareDao;
     }
+
+    public CompareList(List<CompareProduct> compareProducts) {
+        this.compareProducts = compareProducts;
+    }
+
 
     protected CompareList(Parcel in) {
         viewTypeId = in.readInt();
@@ -95,4 +103,11 @@ public class CompareList implements IViewType,Parcelable {
         mCompareDao = compareDao;
     }
 
+    public List<CompareProduct> getCompareProducts() {
+        return compareProducts;
+    }
+
+    public void setCompareProducts(List<CompareProduct> compareProducts) {
+        this.compareProducts = compareProducts;
+    }
 }

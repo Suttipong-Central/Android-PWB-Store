@@ -11,7 +11,7 @@ class Product() : Parcelable,IViewType {
     var sku: String = ""
     var name: String = ""
     var attributeID: Int = 0
-    var price: Int = 0
+    var price: Double = 0.0
     var status: Int = 0
     var viewTypeID: Int = 0
     private var productImageList: ProductDetailImage? = null
@@ -21,7 +21,7 @@ class Product() : Parcelable,IViewType {
         sku = parcel.readString()
         name = parcel.readString()
         attributeID = parcel.readInt()
-        price = parcel.readInt()
+        price = parcel.readDouble()
         status = parcel.readInt()
     }
 
@@ -30,7 +30,7 @@ class Product() : Parcelable,IViewType {
         parcel.writeString(sku)
         parcel.writeString(name)
         parcel.writeInt(attributeID)
-        parcel.writeInt(price)
+        parcel.writeDouble(price)
         parcel.writeInt(status)
     }
 
