@@ -55,6 +55,7 @@ public class CompareDetailViewHolder extends RecyclerView.ViewHolder{
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(mScrollTouchListener);
+        mRecyclerView.setNestedScrollingEnabled(false);
     }
 
     RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
