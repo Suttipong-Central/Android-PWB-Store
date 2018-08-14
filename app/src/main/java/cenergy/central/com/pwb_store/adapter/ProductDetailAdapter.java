@@ -48,7 +48,7 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private static final ViewType VIEW_TYPE_OVERVIEW = new ViewType(VIEW_TYPE_ID_DETAIL_OVERVIEW);
     private static final ViewType VIEW_TYPE_PROMOTION = new ViewType(VIEW_TYPE_ID_DETAIL_PROMOTION);
-    //private static final ViewType VIEW_TYPE_SPEC = new ViewType(VIEW_TYPE_ID_DETAIL_SPEC);
+    private static final ViewType VIEW_TYPE_SPEC = new ViewType(VIEW_TYPE_ID_DETAIL_SPEC);
     private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DETAIL_DELIVERY);
     private static final ViewType VIEW_TYPE_RESULT = new ViewType(VIEW_TYPE_ID_RESULT);
 
@@ -324,7 +324,8 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 //        specDao.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);
 //        mListViewType.add(specDao);
 //
-        mListViewType.add(VIEW_TYPE_PROMOTION);
+        mListViewType.add(VIEW_TYPE_SPEC);
+//        mListViewType.add(VIEW_TYPE_PROMOTION);
 //        mListViewType.add(VIEW_TYPE_DELIVERY);
 
         notifyDataSetChanged();
