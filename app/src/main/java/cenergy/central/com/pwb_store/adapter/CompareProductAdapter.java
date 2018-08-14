@@ -223,10 +223,10 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         // TBD- for show product
         CompareList compareList = new CompareList(compareProducts, compare);
         mListViewType.clear();
+        mCompareDetail.clear();
         mListViewType.add(VIEW_TYPE_COMPARE_HEADER);
         compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
         mListViewType.add(compareList);
-
         // region mockup from older code version
         if (compareList.getCompareDao() != null) {
             CompareDao compareDao = compareList.getCompareDao();

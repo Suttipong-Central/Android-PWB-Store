@@ -29,8 +29,15 @@ public class CompareActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(CompareDetailBus compareDetailBus){
+//        Intent intent = new Intent(this, ProductDetailActivity.class);
+//        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, compareDetailBus.getProductCompareList().getProductId());
+//        ActivityCompat.startActivity(this, intent,
+//                ActivityOptionsCompat
+//                        .makeScaleUpAnimation(compareDetailBus.getView(), 0, 0, compareDetailBus.getView().getWidth(), compareDetailBus.getView().getHeight())
+//                        .toBundle());
+
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, compareDetailBus.getProductCompareList().getProductId());
+        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, compareDetailBus.getCompareProduct().getSku());
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(compareDetailBus.getView(), 0, 0, compareDetailBus.getView().getWidth(), compareDetailBus.getView().getHeight())

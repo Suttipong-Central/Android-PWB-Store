@@ -100,16 +100,18 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
         productName.setText("Brand");
         productDescription.setText(compareProduct.getName());
 
+        // setup OnClick
         imgCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.getDefault().post(new CompareDeleteBus(compareProduct, true));
             }
         });
+
         cardLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                EventBus.getDefault().post(new CompareDetailBus(compareProduct, true, v));
             }
         });
     }
