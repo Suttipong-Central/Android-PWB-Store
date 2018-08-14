@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareShoppingCartButtonViewHolder
+import cenergy.central.com.pwb_store.model.CompareList
 
 class CompareShoppingCartAdapter(context: Context) : RecyclerView.Adapter<CompareShoppingCartButtonViewHolder>() {
 
@@ -14,7 +15,7 @@ class CompareShoppingCartAdapter(context: Context) : RecyclerView.Adapter<Compar
         const val VIEW_TYPE_ID_PRODUCT = 1
     }
 
-    lateinit var productCompareLists: ArrayList<String>
+    lateinit var productCompareLists: CompareList
 
     private val mSpanSize = object : GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
@@ -25,7 +26,7 @@ class CompareShoppingCartAdapter(context: Context) : RecyclerView.Adapter<Compar
         }
     }
 
-    fun setCompareShoppingCart(productCompareLists: ArrayList<String>) {
+    fun setCompareShoppingCart(productCompareLists: CompareList) {
         this.productCompareLists = productCompareLists
     }
 
@@ -37,11 +38,11 @@ class CompareShoppingCartAdapter(context: Context) : RecyclerView.Adapter<Compar
     }
 
     override fun getItemCount(): Int {
-        return productCompareLists.size
+        return productCompareLists.compareProducts.size
     }
 
     override fun onBindViewHolder(holder: CompareShoppingCartButtonViewHolder, position: Int) {
-        val shoppingCart = productCompareLists[position]
+        val shoppingCart = productCompareLists.compareProducts[position]
         holder.setProductCompare(shoppingCart)
     }
 

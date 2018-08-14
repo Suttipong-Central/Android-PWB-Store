@@ -47,6 +47,9 @@ public class CompareList implements IViewType,Parcelable {
         this.mCompareDao = compareDao;
     }
 
+    public CompareList(List<CompareProduct> compareProducts) {
+        this.compareProducts = compareProducts;
+    }
 
     protected CompareList(Parcel in) {
         viewTypeId = in.readInt();

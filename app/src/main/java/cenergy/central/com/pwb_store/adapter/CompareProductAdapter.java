@@ -119,8 +119,9 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 break;
             case VIEW_TYPE_ID_SHOPPING_CART:
                 if (holder instanceof CompareShoppingCartViewHolder) {
+                    CompareList compareList = (CompareList) viewType;
                     CompareShoppingCartViewHolder compareDetailViewHolder = (CompareShoppingCartViewHolder) holder;
-                    compareDetailViewHolder.setViewHolder(mContext);
+                    compareDetailViewHolder.setViewHolder(mContext, compareList);
                 }
                 break;
         }
@@ -222,6 +223,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public void updateCompareProducts(List<CompareProduct> compareProducts, CompareDao compare) {
         // TBD- for show product
         CompareList compareList = new CompareList(compareProducts, compare);
+        CompareList compareListProduct = new CompareList(compareProducts);
         mListViewType.clear();
         mCompareDetail.clear();
         mListViewType.add(VIEW_TYPE_COMPARE_HEADER);
@@ -257,7 +259,8 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
         // endregion
 
-        mListViewType.add(VIEW_TYPE_SHOPPING_CART);
+        compareListProduct.setViewTypeId(VIEW_TYPE_ID_SHOPPING_CART);
+        mListViewType.add(compareListProduct);
         notifyDataSetChanged();
     }
 
