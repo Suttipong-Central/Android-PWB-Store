@@ -249,14 +249,15 @@ public class CompareFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
 
         // TDB- example
-       List<CompareProduct> compareProducts =  RealmController.getInstance().getCompareProducts();
-       mAdapter.updateCompareProducts(compareProducts);
+        mockData();
+        List<CompareProduct> compareProducts = RealmController.getInstance().getCompareProducts();
+        mAdapter.updateCompareProducts(compareProducts, mCompareDao);
 
     }
 
     private void mockData(){
 
-        results = RealmController.with(this).getCompares();
+//        results = RealmController.with(this).getCompares();
         if (results == null){
             List<ProductCompareList> mProductCompareListList = new ArrayList<>();
             mProductCompareListList.add(new ProductCompareList("1111","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +

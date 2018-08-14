@@ -219,13 +219,44 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyDataSetChanged();
     }
 
-    public void updateCompareProducts(List<CompareProduct> compareProducts) {
+    public void updateCompareProducts(List<CompareProduct> compareProducts, CompareDao compare) {
         // TBD- for show product
-        CompareList compareList = new CompareList(compareProducts);
+        CompareList compareList = new CompareList(compareProducts, compare);
         mListViewType.clear();
         mListViewType.add(VIEW_TYPE_COMPARE_HEADER);
         compareList.setViewTypeId(VIEW_TYPE_ID_PRODUCT_LIST);
         mListViewType.add(compareList);
+
+        // region mockup from older code version
+        if (compareList.getCompareDao() != null) {
+            CompareDao compareDao = compareList.getCompareDao();
+            for (CompareDetail compareDetail : compareDao.getCompareDetails()) {
+                List<CompareDetailItem> compareDetailItems = new ArrayList<>();
+                if (compareDetail.getCompareDetailItems().size() < 4) {
+                    int j = 4 - compareDetail.getCompareDetailItems().size();
+
+                    for (CompareDetailItem compareDetailItem : compareDetail.getCompareDetailItems()) {
+                        compareDetailItems.add(new CompareDetailItem(compareDetailItem.getType()));
+                        Log.d(TAG, "" + compareDetailItem.getType());
+                    }
+                    for (int i = 1; i <= j; i++) {
+                        Log.d(TAG, "i" + i);
+                        compareDetailItems.add(new CompareDetailItem(""));
+                    }
+
+                } else {
+                    for (CompareDetailItem compareDetailItem : compareDetail.getCompareDetailItems()) {
+                        compareDetailItems.add(new CompareDetailItem(compareDetailItem.getType()));
+                    }
+                }
+                mCompareDetail.add(new CompareDetail(compareDetail.getName(), compareDetailItems));
+            }
+            mCompareDao = new CompareDao(0, mCompareDetail);
+            mCompareDao.setViewTypeId(VIEW_TYPE_ID_COMPARE_DETAIL);
+            mListViewType.add(mCompareDao);
+        }
+        // endregion
+
         mListViewType.add(VIEW_TYPE_SHOPPING_CART);
         notifyDataSetChanged();
     }
