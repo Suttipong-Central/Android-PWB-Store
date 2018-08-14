@@ -233,7 +233,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
                         if (response != null) {
                             //mProductDao = response.body();
-                            ProductResponse productResponse = response;
                             //TODO Test Total Page.
 //                if (currentPage == 0) {
 //                    currentPage = getNextPage();
@@ -247,12 +246,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 //                    }
 //                }
 
-                            totalItem = productResponse.getProducts().size();
+                            totalItem = response.getTotalCount();
                             totalPage = totalPageCal(totalItem);
                             Log.d(TAG, " totalPage :" + totalPage);
                             currentPage = getNextPage();
-                            productResponse.setCurrentPage(currentPage);
-                            mProductListAdapter.setProduct(productResponse);
+                            response.setCurrentPage(currentPage);
+                            mProductListAdapter.setProduct(response);
                             setTextHeader(totalItem, title);
                             mProgressDialog.dismiss();
                         } else {
