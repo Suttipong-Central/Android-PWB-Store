@@ -88,7 +88,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     //View Members
     ObservableRecyclerView mRecyclerView;
-    PowerBuyTextView productCount;
+    private PowerBuyTextView productCount;
+    private LinearLayout layoutProgress;
 
 //    @BindView(R.id.layout_product)
 //    LinearLayout productLayout;
@@ -211,6 +212,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 } else {
 //                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
+                    layoutProgress.setVisibility(View.VISIBLE);
                     getProductList(departmentId);
                 }
 
@@ -254,19 +256,28 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                             mProductListAdapter.setProduct(response);
                             setTextHeader(totalItem, title);
                             mProgressDialog.dismiss();
+                            if(mPowerBuyPopupWindow.isShowing()){
+                                mPowerBuyPopupWindow.dismiss();
+                            }
+                            layoutProgress.setVisibility(View.GONE);
                         } else {
                             mProductListAdapter.setError();
                             setTextHeader(totalItem, title);
 //                            APIError error = APIErrorUtils.parseError(response);
 //                            Log.e(TAG, "onResponse: " + error.getErrorMessage());
-//                showAlertDialog(error.getErrorMessage(), false);
+//                            showAlertDialog(error.getErrorMessage(), false);
                             mProgressDialog.dismiss();
+                            if(mPowerBuyPopupWindow.isShowing()){
+                                mPowerBuyPopupWindow.dismiss();
+                            }
+                            layoutProgress.setVisibility(View.GONE);
                         }
                     }
 
                     @Override
                     public void failure(@NotNull APIError error) {
                         Log.d("productDaoResponse", error.toString());
+                        layoutProgress.setVisibility(View.GONE);
                     }
                 }
         );
@@ -566,6 +577,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         RelativeLayout layoutFilter = rootView.findViewById(R.id.layout_filter);
         productCount = rootView.findViewById(R.id.txt_product_count);
         mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
+        layoutProgress = rootView.findViewById(R.id.layout_progress);
 
         productTitle.setText(title);
         productCount.setText(title);

@@ -107,4 +107,5 @@
     <string name="error">พบข้อผิดพลาด</string>
     <string name="error_login">Username/Password ไม่ถูกต้อง</string>
     <string name="add_to_cart">Add to cart</string>
+    <string name="brand">Brand</string>
 </resources>
