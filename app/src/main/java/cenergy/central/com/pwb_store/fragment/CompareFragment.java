@@ -132,13 +132,18 @@ public class CompareFragment extends Fragment {
     @Subscribe
     public void onEvent(CompareDeleteBus compareDeleteBus){
         isDelete = true;
-        ProductCompareList productList = compareDeleteBus.getProductCompareList();
-        results = RealmController.with(this).deletedCompare(productList.getProductId());
-        sku = getSku();
-        Log.d(TAG, "id" +productList.getProductId());
-        showProgressDialog();
-        HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
-                UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
+//        ProductCompareList productList = compareDeleteBus.getProductCompareList();
+//        results = RealmController.with(this).deletedCompare(productList.getProductId());
+//        sku = getSku();
+//        Log.d(TAG, "id" +productList.getProductId());
+//        showProgressDialog();
+
+        CompareProduct compareProduct = compareDeleteBus.getCompareProduct();
+        List<CompareProduct> compareProducts = RealmController.getInstance().deleteCompareProduct(compareProduct.getSku());
+        mAdapter.updateCompareProducts(compareProducts, mCompareDao);
+
+//        HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
+//                UserInfoManager.getInstance().getUserId(),"finset", "sku").enqueue(CALLBACK_COMPARE);
 //        List<ProductCompareList> mProductCompareListList = new ArrayList<>();
 //        for (AddCompare addCompare : results){
 //            mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),

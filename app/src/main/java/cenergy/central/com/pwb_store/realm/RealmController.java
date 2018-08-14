@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import java.util.Date;
@@ -151,8 +152,22 @@ public class RealmController {
         });
     }
 
+    public List<CompareProduct> deleteCompareProduct(final String sku) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                RealmResults<CompareProduct> realmCompareProducts = realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findAll();
+                realmCompareProducts.deleteAllFromRealm();
+            }
+        });
+
+        return getCompareProducts();
+    }
+
     public List<CompareProduct> getCompareProducts() {
-       RealmResults<CompareProduct> realmCompareProducts =  realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
+        Realm realm = getRealm();
+        RealmResults<CompareProduct> realmCompareProducts =  realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
         return realmCompareProducts == null ? null : realm.copyFromRealm(realmCompareProducts);
     }
 

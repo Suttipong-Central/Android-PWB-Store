@@ -94,7 +94,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     }
 
 
-    public void bindItem(CompareProduct compareProduct) {
+    public void bindItem(final CompareProduct compareProduct) {
         String unit = itemView.getContext().getString(R.string.baht);
         oldPrice.setText(compareProduct.normalPrice(unit));
         productName.setText("Brand");
@@ -103,7 +103,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
         imgCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                EventBus.getDefault().post(new CompareDeleteBus(compareProduct, true));
             }
         });
         cardLayout.setOnClickListener(new View.OnClickListener() {
