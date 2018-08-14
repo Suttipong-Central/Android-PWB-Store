@@ -8,7 +8,7 @@
     android:layout_height="wrap_content"
     android:background="@color/powerBuyWhite"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/img_fill_back"

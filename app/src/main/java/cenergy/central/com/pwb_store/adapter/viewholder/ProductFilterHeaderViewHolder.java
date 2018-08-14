@@ -10,6 +10,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
@@ -36,7 +37,6 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder imple
     public ProductFilterHeaderViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
-        mImgFilterHeader.setBackgroundResource(R.drawable.ic_keyboard_arrow_right);
     }
 
     public void setViewHolder(ProductFilterSubHeader productFilterSubHeader) {
@@ -44,7 +44,19 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder imple
         mTxtHeader.setText(filter);
         itemView.setTag(productFilterSubHeader);
         itemView.setOnClickListener(this);
+        mImgFilterHeader.setBackgroundResource(R.drawable.ic_keyboard_arrow_right);
         syncIndicator(productFilterSubHeader);
+    }
+
+    public void bindItem(final ProductFilterItem productFilterItem) {
+        mTxtHeader.setText(productFilterItem.getFilterName());
+        mImgFilterHeader.setVisibility(View.GONE);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new ProductFilterItemBus(productFilterItem, getAdapterPosition()));
+            }
+        });
     }
 
     private void syncIndicator(ProductFilterSubHeader productFilterSubHeader) {

@@ -29,8 +29,7 @@ public class ProductFilterItem extends RealmObject implements IViewType, Parcela
     private static final String TAG = "ProductFilterItem";
     @Ignore
     private int viewTypeId;
-    @SerializedName("entity_id")
-    @Expose
+    
     private String id;
     @SerializedName("level")
     @Expose

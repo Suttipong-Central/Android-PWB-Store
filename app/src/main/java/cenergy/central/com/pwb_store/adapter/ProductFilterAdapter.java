@@ -12,7 +12,6 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterItemViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -31,7 +30,7 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
     //Data Members
     private Context mContext;
     private List<IViewType> mListViewType = new ArrayList<>();
-    private List<ProductFilterSubHeader> mProductFilterSubHeaders = new ArrayList<>();
+    private List<ProductFilterItem> productFilterItems = new ArrayList<>();
 
     public ProductFilterAdapter(Context mContext) {
         this.mContext = mContext;
@@ -63,10 +62,10 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_FILTER_HEADER:
-                if (viewType instanceof ProductFilterSubHeader && holder instanceof ProductFilterHeaderViewHolder) {
-                    ProductFilterSubHeader productFilterSubHeader = (ProductFilterSubHeader) viewType;
+                if (viewType instanceof ProductFilterItem && holder instanceof ProductFilterHeaderViewHolder) {
+                    ProductFilterItem productFilterItem = (ProductFilterItem) viewType;
                     ProductFilterHeaderViewHolder productFilterHeaderViewHolder = (ProductFilterHeaderViewHolder) holder;
-                    productFilterHeaderViewHolder.setViewHolder(productFilterSubHeader);
+                    productFilterHeaderViewHolder.bindItem(productFilterItem);
                 }
                 break;
             case VIEW_TYPE_ID_FILTER_ITEM:
@@ -91,15 +90,13 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
     public void setProductFilter(ProductFilterList productFilterList) {
-        this.mProductFilterSubHeaders = productFilterList.getProductFilterSubHeaders();
+        this.productFilterItems = productFilterList.getproductFilterItems();
         mListViewType.clear();
-        for (ProductFilterSubHeader productFilterHeader :
-                productFilterList.getProductFilterSubHeaders()) {
-                productFilterHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
-                mListViewType.add(productFilterHeader);
-
+        for (ProductFilterItem productFilterHeader :
+                productFilterList.getproductFilterItems()) {
+            productFilterHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
+            mListViewType.add(productFilterHeader);
         }
-
         notifyDataSetChanged();
     }
 
@@ -135,36 +132,44 @@ public class ProductFilterAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
 
-
     public void removeProductLevel3(ProductFilterList productFilterList) {
         mListViewType.clear();
-        for (ProductFilterSubHeader productFilterSubHeader :
-                productFilterList.getProductFilterSubHeaders()) {
-            productFilterSubHeader.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
-            mListViewType.add(productFilterSubHeader);
+        for (ProductFilterItem productFilterItem :
+                productFilterList.getproductFilterItems()) {
+            productFilterItem.setViewTypeId(VIEW_TYPE_ID_FILTER_HEADER);
+            mListViewType.add(productFilterItem);
         }
 
         notifyDataSetChanged();
     }
 
-    public void  updateSingleProductFilterItem(ProductFilterItem productFilterItem) {
+//    public void  updateSingleProductFilterItem(ProductFilterItem productFilterItem) {
+//        int parentId = Integer.parseInt(productFilterItem.getId());
+//        for (ProductFilterSubHeader productFilterSubHeader : mProductFilterSubHeaders) {
+//            if (parentId == Integer.parseInt(productFilterSubHeader.getId())) {
+//                if (!productFilterSubHeader.isMultipleType()) {
+//                    if (productFilterSubHeader.isProductFilterItemListAvailable()) {
+//                        List<ProductFilterItem> productFilterItemList = productFilterSubHeader.getProductFilterItemList();
+//                        for (ProductFilterItem headerProductFilterItem :
+//                                productFilterItemList) {
+//                            headerProductFilterItem.setSelected(headerProductFilterItem.getId() == productFilterItem.getId());
+//                        }
+//
+//                        notifyItemRangeChanged(1, productFilterItemList.size());
+//                    }
+//                }
+//            }
+//
+//        }
+//    }
+
+    public void updateSingleProductFilterItem(ProductFilterItem productFilterItem) {
         int parentId = Integer.parseInt(productFilterItem.getId());
-        for (ProductFilterSubHeader productFilterSubHeader : mProductFilterSubHeaders) {
-            if (parentId == Integer.parseInt(productFilterSubHeader.getId())) {
-                if (!productFilterSubHeader.isMultipleType()) {
-                    if (productFilterSubHeader.isProductFilterItemListAvailable()) {
-                        List<ProductFilterItem> productFilterItemList = productFilterSubHeader.getProductFilterItemList();
-                        for (ProductFilterItem headerProductFilterItem :
-                                productFilterItemList) {
-                            headerProductFilterItem.setSelected(headerProductFilterItem.getId() == productFilterItem.getId());
-                        }
-
-                        notifyItemRangeChanged(1, productFilterItemList.size());
-                    }
-                }
+        for (ProductFilterItem item : productFilterItems) {
+            if (parentId == Integer.parseInt(item.getId())) {
+                productFilterItem.setSelected(true);
+                notifyDataSetChanged();
             }
-
         }
-
     }
 }

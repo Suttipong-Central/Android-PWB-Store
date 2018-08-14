@@ -140,17 +140,17 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 mProductFilterList = mTempProductFilterList;
                 mSortingList = mTempSortingList;
             }
-            if (mProductFilterList != null) {
-                if (mProductFilterList.getProductFilterSubHeaders() != null) {
-                    for (ProductFilterSubHeader productFilterHeader : mProductFilterList.getProductFilterSubHeaders()) {
-                        productFilterHeader.setExpanded(false);
-                    }
-                }
-            } else {
-                for (SortingHeader sortingHeader : mSortingList.getSortingHeaders()) {
-                    sortingHeader.setExpanded(false);
-                }
-            }
+//            if (mProductFilterList != null) {
+//                if (mProductFilterList.getproductFilterItems() != null) {
+//                    for (ProductFilterItem productFilterHeader : mProductFilterList.getproductFilterItems()) {
+//                        productFilterHeader.setExpanded(false);
+//                    }
+//                }
+//            } else {
+//                for (SortingHeader sortingHeader : mSortingList.getSortingHeaders()) {
+//                    sortingHeader.setExpanded(false);
+//                }
+//            }
 
             isDoneFilter = false;
         }
@@ -211,7 +211,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 } else {
 //                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-                    getProductList();
+                    getProductList(departmentId);
                 }
 
                 isLoadingMore = true;
@@ -219,7 +219,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
     };
 
-    private void getProductList() {
+    private void getProductList(String departmentId) {
         HttpManagerMagento.Companion.getInstance().retrieveProductList(
                 "category_id",
                 departmentId,
@@ -365,6 +365,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         showProgressDialog();
         isDoneFilter = true;
         ProductFilterItem productFilterItem = productFilterItemBus.getProductFilterItem();
+        Log.d(TAG, "productFilterItemBus" + productFilterItem.getId());
         callFilter(productFilterItem.getId(), sortName, sortType);
         title = productFilterItem.getFilterName();
         departmentId = productFilterItem.getId();
@@ -452,6 +453,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             departmentId = getArguments().getString(ARG_DEPARTMENT_ID);
             storeId = getArguments().getString(ARG_STORE_ID);
             mProductFilterSubHeader = getArguments().getParcelable(ARG_PRODUCT_FILTER_SUB_HEADER);
+
+            // setup filter list
+            if (mProductFilterSubHeader != null) {
+                mProductFilterList = new ProductFilterList(mProductFilterSubHeader.getProductFilterItemList());
+            }
+
             keyWord = getArguments().getString(ARG_KEY_WORD);
         }
         resetPage();
@@ -527,7 +534,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 if (mProductFilterList == null) {
                     mPowerBuyPopupWindow.dismiss();
                 } else {
-                    mTempProductFilterList = new ProductFilterList(mProductFilterList);
+//                    mTempProductFilterList = new ProductFilterList(mProductFilterList);
+                    mTempProductFilterList = mProductFilterList;
                     mPowerBuyPopupWindow.setRecyclerViewFilter(mProductFilterList);
                     mPowerBuyPopupWindow.showAsDropDown(v);
                     mTempSortingList = new SortingList(mSortingList);
@@ -540,7 +548,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     mTempSortingList = new SortingList(mSortingList);
                     mPowerBuyPopupWindow.setRecyclerViewSorting(mSortingList);
                     mPowerBuyPopupWindow.showAsDropDown(v);
-                    mTempProductFilterList = new ProductFilterList(mProductFilterList);
+                    mTempProductFilterList = mProductFilterList;
                 }
                 break;
         }
@@ -593,7 +601,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 showProgressDialog();
 //                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                        "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-                getProductList();
+                getProductList(departmentId);
             }
             if (mProductFilterSubHeader != null) {
 //                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
@@ -730,7 +738,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         sortType = sortTypeT;
 //        HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-        getProductList();
+        getProductList(departmentId);
     }
 
     private void setTextHeader(int total, String name) {

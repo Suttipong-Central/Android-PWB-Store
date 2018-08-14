@@ -65,7 +65,7 @@ class HttpManagerMagento {
         }
     }
 
-    fun retrieveCategories(force:Boolean,callback: ApiResponseCallback<Category?>) {
+    fun retrieveCategories(force:Boolean, callback: ApiResponseCallback<Category?>) {
         // If already cached then do
         val endpointName = "/rest/V1/categories"
         val database = RealmController.with(mContext)
