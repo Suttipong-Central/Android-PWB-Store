@@ -318,6 +318,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 }
                 setTextHeader(totalItem, title);
                 mProgressDialog.dismiss();
+                layoutProgress.setVisibility(View.GONE);
             } else {
                 mProductListAdapter.setError();
                 setTextHeader(totalItem, title);
@@ -325,6 +326,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
 //                showAlertDialog(error.getErrorMessage(), false);
                 mProgressDialog.dismiss();
+                layoutProgress.setVisibility(View.GONE);
             }
         }
 
@@ -332,6 +334,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         public void onFailure(Call<ProductDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
+            layoutProgress.setVisibility(View.GONE);
             setTextHeader(totalItem, title);
         }
     };
