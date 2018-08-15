@@ -29,8 +29,9 @@
                 android:layout_width="122dp"
                 android:layout_height="122dp"
                 android:layout_marginBottom="12dp"
-                tools:src="@mipmap/ic_launcher"/>
+                android:padding="24dp"
                 android:background="@drawable/category_circle"
+                tools:src="@drawable/ic_question_mark"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_view"

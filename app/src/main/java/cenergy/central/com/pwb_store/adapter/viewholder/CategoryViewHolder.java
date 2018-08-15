@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -39,10 +40,10 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder{
         Glide.with(Contextor.getInstance().getContext())
                 //.load(category.getImageURL())
                 .load(categoryHeader.getUrlName())
-                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .placeholder(R.drawable.ic_question_mark)
                 .crossFade()
                 //.fitCenter()
-                .bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
+                //.bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
                 .into(mImageView);
 
         mTextView.setText(categoryHeader.getName());
@@ -60,11 +61,12 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder{
         Glide.with(Contextor.getInstance().getContext())
                 //.load(category.getImageURL())
                 .load(categorySubHeader.getUrlName())
-                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .placeholder(R.drawable.ic_question_mark)
                 .crossFade()
                 //.fitCenter()
-                .bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
+                //.bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
                 .into(mImageView);
+
         mTextView.setText(categorySubHeader.getName());
         itemView.setTag(categorySubHeader);
         itemView.setOnClickListener(new View.OnClickListener() {
