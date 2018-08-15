@@ -5,7 +5,10 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.crashlytics.android.Crashlytics;
+
 import cenergy.central.com.pwb_store.manager.Contextor;
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -17,6 +20,11 @@ public class PowerBuyStoreApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         Contextor.getInstance().init(this);
         initRealm();
