@@ -68,6 +68,10 @@
             android:name="cenergy.central.com.pwb_store.activity.LoginActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name="cenergy.central.com.pwb_store.activity.ShoppingCartActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:screenOrientation="portrait"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="66f02a1aa825afbd81a5fc6ff950f030c64099ff" />

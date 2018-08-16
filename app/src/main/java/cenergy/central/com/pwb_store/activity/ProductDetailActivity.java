@@ -53,6 +53,7 @@ import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,7 +63,8 @@ import retrofit2.Response;
  * Created by napabhat on 7/19/2017 AD.
  */
 
-public class ProductDetailActivity extends AppCompatActivity implements PowerBuyCompareView.OnClickListener {
+public class ProductDetailActivity extends AppCompatActivity implements PowerBuyCompareView.OnClickListener,
+        PowerBuyShoppingCartView.OnClickListener{
     private static final String TAG = ProductDetailActivity.class.getSimpleName();
 
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
@@ -71,6 +73,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     Toolbar mToolbar;
     PowerBuyCompareView mBuyCompareView;
+    PowerBuyShoppingCartView mBuyShoppingCartView;
 
     private ProductDetail mProductDetail;
     private Recommend mRecommend;
@@ -371,6 +374,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private void initView() {
         mToolbar = findViewById(R.id.toolbar);
         mBuyCompareView = findViewById(R.id.button_compare);
+        mBuyShoppingCartView = findViewById(R.id.shopping_cart);
         ImageView searchImageView = findViewById(R.id.img_search);
 
         setSupportActionBar(mToolbar);
@@ -401,6 +405,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         int count = RealmController.with(this).getCompareProducts().size();
 
         mBuyCompareView.setListener(this);
+        mBuyShoppingCartView.setListener(this);
         mBuyCompareView.updateCartCount(count);
     }
 
@@ -646,6 +651,15 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     @Override
     public void onShoppingBagClick(View view) {
         Intent intent = new Intent(this, CompareActivity.class);
+        ActivityCompat.startActivity(this, intent,
+                ActivityOptionsCompat
+                        .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
+                        .toBundle());
+    }
+
+    @Override
+    public void onAddShoppingCartClick(View view) {
+        Intent intent = new Intent(this, ShoppingCartActivity.class);
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())

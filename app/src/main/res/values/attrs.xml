@@ -9,4 +9,8 @@
     <declare-styleable name="PowerBuyEditText">
         <attr name="typeFaceAsset"/>
     </declare-styleable>
+
+    <declare-styleable name="PowerBuyIncreaseOrDecreaseView">
+        <attr name="qty"/>
+    </declare-styleable>
 </resources>

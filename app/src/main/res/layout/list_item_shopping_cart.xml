@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:background="@drawable/border_grey"
+            android:contentDescription="@string/product_detail"
+            android:padding="6dp"
+            tools:src="@drawable/ic_power_buy" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:text="Product Name" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/product_detail"
+                    android:src="@drawable/ic_cancel" />
+
+            </LinearLayout>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/product_code" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Price : ฿68" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_qty_title_shopping_cart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="qty" />
+
+                <cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_toRightOf="@+id/txt_qty_title_shopping_cart"
+                    android:layout_toEndOf="@+id/txt_qty_title_shopping_cart" />
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/textNameProduct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    tools:ignore="RelativeOverlap"
+                    tools:text="฿204" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/graySelect" />
+
+</LinearLayout>

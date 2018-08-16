@@ -49,11 +49,13 @@
             />
 
         <cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+            android:id="@+id/shopping_cart"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="10dp">
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp">
 
         </cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView>
 
