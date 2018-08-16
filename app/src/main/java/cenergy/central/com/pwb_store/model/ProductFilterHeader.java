@@ -40,9 +40,12 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("image")
+    @SerializedName("category_tablet_icon")
     @Expose
-    private String urlName;
+    private String imageURL;
+    @SerializedName("include_in_menu")
+    @Expose
+    private int includeInMenu;
     private String type;
     private int position;
     @SerializedName("children_data")
@@ -71,12 +74,12 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
 
     }
 
-    public ProductFilterHeader(String id, String name, String level, String urlName, String type, List<ProductFilterSubHeader> productFilterSubHeaders) {
+    public ProductFilterHeader(String id, String name, String level, String imageURL, String type, List<ProductFilterSubHeader> productFilterSubHeaders) {
         this.id = id;
         this.name = name;
         this.level = level;
         this.isExpanded = false;
-        this.urlName = urlName;
+        this.imageURL = imageURL;
         this.type = type;
     }
 
@@ -87,7 +90,7 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
         name = in.readString();
         type = in.readString();
         isExpanded = in.readByte() != 0;
-        urlName = in.readString();
+        imageURL = in.readString();
     }
 
     @Override
@@ -96,7 +99,7 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
         dest.writeString(id);
         dest.writeString(name);
         dest.writeByte((byte) (isExpanded ? 1 : 0));
-        dest.writeString(urlName);
+        dest.writeString(imageURL);
     }
 
     @Override
@@ -178,11 +181,23 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
         this.type = type;
     }
 
-    public String getUrlName() {
-        return urlName;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setUrlName(String urlName) {
-        this.urlName = urlName;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public int getIncludeInMenu() {
+        return includeInMenu;
+    }
+
+    public boolean IsIncludeInMenu() {
+        return includeInMenu == 1;
+    }
+
+    public void setIncludeInMenu(int includeInMenu) {
+        this.includeInMenu = includeInMenu;
     }
 }

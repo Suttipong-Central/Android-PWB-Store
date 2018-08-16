@@ -114,6 +114,54 @@ class HttpManagerMagento {
         }
     }
 
+    fun retrieveCategories(force: Boolean, categoryId: Int, categoryLevel: Int, callback: ApiResponseCallback<Category?>) {
+        // If already cached then do
+        val endpointName = "/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+        val database = RealmController.with(mContext)
+        if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
+            Log.i("PBE", "retrieveCategories: using cached")
+            callback.success(database.category)
+            return
+        }
+
+        Log.i("PBE", "retrieveCategories: calling endpoint")
+        retrofit?.let {
+            val categoryService = it.create(CategoryService::class.java)
+            categoryService.getCategories(categoryId, categoryLevel).enqueue(object : Callback<Category> {
+
+                override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
+                    if (response != null) {
+                        val category = response.body()
+                        val categoryHeaders = category?.filterHeaders
+                        if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
+                            val toRemove = arrayListOf<ProductFilterHeader>()
+                            for (header in categoryHeaders) {
+                                if (!header.IsIncludeInMenu()) {
+                                    toRemove.add(header)
+                                }
+                            }
+                            category.filterHeaders.removeAll(toRemove)
+                        }
+
+                        // Store to database
+                        database.saveCategory(category)
+
+                        // Update cached endpoint
+                        database.updateCachedEndpoint(endpointName)
+
+                        callback.success(category)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<Category>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+                }
+            })
+        }
+    }
+
     fun retrieveProductList(category: String, categoryId: String, conditionType: String,
                             pageSize: Int, currentPage: Int, typeSearch: String, fields: String,
                             callback: ApiResponseCallback<ProductResponse?>){

@@ -26,9 +26,12 @@ public class Category extends RealmObject implements IViewType, Parcelable {
     @SerializedName("name")
     @Expose
     private String departmentName;
-    @SerializedName("image")
+    @SerializedName("category_tablet_icon")
     @Expose
     private String imageURL;
+    @SerializedName("include_in_menu")
+    @Expose
+    private int includeInMenu;
     @SerializedName("children_data")
     @Expose
     private RealmList<ProductFilterHeader> mFilterHeaders;
@@ -119,5 +122,17 @@ public class Category extends RealmObject implements IViewType, Parcelable {
 
     public void setFilterHeaders(RealmList<ProductFilterHeader> filterHeaders) {
         mFilterHeaders = filterHeaders;
+    }
+
+    public int getIncludeInMenu() {
+        return includeInMenu;
+    }
+
+    public boolean IsIncludeInMenu() {
+        return includeInMenu == 1;
+    }
+
+    public void setIncludeInMenu(int includeInMenu) {
+        this.includeInMenu = includeInMenu;
     }
 }
