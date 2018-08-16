@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void retrieveCategories() {
-        HttpManagerMagento.Companion.getInstance().retrieveCategories(false ,new ApiResponseCallback<Category>() {
+        HttpManagerMagento.Companion.getInstance().retrieveCategories(false, 2, 4,new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
                 mCategoryDao = new CategoryDao(category);

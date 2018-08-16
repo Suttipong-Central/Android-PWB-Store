@@ -1,8 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -10,22 +8,19 @@ import com.bumptech.glide.Glide;
 
 import org.greenrobot.eventbus.EventBus;
 
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
-import cenergy.central.com.pwb_store.manager.bus.event.CategoryBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by napabhat on 7/5/2017 AD.
  */
 
-public class CategoryViewHolder extends RecyclerView.ViewHolder{
+public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
     ImageView mImageView;
     PowerBuyTextView mTextView;
@@ -38,12 +33,10 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder{
 
     public void setViewHolder(ProductFilterHeader categoryHeader) {
         Glide.with(Contextor.getInstance().getContext())
-                //.load(category.getImageURL())
-                .load(categoryHeader.getUrlName())
+                .load(categoryHeader.getImageURL())
                 .placeholder(R.drawable.ic_question_mark)
                 .crossFade()
-                //.fitCenter()
-                //.bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
+                .fitCenter()
                 .into(mImageView);
 
         mTextView.setText(categoryHeader.getName());
@@ -59,12 +52,10 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder{
 
     public void setViewHolder(ProductFilterSubHeader categorySubHeader) {
         Glide.with(Contextor.getInstance().getContext())
-                //.load(category.getImageURL())
                 .load(categorySubHeader.getUrlName())
                 .placeholder(R.drawable.ic_question_mark)
                 .crossFade()
-                //.fitCenter()
-                //.bitmapTransform(new CropCircleTransformation(Contextor.getInstance().getContext()))
+                .fitCenter()
                 .into(mImageView);
 
         mTextView.setText(categorySubHeader.getName());

@@ -17,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
@@ -126,7 +124,7 @@ public class CategoryFragment extends Fragment {
     }
 
     private void retrieveCategories() {
-        HttpManagerMagento.Companion.getInstance().retrieveCategories(true ,new ApiResponseCallback<Category>() {
+        HttpManagerMagento.Companion.getInstance().retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
                 mAdapter.setCategory(category);
