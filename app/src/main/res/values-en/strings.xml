@@ -20,4 +20,18 @@
     <string name="add_to_cart">Add to Cart</string>
     <string name="brand">Brand</string>
     <string name="loading">Loading...</string>
+
+    <!--Payment-->
+    <string name="payment_header">Payment</string>
+    <string name="user_profile">Personal Details</string>
+    <string name="required_field">*</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="tell">Contact Number</string>
+    <string name="email">Email Address</string>
+    <string name="house_no">House no</string>
+    <string name="place_or_building">Place/Building</string>
+    <string name="soi">Soi</string>
+    <string name="street">Street</string>
+    <string name="tel_or_mobile">Tel/Mobile No.</string>
 </resources>

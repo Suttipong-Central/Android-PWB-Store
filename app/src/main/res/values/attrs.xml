@@ -13,4 +13,8 @@
     <declare-styleable name="PowerBuyIncreaseOrDecreaseView">
         <attr name="qty"/>
     </declare-styleable>
+    <declare-styleable name="PowerBuyEditTextBorder">
+        <attr name="header" format="string"/>
+        <attr name="required" format="boolean"/>
+    </declare-styleable>
 </resources>
