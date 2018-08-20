@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
+import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
+import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
 
-class PaymentActivity : AppCompatActivity() {
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener {
 
     companion object {
         fun intent(context: Context): Intent {
@@ -17,21 +17,20 @@ class PaymentActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var recycler: RecyclerView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
 
-        initView()
-
-        recycler.isNestedScrollingEnabled = false
-        recycler.layoutManager = LinearLayoutManager(this,
-                LinearLayoutManager.VERTICAL, false)
-        recycler.adapter = ShoppingCartAdapter()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentCheckOutFragment.newInstance())
+                .commit()
     }
 
-    private fun initView() {
-        recycler = findViewById(R.id.recycler_product_list_payment)
+    override fun onCheckOutListener(contactNo: String) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentDescriptionFragment.newInstance(contactNo))
+                .commit()
     }
 }
