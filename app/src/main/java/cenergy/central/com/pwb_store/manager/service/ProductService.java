@@ -95,9 +95,15 @@ public interface ProductService {
             @Query("searchCriteria[sortOrders][0][direction]") String typeSearch,
             @Query("fields") String fields);
 
-    @GET("/rest/V1/products/{id}")
+    @GET("/rest/V1/headless/categories/{categoryId}/products")
+    Call<ProductResponse> getProductList(
+            @Path("categoryId") String categoryId,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage);
+
+    @GET("/rest/V1/products/{sku}")
     Call<Product> getProductDetail(
-            @Path("id") String productId,
+            @Path("sku") String sku,
             @Query("fields") String fields);
 
     @GET("/rest/V1/products")

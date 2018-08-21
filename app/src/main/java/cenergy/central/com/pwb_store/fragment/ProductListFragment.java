@@ -213,7 +213,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 //                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
                     layoutProgress.setVisibility(View.VISIBLE);
-                    getProductList(departmentId);
+//                    getProductList(departmentId);
+                    retrieveProductList(departmentId);
                 }
 
                 isLoadingMore = true;
@@ -234,20 +235,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     @Override
                     public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
                         if (response != null) {
-                            //mProductDao = response.body();
-                            //TODO Test Total Page.
-//                if (currentPage == 0) {
-//                    currentPage = getNextPage();
-//                    if (productDao != null) {
-//                        productDao.setCurrentPage(currentPage);
-//                    }
-//                } else {
-//                    currentPage = getNextPage();
-//                    if (productDao != null) {
-//                        productDao.setCurrentPage(currentPage);
-//                    }
-//                }
-
                             totalItem = response.getTotalCount();
                             totalPage = totalPageCal(totalItem);
                             Log.d(TAG, " totalPage :" + totalPage);
@@ -263,9 +250,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         } else {
                             mProductListAdapter.setError();
                             setTextHeader(totalItem, title);
-//                            APIError error = APIErrorUtils.parseError(response);
-//                            Log.e(TAG, "onResponse: " + error.getErrorMessage());
-//                            showAlertDialog(error.getErrorMessage(), false);
                             mProgressDialog.dismiss();
                             if(mPowerBuyPopupWindow.isShowing()){
                                 mPowerBuyPopupWindow.dismiss();
@@ -616,7 +600,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 showProgressDialog();
 //                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                        "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-                getProductList(departmentId);
+//                getProductList(departmentId);
+                retrieveProductList(departmentId);
             }
             if (mProductFilterSubHeader != null) {
 //                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
@@ -753,7 +738,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         sortType = sortTypeT;
 //        HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
 //                "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-        getProductList(departmentId);
+        retrieveProductList(departmentId);
     }
 
     private void setTextHeader(int total, String name) {
@@ -781,5 +766,46 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
+    }
+
+    private void retrieveProductList(String departmentId) {
+        HttpManagerMagento.Companion.getInstance().retrieveProductList(
+                departmentId,
+                PER_PAGE,
+                getNextPage(),
+                new ApiResponseCallback<ProductResponse>() {
+                    @Override
+                    public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                        if (response != null) {
+                            totalItem = response.getTotalCount();
+                            totalPage = totalPageCal(totalItem);
+                            Log.d(TAG, " totalPage :" + totalPage);
+                            currentPage = getNextPage();
+                            response.setCurrentPage(currentPage);
+                            mProductListAdapter.setProduct(response);
+                            setTextHeader(totalItem, title);
+                            mProgressDialog.dismiss();
+                            if(mPowerBuyPopupWindow.isShowing()){
+                                mPowerBuyPopupWindow.dismiss();
+                            }
+                            layoutProgress.setVisibility(View.GONE);
+                        } else {
+                            mProductListAdapter.setError();
+                            setTextHeader(totalItem, title);
+                            mProgressDialog.dismiss();
+                            if(mPowerBuyPopupWindow.isShowing()){
+                                mPowerBuyPopupWindow.dismiss();
+                            }
+                            layoutProgress.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void failure(@NotNull APIError error) {
+                        Log.d("productDaoResponse", error.toString());
+                        layoutProgress.setVisibility(View.GONE);
+                    }
+                }
+        );
     }
 }

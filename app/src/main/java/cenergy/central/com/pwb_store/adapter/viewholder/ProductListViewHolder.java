@@ -123,6 +123,15 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 //
 //            productBrand.setText(extension.getBrand());
 //        }
+
+        Glide.with(Contextor.getInstance().getContext())
+                .load(product.getImageUrl())
+                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .crossFade()
+                .fitCenter()
+                .into(mImageView);
+
+        productBrand.setText(product.getBrand());
         productName.setText(product.getName());
         oldPrice.setText(product.getDisplayOldPrice(unit));
         itemView.setOnClickListener(this);

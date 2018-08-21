@@ -73,7 +73,7 @@ android {
         develop {
             resValue 'string', 'app_name', '\"PowerBuy Store-Dev\"'
             applicationIdSuffix ".dev"
-            versionCode 3
+            versionCode 4
             versionName "0.0.2"
         }
     }

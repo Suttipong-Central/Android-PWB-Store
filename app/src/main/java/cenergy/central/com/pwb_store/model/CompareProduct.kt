@@ -12,9 +12,10 @@ import java.util.*
 
 open class CompareProduct(@PrimaryKey var sku: String = "",
                           var name: String? = "",
-                          var attributeID: Int? = null,
                           var price: Double? = 0.0,
-                          var status: Int? = 0) : RealmObject(), IViewType {
+                          var specialPrice: Double? = 0.0,
+                          var imageUrl: String? = "",
+                          var brand: String? = "") : RealmObject(), IViewType {
 
     // for set view type in adapter
     var viewTypeID: Int = 0
@@ -24,7 +25,7 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
     }
 
     override fun setViewTypeId(id: Int) {
-       this.viewTypeID = id
+        this.viewTypeID = id
     }
 
     fun normalPrice(unit: String): String {
@@ -36,7 +37,8 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
         @JvmStatic
         fun asCompareProduct(product: Product): CompareProduct {
             return CompareProduct(sku = product.sku, name = product.name,
-                    attributeID = product.attributeID, price = product.price, status = product.status)
+                    price = product.price, specialPrice = product.specialPrice, imageUrl = product.imageUrl,
+                    brand = product.brand)
         }
     }
 }

@@ -356,7 +356,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             showProgressDialog();
-            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
+//            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
+            // TODO: ignore getStores
+            retrieveCategories();
 
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -506,49 +508,49 @@ public class MainActivity extends AppCompatActivity {
             public void success(@Nullable Category category) {
                 mCategoryDao = new CategoryDao(category);
                 mDrawerDao = new DrawerDao(mDrawerItemList);
-
-                if (mDrawerItemList.size() == 0 && category != null) {
-                    for (Category item : mCategoryDao.getCategoryList()) {
-                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), item.getId(), item));
-                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
-                    }
-                    mDrawerDao.setStoreDao(mStoreDao);
-                    if (UserInfoManager.getInstance().getUserId() == null ||
-                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
-                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
-                        storeId = "00096";
-                        UserInfoManager.getInstance().setUserIdLogin(storeId);
-                        for (StoreList storeList : mStoreDao.getStoreLists()) {
-                            if (storeList.getStoreId().equalsIgnoreCase(storeId)) {
-                                UserInfoManager.getInstance().setStore(storeList);
-                            }
-                        }
-                        if (!mStoreDao.isStoreEmpty()) {
-                            if (mStoreDao.isStoreListItemListAvailable()) {
-                                List<StoreList> storeLists = mStoreDao.getStoreLists();
-                                for (StoreList headerStore :
-                                        storeLists) {
-                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
-                                }
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
-                        storeId = UserInfoManager.getInstance().getUserId();
-                        if (!mStoreDao.isStoreEmpty()) {
-                            if (mStoreDao.isStoreListItemListAvailable()) {
-                                List<StoreList> storeLists = mStoreDao.getStoreLists();
-                                for (StoreList headerStore :
-                                        storeLists) {
-                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
-                                }
-                            }
-                        }
-                    }
-                    mAdapter.setDrawItem(mDrawerDao);
-                } else {
-                    mAdapter.setDrawItem(mDrawerDao);
-                }
+                // TODO: ignore getStores
+//                if (mDrawerItemList.size() == 0 && category != null) {
+//                    for (Category item : mCategoryDao.getCategoryList()) {
+//                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), item.getId(), item));
+//                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+//                    }
+//                    mDrawerDao.setStoreDao(mStoreDao);
+//                    if (UserInfoManager.getInstance().getUserId() == null ||
+//                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
+//                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
+//                        storeId = "00096";
+//                        UserInfoManager.getInstance().setUserIdLogin(storeId);
+//                        for (StoreList storeList : mStoreDao.getStoreLists()) {
+//                            if (storeList.getStoreId().equalsIgnoreCase(storeId)) {
+//                                UserInfoManager.getInstance().setStore(storeList);
+//                            }
+//                        }
+//                        if (!mStoreDao.isStoreEmpty()) {
+//                            if (mStoreDao.isStoreListItemListAvailable()) {
+//                                List<StoreList> storeLists = mStoreDao.getStoreLists();
+//                                for (StoreList headerStore :
+//                                        storeLists) {
+//                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
+//                        storeId = UserInfoManager.getInstance().getUserId();
+//                        if (!mStoreDao.isStoreEmpty()) {
+//                            if (mStoreDao.isStoreListItemListAvailable()) {
+//                                List<StoreList> storeLists = mStoreDao.getStoreLists();
+//                                for (StoreList headerStore :
+//                                        storeLists) {
+//                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
+//                                }
+//                            }
+//                        }
+//                    }
+//                    mAdapter.setDrawItem(mDrawerDao);
+//                } else {
+//                    mAdapter.setDrawItem(mDrawerDao);
+//                }
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
                         .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)

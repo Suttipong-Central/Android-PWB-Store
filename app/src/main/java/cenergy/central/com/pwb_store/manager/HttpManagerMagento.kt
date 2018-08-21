@@ -185,10 +185,31 @@ class HttpManagerMagento {
         }
     }
 
-    fun retrieveProductDetail(productId: String, string: String, callback: ApiResponseCallback<Product?>) {
+    fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
-            productService.getProductDetail(productId, string)
+            productService.getProductList(categoryId, pageSize, currentPage).enqueue(object : Callback<ProductResponse>{
+                override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                    if (response != null) {
+                        val product = response.body()
+                        callback.success(product)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+
+                }
+            })
+        }
+    }
+
+    fun retrieveProductDetail(sku: String, string: String, callback: ApiResponseCallback<Product?>) {
+        retrofit?.let { retrofit ->
+            val productService = retrofit.create(ProductService::class.java)
+            productService.getProductDetail(sku, string)
             .enqueue(object : Callback<Product>{
                 override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
                     if (response != null) {

@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat
 import java.util.*
 
@@ -10,28 +11,35 @@ class Product() : Parcelable,IViewType {
     var id: Int = 0
     var sku: String = ""
     var name: String = ""
-    var attributeID: Int = 0
     var price: Double = 0.0
-    var status: Int = 0
+    @SerializedName("special_price")
+    var specialPrice: Double = 0.0
+    var brand: String = ""
+    @SerializedName("image")
+    var imageUrl: String = ""
     var viewTypeID: Int = 0
+    var attributeID: Int = 0
     private var productImageList: ProductDetailImage? = null
 
     constructor(parcel: Parcel) : this() {
         id = parcel.readInt()
         sku = parcel.readString()
         name = parcel.readString()
-        attributeID = parcel.readInt()
         price = parcel.readDouble()
-        status = parcel.readInt()
+        specialPrice = parcel.readDouble()
+        brand = parcel.readString()
+        imageUrl = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
         parcel.writeString(sku)
         parcel.writeString(name)
-        parcel.writeInt(attributeID)
         parcel.writeDouble(price)
-        parcel.writeInt(status)
+        parcel.writeDouble(specialPrice)
+        parcel.writeString(brand)
+        parcel.writeString(imageUrl)
+
     }
 
     override fun describeContents(): Int {
