@@ -29,7 +29,7 @@
     <string name="last_name">Last Name</string>
     <string name="tell">Contact Number</string>
     <string name="email">Email Address</string>
-    <string name="house_no">House no</string>
+    <string name="house_on">House no</string>
     <string name="place_or_building">Place/Building</string>
     <string name="soi">Soi</string>
     <string name="street">Street</string>
