@@ -22,7 +22,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
  * Created by napabhat on 7/6/2017 AD.
  */
 
-public class ProductListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class ProductListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private static final String TAG = ProductListViewHolder.class.getSimpleName();
 
     private ImageView mImageView;
@@ -42,24 +42,24 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         productBrand = itemView.findViewById(R.id.txt_product_brand);
     }
 
-    public void setViewHolder(ProductList productList){
+    public void setViewHolder(ProductList productList) {
 
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
         Extension extension = productList.getExtension();
-        if (extension != null){
+        if (extension != null) {
 
-            for (ProductListStore productListStore : extension.getProductListStores()){
+            for (ProductListStore productListStore : extension.getProductListStores()) {
                 Log.d(TAG, "price : " + productListStore.getPrice());
                 Log.d(TAG, "specialPrice : " + productListStore.getSpecialPrice());
                 oldPrice.setText("");
                 oldPrice.setEnableStrikeThrough(false);
                 newPrice.setText("");
-                if (productListStore.getPrice().equals(productListStore.getSpecialPrice())){
+                if (productListStore.getPrice().equals(productListStore.getSpecialPrice())) {
                     Log.d(TAG, "In if");
                     oldPrice.setText(productListStore.getDisplayOldPrice(unit));
                     newPrice.setText("");
-                }else {
+                } else {
                     Log.d(TAG, "In else");
                     oldPrice.setText(productListStore.getDisplayOldPrice(unit));
                     oldPrice.setEnableStrikeThrough(true);
@@ -85,7 +85,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         itemView.setTag(productList);
     }
 
-    public void setViewHolder(Product product){
+    public void setViewHolder(Product product) {
 
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 //
@@ -131,21 +131,34 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
                 .fitCenter()
                 .into(mImageView);
 
+        oldPrice.setText(product.getDisplayOldPrice(unit));
+        newPrice.setText(product.getDisplaySpecialPrice(unit));
+        if (product.isSpecialPrice()) {
+            if (product.getPrice() == product.getSpecialPrice()) {
+                newPrice.setVisibility(View.GONE);
+                oldPrice.setEnableStrikeThrough(false);
+            } else {
+                newPrice.setVisibility(View.VISIBLE);
+                oldPrice.setEnableStrikeThrough(true);
+            }
+        } else {
+            newPrice.setVisibility(View.GONE);
+            oldPrice.setEnableStrikeThrough(false);
+        }
         productBrand.setText(product.getBrand());
         productName.setText(product.getName());
-        oldPrice.setText(product.getDisplayOldPrice(unit));
         itemView.setOnClickListener(this);
         itemView.setTag(product);
     }
 
     @Override
     public void onClick(View v) {
-        if(itemView.getTag() instanceof ProductList){
+        if (itemView.getTag() instanceof ProductList) {
             ProductList productListList = (ProductList) itemView.getTag();
             EventBus.getDefault().post(new ProductDetailBus(productListList.getProductId(), v));
         }
         //new intent for product
-        if(itemView.getTag() instanceof Product){
+        if (itemView.getTag() instanceof Product) {
             Product product = (Product) itemView.getTag();
             EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getSku()), v));
         }
