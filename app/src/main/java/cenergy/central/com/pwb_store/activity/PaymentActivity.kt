@@ -7,9 +7,11 @@ import android.support.v7.app.AppCompatActivity
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
+import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener {
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener , PaymentClickLintener{
 
     companion object {
         fun intent(context: Context): Intent {
@@ -31,6 +33,13 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentDescriptionFragment.newInstance(contactNo))
+                .commit()
+    }
+
+    override fun onPaymentClickListener() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentSuccessFragment.newInstance())
                 .commit()
     }
 }

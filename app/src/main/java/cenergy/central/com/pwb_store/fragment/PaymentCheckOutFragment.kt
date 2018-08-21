@@ -19,8 +19,8 @@ class PaymentCheckOutFragment : Fragment() {
     private lateinit var okBtn : CardView
 
     companion object {
-        fun newInstance(): ProductDetailFragment {
-            val fragment = ProductDetailFragment()
+        fun newInstance(): PaymentCheckOutFragment {
+            val fragment = PaymentCheckOutFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

@@ -10,8 +10,8 @@ import cenergy.central.com.pwb_store.R
 class PaymentSuccessFragment : Fragment(){
 
     companion object {
-        fun newInstance(contactNo: String): ProductDetailFragment {
-            val fragment = ProductDetailFragment()
+        fun newInstance(): PaymentSuccessFragment {
+            val fragment = PaymentSuccessFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

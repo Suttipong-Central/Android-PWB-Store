@@ -19,34 +19,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="32dp"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:padding="20dp"
                     android:background="@drawable/green_circle"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_check" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginStart="32dp"
                     android:orientation="vertical">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="32sp"
-                        tools:text="@string/success" />
+                        android:text="@string/success" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        tools:text="@string/purchasing_number" />
+                        android:textSize="24sp"
+                        android:text="@string/order_number" />
 
                 </LinearLayout>
 
@@ -67,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                tools:text="Orders Detail" />
+                android:text="@string/order_detail" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,25 +79,25 @@
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
+                    android:layout_weight="5.5"
                     android:text="@string/products" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:text="@string/price" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:text="@string/qty" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:text="@string/total_price" />
             </LinearLayout>
 
@@ -107,7 +108,8 @@
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"/>
 
             <LinearLayout
                 android:id="@+id/layout_total_shopping_cart"
@@ -117,7 +119,7 @@
                 android:paddingRight="16dp"
                 android:layout_marginBottom="12dp"
                 android:gravity="end"
-                android:background="@color/grayTextColor"
+                android:background="@color/lightgray"
                 android:orientation="horizontal"
                 tools:ignore="RtlSymmetry">
 
@@ -149,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                tools:text="Orders Detail" />
+                android:text="@string/personal_detail" />
 
             <View
                 android:layout_width="match_parent"
@@ -162,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                tools:text="Orders Detail" />
+                android:text="@string/store_collection_detail" />
 
             <View
                 android:layout_width="match_parent"

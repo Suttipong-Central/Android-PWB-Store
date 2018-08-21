@@ -38,11 +38,14 @@
     <string name="district">District</string>
     <string name="sub_district">Sub district</string>
     <string name="post_code">Postcode</string>
-    <string name="success">Success</string>
-    <string name="purchasing_number">Purchasing number:</string>
+    <string name="success">Your order is successful</string>
+    <string name="order_number">Order number </string>
     <string name="products">Products</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
     <string name="total_price">Total</string>
     <string name="finished">Finished</string>
+    <string name="order_detail">Order Details</string>
+    <string name="personal_detail">Personal Details</string>
+    <string name="store_collection_detail">Store Collection Details</string>
 </resources>
