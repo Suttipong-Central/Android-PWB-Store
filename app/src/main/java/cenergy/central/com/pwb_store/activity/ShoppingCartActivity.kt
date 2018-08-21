@@ -29,7 +29,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         paymentButton.setOnClickListener {
             val intent = PaymentActivity.intent(this)
             ActivityCompat.startActivity(this, intent, ActivityOptionsCompat
-                    .makeScaleUpAnimation(paymentButton, 0, 0,paymentButton.width, paymentButton.height)
+                    .makeScaleUpAnimation(paymentButton, 0, 0, paymentButton.width, paymentButton.height)
                     .toBundle())
         }
     }

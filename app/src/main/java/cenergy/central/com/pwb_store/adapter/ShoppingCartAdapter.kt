@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.adapter
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -21,5 +20,4 @@ class ShoppingCartAdapter : RecyclerView.Adapter<ShoppingCartViewHolder>() {
     override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
         holder.bindView()
     }
-
 }
