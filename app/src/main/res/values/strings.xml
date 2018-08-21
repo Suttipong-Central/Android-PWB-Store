@@ -137,4 +137,9 @@
     <string name="order_detail">Order Details</string>
     <string name="personal_detail">Personal Details</string>
     <string name="store_collection_detail">Store Collection Details</string>
+    <string name="order_date">Order Date</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="phone">Phone</string>
+    <string name="open_today">Open Today</string>
+    <string name="branch">Branch</string>
 </resources>
