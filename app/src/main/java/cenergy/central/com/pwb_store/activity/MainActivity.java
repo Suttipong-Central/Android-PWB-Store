@@ -509,11 +509,11 @@ public class MainActivity extends AppCompatActivity {
                 mCategoryDao = new CategoryDao(category);
                 mDrawerDao = new DrawerDao(mDrawerItemList);
                 // TODO: ignore getStores
-//                if (mDrawerItemList.size() == 0 && category != null) {
-//                    for (Category item : mCategoryDao.getCategoryList()) {
-//                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), item.getId(), item));
-//                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
-//                    }
+                if (mDrawerItemList.size() == 0 && category != null) {
+                    for (Category item : mCategoryDao.getCategoryList()) {
+                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), item.getId(), item));
+                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+                    }
 //                    mDrawerDao.setStoreDao(mStoreDao);
 //                    if (UserInfoManager.getInstance().getUserId() == null ||
 //                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
@@ -547,10 +547,10 @@ public class MainActivity extends AppCompatActivity {
 //                            }
 //                        }
 //                    }
-//                    mAdapter.setDrawItem(mDrawerDao);
-//                } else {
-//                    mAdapter.setDrawItem(mDrawerDao);
-//                }
+                    mAdapter.setDrawItem(mDrawerDao);
+                } else {
+                    mAdapter.setDrawItem(mDrawerDao);
+                }
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
                         .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)

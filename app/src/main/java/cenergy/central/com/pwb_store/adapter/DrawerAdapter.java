@@ -191,8 +191,8 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 //    }
 
     public void setDrawItem(DrawerDao drawerDao){
-
-        setStore(drawerDao.getStoreDao());
+        // TODO: ignore getStores
+//        setStore(drawerDao.getStoreDao());
 
         mListViewType.add(VIEW_TYPE_HEADER);
 
