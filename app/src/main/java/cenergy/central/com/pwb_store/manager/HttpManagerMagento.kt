@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.model.ProductFilterHeader
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -40,6 +41,11 @@ class HttpManagerMagento {
                 }
                 .addInterceptor(interceptor)
                 .build()
+
+        // Create gson
+        val gson = GsonBuilder()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                .create()
 
         retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL_MAGENTO)

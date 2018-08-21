@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PowerBuy Store</string>
+    <!--<string name="app_name">PowerBuy Store</string>-->
 
     <string name="home" translatable="false">Home</string>
     <string name="home_tv" translatable="false">TV &amp; Home Entertainment</string>
