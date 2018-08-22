@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
@@ -11,7 +12,7 @@ import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener , PaymentClickLintener{
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickLintener {
 
     companion object {
         fun intent(context: Context): Intent {
@@ -22,6 +23,8 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener , PaymentClic
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
+
+        initView()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
@@ -41,5 +44,14 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener , PaymentClic
         fragmentTransaction
                 .replace(R.id.container, PaymentSuccessFragment.newInstance())
                 .commit()
+    }
+
+    private fun initView() {
+        val mToolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(mToolbar)
+        if (supportActionBar != null) {
+            supportActionBar!!.setDisplayShowTitleEnabled(false)
+        }
+        mToolbar.setNavigationOnClickListener { finish() }
     }
 }
