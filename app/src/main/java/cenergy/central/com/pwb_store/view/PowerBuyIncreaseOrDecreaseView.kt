@@ -37,12 +37,16 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     }
 
     private fun addQty() {
-        qty += 1
-        notifyAttributeChanged()
+        // Maximum = 10
+        if(qty < 10){
+            qty += 1
+            notifyAttributeChanged()
+        }
     }
 
     private fun removeQty() {
-        if (qty > 0) {
+        // Minimum = 1
+        if (qty > 1) {
             qty -= 1
             notifyAttributeChanged()
         }
