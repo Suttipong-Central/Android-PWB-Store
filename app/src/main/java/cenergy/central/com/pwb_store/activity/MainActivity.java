@@ -462,8 +462,7 @@ public class MainActivity extends AppCompatActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() != null) {
-                //TODO แก้Barcode
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "barcode : " + result.getContents());
                 Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
                 intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());

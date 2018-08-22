@@ -142,4 +142,5 @@
     <string name="phone">Phone</string>
     <string name="open_today">Open Today</string>
     <string name="branch">Branch</string>
+    <string name="search_not_found">ไม่พบข้อมูลที่ค้นหา</string>
 </resources>

@@ -245,6 +245,8 @@ class HttpManagerMagento {
                                 val productResponse = response.body()
                                 if (productResponse?.products!!.size > 0) {
                                     callback.success(productResponse.products[0])
+                                } else {
+                                    callback.success(null)
                                 }
                             } else {
                                 callback.failure(APIErrorUtils.parseError(response))

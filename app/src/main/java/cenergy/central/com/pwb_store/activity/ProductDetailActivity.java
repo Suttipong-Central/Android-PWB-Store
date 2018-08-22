@@ -333,11 +333,16 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         HttpManagerMagento.Companion.getInstance().getProductFromBarcode("barcode", barcode, "eq", "name", 10, 1, new ApiResponseCallback<Product>() {
             @Override
             public void success(@Nullable Product response) {
-                if (response != null){
+                if (response != null) {
+                    findViewById(R.id.tvNotFound).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.container).setVisibility(View.VISIBLE);
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
-                    mProgressDialog.dismiss();
+                } else {
+                    findViewById(R.id.container).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.tvNotFound).setVisibility(View.VISIBLE);
                 }
+                mProgressDialog.dismiss();
             }
 
             @Override
