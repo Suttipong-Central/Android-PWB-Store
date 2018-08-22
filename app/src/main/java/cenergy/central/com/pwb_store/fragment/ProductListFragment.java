@@ -46,6 +46,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
@@ -103,6 +104,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private ProductDao mProductDao;
     private ProductFilterList mProductFilterList;
     private ProductFilterList mTempProductFilterList;
+    private List<String> mProductFilterByBrandList = new ArrayList<>();
     private SortingList mSortingList;
     private SortingList mTempSortingList;
     private String title;
@@ -549,6 +551,14 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     mTempProductFilterList = mProductFilterList;
                 }
                 break;
+            case R.id.layout_brand:
+                if (mProductFilterByBrandList.isEmpty()) {
+                    mPowerBuyPopupWindow.dismiss();
+                } else {
+                    mPowerBuyPopupWindow.setRecyclerViewFilterByBrand(mProductFilterByBrandList);
+                    mPowerBuyPopupWindow.showAsDropDown(v);
+                }
+                break;
         }
     }
 
@@ -573,10 +583,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         LinearLayout titleLayout = rootView.findViewById(R.id.layout_title);
         LinearLayout productLayout = rootView.findViewById(R.id.layout_product);
         LinearLayout sortLayout = rootView.findViewById(R.id.layout_sort);
+        LinearLayout brandLayout = rootView.findViewById(R.id.layout_brand);
 
         titleLayout.setOnClickListener(this);
         productLayout.setOnClickListener(this);
         sortLayout.setOnClickListener(this);
+        brandLayout.setOnClickListener(this);
 
         if (isSearch) {
             layoutFilter.setVisibility(View.GONE);
@@ -782,6 +794,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                             Log.d(TAG, " totalPage :" + totalPage);
                             currentPage = getNextPage();
                             response.setCurrentPage(currentPage);
+                            for (Product product : response.getProducts()) {
+                                if(mProductFilterByBrandList.indexOf(product.getBrand()) == -1){
+                                    mProductFilterByBrandList.add(product.getBrand());
+                                }
+                            }
                             mProductListAdapter.setProduct(response);
                             setTextHeader(totalItem, title);
                             mProgressDialog.dismiss();
@@ -790,7 +807,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                             }
                             layoutProgress.setVisibility(View.GONE);
                         } else {
-                            mProductListAdapter.setError();
+                            if(mProductListAdapter.getItemCount() == 0){
+                                mProductListAdapter.setError();
+                            }
                             setTextHeader(totalItem, title);
                             mProgressDialog.dismiss();
                             if(mPowerBuyPopupWindow.isShowing()){

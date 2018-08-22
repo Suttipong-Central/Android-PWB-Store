@@ -49,8 +49,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toStartOf="@+id/layout_product"
-            android:layout_toLeftOf="@+id/layout_product"
-            android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             android:layout_centerVertical="true"
             android:background="?android:attr/selectableItemBackground"
@@ -62,7 +60,6 @@
                 style="@style/textSize18Sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
                 android:layout_marginEnd="15dp"
                 android:ellipsize="end"
                 android:text="@string/brand"
@@ -71,9 +68,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_keyboard_arrow_down"
                 android:contentDescription="@string/app_name" />
@@ -209,7 +204,6 @@
             android:layout_height="wrap_content"
             android:text="@string/loading"
             android:layout_marginStart="6dp"
-            android:layout_marginLeft="6dp"
             style="@style/textNameProduct"
             android:textColor="@color/powerBuyWhite"
             android:textSize="16sp"/>

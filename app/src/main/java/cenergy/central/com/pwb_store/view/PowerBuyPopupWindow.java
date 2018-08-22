@@ -15,10 +15,13 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.AvaliableStoreFilterAdapter;
+import cenergy.central.com.pwb_store.adapter.FilterByBrandAdapter;
 import cenergy.central.com.pwb_store.adapter.ProductFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.SortingAdapter;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
@@ -44,10 +47,12 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     //Data Member
     private ProductFilterAdapter mProductFilterAdapter;
     private SortingAdapter mSortingAdapter;
+    private FilterByBrandAdapter mFilterByBrandAdapter;
     private AvaliableStoreFilterAdapter mAvaliableStoreFilterAdapter;
     private LinearLayoutManager mLayoutManager;
     private ProductFilterList mProductFilterList;
     private SortingList mSortingList;
+    private List<String> mFilterByBrandList;
     private StoreFilterList mStoreFilterList;
     private Context mContext;
     private int index;
@@ -164,5 +169,14 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     @Override
     public void onClick(View view) {
         Log.d(TAG, "Popup Click");
+    }
+
+    public void setRecyclerViewFilterByBrand(List<String> filterByBrandList) {
+        this.mFilterByBrandList = filterByBrandList;
+        mFilterByBrandAdapter = new FilterByBrandAdapter();
+        mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mFilterByBrandAdapter.setBrandForFilter(mFilterByBrandList);
+        mRecyclerViewFilter.setLayoutManager(mLayoutManager);
+        mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
     }
 }
