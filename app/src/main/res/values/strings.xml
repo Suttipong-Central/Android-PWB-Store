@@ -143,4 +143,7 @@
     <string name="open_today">Open Today</string>
     <string name="branch">Branch</string>
     <string name="search_not_found">ไม่พบข้อมูลที่ค้นหา</string>
+
+    <!-- Shared Preference -->
+    <string name="preference_file_name">pwb_app_preference</string>
 </resources>

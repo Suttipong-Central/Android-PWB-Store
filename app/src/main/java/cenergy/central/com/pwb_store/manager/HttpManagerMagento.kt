@@ -5,6 +5,8 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
+import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.APIError
@@ -250,6 +252,27 @@ class HttpManagerMagento {
                             callback.failure(APIError(t))
                         }
                     })
+        }
+    }
+
+    fun getCart(callback: ApiResponseCallback<String?>) {
+        retrofit?.let {
+            val cartService = it.create(CartService::class.java)
+            cartService.createCart().enqueue(object : Callback<String> {
+
+                override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                    if (response != null && response.isSuccessful) {
+                        val cartId = response.body()
+                        callback.success(cartId)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<String>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+                }
+            })
         }
     }
 }

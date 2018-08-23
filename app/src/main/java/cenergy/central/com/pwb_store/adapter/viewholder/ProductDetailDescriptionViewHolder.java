@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,8 +17,8 @@ import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
-import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.Product;
+import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailStore;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -30,7 +29,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyWrapAbleGridView;
  */
 
 @SuppressLint("SetTextI18n")
-public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     @BindView(R.id.txt_view_product_name)
     PowerBuyTextView mProductName;
@@ -84,29 +83,29 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         ButterKnife.bind(this, itemView);
     }
 
-    public void setViewHolder(ProductDetail productDetail){
+    public void setViewHolder(ProductDetail productDetail) {
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
         mProductName.setText(productDetail.getProductName());
-        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ productDetail.getSku());
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + productDetail.getSku());
         ExtensionProductDetail extensionProductDetail = productDetail.getExtensionProductDetail();
-        if (extensionProductDetail != null){
-            for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
+        if (extensionProductDetail != null) {
+            for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()) {
                 float oldPrice = Float.parseFloat(productDetailStore.getPrice());
                 float newPrice = Float.parseFloat(productDetailStore.getSpecialPrice());
-                if (oldPrice > newPrice){
+                if (oldPrice > newPrice) {
                     mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
-                }else {
-                    mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
-                    namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+                } else {
+                    mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(), R.color.powerBuyPurple));
+                    namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(), R.color.headerTextColor));
                     mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
                 }
 
-                mRegular.setText("Regular Price : " +productDetailStore.getDisplayOldPrice(unit));
+                mRegular.setText("Regular Price : " + productDetailStore.getDisplayOldPrice(unit));
 
-                if (Integer.parseInt(productDetailStore.getStockAvailable()) > 0){
+                if (Integer.parseInt(productDetailStore.getStockAvailable()) > 0) {
                     mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
-                }else {
+                } else {
                     mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
                     mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
                 }
@@ -185,11 +184,11 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         mCardViewCompare.setOnClickListener(this);
     }
 
-    public void setViewHolder(Product product){
+    public void setViewHolder(Product product) {
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
         mProductName.setText(product.getName());
-        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code)+ product.getSku());
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + product.getSku());
 //        namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
         mRegular.setText("Regular Price : " + product.getDisplayOldPrice(unit));
 
@@ -216,6 +215,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 //                }
 //            }
 //        }
+        itemView.findViewById(R.id.card_view_add_to_cart).setOnClickListener(this);
         mCardViewStore.setTag(product);
         mCardViewStore.setOnClickListener(this);
         mCardViewCompare.setTag(product);
@@ -224,12 +224,24 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
     @Override
     public void onClick(View view) {
-        if (view == mCardViewStore){
-            Product product = (Product) mCardViewStore.getTag();
-            EventBus.getDefault().post(new StoreAvaliableBus(view, product.getSku()));
-        }else if (view == mCardViewCompare){
-            Product product = (Product) mCardViewCompare.getTag();
-            EventBus.getDefault().post(new ProductBus(product));
+        switch (view.getId()) {
+            case R.id.card_view_store: {
+                Product product = (Product) mCardViewStore.getTag();
+                EventBus.getDefault().post(new StoreAvaliableBus(view, product.getSku()));
+            }
+            break;
+
+            case R.id.card_view_add_compare: {
+                Product product = (Product) mCardViewCompare.getTag();
+                EventBus.getDefault().post(new ProductBus(product, ProductBus.ACTION_ADD_TO_COMPARE));
+            }
+            break;
+
+            case R.id.card_view_add_to_cart: {
+                Product product = (Product) mCardViewCompare.getTag();
+                EventBus.getDefault().post(new ProductBus(product, ProductBus.ACTION_ADD_TO_CART));
+            }
+            break;
         }
     }
 }

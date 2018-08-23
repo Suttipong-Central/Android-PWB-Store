@@ -32,6 +32,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
@@ -138,6 +139,16 @@ public class ProductDetailFragment extends Fragment {
     @Subscribe
     public void onEvent(ProductBus productBus){
         Product product = productBus.getProduct();
+        String action = productBus.getAction();
+        switch (action) {
+            case ProductBus.ACTION_ADD_TO_COMPARE: {
+                actionAddToCompare(product);
+            }
+            break;
+        }
+    }
+
+    private void actionAddToCompare(Product product) {
         showProgressDialog();
         RealmController database = RealmController.with(this);
         long count = database.getCompareProducts().size();
@@ -200,9 +211,9 @@ public class ProductDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init(savedInstanceState);
-
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
+        }
     }
 
     @Override

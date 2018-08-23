@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,19 +29,21 @@ import cenergy.central.com.pwb_store.fragment.WebViewFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.RecommendBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOption;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
-import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetailOption;
 import cenergy.central.com.pwb_store.model.ProductDetailOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailPromotion;
@@ -75,6 +78,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     PowerBuyCompareView mBuyCompareView;
     PowerBuyShoppingCartView mBuyShoppingCartView;
 
+    private PreferenceManager preferenceManager;
     private ProductDetail mProductDetail;
     private Recommend mRecommend;
     private SpecDao mSpecDao;
@@ -83,6 +87,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private boolean isBarcode;
     private Realm mRealm;
     private ProductDetailDao mProductDetailDao;
+    private Product product;
 
     final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
         @Override
@@ -293,10 +298,39 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         finish();
     }
 
+
+    @Subscribe
+    public void onEvent(ProductBus productBus){
+        Product product = productBus.getProduct();
+        String action = productBus.getAction();
+        showProgressDialog();
+        switch (action) {
+            case ProductBus.ACTION_ADD_TO_CART: {
+                actionAddToCart(product);
+            }
+            break;
+        }
+    }
+
+    private void actionAddToCart(Product product) {
+        this.product = product;
+        showProgressDialog();
+        String cartId = preferenceManager.getCartId();
+        if (preferenceManager.getCartId() != null) {
+            Log.d("ProductDetail", "has cart id");
+            addProductToCart(cartId, product);
+        } else  {
+            Log.d("ProductDetail", "new cart id");
+            retrieveCart();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
+
+        preferenceManager = new PreferenceManager(this); // get pref
 
         Intent mIntent = getIntent();
         Bundle extras = mIntent.getExtras();
@@ -691,5 +725,29 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         } else {
             mProgressDialog.show();
         }
+    }
+
+    private void retrieveCart() {
+        HttpManagerMagento.Companion.getInstance().getCart(new ApiResponseCallback<String>() {
+            @Override
+            public void success(@Nullable String cartId) {
+                if (cartId != null) {
+                    preferenceManager.setCartId(cartId);
+                    addProductToCart(cartId, product);
+                    Toast.makeText(ProductDetailActivity.this, product.getSku() + "Add To Cart",Toast.LENGTH_SHORT).show();
+                }
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                mProgressDialog.dismiss();
+                Toast.makeText(ProductDetailActivity.this, error.getErrorUserMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addProductToCart(String cartId, Product product) {
+        mProgressDialog.dismiss();
     }
 }

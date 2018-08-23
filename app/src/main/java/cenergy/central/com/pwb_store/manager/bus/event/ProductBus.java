@@ -11,13 +11,19 @@ public class ProductBus {
 
     private ProductDetail mProductDetail;
     private Product product; // new model
+    private String action; // action
 
-    public ProductBus(ProductDetail productDetail){
+    // constants
+    public static final String ACTION_ADD_TO_CART = "action_add_to_cart";
+    public static final String ACTION_ADD_TO_COMPARE = "action_add_to_compare";
+
+    public ProductBus(ProductDetail productDetail) {
         this.mProductDetail = productDetail;
     }
 
-    public ProductBus(Product product) {
+    public ProductBus(Product product, String action) {
         this.product = product;
+        this.action = action;
     }
 
     public ProductDetail getProductDetail() {
@@ -26,5 +32,9 @@ public class ProductBus {
 
     public Product getProduct() {
         return product;
+    }
+
+    public String getAction() {
+        return action;
     }
 }
