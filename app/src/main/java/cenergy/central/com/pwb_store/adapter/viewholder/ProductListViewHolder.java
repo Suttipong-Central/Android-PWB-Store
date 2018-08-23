@@ -133,22 +133,35 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
         oldPrice.setText(product.getDisplayOldPrice(unit));
         newPrice.setText(product.getDisplaySpecialPrice(unit));
-        if (product.isSpecialPrice()) {
+        if (product.isSpecialPrice() && product.getSpecialPrice() != 0) {
             if (product.getPrice() == product.getSpecialPrice()) {
-                newPrice.setVisibility(View.GONE);
-                oldPrice.setEnableStrikeThrough(false);
+                hideSpecialPrice();
             } else {
-                newPrice.setVisibility(View.VISIBLE);
-                oldPrice.setEnableStrikeThrough(true);
+                showSpecialPrice();
+            }
+        } else if (product.getSpecialPrice() != 0) {
+            if(product.getPrice() == product.getSpecialPrice()){
+                hideSpecialPrice();
+            } else {
+                showSpecialPrice();
             }
         } else {
-            newPrice.setVisibility(View.GONE);
-            oldPrice.setEnableStrikeThrough(false);
+            hideSpecialPrice();
         }
         productBrand.setText(product.getBrand());
         productName.setText(product.getName());
         itemView.setOnClickListener(this);
         itemView.setTag(product);
+    }
+
+    private void showSpecialPrice() {
+        newPrice.setVisibility(View.VISIBLE);
+        oldPrice.setEnableStrikeThrough(true);
+    }
+
+    private void hideSpecialPrice() {
+        newPrice.setVisibility(View.GONE);
+        oldPrice.setEnableStrikeThrough(false);
     }
 
     @Override
