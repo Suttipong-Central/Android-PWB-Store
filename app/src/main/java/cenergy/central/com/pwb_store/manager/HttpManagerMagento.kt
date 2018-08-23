@@ -5,18 +5,14 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.Category
-import cenergy.central.com.pwb_store.model.Product
-import cenergy.central.com.pwb_store.model.ProductFilterHeader
+import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
-import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -66,7 +62,7 @@ class HttpManagerMagento {
         }
     }
 
-    fun retrieveCategories(force:Boolean, callback: ApiResponseCallback<Category?>) {
+    fun retrieveCategories(force: Boolean, callback: ApiResponseCallback<Category?>) {
         // If already cached then do
         val endpointName = "/rest/V1/categories"
         val database = RealmController.with(mContext)
@@ -165,11 +161,11 @@ class HttpManagerMagento {
 
     fun retrieveProductList(category: String, categoryId: String, conditionType: String,
                             pageSize: Int, currentPage: Int, typeSearch: String, fields: String,
-                            callback: ApiResponseCallback<ProductResponse?>){
+                            callback: ApiResponseCallback<ProductResponse?>) {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
             productService.getProductList(category, categoryId, conditionType, pageSize,
-                    currentPage, typeSearch, fields).enqueue(object : Callback<ProductResponse>{
+                    currentPage, typeSearch, fields).enqueue(object : Callback<ProductResponse> {
                 override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                     if (response != null) {
                         val product = response.body()
@@ -189,7 +185,7 @@ class HttpManagerMagento {
     fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
-            productService.getProductList(categoryId, pageSize, currentPage).enqueue(object : Callback<ProductResponse>{
+            productService.getProductList(categoryId, pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
                 override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                     if (response != null) {
                         val product = response.body()
@@ -211,20 +207,20 @@ class HttpManagerMagento {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
             productService.getProductDetail(sku, string)
-            .enqueue(object : Callback<Product>{
-                override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
-                    if (response != null) {
-                        val productDetailNew = response.body()
-                        callback.success(productDetailNew)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
-                }
+                    .enqueue(object : Callback<Product> {
+                        override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
+                            if (response != null) {
+                                val productDetailNew = response.body()
+                                callback.success(productDetailNew)
+                            } else {
+                                callback.failure(APIErrorUtils.parseError(response))
+                            }
+                        }
 
-                override fun onFailure(call: Call<Product>?, t: Throwable?) {
-                    callback.failure(APIError(t))
-                }
-            })
+                        override fun onFailure(call: Call<Product>?, t: Throwable?) {
+                            callback.failure(APIError(t))
+                        }
+                    })
         }
     }
 
@@ -255,6 +251,7 @@ class HttpManagerMagento {
         }
     }
 
+    // region Cart
     fun getCart(callback: ApiResponseCallback<String?>) {
         retrofit?.let {
             val cartService = it.create(CartService::class.java)
@@ -275,4 +272,25 @@ class HttpManagerMagento {
             })
         }
     }
+
+    fun addProductToCart(cartId: String, cartItemBody: CartItemBody, callback: ApiResponseCallback<CartItem>) {
+        retrofit?.let {
+            val cartService = it.create(CartService::class.java)
+            cartService.addProduct(cartId, cartItemBody).enqueue(object : Callback<CartItem> {
+                override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
+                    if (response != null && response.isSuccessful) {
+                        val cartItem = response.body()
+                        callback.success(cartItem)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<CartItem>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+                }
+            })
+        }
+    }
+    // endregion
 }
