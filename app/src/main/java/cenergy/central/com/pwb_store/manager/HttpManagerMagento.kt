@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.APIError
@@ -35,20 +36,15 @@ class HttpManagerMagento {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
                     val request = chain.request().newBuilder()
-                            .addHeader(HEADER_AUTHORIZATION, CLIENT_MAGENTO)
+                            .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
                             .build()
                     chain.proceed(request)
                 }
                 .addInterceptor(interceptor)
                 .build()
 
-        // Create gson
-        val gson = GsonBuilder()
-                .setDateFormat("yyyy-MM-dd HH:mm:ss")
-                .create()
-
         retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL_MAGENTO)
+                .baseUrl(Constants.BASE_URL_MAGENTO)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build()
@@ -57,9 +53,6 @@ class HttpManagerMagento {
     companion object {
         //Specific Header
         private const val HEADER_AUTHORIZATION = "Authorization"
-        //Specific Client
-        private const val CLIENT_MAGENTO = "Bearer ba102y6thpckeoqgo196u82tllvlf50q"
-        private const val BASE_URL_MAGENTO = "https://staging.powerbuy.co.th/"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null

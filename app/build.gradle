@@ -38,18 +38,6 @@ android {
             versionNameSuffix "-DEBUG"
             ext.alwaysUpdateBuildId = false
         }
-        stage {
-            initWith debug
-            versionNameSuffix "-STAGE"
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
-            renderscriptOptimLevel 3
-            zipAlignEnabled true
-        }
         release {
             signingConfig signingConfigs.config
             minifyEnabled true
@@ -68,6 +56,13 @@ android {
             resValue 'string', 'app_name', '\"PowerBuy Store\"'
             versionCode 1
             versionName "1.0"
+        }
+
+        staging {
+            resValue 'string', 'app_name', '\"PowerBuy Store-Staging\"'
+            applicationIdSuffix ".staging"
+            versionCode 1
+            versionName "0.0.1"
         }
 
         develop {
