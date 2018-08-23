@@ -36,6 +36,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.CartItem;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetail;
@@ -52,6 +53,9 @@ import cenergy.central.com.pwb_store.model.Recommend;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.model.SpecItem;
 import cenergy.central.com.pwb_store.model.TheOneCardProductDetail;
+import cenergy.central.com.pwb_store.model.body.CartBody;
+import cenergy.central.com.pwb_store.model.body.CartItemBody;
+import cenergy.central.com.pwb_store.realm.DatabaseListener;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -67,7 +71,7 @@ import retrofit2.Response;
  */
 
 public class ProductDetailActivity extends AppCompatActivity implements PowerBuyCompareView.OnClickListener,
-        PowerBuyShoppingCartView.OnClickListener{
+        PowerBuyShoppingCartView.OnClickListener {
     private static final String TAG = ProductDetailActivity.class.getSimpleName();
 
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
@@ -92,11 +96,11 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
         @Override
         public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 mProductDetail = response.body();
-                if (mProductDetail != null){
+                if (mProductDetail != null) {
                     ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
-                    if (extensionProductDetail.getSpecItems() != null){
+                    if (extensionProductDetail.getSpecItems() != null) {
                         mSpecDao = new SpecDao(extensionProductDetail.getSpecItems());
                         mProductDetail.setSpecDao(mSpecDao);
                     }
@@ -108,11 +112,11 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                             .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
                             .commit();
                     mProgressDialog.dismiss();
-                }else {
+                } else {
                     MockData();
                     mProgressDialog.dismiss();
                 }
-            }else {
+            } else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
                 showAlertDialog(error.getErrorMessage(), false);
@@ -174,14 +178,14 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     final Callback<ProductDetailDao> CALLBACK_BARCODE = new Callback<ProductDetailDao>() {
         @Override
         public void onResponse(Call<ProductDetailDao> call, Response<ProductDetailDao> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 mProductDetailDao = response.body();
-                if (mProductDetailDao != null){
-                    for (ProductDetail productDetail : mProductDetailDao.getProductDetails()){
+                if (mProductDetailDao != null) {
+                    for (ProductDetail productDetail : mProductDetailDao.getProductDetails()) {
                         mProductDetail = productDetail;
                     }
                 }
-                if (mProductDetail != null){
+                if (mProductDetail != null) {
 //                    List<SpecItem> specItems = new ArrayList<>();
 ////                    specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
 ////                    specItems.add(new SpecItem("Picture size","62x46mm"));
@@ -202,7 +206,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 //                    mProductDetail.setSpecDao(mSpecDao);
                     //mRecommend = new Recommend(mProductDetail.getProductRelatedLists());
                     ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
-                    if (extensionProductDetail.getSpecItems() != null){
+                    if (extensionProductDetail.getSpecItems() != null) {
                         mSpecDao = new SpecDao(extensionProductDetail.getSpecItems());
                         mProductDetail.setSpecDao(mSpecDao);
                     }
@@ -211,7 +215,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                             .replace(R.id.container, ProductDetailFragment.newInstance(mProductDetail, mRecommend))
                             .commit();
                     mProgressDialog.dismiss();
-                }else {
+                } else {
                     //MockData();
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction
@@ -219,7 +223,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                             .commit();
                     mProgressDialog.dismiss();
                 }
-            }else {
+            } else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
                 showAlertDialog(error.getErrorMessage(), false);
@@ -236,7 +240,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
 
     @Subscribe
-    public void onEvent(PromotionItemBus promotionItemBus){
+    public void onEvent(PromotionItemBus promotionItemBus) {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WebViewActivity.ARG_WEB_URL, promotionItemBus.getPromotionItem().getPromotionDetailText().getHtml());
         intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML);
@@ -249,7 +253,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Subscribe
-    public void onEvent(OverviewBus overviewBus){
+    public void onEvent(OverviewBus overviewBus) {
         Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra(WebViewActivity.ARG_WEB_URL, overviewBus.getReviewDetailText().getHtml());
         intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML);
@@ -262,10 +266,10 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Subscribe
-    public void onEvent(SpecDaoBus specDaoBus){
-        if (specDaoBus.getSpecDao().getSpecItems().size() == 0){
+    public void onEvent(SpecDaoBus specDaoBus) {
+        if (specDaoBus.getSpecDao().getSpecItems().size() == 0) {
             showAlertDialog("ไม่มีข้อมูล", false);
-        }else {
+        } else {
             Intent intent = new Intent(this, SpecActivity.class);
             intent.putExtra(SpecActivity.ARG_SPEC_DAO, specDaoBus.getSpecDao());
             intent.putExtra(SpecActivity.ARG_PRODUCT_ID, productId);
@@ -278,8 +282,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Subscribe
-    public void onEvent(UpdateBageBus updateBageBus){
-        if (updateBageBus.isUpdate()){
+    public void onEvent(UpdateBageBus updateBageBus) {
+        if (updateBageBus.isUpdate()) {
 //            long count = RealmController.with(this).getCount();
             long count = RealmController.with(this).getCompareProducts().size();
             mBuyCompareView.updateCartCount((int) count);
@@ -287,7 +291,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Subscribe
-    public void onEvent(RecommendBus recommendBus){
+    public void onEvent(RecommendBus recommendBus) {
         Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
         intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, recommendBus.getRelatedList().getProductId());
         intent.putExtra(ProductDetailActivity.ARG_IS_BARCODE, false);
@@ -300,7 +304,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
 
     @Subscribe
-    public void onEvent(ProductBus productBus){
+    public void onEvent(ProductBus productBus) {
         Product product = productBus.getProduct();
         String action = productBus.getAction();
         showProgressDialog();
@@ -319,7 +323,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         if (preferenceManager.getCartId() != null) {
             Log.d("ProductDetail", "has cart id");
             addProductToCart(cartId, product);
-        } else  {
+        } else {
             Log.d("ProductDetail", "new cart id");
             retrieveCart();
         }
@@ -343,7 +347,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         initView();
 //        MockData();
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             showProgressDialog();
             if (!isBarcode) {
 //                HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
@@ -393,7 +397,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                 getString(R.string.product_detail), new ApiResponseCallback<Product>() {
                     @Override
                     public void success(@Nullable Product response) {
-                        if (response != null){
+                        if (response != null) {
                             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                             fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
                             mProgressDialog.dismiss();
@@ -446,6 +450,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         mBuyCompareView.setListener(this);
         mBuyShoppingCartView.setListener(this);
         mBuyCompareView.updateCartCount(count);
+        updateShoppingCartBadge();
     }
 
     private void MockData() {
@@ -621,14 +626,14 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         ProductDetailOption productDetailOption = new ProductDetailOption(1, "color", "Color", 2, productDetailOptionItemListColor);
 
         List<SpecItem> specItems = new ArrayList<>();
-        specItems.add(new SpecItem("Instant Film","Fujifilm Instant Color “Instax mini”"));
-        specItems.add(new SpecItem("Picture size","62x46mm"));
-        specItems.add(new SpecItem("Shutter","Shutter speed : 1/60 sec"));
-        specItems.add(new SpecItem("Exposure Control","Manual Switching System (LED indecator in exposure meter)"));
-        specItems.add(new SpecItem("Flash","Constant firing flash (automatic light adjustment)\n" +
+        specItems.add(new SpecItem("Instant Film", "Fujifilm Instant Color “Instax mini”"));
+        specItems.add(new SpecItem("Picture size", "62x46mm"));
+        specItems.add(new SpecItem("Shutter", "Shutter speed : 1/60 sec"));
+        specItems.add(new SpecItem("Exposure Control", "Manual Switching System (LED indecator in exposure meter)"));
+        specItems.add(new SpecItem("Flash", "Constant firing flash (automatic light adjustment)\n" +
                 "Recycle time : 0.2 sec. to 6 sec. (when using new batteries), Effective flash\n" +
                 "range : 0.6m - 2.7m"));
-        specItems.add(new SpecItem("Display Screen","3.0 Inches."));
+        specItems.add(new SpecItem("Display Screen", "3.0 Inches."));
 
         mSpecDao = new SpecDao(specItems);
 
@@ -734,9 +739,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                 if (cartId != null) {
                     preferenceManager.setCartId(cartId);
                     addProductToCart(cartId, product);
-                    Toast.makeText(ProductDetailActivity.this, product.getSku() + "Add To Cart",Toast.LENGTH_SHORT).show();
                 }
-                mProgressDialog.dismiss();
             }
 
             @Override
@@ -747,7 +750,46 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         });
     }
 
-    private void addProductToCart(String cartId, Product product) {
-        mProgressDialog.dismiss();
+    private void addProductToCart(final String cartId, Product product) {
+        CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, product.getSku(), 1)); // default add qty 1
+        HttpManagerMagento.Companion.getInstance().addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
+            @Override
+            public void success(@Nullable CartItem cartItem) {
+                saveCartItem(cartItem);
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                mProgressDialog.dismiss();
+                Toast.makeText(ProductDetailActivity.this, error.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void saveCartItem(CartItem cartItem) {
+        Log.d("ProductDetail", "call store cartItem");
+
+        RealmController.with(this).saveCartItem(cartItem, new DatabaseListener() {
+            @Override
+            public void onSuccessfully() {
+                updateShoppingCartBadge();
+                Toast.makeText(ProductDetailActivity.this, product.getSku() + "Add To Cart", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                mProgressDialog.dismiss();
+                if (error != null) {
+                    Log.d(TAG, "" + error.getMessage());
+                }
+            }
+        });
+    }
+
+    private void updateShoppingCartBadge() {
+        int count = RealmController.with(this).getCartItems().size();
+        mBuyShoppingCartView.setBadgeCart(count);
+        Log.d("ProductDetail", "count shopping badge" + count);
     }
 }

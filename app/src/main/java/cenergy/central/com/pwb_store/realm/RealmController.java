@@ -4,14 +4,15 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import java.util.Date;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
+import cenergy.central.com.pwb_store.model.CartItem;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
@@ -173,6 +174,59 @@ public class RealmController {
 
     public CompareProduct getCompareProduct(String sku) {
         return realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findFirst();
+    }
+    // endregion
+
+    // region cart item
+    public void saveCartItem(final CartItem cartItem, final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(cartItem);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+
+            @Override
+            public void onSuccess() {
+                if (listener != null) {
+                    Log.d("Database", "stored cart item");
+                    listener.onSuccessfully();
+                }
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(@NonNull Throwable error) {
+                if (listener != null) {
+                    listener.onFailure(error);
+                }
+            }
+        });
+    }
+
+    public List<CartItem> deleteCartItem(final String itemId) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                RealmResults<CartItem> realmCompareProducts = realm.where(CartItem.class).equalTo(
+                        CartItem.FIELD_ID, itemId).findAll();
+                realmCompareProducts.deleteAllFromRealm();
+            }
+        });
+
+        return getCartItems();
+    }
+
+    public List<CartItem> getCartItems() {
+        Realm realm = getRealm();
+        RealmResults<CartItem> realmCartItems = realm.where(CartItem.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
+        return realmCartItems == null ? null : realm.copyFromRealm(realmCartItems);
+    }
+
+
+    public CartItem getCartItem(String itemId) {
+        return realm.where(CartItem.class).equalTo(CartItem.FIELD_ID, itemId).findFirst();
     }
     // endregion
 
