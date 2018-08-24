@@ -185,7 +185,7 @@ class HttpManagerMagento {
     fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
-            productService.getProductList(categoryId, pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
+            productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
                 override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                     if (response != null) {
                         val product = response.body()
