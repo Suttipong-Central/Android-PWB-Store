@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
@@ -22,6 +24,8 @@ import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import java.text.NumberFormat
+import java.util.*
 
 class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
@@ -33,9 +37,12 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private lateinit var searchImageView: ImageView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var title: PowerBuyTextView
+    private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
     var shoppingCartAdapter = ShoppingCartAdapter(this)
-    private var cartId : String = ""
+    private var cartId: String = ""
+    private var unit: String = ""
+
     companion object {
         private const val CART_ID = "CART_ID"
     }
@@ -70,6 +77,9 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     }
 
     private fun initView() {
+
+        unit = Contextor.getInstance().context.getString(R.string.baht)
+
         mToolbar = findViewById(R.id.toolbar)
         searchImageView = findViewById(R.id.search_button)
         recycler = findViewById(R.id.recycler_view_shopping_cart)
@@ -82,12 +92,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         updateTitle(0) // default title
 
         backToShopButton.setOnClickListener { finish() }
-        paymentButton.setOnClickListener {
-            val intent = PaymentActivity.intent(this)
-            ActivityCompat.startActivity(this, intent, ActivityOptionsCompat
-                    .makeScaleUpAnimation(paymentButton, 0, 0, paymentButton.width, paymentButton.height)
-                    .toBundle())
-        }
     }
 
     private fun updateTitle(count: Int) {
@@ -113,19 +117,21 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
                 if (response != null) {
-                    shoppingCartAdapter.cartItemList = response
+                    cartItemList = response
+                    shoppingCartAdapter.cartItemList = cartItemList
 
                     var sum = 0
-                    for (item in response) {
+                    for (item in cartItemList) {
                         sum += item.qty ?: 0
                     }
                     updateTitle(sum)
 
                     var total = 0.0
-                    response.forEach {
+                    cartItemList.forEach {
                         total += it.qty!! * it.price!!
                     }
-                    totalPrice.text = total.toString()
+                    totalPrice.text = getDisplayPrice(unit, total.toString())
+                    checkCanClickPayment()
                     if (mProgressDialog != null) {
                         mProgressDialog?.dismiss()
                     }
@@ -136,6 +142,21 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
             }
         })
+    }
+
+    private fun checkCanClickPayment() {
+        if (cartItemList.isNotEmpty()) {
+            paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.powerBuyPurple))
+            paymentButton.setOnClickListener {
+                val intent = PaymentActivity.intent(this)
+                ActivityCompat.startActivity(this, intent, ActivityOptionsCompat
+                        .makeScaleUpAnimation(paymentButton, 0, 0, paymentButton.width, paymentButton.height)
+                        .toBundle())
+            }
+        } else {
+            paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.hintColor))
+            paymentButton.isEnabled = false
+        }
     }
 
     private fun deleteItem(cartId: String, itemId: Long) {
@@ -161,5 +182,10 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
     private fun deleteItemInLocal(itemId: Long) {
         RealmController.with(this).deleteCartItem(itemId)
+    }
+
+    private fun getDisplayPrice(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 }

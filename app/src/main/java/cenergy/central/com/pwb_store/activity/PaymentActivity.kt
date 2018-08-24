@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
 import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -40,18 +41,13 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         setContentView(R.layout.activity_payment)
         showProgressDialog()
         initView()
+
         preferenceManager.cartId?.let { cartId->
             HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
                 override fun success(response: List<CartItem>?) {
                     if (response != null) {
                         cartItemList = response
-                        val fragmentTransaction = supportFragmentManager.beginTransaction()
-                        fragmentTransaction
-                                .replace(R.id.container, PaymentDescriptionFragment.newInstance(""))
-                                .commit()
-                        if (mProgressDialog != null) {
-                            mProgressDialog?.dismiss()
-                        }
+                        mProgressDialog?.dismiss()
                     }
                 }
 
@@ -61,10 +57,10 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
             })
         }
 
-//        val fragmentTransaction = supportFragmentManager.beginTransaction()
-//        fragmentTransaction
-//                .replace(R.id.container, PaymentCheckOutFragment.newInstance())
-//                .commit()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentCheckOutFragment.newInstance())
+                .commit()
     }
 
     override fun onCheckOutListener(contactNo: String) {

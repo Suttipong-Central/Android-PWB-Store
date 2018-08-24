@@ -19,7 +19,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_shopping_cart)
     private val productCode: PowerBuyTextView = itemView.findViewById(R.id.product_code_list_shopping_card)
     private val productPrice: PowerBuyTextView = itemView.findViewById(R.id.price_list_shopping_cart)
-    private val productQty: PowerBuyIncreaseOrDecreaseView = itemView.findViewById(R.id.qty__list_shopping_cart)
+    private val productQty: PowerBuyIncreaseOrDecreaseView = itemView.findViewById(R.id.qty_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
     private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
 

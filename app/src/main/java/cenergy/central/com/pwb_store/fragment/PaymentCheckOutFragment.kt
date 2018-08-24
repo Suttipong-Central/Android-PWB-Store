@@ -3,15 +3,19 @@ package cenergy.central.com.pwb_store.fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.CardView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
 
-class PaymentCheckOutFragment : Fragment() {
+class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
     private var checkOutClickListener: CheckOutClickListener? = null
 
@@ -42,15 +46,38 @@ class PaymentCheckOutFragment : Fragment() {
         return rootView
     }
 
+    override fun afterTextChanged(s: Editable?) {
+        checkCanSave()
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+    }
+
     private fun setupView(rootView: View) {
         contactNoEdt = rootView.findViewById(R.id.contact_number_check_out)
         okBtn = rootView.findViewById(R.id.ok_btn_check_out)
+        okBtn.isEnabled = false
+        contactNoEdt.addTextChangedListener(this)
+    }
 
-        okBtn.setOnClickListener { checkOnClick() }
+    private fun checkCanSave() {
+        if (contactNoEdt.text.toString().length == 10){
+            context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
+            okBtn.isEnabled = true
+            okBtn.setOnClickListener { checkOnClick() }
+        } else {
+            context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.hintColor)) }
+            okBtn.isEnabled = false
+        }
     }
 
     private fun checkOnClick() {
-        if( contactNoEdt.text != null && contactNoEdt.text.toString().isNotEmpty()){
+        if( contactNoEdt.text != null && contactNoEdt.text.toString().isNotEmpty() && contactNoEdt.text.toString().length == 10){
             checkOutClickListener?.onCheckOutListener(contactNoEdt.text.toString())
         }
     }
