@@ -67,5 +67,6 @@
     <string name="yes">ใช่</string>
     <string name="no">ไม่ใช่</string>
     <string name="format_header_cart_items">รถเข็นของคุณ(%s ชิ้น)</string>
+    <string name="name_price">Price :</string>
 
 </resources>

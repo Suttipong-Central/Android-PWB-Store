@@ -189,8 +189,22 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
         mProductName.setText(product.getName());
         mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + product.getSku());
-//        namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
+
         mRegular.setText("Regular Price : " + product.getDisplayOldPrice(unit));
+        if(product.getPrice() != product.getSpecialPrice()){
+            mSalePrice.setText(product.getDisplaySpecialPrice(unit));
+            namePrice.setText(itemView.getContext().getResources().getString(R.string.name_price));
+        } else {
+            mSalePrice.setText("");
+            namePrice.setText("");
+        }
+        if (product.getExtension().getStokeItem().isInStock()) {
+            mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
+        } else {
+            mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
+            mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+        }
+
 
 //        ExtensionProductDetail extensionProductDetail = productDetailNew.getExtensionProductDetail();
 //        if (extensionProductDetail != null){
