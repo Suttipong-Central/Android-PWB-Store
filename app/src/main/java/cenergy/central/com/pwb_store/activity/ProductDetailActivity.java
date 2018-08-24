@@ -36,6 +36,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CartItem;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
 import cenergy.central.com.pwb_store.model.Product;
@@ -758,12 +759,12 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         });
     }
 
-    private void addProductToCart(final String cartId, Product product) {
+    private void addProductToCart(final String cartId, final Product product) {
         CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, product.getSku(), 1)); // default add qty 1
         HttpManagerMagento.Companion.getInstance().addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
             @Override
             public void success(@Nullable CartItem cartItem) {
-                saveCartItem(cartItem);
+                saveCartItem(cartItem, product);
                 mProgressDialog.dismiss();
             }
 
@@ -775,10 +776,10 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         });
     }
 
-    private void saveCartItem(CartItem cartItem) {
+    private void saveCartItem(CartItem cartItem, Product product) {
         Log.d("ProductDetail", "call store cartItem");
 
-        RealmController.with(this).saveCartItem(cartItem, new DatabaseListener() {
+        RealmController.with(this).saveCartItem(CacheCartItem.asCartItem(cartItem, product), new DatabaseListener() {
             @Override
             public void onSuccessfully() {
                 updateShoppingCartBadge();

@@ -9,7 +9,7 @@ import io.realm.annotations.PrimaryKey
  * Email: Anupharpae@gmail.com
  */
 
-open class CartItem(
+data class CartItem(
         @PrimaryKey
         @SerializedName("item_id")
         var id: Long? = 0,
@@ -20,9 +20,4 @@ open class CartItem(
         @SerializedName("product_type")
         var type: String? = "",
         @SerializedName("quote_id")
-        var cartId: String? = "") : RealmObject() {
-
-    companion object {
-        const val FIELD_ID = "id"
-    }
-}
+        var cartId: String? = "")
