@@ -12,7 +12,7 @@ import io.realm.annotations.PrimaryKey
 open class CartItem(
         @PrimaryKey
         @SerializedName("item_id")
-        var id: Int? = 0,
+        var id: Long? = 0,
         var sku: String? = "",
         var qty: Int? = 0,
         var name: String? = "",

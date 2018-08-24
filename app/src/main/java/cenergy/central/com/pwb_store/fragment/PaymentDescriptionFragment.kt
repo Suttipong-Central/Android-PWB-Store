@@ -87,11 +87,11 @@ class PaymentDescriptionFragment : Fragment() {
         tellEdt = rootView.findViewById(R.id.tell_payment)
         paymentBtn = rootView.findViewById(R.id.payment_button_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
-        val shoppingCartAdapter = ShoppingCartAdapter()
+        val shoppingCartAdapter = ShoppingCartAdapter(null)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.updateCartItemList(cartItemList)
+        shoppingCartAdapter.cartItemList = this.cartItemList
 
         var total = 0.0
         cartItemList.forEach {

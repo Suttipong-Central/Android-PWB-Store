@@ -46,7 +46,8 @@ public class ProductFilterItem extends RealmObject implements IViewType, Parcela
     private String slug;
 
     private String value;
-
+    
+    @Ignore
     private boolean isSelected;
 
     private int filterId;

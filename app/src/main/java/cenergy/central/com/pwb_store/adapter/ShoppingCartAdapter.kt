@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,14 +8,13 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
 import cenergy.central.com.pwb_store.model.CartItem
 
-class ShoppingCartAdapter : RecyclerView.Adapter<ShoppingCartViewHolder>() {
+class ShoppingCartAdapter(val listener: ShoppingCartListener?) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
 
     var cartItemList = listOf<CartItem>()
-
-    fun updateCartItemList(cartItemList: List<CartItem>){
-        this.cartItemList = cartItemList
-        notifyDataSetChanged()
-    }
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingCartViewHolder {
         return ShoppingCartViewHolder(LayoutInflater.from(parent.context)
@@ -26,6 +26,10 @@ class ShoppingCartAdapter : RecyclerView.Adapter<ShoppingCartViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
-        holder.bindView(cartItemList[position])
+        holder.bindView(cartItemList[position], listener)
+    }
+
+    interface ShoppingCartListener {
+        fun onDeleteItem(cartId: String, itemId: Long)
     }
 }

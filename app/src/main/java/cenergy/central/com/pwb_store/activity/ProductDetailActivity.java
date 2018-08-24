@@ -664,6 +664,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         EventBus.getDefault().register(this);
         long count = RealmController.with(this).getCompareProducts().size();
         mBuyCompareView.updateCartCount((int) count);
+
+        updateShoppingCartBadge();
     }
 
     @Override

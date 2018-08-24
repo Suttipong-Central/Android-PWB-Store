@@ -204,7 +204,7 @@ public class RealmController {
         });
     }
 
-    public List<CartItem> deleteCartItem(final String itemId) {
+    public List<CartItem> deleteCartItem(final Long itemId) {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override

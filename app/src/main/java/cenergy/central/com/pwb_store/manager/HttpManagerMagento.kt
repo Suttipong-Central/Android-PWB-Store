@@ -313,5 +313,23 @@ class HttpManagerMagento {
         }
     }
 
+    fun deleteItem(cartId: String, itemId: Long, callback: ApiResponseCallback<Boolean>) {
+        retrofit?.let {
+            val cartService = it.create(CartService::class.java)
+            cartService.deleteItem(cartId, itemId).enqueue(object : Callback<Boolean> {
+                override fun onResponse(call: Call<Boolean>?, response: Response<Boolean>?) {
+                    if (response != null && response.isSuccessful) {
+                        callback.success(response.body() ?: false)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<Boolean>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+                }
+            })
+        }
+    }
     // endregion
 }

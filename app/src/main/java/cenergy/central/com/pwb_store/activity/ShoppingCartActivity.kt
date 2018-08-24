@@ -10,6 +10,7 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
@@ -18,10 +19,11 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
-class ShoppingCartActivity : AppCompatActivity() {
+class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var mToolbar: Toolbar
@@ -31,8 +33,8 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var searchImageView: ImageView
     private lateinit var totalPrice: PowerBuyTextView
     private var mProgressDialog: ProgressDialog? = null
-    var shoppingCartAdapter = ShoppingCartAdapter()
-
+    var shoppingCartAdapter = ShoppingCartAdapter(this)
+    private var cartId : String = ""
     companion object {
         private const val CART_ID = "CART_ID"
     }
@@ -40,33 +42,15 @@ class ShoppingCartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+
+        cartId = intent.getStringExtra(CART_ID)
         initView()
         setUpToolbar()
         showProgressDialog()
         recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = shoppingCartAdapter
 
-        preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-                override fun success(response: List<CartItem>?) {
-                    if (response != null) {
-                        shoppingCartAdapter.updateCartItemList(response)
-                        var total = 0.0
-                        response.forEach {
-                            total += it.qty!! * it.price!!
-                        }
-                        totalPrice.text = total.toString()
-                        if (mProgressDialog != null) {
-                            mProgressDialog?.dismiss()
-                        }
-                    }
-                }
-
-                override fun failure(error: APIError) {
-
-                }
-            })
-        }
+        getCartItem()
     }
 
     private fun setUpToolbar() {
@@ -109,5 +93,58 @@ class ShoppingCartActivity : AppCompatActivity() {
         } else {
             mProgressDialog?.show()
         }
+    }
+
+    //region {@link implement ShoppingCartAdapter.ShoppingCartListener }
+    override fun onDeleteItem(cartId: String, itemId: Long) {
+        deleteItem(cartId, itemId)
+    }
+    //end region
+
+    private fun getCartItem() {
+        HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+            override fun success(response: List<CartItem>?) {
+                if (response != null) {
+                    shoppingCartAdapter.cartItemList = response
+                    var total = 0.0
+                    response.forEach {
+                        total += it.qty!! * it.price!!
+                    }
+                    totalPrice.text = total.toString()
+                    if (mProgressDialog != null) {
+                        mProgressDialog?.dismiss()
+                    }
+                }
+            }
+
+            override fun failure(error: APIError) {
+
+            }
+        })
+    }
+
+    private fun deleteItem(cartId: String, itemId: Long) {
+        showProgressDialog()
+        HttpManagerMagento.getInstance().deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
+            override fun success(response: Boolean?) {
+                if (response == true) {
+                    deleteItemInLocal(itemId)
+                    getCartItem()
+                } else {
+                    Log.d("DeleteItem", "delete fail.")
+                    mProgressDialog?.dismiss()
+                }
+            }
+
+            override fun failure(error: APIError) {
+                Log.d("DeleteItem", "error ${error.errorMessage}")
+                mProgressDialog?.dismiss()
+            }
+
+        })
+    }
+
+    private fun deleteItemInLocal(itemId: Long) {
+        RealmController.with(this).deleteCartItem(itemId)
     }
 }
