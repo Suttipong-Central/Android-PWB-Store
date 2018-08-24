@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/powerBuyWhite"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/layout_shopping_cart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -18,72 +19,64 @@
             android:background="@drawable/border_grey"
             android:contentDescription="@string/product_detail"
             android:padding="6dp"
-            tools:src="@drawable/ic_power_buy" />
+            android:src="@drawable/ic_pwb_logo_detail" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/product_name_list_shopping_cart"
+                style="@style/descriptionProduct"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/product_name_list_shopping_cart"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="Product Name" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/product_detail"
-                    android:src="@drawable/ic_cancel" />
-
-            </LinearLayout>
+                android:textSize="20sp"
+                tools:text="Product Name" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/product_code_list_shopping_card"
+                style="@style/descriptionProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="@string/product_code" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/price_list_shopping_cart"
+                style="@style/descriptionProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Price : ฿68" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_qty_title_shopping_cart"
+                    android:id="@+id/txt_qty_title_list_shopping_cart"
+                    style="@style/descriptionProduct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="@string/qty" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/qty__list_shopping_cart"
+                    android:layout_width="160dp"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
-                    android:layout_toRightOf="@+id/txt_qty_title_shopping_cart"
-                    android:layout_toEndOf="@+id/txt_qty_title_shopping_cart" />
+                    android:layout_toEndOf="@+id/txt_qty_title_list_shopping_cart" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/total_price_list_shopping_cart"
                     style="@style/textNameProduct"
+                    android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     tools:ignore="RelativeOverlap"
                     tools:text="฿204" />
@@ -94,9 +87,18 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/product_detail"
+        android:src="@drawable/ic_cancel" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_below="@+id/layout_shopping_cart"
         android:background="@color/graySelect" />
 
-</LinearLayout>
+</RelativeLayout>

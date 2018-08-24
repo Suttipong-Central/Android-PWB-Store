@@ -77,6 +77,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
     public static final String ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU";
     public static final String ARG_IS_BARCODE = "ARG_IS_BARCODE";
+    public static final String CART_ID = "CART_ID";
 
     Toolbar mToolbar;
     PowerBuyCompareView mBuyCompareView;
@@ -703,11 +704,16 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     @Override
     public void onAddShoppingCartClick(View view) {
-        Intent intent = new Intent(this, ShoppingCartActivity.class);
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
-                        .toBundle());
+        if(RealmController.with(this).getCartItems().size() > 0){
+            Intent intent = new Intent(this, ShoppingCartActivity.class);
+            intent.putExtra(CART_ID, preferenceManager.getCartId());
+            ActivityCompat.startActivity(this, intent,
+                    ActivityOptionsCompat
+                            .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
+                            .toBundle());
+        } else {
+            showAlertDialog(getResources().getString(R.string.not_have_products_in_cart), false);
+        }
     }
 
     private void showAlertDialog(String message, final boolean shouldCloseActivity) {

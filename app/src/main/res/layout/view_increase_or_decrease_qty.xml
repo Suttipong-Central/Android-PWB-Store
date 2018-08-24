@@ -12,8 +12,9 @@
 
     <LinearLayout
         android:id="@+id/layout_qty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <View
@@ -25,9 +26,9 @@
             android:id="@+id/remove"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="@string/app_name"
             android:padding="3dp"
-            android:src="@drawable/ic_remove"
-            android:contentDescription="@string/app_name"/>
+            android:src="@drawable/ic_remove" />
 
         <View
             android:layout_width="1dp"
@@ -36,12 +37,14 @@
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/qty"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:ignore="NestedWeights" />
 
         <View
             android:layout_width="1dp"
@@ -52,9 +55,9 @@
             android:id="@+id/add"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="@string/app_name"
             android:padding="3dp"
-            android:src="@drawable/ic_add"
-            android:contentDescription="@string/app_name" />
+            android:src="@drawable/ic_add" />
 
         <View
             android:layout_width="1dp"
