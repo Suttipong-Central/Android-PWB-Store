@@ -89,7 +89,7 @@
 
     <cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
         android:id="@+id/qty_list_shopping_cart"
-        android:layout_width="140dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:layout_marginStart="16dp"

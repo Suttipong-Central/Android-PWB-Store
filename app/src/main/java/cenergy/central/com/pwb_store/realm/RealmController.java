@@ -226,7 +226,7 @@ public class RealmController {
     }
 
 
-    public CacheCartItem getCartItem(String itemId) {
+    public CacheCartItem getCartItem(Long itemId) {
         return realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_ID, itemId).findFirst();
     }
     // endregion

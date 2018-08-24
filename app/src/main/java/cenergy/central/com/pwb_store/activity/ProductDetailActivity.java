@@ -395,8 +395,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void retrieveProduct(String sku) {
-        HttpManagerMagento.Companion.getInstance().retrieveProductDetail(sku,
-                getString(R.string.product_detail), new ApiResponseCallback<Product>() {
+        HttpManagerMagento.Companion.getInstance().retrieveProductDetail(sku, new ApiResponseCallback<Product>() {
                     @Override
                     public void success(@Nullable Product response) {
                         if (response != null) {
@@ -707,7 +706,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     @Override
     public void onAddShoppingCartClick(View view) {
-        if(RealmController.with(this).getCartItems().size() > 0){
+        if (RealmController.with(this).getCartItems().size() > 0) {
             Intent intent = new Intent(this, ShoppingCartActivity.class);
             intent.putExtra(CART_ID, preferenceManager.getCartId());
             ActivityCompat.startActivity(this, intent,
@@ -776,14 +775,14 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         });
     }
 
-    private void saveCartItem(CartItem cartItem, Product product) {
+    private void saveCartItem(CartItem cartItem, final Product product) {
         Log.d("ProductDetail", "call store cartItem");
 
         RealmController.with(this).saveCartItem(CacheCartItem.asCartItem(cartItem, product), new DatabaseListener() {
             @Override
             public void onSuccessfully() {
                 updateShoppingCartBadge();
-                Toast.makeText(ProductDetailActivity.this, getResources().getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProductDetailActivity.this, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show();
             }
 
             @Override

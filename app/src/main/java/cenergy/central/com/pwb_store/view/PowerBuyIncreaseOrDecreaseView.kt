@@ -13,6 +13,7 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     private var add: ImageView? = null
     private var remove: ImageView? = null
     private var qty: Int = 0
+    private var maximum: Int = 10 // default
 
     constructor(context: Context) : super(context) {
         prepareView()
@@ -37,8 +38,7 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     }
 
     private fun addQty() {
-        // Maximum = 10
-        if (qty < 10) {
+        if (qty < maximum) {
             qty += 1
             notifyAttributeChanged()
         }
@@ -76,6 +76,11 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
 
     fun setQty(qty: Int) {
         this.qty = qty
+        notifyAttributeChanged()
+    }
+
+    fun setMaximum(max: Int) {
+        this.maximum = max
         notifyAttributeChanged()
     }
 }

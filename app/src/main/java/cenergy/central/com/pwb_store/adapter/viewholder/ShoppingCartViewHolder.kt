@@ -9,6 +9,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
@@ -16,12 +17,16 @@ import java.util.*
 
 class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+    // widget view
     private val productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_shopping_cart)
     private val productCode: PowerBuyTextView = itemView.findViewById(R.id.product_code_list_shopping_card)
     private val productPrice: PowerBuyTextView = itemView.findViewById(R.id.price_list_shopping_cart)
     private val productQty: PowerBuyIncreaseOrDecreaseView = itemView.findViewById(R.id.qty_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
     private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
+
+    // data
+    private val database = RealmController.with(itemView.context)
 
     @SuppressLint("SetTextI18n")
     fun bindView(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
@@ -31,6 +36,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 R.string.product_code)} ${cartItem.sku}"
         productPrice.text = "${itemView.context.resources.getString(
                 R.string.product_price)} ${getDisplayPrice(unit, cartItem.price.toString())}"
+        val cacheCartItem = database.getCartItem(cartItem.id) // get cacheCartItem
+        productQty.setMaximum(cacheCartItem.maxQTY)
         productQty.setQty(cartItem.qty!!)
         totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), cartItem.price!!))
 

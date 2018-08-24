@@ -203,10 +203,10 @@ class HttpManagerMagento {
         }
     }
 
-    fun retrieveProductDetail(sku: String, string: String, callback: ApiResponseCallback<Product?>) {
+    fun retrieveProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
         retrofit?.let { retrofit ->
             val productService = retrofit.create(ProductService::class.java)
-            productService.getProductDetail(sku, string)
+            productService.getProductDetail(sku)
                     .enqueue(object : Callback<Product> {
                         override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
                             if (response != null) {

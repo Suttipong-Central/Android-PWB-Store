@@ -106,8 +106,7 @@ public interface ProductService {
 
     @GET("/rest/V1/products/{sku}")
     Call<Product> getProductDetail(
-            @Path("sku") String sku,
-            @Query("fields") String fields);
+            @Path("sku") String sku);
 
     @GET("/rest/V1/products")
     Call<ProductResponse> getProductFromBarcode(

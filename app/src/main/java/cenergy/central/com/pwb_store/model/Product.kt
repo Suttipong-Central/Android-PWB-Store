@@ -38,12 +38,17 @@ class Product() : Parcelable, IViewType {
         name = parcel.readString()
         price = parcel.readDouble()
         specialPrice = parcel.readDouble()
+        specialFromDate = parcel.readString()
+        specialToDate = parcel.readString()
         brand = parcel.readString()
         imageUrl = parcel.readString()
         viewTypeID = parcel.readInt()
         attributeID = parcel.readInt()
+        status = parcel.readInt()
+        extension = parcel.readParcelable(ProductExtension::class.java.classLoader)
         productImageList = parcel.readParcelable(ProductDetailImage::class.java.classLoader)
     }
+
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -101,10 +106,14 @@ class Product() : Parcelable, IViewType {
         parcel.writeString(name)
         parcel.writeDouble(price)
         parcel.writeDouble(specialPrice)
+        parcel.writeString(specialFromDate)
+        parcel.writeString(specialToDate)
         parcel.writeString(brand)
         parcel.writeString(imageUrl)
         parcel.writeInt(viewTypeID)
         parcel.writeInt(attributeID)
+        parcel.writeInt(status)
+        parcel.writeParcelable(extension, flags)
         parcel.writeParcelable(productImageList, flags)
     }
 
