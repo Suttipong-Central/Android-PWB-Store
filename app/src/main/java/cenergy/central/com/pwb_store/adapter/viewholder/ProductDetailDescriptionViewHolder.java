@@ -77,10 +77,12 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
     CardView mCardViewCompare;
 
     private ProductDetailOptionItemAdapter mAdapter;
+    private CardView addToCartButton;
 
     public ProductDetailDescriptionViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+        addToCartButton = itemView.findViewById(R.id.card_view_add_to_cart);
     }
 
     public void setViewHolder(ProductDetail productDetail) {
@@ -189,20 +191,26 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
         mProductName.setText(product.getName());
         mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + product.getSku());
-
         mRegular.setText("Regular Price : " + product.getDisplayOldPrice(unit));
-        if(product.getPrice() != product.getSpecialPrice()){
-            mSalePrice.setText(product.getDisplaySpecialPrice(unit));
-            namePrice.setText(itemView.getContext().getResources().getString(R.string.name_price));
-        } else {
-            mSalePrice.setText("");
-            namePrice.setText("");
+        if(product.getSpecialPrice() > 0){
+            if(product.getPrice() != product.getSpecialPrice()){
+                mSalePrice.setText(product.getDisplaySpecialPrice(unit));
+                namePrice.setText(itemView.getContext().getResources().getString(R.string.name_price));
+            } else {
+                mSalePrice.setText("");
+                namePrice.setText("");
+            }
         }
+
         if (product.getExtension().getStokeItem().isInStock()) {
             mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
+            addToCartButton.setOnClickListener(this);
+            addToCartButton.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.powerBuyPurple));
         } else {
             mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
             mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+            addToCartButton.setEnabled(false);
+            addToCartButton.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.hintColor));
         }
 
 
@@ -229,7 +237,6 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 //                }
 //            }
 //        }
-        itemView.findViewById(R.id.card_view_add_to_cart).setOnClickListener(this);
         mCardViewStore.setTag(product);
         mCardViewStore.setOnClickListener(this);
         mCardViewCompare.setTag(product);
