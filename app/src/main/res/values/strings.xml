@@ -155,4 +155,5 @@
     <string name="title_confirm_delete_item">คุณต้องการลบสินค้าชิ้นนี้ออกจากตะกร้า?</string>
     <string name="yes">ใช่</string>
     <string name="no">ไม่ใช่</string>
+    <string name="format_header_cart_items">รถเข็นของคุณ(%s ชิ้น)</string>
 </resources>

@@ -32,6 +32,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private lateinit var paymentButton: CardView
     private lateinit var searchImageView: ImageView
     private lateinit var totalPrice: PowerBuyTextView
+    private lateinit var title: PowerBuyTextView
     private var mProgressDialog: ProgressDialog? = null
     var shoppingCartAdapter = ShoppingCartAdapter(this)
     private var cartId : String = ""
@@ -73,9 +74,12 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         searchImageView = findViewById(R.id.search_button)
         recycler = findViewById(R.id.recycler_view_shopping_cart)
         totalPrice = findViewById(R.id.txt_total_price_shopping_cart)
+        title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
         preferenceManager = PreferenceManager(this)
+
+        updateTitle(0) // default title
 
         backToShopButton.setOnClickListener { finish() }
         paymentButton.setOnClickListener {
@@ -84,6 +88,10 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
                     .makeScaleUpAnimation(paymentButton, 0, 0, paymentButton.width, paymentButton.height)
                     .toBundle())
         }
+    }
+
+    private fun updateTitle(count: Int) {
+        title.text = getString(R.string.format_header_cart_items, count.toString())
     }
 
     private fun showProgressDialog() {
@@ -106,6 +114,13 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
             override fun success(response: List<CartItem>?) {
                 if (response != null) {
                     shoppingCartAdapter.cartItemList = response
+
+                    var sum = 0
+                    for (item in response) {
+                        sum += item.qty ?: 0
+                    }
+                    updateTitle(sum)
+
                     var total = 0.0
                     response.forEach {
                         total += it.qty!! * it.price!!

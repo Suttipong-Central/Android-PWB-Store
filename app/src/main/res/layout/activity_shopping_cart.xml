@@ -32,7 +32,7 @@
                 android:layout_marginStart="16dp"
                 android:paddingTop="16dp"
                 android:ellipsize="end"
-                android:text="@string/compare_header"
+                tools:text="@string/format_header_cart_items"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:typeFaceAsset="RobotoLight.ttf" />
