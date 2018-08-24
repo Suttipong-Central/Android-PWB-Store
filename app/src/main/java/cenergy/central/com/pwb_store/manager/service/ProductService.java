@@ -98,6 +98,9 @@ public interface ProductService {
     @GET("/rest/V1/headless/categories/{categoryId}/products")
     Call<ProductResponse> getProductList(
             @Path("categoryId") String categoryId,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") int statusValue,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String conditionType,
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage);
 

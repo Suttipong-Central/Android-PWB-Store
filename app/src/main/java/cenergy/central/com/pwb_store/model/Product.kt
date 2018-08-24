@@ -7,6 +7,7 @@ import org.joda.time.DateTime
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class Product() : Parcelable, IViewType {
 
@@ -25,6 +26,10 @@ class Product() : Parcelable, IViewType {
     var imageUrl: String = ""
     var viewTypeID: Int = 0
     var attributeID: Int = 0
+    var status: Int = 1
+    @SerializedName("extension_attributes")
+    var extension: ProductExtension? = null
+
     private var productImageList: ProductDetailImage? = null
 
     constructor(parcel: Parcel) : this() {
