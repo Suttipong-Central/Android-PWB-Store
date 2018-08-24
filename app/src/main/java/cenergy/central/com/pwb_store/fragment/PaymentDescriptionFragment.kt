@@ -12,7 +12,10 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
+import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class PaymentDescriptionFragment : Fragment() {
 
@@ -30,15 +33,15 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var subDistrictEdt: PowerBuyEditTextBorder
     private lateinit var postCodeEdt: PowerBuyEditTextBorder
     private lateinit var tellEdt: PowerBuyEditTextBorder
+    private lateinit var totalPrice: PowerBuyTextView
     private lateinit var paymentBtn: CardView
+    private var cartItemList: List<CartItem> = listOf()
+    private var contactNo: String? = null
+    private var paymentClickListener: PaymentClickLintener? = null
+    private var paymentDescriptionListener: PaymentDescriptionListener? = null
 
     companion object {
-
         private const val contactNumber = "CONTACT_NUMBER"
-
-        private var paymentClickListener: PaymentClickLintener? = null
-
-        private var contactNo: String? = null
 
         fun newInstance(contactNo: String): PaymentDescriptionFragment {
             val fragment = PaymentDescriptionFragment()
@@ -49,9 +52,11 @@ class PaymentDescriptionFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         paymentClickListener = context as PaymentClickLintener
+        paymentDescriptionListener = context as PaymentDescriptionListener
+        cartItemList = paymentDescriptionListener!!.getItemList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,14 +86,19 @@ class PaymentDescriptionFragment : Fragment() {
         postCodeEdt = rootView.findViewById(R.id.post_code_payment)
         tellEdt = rootView.findViewById(R.id.tell_payment)
         paymentBtn = rootView.findViewById(R.id.payment_button_payment)
-
-        recycler.layoutManager = LinearLayoutManager(context,
-                LinearLayoutManager.VERTICAL, false)
-        recycler.adapter = ShoppingCartAdapter()
+        totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
+        val shoppingCartAdapter = ShoppingCartAdapter()
+        recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
+        recycler.adapter = shoppingCartAdapter
+        shoppingCartAdapter.updateCartItemList(cartItemList)
 
+        var total = 0.0
+        cartItemList.forEach {
+            total += it.qty!! * it.price!!
+        }
+        totalPrice.text = total.toString()
         contactNo?.let { contactNumberEdt.setText(it) }
-
         paymentBtn.setOnClickListener { paymentClickListener?.onPaymentClickListener() }
     }
 }

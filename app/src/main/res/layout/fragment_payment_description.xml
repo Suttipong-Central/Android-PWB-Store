@@ -2,6 +2,7 @@
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/powerBuyWhite"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -52,7 +53,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     app:header="@string/first_name"
                     app:required="true" />
@@ -61,7 +61,6 @@
                     android:id="@+id/last_name_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     app:header="@string/last_name"
@@ -80,7 +79,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     app:header="@string/tell"
                     app:required="true" />
@@ -89,7 +87,6 @@
                     android:id="@+id/email_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     app:header="@string/email"
@@ -123,7 +120,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     app:header="@string/house_on"
                     app:required="true" />
@@ -132,7 +128,6 @@
                     android:id="@+id/place_or_building_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     app:header="@string/place_or_building"
@@ -151,7 +146,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     app:header="@string/soi"
                     app:required="false" />
@@ -160,7 +154,6 @@
                     android:id="@+id/street_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     app:header="@string/street"
@@ -179,7 +172,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     app:header="@string/province"
                     app:required="true" />
@@ -188,7 +180,6 @@
                     android:id="@+id/district_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     app:header="@string/district"
@@ -207,7 +198,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     app:header="@string/sub_district"
                     app:required="true" />
@@ -216,7 +206,6 @@
                     android:id="@+id/post_code_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     app:header="@string/post_code"
@@ -235,7 +224,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
-                    android:layout_marginRight="32dp"
                     android:layout_weight="1"
                     app:header="@string/tel_or_mobile"
                     app:required="false" />
@@ -264,7 +252,6 @@
             android:layout_gravity="end"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="6dp"
-            android:layout_marginRight="6dp"
             android:orientation="horizontal">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -272,13 +259,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                tools:text="Total :" />
+                android:text="@string/total_price" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_total_price_payment_description"
                 style="@style/textNameProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="18dp"
                 android:layout_marginStart="18dp"
                 android:textSize="18sp"
                 tools:text="4,404" />

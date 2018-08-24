@@ -780,7 +780,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
             @Override
             public void onSuccessfully() {
                 updateShoppingCartBadge();
-                Toast.makeText(ProductDetailActivity.this, product.getSku() + "Add To Cart", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProductDetailActivity.this, getResources().getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show();
             }
 
             @Override

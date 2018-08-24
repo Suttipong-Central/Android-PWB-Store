@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -22,6 +23,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class ShoppingCartActivity : AppCompatActivity() {
 
+    private lateinit var preferenceManager: PreferenceManager
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
     private lateinit var backToShopButton: CardView
@@ -38,32 +40,33 @@ class ShoppingCartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
-        val cartId = intent.getStringExtra(CART_ID)
         initView()
         setUpToolbar()
         showProgressDialog()
         recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = shoppingCartAdapter
 
-        HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-            override fun success(response: List<CartItem>?) {
-                if (response != null) {
-                    shoppingCartAdapter.updateCartItemList(response)
-                    var total = 0.0
-                    response.forEach {
-                        total += it.qty!! * it.price!!
-                    }
-                    totalPrice.text = total.toString()
-                    if (mProgressDialog != null) {
-                        mProgressDialog?.dismiss()
+        preferenceManager.cartId?.let { cartId ->
+            HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+                override fun success(response: List<CartItem>?) {
+                    if (response != null) {
+                        shoppingCartAdapter.updateCartItemList(response)
+                        var total = 0.0
+                        response.forEach {
+                            total += it.qty!! * it.price!!
+                        }
+                        totalPrice.text = total.toString()
+                        if (mProgressDialog != null) {
+                            mProgressDialog?.dismiss()
+                        }
                     }
                 }
-            }
 
-            override fun failure(error: APIError) {
+                override fun failure(error: APIError) {
 
-            }
-        })
+                }
+            })
+        }
     }
 
     private fun setUpToolbar() {
@@ -88,6 +91,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         totalPrice = findViewById(R.id.txt_total_price_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
+        preferenceManager = PreferenceManager(this)
 
         backToShopButton.setOnClickListener { finish() }
         paymentButton.setOnClickListener {

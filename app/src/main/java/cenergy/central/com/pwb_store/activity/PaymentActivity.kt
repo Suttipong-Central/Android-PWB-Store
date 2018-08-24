@@ -1,18 +1,33 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
 import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.utils.DialogUtils
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickLintener {
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickLintener, PaymentDescriptionListener {
+
+    override fun getItemList(): List<CartItem> {
+        return cartItemList
+    }
+
+    private var cartItemList: List<CartItem> = listOf()
+    private lateinit var preferenceManager: PreferenceManager
+    private var mProgressDialog: ProgressDialog? = null
 
     companion object {
         fun intent(context: Context): Intent {
@@ -23,13 +38,33 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
-
+        showProgressDialog()
         initView()
+        preferenceManager.cartId?.let { cartId->
+            HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+                override fun success(response: List<CartItem>?) {
+                    if (response != null) {
+                        cartItemList = response
+                        val fragmentTransaction = supportFragmentManager.beginTransaction()
+                        fragmentTransaction
+                                .replace(R.id.container, PaymentDescriptionFragment.newInstance(""))
+                                .commit()
+                        if (mProgressDialog != null) {
+                            mProgressDialog?.dismiss()
+                        }
+                    }
+                }
 
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentCheckOutFragment.newInstance())
-                .commit()
+                override fun failure(error: APIError) {
+
+                }
+            })
+        }
+
+//        val fragmentTransaction = supportFragmentManager.beginTransaction()
+//        fragmentTransaction
+//                .replace(R.id.container, PaymentCheckOutFragment.newInstance())
+//                .commit()
     }
 
     override fun onCheckOutListener(contactNo: String) {
@@ -52,6 +87,16 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
+        preferenceManager = PreferenceManager(this)
         mToolbar.setNavigationOnClickListener { finish() }
+    }
+
+    private fun showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtils.createProgressDialog(this)
+            mProgressDialog?.show()
+        } else {
+            mProgressDialog?.show()
+        }
     }
 }
