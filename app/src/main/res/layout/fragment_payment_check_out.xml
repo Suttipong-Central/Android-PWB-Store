@@ -69,6 +69,26 @@
                 app:typeFaceAsset="RobotoLight.ttf" />
 
         </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/skip_btn_check_out"
+            style="@style/RaisedButtonCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/categoryColor" >
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                style="@style/RaisedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/skip"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                app:typeFaceAsset="RobotoLight.ttf" />
+
+        </android.support.v7.widget.CardView>
     </LinearLayout>
 
 </LinearLayout>

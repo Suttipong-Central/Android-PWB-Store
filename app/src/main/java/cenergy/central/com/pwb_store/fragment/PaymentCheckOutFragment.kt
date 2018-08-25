@@ -61,8 +61,10 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
     private fun setupView(rootView: View) {
         contactNoEdt = rootView.findViewById(R.id.contact_number_check_out)
         okBtn = rootView.findViewById(R.id.ok_btn_check_out)
+        val skipBtn: CardView = rootView.findViewById(R.id.skip_btn_check_out)
         okBtn.isEnabled = false
         contactNoEdt.addTextChangedListener(this)
+        skipBtn.setOnClickListener { checkOutClickListener?.onCheckOutListener("") }
     }
 
     private fun checkCanSave() {
