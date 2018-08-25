@@ -10,6 +10,8 @@ import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.CartItemBody
+import cenergy.central.com.pwb_store.model.body.ItemBody
+import cenergy.central.com.pwb_store.model.body.UpdateItemBody
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
@@ -24,7 +26,7 @@ import java.util.concurrent.TimeUnit
 
 class HttpManagerMagento {
     private val mContext: Context = Contextor.getInstance().context
-    private var retrofit: Retrofit? = null
+    private var retrofit: Retrofit
 
     init {
         val interceptor = HttpLoggingInterceptor()
@@ -73,42 +75,40 @@ class HttpManagerMagento {
         }
 
         Log.i("PBE", "retrieveCategories: calling endpoint")
-        retrofit?.let {
-            val categoryService = it.create(CategoryService::class.java)
-            categoryService.categories.enqueue(object : Callback<Category> {
+        val categoryService = retrofit.create(CategoryService::class.java)
+        categoryService.categories.enqueue(object : Callback<Category> {
 
-                override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                    if (response != null) {
-                        //TODO: keep just position less than 15
-                        val category = response.body()
-                        val categoryHeader = category?.filterHeaders
-                        if (categoryHeader != null) {
-                            val toRemove = arrayListOf<ProductFilterHeader>()
-                            for (header in categoryHeader) {
-                                if (header.position > 15) {
-                                    toRemove.add(header)
-                                }
+            override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
+                if (response != null) {
+                    //TODO: keep just position less than 15
+                    val category = response.body()
+                    val categoryHeader = category?.filterHeaders
+                    if (categoryHeader != null) {
+                        val toRemove = arrayListOf<ProductFilterHeader>()
+                        for (header in categoryHeader) {
+                            if (header.position > 15) {
+                                toRemove.add(header)
                             }
-                            category.filterHeaders.removeAll(toRemove)
                         }
-
-                        // Store to database
-                        database.saveCategory(category)
-
-                        // Update cached endpoint
-                        database.updateCachedEndpoint(endpointName)
-
-                        callback.success(category)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
+                        category.filterHeaders.removeAll(toRemove)
                     }
-                }
 
-                override fun onFailure(call: Call<Category>?, t: Throwable?) {
-                    callback.failure(APIError(t))
+                    // Store to database
+                    database.saveCategory(category)
+
+                    // Update cached endpoint
+                    database.updateCachedEndpoint(endpointName)
+
+                    callback.success(category)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
-            })
-        }
+            }
+
+            override fun onFailure(call: Call<Category>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun retrieveCategories(force: Boolean, categoryId: Int, categoryLevel: Int, callback: ApiResponseCallback<Category?>) {
@@ -122,214 +122,217 @@ class HttpManagerMagento {
         }
 
         Log.i("PBE", "retrieveCategories: calling endpoint")
-        retrofit?.let {
-            val categoryService = it.create(CategoryService::class.java)
-            categoryService.getCategories(categoryId, categoryLevel).enqueue(object : Callback<Category> {
+        val categoryService = retrofit.create(CategoryService::class.java)
+        categoryService.getCategories(categoryId, categoryLevel).enqueue(object : Callback<Category> {
 
-                override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                    if (response != null) {
-                        val category = response.body()
-                        val categoryHeaders = category?.filterHeaders
-                        if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
-                            val toRemove = arrayListOf<ProductFilterHeader>()
-                            for (header in categoryHeaders) {
-                                if (!header.IsIncludeInMenu()) {
-                                    toRemove.add(header)
-                                }
+            override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
+                if (response != null) {
+                    val category = response.body()
+                    val categoryHeaders = category?.filterHeaders
+                    if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
+                        val toRemove = arrayListOf<ProductFilterHeader>()
+                        for (header in categoryHeaders) {
+                            if (!header.IsIncludeInMenu()) {
+                                toRemove.add(header)
                             }
-                            category.filterHeaders.removeAll(toRemove)
                         }
-
-                        // Store to database
-                        database.saveCategory(category)
-
-                        // Update cached endpoint
-                        database.updateCachedEndpoint(endpointName)
-
-                        callback.success(category)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
+                        category.filterHeaders.removeAll(toRemove)
                     }
-                }
 
-                override fun onFailure(call: Call<Category>?, t: Throwable?) {
-                    callback.failure(APIError(t))
+                    // Store to database
+                    database.saveCategory(category)
+
+                    // Update cached endpoint
+                    database.updateCachedEndpoint(endpointName)
+
+                    callback.success(category)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
-            })
-        }
+            }
+
+            override fun onFailure(call: Call<Category>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun retrieveProductList(category: String, categoryId: String, conditionType: String,
                             pageSize: Int, currentPage: Int, typeSearch: String, fields: String,
                             callback: ApiResponseCallback<ProductResponse?>) {
-        retrofit?.let { retrofit ->
-            val productService = retrofit.create(ProductService::class.java)
-            productService.getProductList(category, categoryId, conditionType, pageSize,
-                    currentPage, typeSearch, fields).enqueue(object : Callback<ProductResponse> {
-                override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
-                    if (response != null) {
-                        val product = response.body()
-                        callback.success(product)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductList(category, categoryId, conditionType, pageSize,
+                currentPage, typeSearch, fields).enqueue(object : Callback<ProductResponse> {
+            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                if (response != null) {
+                    val product = response.body()
+                    callback.success(product)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
+            }
 
-                override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
-                    callback.failure(APIError(t))
-                }
-            })
-        }
+            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
-        retrofit?.let { retrofit ->
-            val productService = retrofit.create(ProductService::class.java)
-            productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
-                override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
-                    if (response != null) {
-                        val product = response.body()
-                        callback.success(product)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
+            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                if (response != null) {
+                    val product = response.body()
+                    callback.success(product)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
+            }
 
-                override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
-                    callback.failure(APIError(t))
+            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
 
-                }
-            })
-        }
+            }
+        })
     }
 
     fun retrieveProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
-        retrofit?.let { retrofit ->
-            val productService = retrofit.create(ProductService::class.java)
-            productService.getProductDetail(sku)
-                    .enqueue(object : Callback<Product> {
-                        override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
-                            if (response != null) {
-                                val productDetailNew = response.body()
-                                callback.success(productDetailNew)
-                            } else {
-                                callback.failure(APIErrorUtils.parseError(response))
-                            }
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductDetail(sku)
+                .enqueue(object : Callback<Product> {
+                    override fun onResponse(call: Call<Product>?, response: Response<Product>?) {
+                        if (response != null) {
+                            val productDetailNew = response.body()
+                            callback.success(productDetailNew)
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
                         }
+                    }
 
-                        override fun onFailure(call: Call<Product>?, t: Throwable?) {
-                            callback.failure(APIError(t))
-                        }
-                    })
-        }
+                    override fun onFailure(call: Call<Product>?, t: Throwable?) {
+                        callback.failure(APIError(t))
+                    }
+                })
     }
 
     fun getProductFromBarcode(filterBarcode: String, barcode: String, eq: String, orderBy: String,
                               pageSize: Int, currentPage: Int, callback: ApiResponseCallback<Product?>) {
-        retrofit?.let {
-            val productService = it.create(ProductService::class.java)
-            productService.getProductFromBarcode(filterBarcode, barcode, eq, orderBy, pageSize, currentPage)
-                    .enqueue(object : Callback<ProductResponse> {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductFromBarcode(filterBarcode, barcode, eq, orderBy, pageSize, currentPage)
+                .enqueue(object : Callback<ProductResponse> {
 
-                        override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
-                            if (response != null) {
-                                val productResponse = response.body()
-                                if (productResponse?.products!!.size > 0) {
-                                    callback.success(productResponse.products[0])
-                                } else {
-                                    callback.success(null)
-                                }
+                    override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                        if (response != null) {
+                            val productResponse = response.body()
+                            if (productResponse?.products!!.size > 0) {
+                                callback.success(productResponse.products[0])
                             } else {
-                                callback.failure(APIErrorUtils.parseError(response))
+                                callback.success(null)
                             }
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
                         }
+                    }
 
-                        override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
-                            callback.failure(APIError(t))
-                        }
-                    })
-        }
+                    override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                        callback.failure(APIError(t))
+                    }
+                })
     }
 
     // region Cart
     fun getCart(callback: ApiResponseCallback<String?>) {
-        retrofit?.let {
-            val cartService = it.create(CartService::class.java)
-            cartService.createCart().enqueue(object : Callback<String> {
+        val cartService = it.create(CartService::class.java)
+        cartService.createCart().enqueue(object : Callback<String> {
 
-                override fun onResponse(call: Call<String>?, response: Response<String>?) {
-                    if (response != null && response.isSuccessful) {
-                        val cartId = response.body()
-                        callback.success(cartId)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                if (response != null && response.isSuccessful) {
+                    val cartId = response.body()
+                    callback.success(cartId)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
+            }
 
-                override fun onFailure(call: Call<String>?, t: Throwable?) {
-                    callback.failure(APIError(t))
-                }
-            })
-        }
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun addProductToCart(cartId: String, cartItemBody: CartItemBody, callback: ApiResponseCallback<CartItem>) {
-        retrofit?.let {
-            val cartService = it.create(CartService::class.java)
-            cartService.addProduct(cartId, cartItemBody).enqueue(object : Callback<CartItem> {
-                override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
-                    if (response != null && response.isSuccessful) {
-                        val cartItem = response.body()
-                        callback.success(cartItem)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
+        val cartService = retrofit.create(CartService::class.java)
+        cartService.addProduct(cartId, cartItemBody).enqueue(object : Callback<CartItem> {
+            override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
+                if (response != null && response.isSuccessful) {
+                    val cartItem = response.body()
+                    callback.success(cartItem)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
+            }
 
-                override fun onFailure(call: Call<CartItem>?, t: Throwable?) {
-                    callback.failure(APIError(t))
-                }
-            })
-        }
+            override fun onFailure(call: Call<CartItem>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun viewCart(cartId: String, callback: ApiResponseCallback<List<CartItem>>) {
-        retrofit?.let {
-            val cartService = it.create(CartService::class.java)
-            cartService.viewCart(cartId).enqueue(object : Callback<List<CartItem>> {
-                override fun onResponse(call: Call<List<CartItem>>, response: Response<List<CartItem>>) {
-                    if (response.isSuccessful) {
-                        val cartItemList = response.body()
-                        callback.success(cartItemList)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
+        val cartService = retrofit.create(CartService::class.java)
+        cartService.viewCart(cartId).enqueue(object : Callback<List<CartItem>> {
+            override fun onResponse(call: Call<List<CartItem>>, response: Response<List<CartItem>>) {
+                if (response.isSuccessful) {
+                    val cartItemList = response.body()
+                    callback.success(cartItemList)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
+            }
 
-                override fun onFailure(call: Call<List<CartItem>>, t: Throwable) {
-                    callback.failure(APIError(t))
-                }
-            })
-        }
+            override fun onFailure(call: Call<List<CartItem>>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun deleteItem(cartId: String, itemId: Long, callback: ApiResponseCallback<Boolean>) {
-        retrofit?.let {
-            val cartService = it.create(CartService::class.java)
-            cartService.deleteItem(cartId, itemId).enqueue(object : Callback<Boolean> {
-                override fun onResponse(call: Call<Boolean>?, response: Response<Boolean>?) {
-                    if (response != null && response.isSuccessful) {
-                        callback.success(response.body() ?: false)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
+        val cartService = retrofit.create(CartService::class.java)
+        cartService.deleteItem(cartId, itemId).enqueue(object : Callback<Boolean> {
+            override fun onResponse(call: Call<Boolean>?, response: Response<Boolean>?) {
+                if (response != null && response.isSuccessful) {
+                    callback.success(response.body() ?: false)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
                 }
+            }
 
-                override fun onFailure(call: Call<Boolean>?, t: Throwable?) {
-                    callback.failure(APIError(t))
-                }
-            })
-        }
+            override fun onFailure(call: Call<Boolean>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
-    // endregion
+
+    fun updateItem(cartId: String, itemId: Long, qty: Int, callback: ApiResponseCallback<CartItem>) {
+        val cartService = retrofit.create(CartService::class.java)
+        val item = ItemBody(cartId= cartId, itemId = itemId, qty = qty)
+        val updateItemBody = UpdateItemBody(cartItem = item)
+        cartService.updateItem(cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
+            override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
+                if (response != null && response.isSuccessful) {
+                    val cartItem = response.body()
+                    callback.success(cartItem)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<CartItem>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+
+    }
+// endregion
 }
