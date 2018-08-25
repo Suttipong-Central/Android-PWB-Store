@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.manager.service
 
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.body.CartItemBody
+import cenergy.central.com.pwb_store.model.body.UpdateItemBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -21,4 +22,9 @@ internal interface CartService {
     @DELETE("/rest/V1/guest-carts/{cartId}/items/{itemId}")
     fun deleteItem(@Path("cartId") cartId: String,
                    @Path("itemId") itemId: Long): Call<Boolean>
+
+    @PUT("/rest/V1/guest-carts/{cartId}/items/{itemId}")
+    fun updateItem(@Path("cartId") cartId: String,
+                   @Path("itemId") itemId: Long,
+                   @Body updateItemBody: UpdateItemBody): Call<CartItem>
 }
