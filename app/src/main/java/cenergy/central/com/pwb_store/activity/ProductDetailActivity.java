@@ -776,8 +776,6 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void saveCartItem(CartItem cartItem, final Product product) {
-        Log.d("ProductDetail", "call store cartItem");
-
         RealmController.with(this).saveCartItem(CacheCartItem.asCartItem(cartItem, product), new DatabaseListener() {
             @Override
             public void onSuccessfully() {

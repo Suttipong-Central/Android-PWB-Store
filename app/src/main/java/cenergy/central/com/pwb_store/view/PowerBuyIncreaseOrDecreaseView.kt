@@ -14,6 +14,7 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     private var remove: ImageView? = null
     private var qty: Int = 0
     private var maximum: Int = 10 // default
+    private var listener: OnViewClickListener? = null
 
     constructor(context: Context) : super(context) {
         prepareView()
@@ -33,8 +34,12 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
         add = view.findViewById(R.id.add)
         remove = view.findViewById(R.id.remove)
 
-        add?.setOnClickListener { addQty() }
-        remove?.setOnClickListener { removeQty() }
+        add?.setOnClickListener { listener?.onClickQuantity(QuantityAction.ACTION_INCREASE, qty) }
+        remove?.setOnClickListener { listener?.onClickQuantity(QuantityAction.ACTION_DECREASE, qty) }
+    }
+
+    fun setOnClickQuantity(listener: OnViewClickListener){
+        this.listener = listener
     }
 
     private fun addQty() {
@@ -82,5 +87,13 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     fun setMaximum(max: Int) {
         this.maximum = max
         notifyAttributeChanged()
+    }
+
+    enum class QuantityAction {
+        ACTION_INCREASE, ACTION_DECREASE
+    }
+
+    interface OnViewClickListener {
+        fun onClickQuantity(action: QuantityAction, qty:Int)
     }
 }

@@ -28,4 +28,14 @@ open class CacheCartItem(
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 0)
         }
     }
+
+    fun updateItem(cartItem: CartItem) {
+        this.itemId = cartItem.id
+        this.sku = cartItem.sku
+        this.qty = cartItem.qty
+        this.name = cartItem.name
+        this.price = cartItem.price
+        this.type = cartItem.type
+        this.cartId = cartItem.cartId
+    }
 }

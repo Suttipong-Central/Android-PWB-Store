@@ -39,9 +39,12 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private lateinit var title: PowerBuyTextView
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
+
+    // data
     var shoppingCartAdapter = ShoppingCartAdapter(this)
     private var cartId: String = ""
     private var unit: String = ""
+    private val database: RealmController = RealmController.with(this)
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -110,6 +113,10 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     //region {@link implement ShoppingCartAdapter.ShoppingCartListener }
     override fun onDeleteItem(cartId: String, itemId: Long) {
         deleteItem(cartId, itemId)
+    }
+
+    override fun onUpdateItem(cartId: String, itemId: Long, qty: Int) {
+        updateItem(cartId, itemId, qty)
     }
     //end region
 
@@ -180,8 +187,34 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         })
     }
 
+    private fun updateItem(cartId: String, itemId: Long, qty: Int) {
+        showProgressDialog()
+        HttpManagerMagento.getInstance().updateItem(cartId, itemId, qty, object : ApiResponseCallback<CartItem> {
+            override fun success(response: CartItem?) {
+                saveCartItemInLocal(response)
+                getCartItem()
+            }
+
+            override fun failure(error: APIError) {
+                Log.d("UpdateItem", "update fail.")
+                mProgressDialog?.dismiss()
+            }
+        })
+    }
+
     private fun deleteItemInLocal(itemId: Long) {
-        RealmController.with(this).deleteCartItem(itemId)
+        database.deleteCartItem(itemId)
+    }
+
+    private fun saveCartItemInLocal(cartItem: CartItem?) {
+        if (cartItem != null) {
+            val cacheCartItem = database.getCartItem(cartItem.id)
+            cacheCartItem.updateItem(cartItem)
+            database.saveCartItem(cacheCartItem)
+        } else {
+            Log.d("On updateItem", "CartItem null.")
+        }
+
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {

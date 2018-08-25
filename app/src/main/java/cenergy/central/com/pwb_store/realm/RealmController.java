@@ -179,6 +179,16 @@ public class RealmController {
     // endregion
 
     // region cart item
+    public void saveCartItem(final CacheCartItem cacheCartItem) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(cacheCartItem);
+            }
+        });
+    }
+
     public void saveCartItem(final CacheCartItem cacheCartItem, final DatabaseListener listener) {
         Realm realm = getRealm();
         realm.executeTransactionAsync(new Realm.Transaction() {
@@ -225,9 +235,9 @@ public class RealmController {
         return realmCartItems == null ? null : realm.copyFromRealm(realmCartItems);
     }
 
-
     public CacheCartItem getCartItem(Long itemId) {
-        return realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_ID, itemId).findFirst();
+        CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_ID, itemId).findFirst();
+        return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
     }
     // endregion
 
