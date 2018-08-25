@@ -158,4 +158,5 @@
     <string name="format_header_cart_items">รถเข็นของคุณ(%s ชิ้น)</string>
     <string name="name_price">Price :</string>
     <string name="skip">SKIP</string>
+    <string name="billing_address">Billing Address</string>
 </resources>
