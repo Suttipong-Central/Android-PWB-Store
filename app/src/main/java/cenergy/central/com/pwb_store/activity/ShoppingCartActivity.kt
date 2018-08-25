@@ -39,9 +39,8 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private lateinit var title: PowerBuyTextView
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
-
     // data
-    var shoppingCartAdapter = ShoppingCartAdapter(this)
+    var shoppingCartAdapter = ShoppingCartAdapter(this, false)
     private var cartId: String = ""
     private var unit: String = ""
     private val database: RealmController = RealmController.with(this)

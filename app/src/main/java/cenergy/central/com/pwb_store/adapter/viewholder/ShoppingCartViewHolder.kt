@@ -23,16 +23,18 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val productCode: PowerBuyTextView = itemView.findViewById(R.id.product_code_list_shopping_card)
     private val productPrice: PowerBuyTextView = itemView.findViewById(R.id.price_list_shopping_cart)
     private val productQty: PowerBuyIncreaseOrDecreaseView = itemView.findViewById(R.id.qty_list_shopping_cart)
+    private val qtyText: PowerBuyTextView = itemView.findViewById(R.id.txt_qty_title_list_shopping_cart)
+    private val qtyTextTitle: PowerBuyTextView = itemView.findViewById(R.id.qty_title_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
     private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
 
     // data
     private val database = RealmController.with(itemView.context)
-    private lateinit var listener: ShoppingCartAdapter.ShoppingCartListener
+    private var listener: ShoppingCartAdapter.ShoppingCartListener? = null
     private lateinit var cartItem: CartItem
 
     @SuppressLint("SetTextI18n")
-    fun bindView(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener) {
+    fun bindView(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         this.listener = listener
         this. cartItem = cartItem
@@ -63,7 +65,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 resultQty = qty - 1
             }
         }
-        cartItem.id?.let { itemId -> cartItem.cartId?.let { listener.onUpdateItem(it, itemId,resultQty) } }
+        cartItem.id?.let { itemId -> cartItem.cartId?.let { listener?.onUpdateItem(it, itemId,resultQty) } }
     }
     // endregion
 
@@ -89,5 +91,12 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
         builder.setNegativeButton(context.getString(R.string.no)) { dialog, _ -> dialog?.dismiss() }
         builder.create().show()
+    }
+
+    fun hideDeleteItem(cartItem: CartItem) {
+        deleteImageView.visibility = View.GONE
+        qtyTextTitle.text = itemView.resources.getString(R.string.qty_title)
+        productQty.visibility = View.GONE
+        qtyText.text = cartItem.qty.toString()
     }
 }

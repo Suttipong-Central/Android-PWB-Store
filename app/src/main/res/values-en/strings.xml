@@ -70,5 +70,6 @@
     <string name="name_price">Price :</string>
     <string name="skip">SKIP</string>
     <string name="billing_address">Billing Address</string>
+    <string name="qty_title">Qty :</string>
 
 </resources>

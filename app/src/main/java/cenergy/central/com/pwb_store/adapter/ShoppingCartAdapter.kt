@@ -7,7 +7,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
 import cenergy.central.com.pwb_store.model.CartItem
 
-class ShoppingCartAdapter(val listener: ShoppingCartListener?) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
+class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
 
     var cartItemList = listOf<CartItem>()
         set(value) {
@@ -25,7 +25,10 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?) : RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
-        listener?.let { holder.bindView(cartItemList[position], it) }
+        holder.bindView(cartItemList[position], listener)
+        if (isDescription) {
+            holder.hideDeleteItem(cartItemList[position])
+        }
     }
 
     interface ShoppingCartListener {
