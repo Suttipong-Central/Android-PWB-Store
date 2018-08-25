@@ -9,6 +9,7 @@ import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.body.BillingBody
 import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.ItemBody
 import cenergy.central.com.pwb_store.model.body.UpdateItemBody
@@ -316,7 +317,7 @@ class HttpManagerMagento {
 
     fun updateItem(cartId: String, itemId: Long, qty: Int, callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        val item = ItemBody(cartId= cartId, itemId = itemId, qty = qty)
+        val item = ItemBody(cartId = cartId, itemId = itemId, qty = qty)
         val updateItemBody = UpdateItemBody(cartItem = item)
         cartService.updateItem(cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
@@ -334,5 +335,23 @@ class HttpManagerMagento {
         })
 
     }
-// endregion
+
+    fun createBilling(cartId: String, address: CustomerAddress, userForShipping: Boolean, callback: ApiResponseCallback<String?>) {
+        val cartService = retrofit.create(CartService::class.java)
+        val billingBody = BillingBody(address = address, useForShipping = userForShipping)
+        cartService.createBilling(cartId, billingBody).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>?) {
+                if (response != null && response.isSuccessful) {
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+    // endregion
 }
