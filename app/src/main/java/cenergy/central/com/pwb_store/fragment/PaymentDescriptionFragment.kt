@@ -11,11 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import java.text.NumberFormat
+import java.util.*
 
 class PaymentDescriptionFragment : Fragment() {
 
@@ -93,12 +96,18 @@ class PaymentDescriptionFragment : Fragment() {
         recycler.adapter = shoppingCartAdapter
         shoppingCartAdapter.cartItemList = this.cartItemList
 
+        val unit = Contextor.getInstance().context.getString(R.string.baht)
         var total = 0.0
         cartItemList.forEach {
             total += it.qty!! * it.price!!
         }
-        totalPrice.text = total.toString()
+        totalPrice.text = getDisplayPrice(unit, total.toString())
         contactNo?.let { contactNumberEdt.setText(it) }
         paymentBtn.setOnClickListener { paymentClickListener?.onPaymentClickListener() }
+    }
+
+    private fun getDisplayPrice(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 }
