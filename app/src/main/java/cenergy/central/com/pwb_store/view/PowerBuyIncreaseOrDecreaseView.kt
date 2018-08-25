@@ -1,17 +1,18 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
-import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 
 class PowerBuyIncreaseOrDecreaseView : LinearLayout {
 
-    private var qtyText: PowerBuyTextView? = null
-    private var add: ImageView? = null
-    private var remove: ImageView? = null
+    private lateinit var qtyText: PowerBuyTextView
+    private lateinit var addButton: ImageButton
+    private lateinit var removeButton: ImageButton
     private var qty: Int = 0
     private var maximum: Int = 10 // default
     private var listener: OnViewClickListener? = null
@@ -31,14 +32,22 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     private fun prepareView() {
         val view = View.inflate(context, R.layout.view_increase_or_decrease_qty, this)
         qtyText = view.findViewById(R.id.qty)
-        add = view.findViewById(R.id.add)
-        remove = view.findViewById(R.id.remove)
+        addButton = view.findViewById(R.id.addButton)
+        removeButton = view.findViewById(R.id.removeButton)
 
-        add?.setOnClickListener { listener?.onClickQuantity(QuantityAction.ACTION_INCREASE, qty) }
-        remove?.setOnClickListener { listener?.onClickQuantity(QuantityAction.ACTION_DECREASE, qty) }
+        addButton.setOnClickListener {
+            if (qty < maximum) {
+                listener?.onClickQuantity(QuantityAction.ACTION_INCREASE, qty)
+            }
+        }
+        removeButton.setOnClickListener {
+            if (qty > 1) {
+                listener?.onClickQuantity(QuantityAction.ACTION_DECREASE, qty)
+            }
+        }
     }
 
-    fun setOnClickQuantity(listener: OnViewClickListener){
+    fun setOnClickQuantity(listener: OnViewClickListener) {
         this.listener = listener
     }
 
@@ -72,7 +81,19 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     }
 
     private fun notifyAttributeChanged() {
-        qtyText?.text = "$qty"
+        qtyText.text = qty.toString()
+        removeButton.isEnabled = qty > 1
+        addButton.isEnabled = qty < maximum
+        isDisableButton(addButton)
+        isDisableButton(removeButton)
+    }
+
+    private fun isDisableButton(button: ImageButton) {
+        if (!button.isEnabled) {
+            button.setBackgroundColor(ContextCompat.getColor(context, R.color.disableButton))
+        } else {
+            button.setBackgroundColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
+        }
     }
 
     fun getQty(): Int {
@@ -94,6 +115,6 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     }
 
     interface OnViewClickListener {
-        fun onClickQuantity(action: QuantityAction, qty:Int)
+        fun onClickQuantity(action: QuantityAction, qty: Int)
     }
 }
