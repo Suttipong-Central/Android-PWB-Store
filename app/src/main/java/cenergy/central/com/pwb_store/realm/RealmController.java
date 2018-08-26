@@ -13,7 +13,6 @@ import java.util.List;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
-import cenergy.central.com.pwb_store.model.CartItem;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
@@ -34,7 +33,7 @@ public class RealmController {
         realm = Realm.getDefaultInstance();
     }
 
-    public RealmController () {
+    public RealmController() {
         realm = Realm.getDefaultInstance();
     }
 
@@ -94,12 +93,12 @@ public class RealmController {
         return realm.where(AddCompare.class).findAllSorted("productSku", Sort.DESCENDING);
     }
 
-    public RealmResults<AddCompare> deletedCompare(final String productSku){
+    public RealmResults<AddCompare> deletedCompare(final String productSku) {
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<AddCompare> result = realm.where(AddCompare.class).equalTo("productSku",productSku).findAllSorted("productSku", Sort.DESCENDING);
+                RealmResults<AddCompare> result = realm.where(AddCompare.class).equalTo("productSku", productSku).findAllSorted("productSku", Sort.DESCENDING);
                 result.deleteAllFromRealm();
             }
         });
@@ -133,7 +132,7 @@ public class RealmController {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                CompareProduct compareProduct =  CompareProduct.asCompareProduct(product);
+                CompareProduct compareProduct = CompareProduct.asCompareProduct(product);
                 realm.copyToRealmOrUpdate(compareProduct);
             }
         }, new Realm.Transaction.OnSuccess() {
@@ -169,7 +168,7 @@ public class RealmController {
 
     public List<CompareProduct> getCompareProducts() {
         Realm realm = getRealm();
-        RealmResults<CompareProduct> realmCompareProducts =  realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
+        RealmResults<CompareProduct> realmCompareProducts = realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAll();
         return realmCompareProducts == null ? null : realm.copyFromRealm(realmCompareProducts);
     }
 
@@ -238,6 +237,16 @@ public class RealmController {
     public CacheCartItem getCartItem(Long itemId) {
         CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_ID, itemId).findFirst();
         return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
+    }
+
+    public void deleteAllCacheCartItem() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(CacheCartItem.class).findAll().deleteAllFromRealm();
+            }
+        });
     }
     // endregion
 
