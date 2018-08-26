@@ -10,6 +10,7 @@ import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
+import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -341,14 +342,51 @@ class HttpManagerMagento {
         cartService.createShippingInformation(cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
             override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {
                 if (response != null && response.isSuccessful) {
-                    val cartItem = response.body()
-                    callback.success(cartItem)
+                    val shippingInformation = response.body()
+                    callback.success(shippingInformation)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
             }
 
             override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun updateOder(cartId: String, callback: ApiResponseCallback<String>) {
+        val cartService = retrofit.create(CartService::class.java)
+        val method = MethodBody("payatstore")
+        val paymentMethodBody = PaymentMethodBody(method)
+        cartService.updateOrder(cartId, paymentMethodBody).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                if (response != null && response.isSuccessful) {
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {
+        val cartService = retrofit.create(CartService::class.java)
+        cartService.getOrder(orderId).enqueue(object : Callback<OrderResponse> {
+            override fun onResponse(call: Call<OrderResponse>?, response: Response<OrderResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val orderResponse = response.body()
+                    callback.success(orderResponse)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<OrderResponse>?, t: Throwable?) {
                 callback.failure(APIError(t))
             }
         })
