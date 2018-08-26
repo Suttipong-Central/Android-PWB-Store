@@ -134,17 +134,17 @@ class PaymentDescriptionFragment : Fragment() {
     private fun createBilling() {
         if (cartId != null) {
             val customerAddress = CustomerAddress(firstName, lastName, email, contactNo)
-            HttpManagerMagento.getInstance().createBilling(cartId!!, customerAddress, true, object: ApiResponseCallback<String?>{
-                override fun success(response: String?) {
-                    if(response != null){
-                        paymentClickListener?.onPaymentClickListener()
-                    }
-                }
-
-                override fun failure(error: APIError) {
-                    Log.d("PAYMENT_DESCRIPTION", error.errorMessage)
-                }
-            })
+//            HttpManagerMagento.getInstance().createBilling(cartId!!, customerAddress, true, object: ApiResponseCallback<String?>{
+//                override fun success(response: String?) {
+//                    if(response != null){
+//                        paymentClickListener?.onPaymentClickListener()
+//                    }
+//                }
+//
+//                override fun failure(error: APIError) {
+//                    Log.d("PAYMENT_DESCRIPTION", error.errorMessage)
+//                }
+//            })
         }
     }
 

@@ -335,23 +335,5 @@ class HttpManagerMagento {
         })
 
     }
-
-    fun createBilling(cartId: String, address: CustomerAddress, userForShipping: Boolean, callback: ApiResponseCallback<String?>) {
-        val cartService = retrofit.create(CartService::class.java)
-        val billingBody = BillingBody(address = address, useForShipping = userForShipping)
-        cartService.createBilling(cartId, billingBody).enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>?) {
-                if (response != null && response.isSuccessful) {
-                    callback.success(response.body())
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
-
-            override fun onFailure(call: Call<String>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
-    }
     // endregion
 }
