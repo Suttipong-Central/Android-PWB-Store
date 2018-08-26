@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -24,6 +25,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
@@ -50,6 +52,7 @@ class PaymentDescriptionFragment : Fragment() {
     private var cartItemList: List<CartItem> = listOf()
     private var paymentClickListener: PaymentClickListener? = null
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
+    private var mProgressDialog: ProgressDialog? = null
     private var cartId: String? = null
     private lateinit var firstName: String
     private lateinit var lastName: String
@@ -119,6 +122,7 @@ class PaymentDescriptionFragment : Fragment() {
         totalPrice.text = getDisplayPrice(unit, total.toString())
         contactNumberEdt.setText(contactNo)
         paymentBtn.setOnClickListener {
+            showProgressDialog()
             if (firstNameEdt.editText.text.toString().isNotEmpty() && lastNameEdt.editText.text.toString().isNotEmpty() &&
                     emailEdt.editText.text.toString().isNotEmpty() && contactNumberEdt.editText.text.isNotEmpty()) {
                 firstName = firstNameEdt.editText.text.toString()
@@ -127,6 +131,7 @@ class PaymentDescriptionFragment : Fragment() {
                 contactNo = contactNumberEdt.editText.text.toString()
                 createBilling()
             } else {
+                mProgressDialog?.dismiss()
                 showAlertDialog("", resources.getString(R.string.fill_in_important_imformation))
             }
         }
@@ -137,20 +142,42 @@ class PaymentDescriptionFragment : Fragment() {
             val shippingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
             val billingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
 
-            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress, object : ApiResponseCallback<ShippingInformationResponse> {
-                override fun success(response: ShippingInformationResponse?) {
-                    if (response != null) {
-                        paymentClickListener?.onPaymentClickListener()
-                    } else {
-                        Log.d("CreateShipping", "null")
-                    }
-                }
+            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress,
+                    object : ApiResponseCallback<ShippingInformationResponse> {
+                        override fun success(response: ShippingInformationResponse?) {
+                            if (response != null) {
+                                updateOrder()
+                            } else {
+                                mProgressDialog?.dismiss()
+                                showAlertDialog(resources.getString(R.string.sorry), resources.getString(R.string.some_thing_wrong))
+                            }
+                        }
 
-                override fun failure(error: APIError) {
-                    Log.d("CreateShipping", error.errorMessage)
-                }
-            })
+                        override fun failure(error: APIError) {
+                            mProgressDialog?.dismiss()
+                            Log.d("CreateShipping", error.errorMessage)
+                        }
+                    })
         }
+    }
+
+    private fun updateOrder() {
+        HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String>{
+            override fun success(response: String?) {
+                if (response != null){
+                    mProgressDialog?.dismiss()
+                    paymentClickListener?.onPaymentClickListener(response)
+                } else {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog(resources.getString(R.string.sorry), resources.getString(R.string.some_thing_wrong))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                Log.d("CreateShipping", error.errorMessage)
+            }
+        })
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
@@ -167,5 +194,14 @@ class PaymentDescriptionFragment : Fragment() {
             builder.setTitle(title)
         }
         builder.show()
+    }
+
+    private fun showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtils.createProgressDialog(context)
+            mProgressDialog?.show()
+        } else {
+            mProgressDialog?.show()
+        }
     }
 }

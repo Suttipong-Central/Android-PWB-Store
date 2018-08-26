@@ -41,5 +41,5 @@ internal interface CartService {
                     @Body paymentMethod: PaymentMethodBody): Call<String>
 
     @GET("/rest/V1/orders/{orderId}")
-    fun getOrder(@Path("cartId") cartId: String): Call<OrderResponse>
+    fun getOrder(@Path("orderId") cartId: String): Call<OrderResponse>
 }

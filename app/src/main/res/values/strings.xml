@@ -161,4 +161,6 @@
     <string name="billing_address">Billing Address</string>
     <string name="qty_title">Qty :</string>
     <string name="fill_in_important_imformation">Please fill in the important information.</string>
+    <string name="sorry">ขออภัย</string>
+    <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
 </resources>

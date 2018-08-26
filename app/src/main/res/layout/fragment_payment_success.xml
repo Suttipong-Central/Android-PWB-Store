@@ -34,7 +34,6 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="32dp"
                     android:layout_marginStart="32dp"
                     android:orientation="vertical">
 
@@ -78,28 +77,36 @@
                 android:weightSum="10">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="5.5"
-                    android:text="@string/products" />
+                    android:text="@string/products"
+                    android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
-                    android:text="@string/price" />
+                    android:text="@string/price"
+                    android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
-                    android:text="@string/qty" />
+                    android:text="@string/qty"
+                    android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
-                    android:text="@string/total" />
+                    android:text="@string/total"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <View
@@ -122,23 +129,22 @@
                 android:gravity="end"
                 android:orientation="horizontal"
                 android:paddingEnd="16dp"
-                android:paddingRight="16dp"
                 tools:ignore="RtlSymmetry">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     style="@style/textNameProduct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="@string/total_price" />
+                    android:text="@string/total_price"
+                    android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_total_price_order_success"
                     style="@style/textPaymentHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="18dp"
                     android:layout_marginStart="18dp"
-                    android:textSize="18sp"
+                    android:textSize="22sp"
                     tools:text="4,404" />
             </LinearLayout>
 
@@ -166,12 +172,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/order_date"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_order_date_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -186,12 +196,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/customer_name"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_name_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -206,12 +220,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/email"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_email_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -226,12 +244,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/tell"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_contact_no_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -260,12 +282,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/branch"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_branch_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -280,12 +306,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/address"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_address_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -300,12 +330,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/phone"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_tell_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -320,12 +354,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/open_today"
+                    android:textSize="16sp"
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_open_today_order_success"
+                    style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8" />
+                    android:layout_weight="8"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -337,6 +375,7 @@
                 android:background="@color/graySelect" />
 
             <android.support.v7.widget.CardView
+                android:id="@+id/finish_btn_order_success"
                 style="@style/RaisedButtonCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

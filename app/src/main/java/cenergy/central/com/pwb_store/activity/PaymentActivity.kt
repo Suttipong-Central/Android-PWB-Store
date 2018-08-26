@@ -70,10 +70,10 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
                 .commit()
     }
 
-    override fun onPaymentClickListener() {
+    override fun onPaymentClickListener(orderId: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
-                .replace(R.id.container, PaymentSuccessFragment.newInstance())
+                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId))
                 .commit()
     }
 
