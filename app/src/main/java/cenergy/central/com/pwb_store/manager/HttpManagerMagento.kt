@@ -9,11 +9,9 @@ import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.BillingBody
-import cenergy.central.com.pwb_store.model.body.CartItemBody
-import cenergy.central.com.pwb_store.model.body.ItemBody
-import cenergy.central.com.pwb_store.model.body.UpdateItemBody
+import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import okhttp3.OkHttpClient
@@ -333,7 +331,27 @@ class HttpManagerMagento {
                 callback.failure(APIError(t))
             }
         })
+    }
 
+    fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation
+                                  , callback: ApiResponseCallback<ShippingInformationResponse>) {
+        val cartService = retrofit.create(CartService::class.java)
+        val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, "storepickup", "storepickup")
+        val shippingBody = ShippingBody(addressInformationBody)
+        cartService.createShippingInformation(cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
+            override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val cartItem = response.body()
+                    callback.success(cartItem)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
     }
     // endregion
 }

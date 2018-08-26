@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -22,8 +21,9 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.CustomerAddress
+import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
@@ -131,20 +131,25 @@ class PaymentDescriptionFragment : Fragment() {
             }
         }
     }
+
     private fun createBilling() {
         if (cartId != null) {
-            val customerAddress = CustomerAddress(firstName, lastName, email, contactNo)
-//            HttpManagerMagento.getInstance().createBilling(cartId!!, customerAddress, true, object: ApiResponseCallback<String?>{
-//                override fun success(response: String?) {
-//                    if(response != null){
-//                        paymentClickListener?.onPaymentClickListener()
-//                    }
-//                }
-//
-//                override fun failure(error: APIError) {
-//                    Log.d("PAYMENT_DESCRIPTION", error.errorMessage)
-//                }
-//            })
+            val shippingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
+            val billingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
+
+            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress, object : ApiResponseCallback<ShippingInformationResponse> {
+                override fun success(response: ShippingInformationResponse?) {
+                    if (response != null) {
+                        paymentClickListener?.onPaymentClickListener()
+                    } else {
+                        Log.d("CreateShipping", "null")
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    Log.d("CreateShipping", error.errorMessage)
+                }
+            })
         }
     }
 

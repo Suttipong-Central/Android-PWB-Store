@@ -1,9 +1,10 @@
 package cenergy.central.com.pwb_store.manager.service
 
 import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.body.BillingBody
 import cenergy.central.com.pwb_store.model.body.CartItemBody
+import cenergy.central.com.pwb_store.model.body.ShippingBody
 import cenergy.central.com.pwb_store.model.body.UpdateItemBody
+import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -28,4 +29,9 @@ internal interface CartService {
     fun updateItem(@Path("cartId") cartId: String,
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
+
+    @POST("/rest/V1/guest-carts/{cartId}/shipping-information")
+    fun createShippingInformation(@Path("cartId") cartId: String,
+                                  @Body shippingBody: ShippingBody): Call<ShippingInformationResponse>
+
 }
