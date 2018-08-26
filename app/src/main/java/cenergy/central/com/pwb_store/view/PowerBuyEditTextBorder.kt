@@ -10,7 +10,7 @@ class PowerBuyEditTextBorder : LinearLayout {
 
     private var header: PowerBuyTextView? = null
     private var requiredField: PowerBuyTextView? = null
-    private var editText: PowerBuyEditText? = null
+    lateinit var editText: PowerBuyEditText
     private var required = false
     private var textHeader = ""
     private var textEditText = ""
@@ -56,7 +56,7 @@ class PowerBuyEditTextBorder : LinearLayout {
         } else {
             requiredField?.visibility = View.GONE
         }
-        editText?.setText(textEditText)
+        editText.setText(textEditText)
     }
 
     fun getText(): String {

@@ -13,14 +13,14 @@ import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
-import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickLintener, PaymentDescriptionListener {
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener, PaymentDescriptionListener {
 
     override fun getItemList(): List<CartItem> {
         return cartItemList

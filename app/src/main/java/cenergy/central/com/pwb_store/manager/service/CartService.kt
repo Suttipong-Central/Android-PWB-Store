@@ -29,7 +29,7 @@ internal interface CartService {
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-    @POST("/rest/V1/guest-carts/{cart_id}/billing-address")
+    @POST("/rest/V1/guest-carts/{cardId}/billing-address")
     fun createBilling(@Path("cardId") cartId: String,
                       @Body billingBody: BillingBody): Call<String>
 }

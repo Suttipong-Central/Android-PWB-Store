@@ -1,5 +1,5 @@
 package cenergy.central.com.pwb_store.manager.listeners
 
-interface PaymentClickLintener{
+interface PaymentClickListener{
     fun onPaymentClickListener()
 }

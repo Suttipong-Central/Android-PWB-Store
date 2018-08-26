@@ -71,5 +71,6 @@
     <string name="skip">SKIP</string>
     <string name="billing_address">Billing Address</string>
     <string name="qty_title">Qty :</string>
+    <string name="fill_in_important_imformation">Please fill in the important information.</string>
 
 </resources>

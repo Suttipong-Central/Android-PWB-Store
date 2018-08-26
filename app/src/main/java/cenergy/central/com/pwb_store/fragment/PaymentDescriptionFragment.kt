@@ -1,20 +1,29 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
-import cenergy.central.com.pwb_store.manager.listeners.PaymentClickLintener
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
+import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.CustomerAddress
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
@@ -39,17 +48,21 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var paymentBtn: CardView
     private var cartItemList: List<CartItem> = listOf()
-    private var contactNo: String? = null
-    private var paymentClickListener: PaymentClickLintener? = null
+    private var paymentClickListener: PaymentClickListener? = null
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
+    private var cartId: String? = null
+    private lateinit var firstName: String
+    private lateinit var lastName: String
+    private lateinit var email: String
+    private lateinit var contactNo: String
 
     companion object {
-        private const val contactNumber = "CONTACT_NUMBER"
+        private const val CONTACT_NUMBER = "CONTACT_NUMBER"
 
         fun newInstance(contactNo: String): PaymentDescriptionFragment {
             val fragment = PaymentDescriptionFragment()
             val args = Bundle()
-            args.putString(contactNumber, contactNo)
+            args.putString(CONTACT_NUMBER, contactNo)
             fragment.arguments = args
             return fragment
         }
@@ -57,14 +70,16 @@ class PaymentDescriptionFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        paymentClickListener = context as PaymentClickLintener
+        paymentClickListener = context as PaymentClickListener
         paymentDescriptionListener = context as PaymentDescriptionListener
         cartItemList = paymentDescriptionListener!!.getItemList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        contactNo = arguments?.getString(contactNumber)
+        val preferenceManager = context?.let { PreferenceManager(it) }
+        cartId = preferenceManager?.cartId
+        contactNo = arguments?.getString(CONTACT_NUMBER) ?: ""
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -102,12 +117,50 @@ class PaymentDescriptionFragment : Fragment() {
             total += it.qty!! * it.price!!
         }
         totalPrice.text = getDisplayPrice(unit, total.toString())
-        contactNo?.let { contactNumberEdt.setText(it) }
-        paymentBtn.setOnClickListener { paymentClickListener?.onPaymentClickListener() }
+        contactNumberEdt.setText(contactNo)
+        paymentBtn.setOnClickListener {
+            if (firstNameEdt.editText.text.toString().isNotEmpty() && lastNameEdt.editText.text.toString().isNotEmpty() &&
+                    emailEdt.editText.text.toString().isNotEmpty() && contactNumberEdt.editText.text.isNotEmpty()) {
+                firstName = firstNameEdt.editText.text.toString()
+                lastName = lastNameEdt.editText.text.toString()
+                email = emailEdt.editText.text.toString()
+                contactNo = contactNumberEdt.editText.text.toString()
+                createBilling()
+            } else {
+                showAlertDialog("", resources.getString(R.string.fill_in_important_imformation))
+            }
+        }
+    }
+    private fun createBilling() {
+        if (cartId != null) {
+            val customerAddress = CustomerAddress(firstName, lastName, email, contactNo)
+            HttpManagerMagento.getInstance().createBilling(cartId!!, customerAddress, true, object: ApiResponseCallback<String?>{
+                override fun success(response: String?) {
+                    if(response != null){
+                        paymentClickListener?.onPaymentClickListener()
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    Log.d("PAYMENT_DESCRIPTION", error.errorMessage)
+                }
+            })
+        }
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
     }
 }
