@@ -130,10 +130,8 @@ class PaymentSuccessFragment : Fragment() {
     }
 
     private fun finishThisPage() {
-        Log.d("Get Order :", "Finished")
-        val preferenceManager = context?.let { PreferenceManager(it) }
-        preferenceManager?.clearCartId()
-        RealmController.getInstance().deleteAllCacheCartItem()
+        clearCachedCart()
+
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context?.let {
@@ -141,6 +139,13 @@ class PaymentSuccessFragment : Fragment() {
                     .makeScaleUpAnimation(finishButton, 0, 0, finishButton.width, finishButton.height)
                     .toBundle())
         }
+    }
+
+    private fun clearCachedCart() {
+        val preferenceManager = context?.let { PreferenceManager(it) }
+        preferenceManager?.clearCartId()
+        RealmController.getInstance().deleteAllCacheCartItem()
+        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
