@@ -67,7 +67,7 @@
     <string name="no">ไม่ใช่</string>
     <string name="format_header_cart_items">รถเข็นของคุณ(%s ชิ้น)</string>
     <string name="name_price">Price:</string>
-    <string name="skip">SKIP</string>
+    <string name="skip"><u>SKIP</u></string>
     <string name="billing_address">Billing Address</string>
     <string name="qty_title">Qty:</string>
     <string name="fill_in_important_information">Please fill in the important information.</string>

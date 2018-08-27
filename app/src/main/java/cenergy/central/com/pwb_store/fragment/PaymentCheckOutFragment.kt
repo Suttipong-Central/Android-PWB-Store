@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
@@ -61,7 +62,7 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
     private fun setupView(rootView: View) {
         contactNoEdt = rootView.findViewById(R.id.contact_number_check_out)
         okBtn = rootView.findViewById(R.id.ok_btn_check_out)
-        val skipBtn: CardView = rootView.findViewById(R.id.skip_btn_check_out)
+        val skipBtn: TextView = rootView.findViewById(R.id.skipButton)
         okBtn.isEnabled = false
         contactNoEdt.addTextChangedListener(this)
         skipBtn.setOnClickListener { checkOutClickListener?.onCheckOutListener("") }
