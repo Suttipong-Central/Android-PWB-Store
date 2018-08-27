@@ -44,7 +44,7 @@
     <string name="price">Price</string>
     <string name="qty">Qty</string>
     <string name="total">Total</string>
-    <string name="total_price">Total :</string>
+    <string name="total_price">Total:</string>
     <string name="finished">Finished</string>
     <string name="order_detail">Order Details</string>
     <string name="personal_detail">Personal Details</string>
@@ -55,7 +55,7 @@
     <string name="open_today">Open Today</string>
     <string name="branch">Branch</string>
     <string name="search_not_found">ไม่พบข้อมูลที่ค้นหา</string>
-    <string name="product_price">Price :</string>
+    <string name="product_price">Price:</string>
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
@@ -66,10 +66,10 @@
     <string name="yes">ใช่</string>
     <string name="no">ไม่ใช่</string>
     <string name="format_header_cart_items">รถเข็นของคุณ(%s ชิ้น)</string>
-    <string name="name_price">Price :</string>
+    <string name="name_price">Price:</string>
     <string name="skip">SKIP</string>
     <string name="billing_address">Billing Address</string>
-    <string name="qty_title">Qty :</string>
+    <string name="qty_title">Qty:</string>
     <string name="fill_in_important_information">Please fill in the important information.</string>
     <string name="sorry">ขออภัย</string>
     <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
