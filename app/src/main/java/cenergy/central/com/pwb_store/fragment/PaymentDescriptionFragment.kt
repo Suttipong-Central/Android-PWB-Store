@@ -25,6 +25,7 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -56,18 +57,26 @@ class PaymentDescriptionFragment : Fragment() {
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
     private var mProgressDialog: ProgressDialog? = null
     private var cartId: String? = null
+    private var member: Member? = null
     private lateinit var firstName: String
     private lateinit var lastName: String
     private lateinit var email: String
     private lateinit var contactNo: String
 
     companion object {
-        private const val CONTACT_NUMBER = "CONTACT_NUMBER"
+        private const val MEMBER = "MEMBER"
 
-        fun newInstance(contactNo: String): PaymentDescriptionFragment {
+        fun newInstance(): PaymentDescriptionFragment {
             val fragment = PaymentDescriptionFragment()
             val args = Bundle()
-            args.putString(CONTACT_NUMBER, contactNo)
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(member: Member): PaymentDescriptionFragment {
+            val fragment = PaymentDescriptionFragment()
+            val args = Bundle()
+            args.putParcelable(MEMBER, member)
             fragment.arguments = args
             return fragment
         }
@@ -84,7 +93,7 @@ class PaymentDescriptionFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val preferenceManager = context?.let { PreferenceManager(it) }
         cartId = preferenceManager?.cartId
-        contactNo = arguments?.getString(CONTACT_NUMBER) ?: ""
+        member = arguments?.getParcelable(MEMBER)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -118,6 +127,14 @@ class PaymentDescriptionFragment : Fragment() {
         tellEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS)
 
+        //Set Member
+        member?.let { member ->
+            firstNameEdt.setText(member.getFirstName())
+            lastNameEdt.setText(member.getLastName())
+            emailEdt.setText(member.email)
+            contactNumberEdt.setText(member.mobilePhone)
+        }
+
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
@@ -130,7 +147,6 @@ class PaymentDescriptionFragment : Fragment() {
             total += it.qty!! * it.price!!
         }
         totalPrice.text = getDisplayPrice(unit, total.toString())
-        contactNumberEdt.setText(contactNo)
         paymentBtn.setOnClickListener {
             checkConfirm()
         }

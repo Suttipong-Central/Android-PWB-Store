@@ -17,4 +17,16 @@ data class MemberResponse(
         @SerializedName("lastName")
         var lastname: NamePattern? = null,
         var cards: ArrayList<MemberCard> = arrayListOf()
-)
+) {
+    fun getDisplayName(): String {
+        return if (firstname != null && lastname != null) {
+            if (firstname!!.thai.isNotEmpty()) {
+                "${firstname!!.thai} ${lastname!!.thai}"
+            } else {
+                "${firstname!!.eng} ${lastname!!.eng}"
+            }
+        } else {
+            ""
+        }
+    }
+}

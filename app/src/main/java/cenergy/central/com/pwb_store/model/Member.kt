@@ -122,4 +122,28 @@ data class Member(var nationalId: String = "",
             return arrayOfNulls(size)
         }
     }
+
+    fun getFirstName(): String {
+        return if (firstname != null) {
+            if (firstname!!.thai.isNotEmpty()) {
+                firstname!!.thai
+            } else {
+                firstname!!.eng
+            }
+        } else {
+            ""
+        }
+    }
+
+    fun getLastName(): String {
+        return if (lastname != null) {
+            if (lastname!!.thai.isNotEmpty()) {
+                lastname!!.thai
+            } else {
+                lastname!!.eng
+            }
+        } else {
+            ""
+        }
+    }
 }
