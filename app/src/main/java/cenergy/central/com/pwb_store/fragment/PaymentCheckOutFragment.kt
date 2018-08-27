@@ -37,10 +37,6 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
         checkOutClickListener = context as CheckOutClickListener
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_payment_check_out, container, false)
         setupView(rootView)

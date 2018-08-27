@@ -4,20 +4,25 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.text.TextUtils
+import android.util.Log
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
 import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
 class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener, PaymentDescriptionListener {
@@ -51,9 +56,14 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
 
     override fun onCheckOutListener(contactNo: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentDescriptionFragment.newInstance(contactNo))
-                .commit()
+        // skip?
+        if (contactNo.trim().isEmpty()) {
+            fragmentTransaction
+                    .replace(R.id.container, PaymentDescriptionFragment.newInstance(contactNo))
+                    .commit()
+        } else {
+            getCustomerT1C(contactNo)
+        }
     }
 
     override fun onPaymentClickListener(orderId: String) {
@@ -97,5 +107,30 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
                 }
             })
         }
+    }
+
+    private fun getCustomerT1C(mobile: String) {
+        HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ",object : ApiResponseCallback<List<MemberResponse>>{
+            override fun success(response: List<MemberResponse>?) {
+                Log.d("MemberResponse", response?.get(0)?.customerId)
+            }
+
+            override fun failure(error: APIError) {
+                Log.d("MemberResponse", "Errror ${error.errorMessage}")
+
+                //TODO: Add dialog ("need to skip?")
+            }
+        })
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
     }
 }

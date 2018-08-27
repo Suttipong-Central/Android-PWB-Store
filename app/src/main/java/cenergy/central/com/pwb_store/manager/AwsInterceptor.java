@@ -30,6 +30,7 @@ public class AwsInterceptor implements Interceptor {
     private final String serviceName;
     @NonNull
     private final String xApiKey;
+    private String transactionChannel = null;
     @NonNull
     private final AWS4Signer signer;
 
@@ -42,13 +43,29 @@ public class AwsInterceptor implements Interceptor {
         signer.setRegionName(region);
     }
 
+    public AwsInterceptor(@NonNull AWSCredentialsProvider credentialsProvider, @NonNull String serviceName, @NonNull String region, @NonNull String xApiKey, @NonNull String transactionChannel) {
+        this.credentialsProvider = credentialsProvider;
+        this.serviceName = serviceName;
+        this.xApiKey = xApiKey;
+        this.transactionChannel = transactionChannel;
+        signer = new AWS4Signer();
+        signer.setServiceName(serviceName);
+        signer.setRegionName(region);
+    }
+
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
         Request signedRequest = sign(chain.request());
 
-        signedRequest = signedRequest.newBuilder()
-                .addHeader("x-api-key", xApiKey)
-                .build();
+        if (transactionChannel == null) {
+            signedRequest = signedRequest.newBuilder()
+                    .addHeader("x-api-key", xApiKey)
+                    .build();
+        } else {
+            signedRequest = signedRequest.newBuilder()
+                    .addHeader("transaction-channel", transactionChannel)
+                    .build();
+        }
 
         return chain.proceed(signedRequest);
     }
@@ -122,7 +139,7 @@ public class AwsInterceptor implements Interceptor {
 //                        //.addPathSegment("list-stock")
 //                        .build();
 //            }else {
-                url = url.newBuilder().addPathSegment("").build();
+            url = url.newBuilder().addPathSegment("").build();
 //            }
             builder.url(url);
         }
