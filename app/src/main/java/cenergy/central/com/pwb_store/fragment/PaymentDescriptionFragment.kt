@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
@@ -109,6 +110,14 @@ class PaymentDescriptionFragment : Fragment() {
         tellEdt = rootView.findViewById(R.id.tell_payment)
         paymentBtn = rootView.findViewById(R.id.payment_button_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
+
+        //Set Input type
+        contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        contactNumberEdt.setTextLength(10)
+        tellEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        tellEdt.setTextLength(10)
+        emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS)
+
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
@@ -129,12 +138,12 @@ class PaymentDescriptionFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
-        if (firstNameEdt.editText.text.toString().isNotEmpty() && lastNameEdt.editText.text.toString().isNotEmpty() &&
-                emailEdt.editText.text.toString().isNotEmpty() && contactNumberEdt.editText.text.isNotEmpty()) {
-            firstName = firstNameEdt.editText.text.toString()
-            lastName = lastNameEdt.editText.text.toString()
-            email = emailEdt.editText.text.toString()
-            contactNo = contactNumberEdt.editText.text.toString()
+        if (firstNameEdt.getText().isNotEmpty() && lastNameEdt.getText().isNotEmpty() &&
+                emailEdt.getText().isNotEmpty() && contactNumberEdt.getText().isNotEmpty()) {
+            firstName = firstNameEdt.getText()
+            lastName = lastNameEdt.getText()
+            email = emailEdt.getText()
+            contactNo = contactNumberEdt.getText()
             showAlertCheckPayment("", resources.getString(R.string.comfrim_oder))
         } else {
             mProgressDialog?.dismiss()

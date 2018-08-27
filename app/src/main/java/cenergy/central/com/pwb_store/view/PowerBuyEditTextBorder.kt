@@ -1,10 +1,12 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
+import android.text.InputFilter
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
+
 
 class PowerBuyEditTextBorder : LinearLayout {
 
@@ -60,11 +62,21 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     fun getText(): String {
-        return this.textEditText
+        return this.editText.text.toString()
     }
 
     fun setText(input: String) {
         this.textEditText = input
         notifyAttributeChanged()
+    }
+
+    fun setEditTextInputType(inputType: Int) {
+        this.editText.inputType = inputType
+    }
+
+    fun setTextLength(maxLength: Int) {
+        val filterArray = arrayOfNulls<InputFilter>(1)
+        filterArray[0] = InputFilter.LengthFilter(maxLength)
+        this.editText.filters = filterArray
     }
 }
