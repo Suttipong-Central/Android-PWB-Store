@@ -795,7 +795,12 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void updateShoppingCartBadge() {
-        int count = RealmController.with(this).getCartItems().size();
+        int count = 0;
+        for( CacheCartItem item : RealmController.with(this).getCartItems()){
+            if(item.getQty() != null){
+                count += item.getQty();
+            }
+        }
         mBuyShoppingCartView.setBadgeCart(count);
         Log.d("ProductDetail", "count shopping badge" + count);
     }
