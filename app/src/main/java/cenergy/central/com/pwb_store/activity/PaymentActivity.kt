@@ -41,21 +41,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         setContentView(R.layout.activity_payment)
         showProgressDialog()
         initView()
-
-        preferenceManager.cartId?.let { cartId->
-            HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-                override fun success(response: List<CartItem>?) {
-                    if (response != null) {
-                        cartItemList = response
-                        mProgressDialog?.dismiss()
-                    }
-                }
-
-                override fun failure(error: APIError) {
-
-                }
-            })
-        }
+        getItems()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
@@ -93,6 +79,23 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
             mProgressDialog?.show()
         } else {
             mProgressDialog?.show()
+        }
+    }
+
+    private fun getItems() {
+        preferenceManager.cartId?.let { cartId->
+            HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+                override fun success(response: List<CartItem>?) {
+                    if (response != null) {
+                        cartItemList = response
+                        mProgressDialog?.dismiss()
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    mProgressDialog?.dismiss()
+                }
+            })
         }
     }
 }
