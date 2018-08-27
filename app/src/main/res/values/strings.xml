@@ -148,7 +148,6 @@
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
-    <string name="not_have_products_in_cart">Not have a product in your cart.</string>
     <string name="added_to_cart">This product is added to card.</string>
 
     <!-- Cart -->
@@ -160,7 +159,12 @@
     <string name="skip">SKIP</string>
     <string name="billing_address">Billing Address</string>
     <string name="qty_title">Qty :</string>
-    <string name="fill_in_important_imformation">Please fill in the important information.</string>
+    <string name="fill_in_important_information">Please fill in the important information.</string>
     <string name="sorry">ขออภัย</string>
     <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
+    <string name="comfrim_oder">ยืนยันการซื้อสินค้า</string>
+    <string name="ok_alert">ตกลง</string>
+    <string name="cancel_alert">ยกเลิก</string>
+    <string name="cannot_get_cart_item">ไม่สามารถเรียกสินค้าในตะกร้าได้</string>
+    <string name="not_have_products_in_cart">ไม่มีสินค้าอยู่ในตะกร้า กรุณาเพิ่มสิาค้าที่ท่านต้องการ</string>
 </resources>

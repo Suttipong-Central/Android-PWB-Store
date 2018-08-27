@@ -9,7 +9,6 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -122,18 +121,22 @@ class PaymentDescriptionFragment : Fragment() {
         totalPrice.text = getDisplayPrice(unit, total.toString())
         contactNumberEdt.setText(contactNo)
         paymentBtn.setOnClickListener {
-            showProgressDialog()
-            if (firstNameEdt.editText.text.toString().isNotEmpty() && lastNameEdt.editText.text.toString().isNotEmpty() &&
-                    emailEdt.editText.text.toString().isNotEmpty() && contactNumberEdt.editText.text.isNotEmpty()) {
-                firstName = firstNameEdt.editText.text.toString()
-                lastName = lastNameEdt.editText.text.toString()
-                email = emailEdt.editText.text.toString()
-                contactNo = contactNumberEdt.editText.text.toString()
-                createBilling()
-            } else {
-                mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.fill_in_important_imformation))
-            }
+            showAlertCheckPayment("", resources.getString(R.string.comfrim_oder))
+        }
+    }
+
+    private fun checkConfirm() {
+        showProgressDialog()
+        if (firstNameEdt.editText.text.toString().isNotEmpty() && lastNameEdt.editText.text.toString().isNotEmpty() &&
+                emailEdt.editText.text.toString().isNotEmpty() && contactNumberEdt.editText.text.isNotEmpty()) {
+            firstName = firstNameEdt.editText.text.toString()
+            lastName = lastNameEdt.editText.text.toString()
+            email = emailEdt.editText.text.toString()
+            contactNo = contactNumberEdt.editText.text.toString()
+            createBilling()
+        } else {
+            mProgressDialog?.dismiss()
+            showAlertDialog("", resources.getString(R.string.fill_in_important_information))
         }
     }
 
@@ -149,33 +152,33 @@ class PaymentDescriptionFragment : Fragment() {
                                 updateOrder()
                             } else {
                                 mProgressDialog?.dismiss()
-                                showAlertDialog(resources.getString(R.string.sorry), resources.getString(R.string.some_thing_wrong))
+                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                             }
                         }
 
                         override fun failure(error: APIError) {
                             mProgressDialog?.dismiss()
-                            Log.d("CreateShipping", error.errorMessage)
+                            showAlertDialog("", error.errorMessage)
                         }
                     })
         }
     }
 
     private fun updateOrder() {
-        HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String>{
+        HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
-                if (response != null){
+                if (response != null) {
                     mProgressDialog?.dismiss()
                     paymentClickListener?.onPaymentClickListener(response)
                 } else {
                     mProgressDialog?.dismiss()
-                    showAlertDialog(resources.getString(R.string.sorry), resources.getString(R.string.some_thing_wrong))
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                Log.d("CreateShipping", error.errorMessage)
+                showAlertDialog("", error.errorMessage)
             }
         })
     }
@@ -183,6 +186,18 @@ class PaymentDescriptionFragment : Fragment() {
     private fun getDisplayPrice(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
+    private fun showAlertCheckPayment(title: String, message: String) {
+        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> checkConfirm() }
+                .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which -> dialog.dismiss() }
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
     }
 
     private fun showAlertDialog(title: String, message: String) {

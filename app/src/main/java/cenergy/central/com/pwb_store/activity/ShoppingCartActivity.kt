@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.text.TextUtils
 import android.util.Log
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
@@ -138,14 +140,16 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
                     }
                     totalPrice.text = getDisplayPrice(unit, total.toString())
                     checkCanClickPayment()
-                    if (mProgressDialog != null) {
-                        mProgressDialog?.dismiss()
-                    }
+                    mProgressDialog?.dismiss()
+                } else {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
                 }
             }
 
             override fun failure(error: APIError) {
-
+                mProgressDialog?.dismiss()
+                showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
             }
         })
     }
@@ -219,5 +223,16 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private fun getDisplayPrice(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
     }
 }

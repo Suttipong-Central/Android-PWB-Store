@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -714,7 +715,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
                             .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
                             .toBundle());
         } else {
-            showAlertDialog(getResources().getString(R.string.not_have_products_in_cart), false);
+            showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
         }
     }
 
@@ -753,7 +754,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
             @Override
             public void failure(@NotNull APIError error) {
                 mProgressDialog.dismiss();
-                Toast.makeText(ProductDetailActivity.this, error.getErrorUserMessage(), Toast.LENGTH_SHORT).show();
+                showAlertDialog("", error.getErrorUserMessage());
             }
         });
     }
@@ -770,7 +771,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
             @Override
             public void failure(@NotNull APIError error) {
                 mProgressDialog.dismiss();
-                Toast.makeText(ProductDetailActivity.this, error.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                showAlertDialog("", error.getErrorMessage());
             }
         });
     }
@@ -787,7 +788,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
             public void onFailure(Throwable error) {
                 mProgressDialog.dismiss();
                 if (error != null) {
-                    Log.d(TAG, "" + error.getMessage());
+                    showAlertDialog("", error.getMessage());
                 }
             }
         });
@@ -797,5 +798,21 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
         int count = RealmController.with(this).getCartItems().size();
         mBuyShoppingCartView.setBadgeCart(count);
         Log.d("ProductDetail", "count shopping badge" + count);
+    }
+
+    private void showAlertDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressDialog.dismiss();
+                    }
+                });
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title);
+        }
+        builder.show();
     }
 }
