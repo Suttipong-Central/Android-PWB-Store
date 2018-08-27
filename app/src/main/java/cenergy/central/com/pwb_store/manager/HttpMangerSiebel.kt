@@ -5,8 +5,8 @@ import android.content.Context
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.AWSCredentialsProvider
@@ -67,7 +67,7 @@ class HttpMangerSiebel {
 
     fun verifyMemberFromT1C(mobile: String, mobileCountryCode: String, callback: ApiResponseCallback<List<MemberResponse>>) {
         val memberService = retrofit.create(MemberService::class.java)
-        memberService.getMemberFromT1C(mobile, mobileCountryCode).enqueue(object : Callback<List<MemberResponse>> {
+        memberService.geT1CtMemberFromMobile(mobile, mobileCountryCode).enqueue(object : Callback<List<MemberResponse>> {
             override fun onResponse(call: Call<List<MemberResponse>>?, response: Response<List<MemberResponse>>?) {
                 if (response != null && response.isSuccessful) {
                     val orderResponse = response.body()
@@ -79,6 +79,25 @@ class HttpMangerSiebel {
 
             override fun onFailure(call: Call<List<MemberResponse>>?, t: Throwable?) {
                 callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getT1CMember(customerId: String, callback: ApiResponseCallback<Member>) {
+        val memberService = retrofit.create(MemberService::class.java)
+        memberService.getT1CMember(customerId).enqueue(object : Callback<Member> {
+            override fun onResponse(call: Call<Member>?, response: Response<Member>?) {
+                if (response != null && response.isSuccessful) {
+                    val orderResponse = response.body()
+                    callback.success(orderResponse)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<Member>?, t: Throwable?) {
+                callback.failure(APIError(t))
+
             }
         })
     }
@@ -102,7 +121,7 @@ class HttpMangerSiebel {
         private const val CLIENT_SERVICE_NAME = "execute-api"
         private const val CLIENT_REGION = "ap-southeast-1"
         private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        private const val HOST_NAME = "https://api.central.tech/"
+        private const val HOST_NAME = "https://api.central.tech"
         private const val CLIENT_ACCESS_KEY = "AKIAJK27ORQKY42QRFWQ"
         private const val CLIENT_SECRET_KEY = "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"
 
