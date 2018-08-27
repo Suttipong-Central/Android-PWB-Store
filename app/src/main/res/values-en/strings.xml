@@ -39,7 +39,7 @@
     <string name="sub_district">Sub district</string>
     <string name="post_code">Postcode</string>
     <string name="success">Your order is successful</string>
-    <string name="order_number">Order number </string>
+    <string name="order_number">Order number: </string>
     <string name="products">Products</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>

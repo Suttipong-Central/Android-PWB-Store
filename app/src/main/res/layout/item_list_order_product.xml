@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@color/powerBuyWhite"
     android:paddingBottom="16dp"
     android:paddingTop="16dp"
     android:weightSum="10">
@@ -21,7 +22,9 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:background="@drawable/border_grey"
-            android:contentDescription="@string/app_name" />
+            android:padding="6dp"
+            android:contentDescription="@string/app_name"
+            tools:src="@drawable/ic_pwb_logo_detail"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/product_name_list_order"

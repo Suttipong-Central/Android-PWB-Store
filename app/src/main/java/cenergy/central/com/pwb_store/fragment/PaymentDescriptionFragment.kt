@@ -9,6 +9,7 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -169,6 +171,7 @@ class PaymentDescriptionFragment : Fragment() {
             override fun success(response: String?) {
                 if (response != null) {
                     mProgressDialog?.dismiss()
+                    clearCachedCart()
                     paymentClickListener?.onPaymentClickListener(response)
                 } else {
                     mProgressDialog?.dismiss()
@@ -218,5 +221,12 @@ class PaymentDescriptionFragment : Fragment() {
         } else {
             mProgressDialog?.show()
         }
+    }
+
+    private fun clearCachedCart() {
+        val preferenceManager = context?.let { PreferenceManager(it) }
+        preferenceManager?.clearCartId()
+        RealmController.getInstance().deleteAllCacheCartItem()
+        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

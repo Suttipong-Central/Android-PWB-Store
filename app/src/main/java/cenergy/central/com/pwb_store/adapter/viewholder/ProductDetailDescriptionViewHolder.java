@@ -190,8 +190,8 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
 
         mProductName.setText(product.getName());
-        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + product.getSku());
-        mRegular.setText("Regular Price : " + product.getDisplayOldPrice(unit));
+        mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + "  " + product.getSku());
+        mRegular.setText("Regular Price: " + product.getDisplayOldPrice(unit));
         if(product.getSpecialPrice() > 0){
             if(product.getPrice() != product.getSpecialPrice()){
                 mSalePrice.setText(product.getDisplaySpecialPrice(unit));

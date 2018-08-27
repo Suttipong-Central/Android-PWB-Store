@@ -35,6 +35,7 @@ import java.util.*
 class PaymentSuccessFragment : Fragment() {
 
     lateinit var recycler: RecyclerView
+    lateinit var orderNumber: PowerBuyTextView
     lateinit var totalPrice: PowerBuyTextView
     lateinit var orderDate: PowerBuyTextView
     lateinit var name: PowerBuyTextView
@@ -78,6 +79,7 @@ class PaymentSuccessFragment : Fragment() {
         showProgressDialog()
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         recycler = rootView.findViewById(R.id.recycler_view_order_detail_list)
+        orderNumber = rootView.findViewById(R.id.order_number_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
         orderDate = rootView.findViewById(R.id.txt_order_date_order_success)
         name = rootView.findViewById(R.id.txt_name_order_success)
@@ -99,6 +101,9 @@ class PaymentSuccessFragment : Fragment() {
                     if (response != null) {
                         listItems = response.items
                         orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems
+                        //Setup order number
+                        orderNumber.text = "${resources.getString(R.string.order_number)} ${response.orderId}"
+
                         //Setup total price
                         var total = 0.0
                         listItems.forEach {
@@ -130,8 +135,6 @@ class PaymentSuccessFragment : Fragment() {
     }
 
     private fun finishThisPage() {
-        clearCachedCart()
-
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context?.let {
@@ -139,13 +142,6 @@ class PaymentSuccessFragment : Fragment() {
                     .makeScaleUpAnimation(finishButton, 0, 0, finishButton.width, finishButton.height)
                     .toBundle())
         }
-    }
-
-    private fun clearCachedCart() {
-        val preferenceManager = context?.let { PreferenceManager(it) }
-        preferenceManager?.clearCartId()
-        RealmController.getInstance().deleteAllCacheCartItem()
-        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
