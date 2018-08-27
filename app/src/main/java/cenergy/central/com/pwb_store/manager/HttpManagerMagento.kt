@@ -10,6 +10,7 @@ import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
+import cenergy.central.com.pwb_store.model.response.BrandResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
@@ -193,6 +194,42 @@ class HttpManagerMagento {
             override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
                 callback.failure(APIError(t))
 
+            }
+        })
+    }
+
+    fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductsFilterByBrand(categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
+            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                if (response != null) {
+                    val product = response.body()
+                    callback.success(product)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getBrands(categoryId: String, callback: ApiResponseCallback<BrandResponse>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getBrands(categoryId).enqueue(object : Callback<BrandResponse> {
+            override fun onResponse(call: Call<BrandResponse>?, response: Response<BrandResponse>?) {
+                if (response != null) {
+                    val product = response.body()
+                    callback.success(product)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<BrandResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
             }
         })
     }

@@ -6,8 +6,7 @@
     android:id="@+id/head_frame"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
-    android:background="@color/powerBuyWhite"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:background="@color/powerBuyWhite">
 
     <ImageView
         android:id="@+id/img_fill_back"
@@ -24,6 +23,7 @@
         android:layout_gravity="center_vertical"
         android:ellipsize="end"
         android:padding="10dp"
+        android:textColor="@drawable/text_selector_orange"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="10dp"
         style="@style/textFilterHead"

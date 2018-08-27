@@ -24,6 +24,8 @@ import cenergy.central.com.pwb_store.adapter.AvaliableStoreFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.FilterByBrandAdapter;
 import cenergy.central.com.pwb_store.adapter.ProductFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.SortingAdapter;
+import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
+import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
@@ -47,12 +49,11 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     //Data Member
     private ProductFilterAdapter mProductFilterAdapter;
     private SortingAdapter mSortingAdapter;
-    private FilterByBrandAdapter mFilterByBrandAdapter;
     private AvaliableStoreFilterAdapter mAvaliableStoreFilterAdapter;
     private LinearLayoutManager mLayoutManager;
     private ProductFilterList mProductFilterList;
     private SortingList mSortingList;
-    private List<String> mFilterByBrandList;
+    private List<Brand> brands;
     private StoreFilterList mStoreFilterList;
     private Context mContext;
     private int index;
@@ -171,11 +172,11 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         Log.d(TAG, "Popup Click");
     }
 
-    public void setRecyclerViewFilterByBrand(List<String> filterByBrandList) {
-        this.mFilterByBrandList = filterByBrandList;
-        mFilterByBrandAdapter = new FilterByBrandAdapter();
+    public void setRecyclerViewFilterByBrand(List<Brand> brands, OnBrandFilterClickListener listener) {
+        this.brands = brands;
+        FilterByBrandAdapter mFilterByBrandAdapter = new FilterByBrandAdapter(listener);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mFilterByBrandAdapter.setBrandForFilter(mFilterByBrandList);
+        mFilterByBrandAdapter.setBrandForFilter(brands);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
     }

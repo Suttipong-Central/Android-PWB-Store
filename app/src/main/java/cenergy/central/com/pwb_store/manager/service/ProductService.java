@@ -1,9 +1,10 @@
 package cenergy.central.com.pwb_store.manager.service;
 
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
-import cenergy.central.com.pwb_store.model.Product;
+import cenergy.central.com.pwb_store.model.response.BrandResponse;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -103,6 +104,21 @@ public interface ProductService {
             @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String conditionType,
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage);
+
+    @GET("/rest/V1/headless/categories/{categoryId}/products")
+    Call<ProductResponse> getProductsFilterByBrand(
+            @Path("categoryId") String categoryId,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") int statusValue,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String conditionType,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String brandQuery,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") Long brandId,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String brandConditionType,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage);
+
+    @GET("/rest/V1/headless/categories/{categoryId}/brands")
+    Call<BrandResponse> getBrands(@Path("categoryId") String categoryId);
 
     @GET("/rest/V1/products/{sku}")
     Call<Product> getProductDetail(

@@ -2,24 +2,32 @@ package cenergy.central.com.pwb_store.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.FilterByBrandViewHolder;
+import cenergy.central.com.pwb_store.model.Brand;
 
-public class FilterByBrandAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FilterByBrandAdapter extends RecyclerView.Adapter<FilterByBrandViewHolder> {
 
-    private List<String> mFilterByBrandList;
+    private OnBrandFilterClickListener listener;
+    private List<Brand> brands;
 
-    public void setBrandForFilter(List<String> filterByBrandList) {
-        this.mFilterByBrandList = filterByBrandList;
+    public FilterByBrandAdapter(OnBrandFilterClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void setBrandForFilter(List<Brand> brands) {
+        this.brands = brands;
         notifyDataSetChanged();
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FilterByBrandViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new FilterByBrandViewHolder(
                 LayoutInflater
                         .from(parent.getContext())
@@ -28,13 +36,19 @@ public class FilterByBrandAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        FilterByBrandViewHolder filterByBrandViewHolder = (FilterByBrandViewHolder) holder;
-        filterByBrandViewHolder.setViewHolder(mFilterByBrandList.get(position));
+    public void onBindViewHolder(FilterByBrandViewHolder holder, int position) {
+        final Brand brand = brands.get(position);
+        holder.setViewHolder(brand);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onClickedItem(brand);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return mFilterByBrandList.size();
+        return brands.size();
     }
 }

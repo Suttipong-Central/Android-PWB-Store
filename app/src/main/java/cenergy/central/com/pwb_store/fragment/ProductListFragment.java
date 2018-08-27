@@ -34,6 +34,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
+import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
@@ -45,8 +46,8 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
 import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.Category;
-import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
@@ -54,6 +55,7 @@ import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
+import cenergy.central.com.pwb_store.model.response.BrandResponse;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -69,7 +71,7 @@ import static java.lang.Math.ceil;
  * Created by napabhat on 7/6/2017 AD.
  */
 
-public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks, View.OnClickListener {
+public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks, View.OnClickListener, OnBrandFilterClickListener {
     private static final String TAG = ProductListFragment.class.getSimpleName();
     private static final String ARG_TITLE = "ARG_TITLE";
     private static final String ARG_SEARCH = "ARG_SEARCH";
@@ -104,7 +106,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private ProductDao mProductDao;
     private ProductFilterList mProductFilterList;
     private ProductFilterList mTempProductFilterList;
-    private List<String> mProductFilterByBrandList = new ArrayList<>();
+    private List<Brand> brands = new ArrayList<>();
     private SortingList mSortingList;
     private SortingList mTempSortingList;
     private String title;
@@ -212,8 +214,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
                             keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                 } else {
-//                    HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-//                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
                     layoutProgress.setVisibility(View.VISIBLE);
 //                    getProductList(departmentId);
                     retrieveProductList(departmentId);
@@ -236,28 +236,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 new ApiResponseCallback<ProductResponse>() {
                     @Override
                     public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
-                        if (response != null) {
-                            totalItem = response.getTotalCount();
-                            totalPage = totalPageCal(totalItem);
-                            Log.d(TAG, " totalPage :" + totalPage);
-                            currentPage = getNextPage();
-                            response.setCurrentPage(currentPage);
-                            mProductListAdapter.setProduct(response);
-                            setTextHeader(totalItem, title);
-                            mProgressDialog.dismiss();
-                            if(mPowerBuyPopupWindow.isShowing()){
-                                mPowerBuyPopupWindow.dismiss();
-                            }
-                            layoutProgress.setVisibility(View.GONE);
-                        } else {
-                            mProductListAdapter.setError();
-                            setTextHeader(totalItem, title);
-                            mProgressDialog.dismiss();
-                            if(mPowerBuyPopupWindow.isShowing()){
-                                mPowerBuyPopupWindow.dismiss();
-                            }
-                            layoutProgress.setVisibility(View.GONE);
-                        }
+                        updateProductList(response);
                     }
 
                     @Override
@@ -364,6 +343,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     public void onEvent(ProductFilterItemBus productFilterItemBus) {
         showProgressDialog();
         isDoneFilter = true;
+        currentPage = 1; // clear current page
         ProductFilterItem productFilterItem = productFilterItemBus.getProductFilterItem();
         Log.d(TAG, "productFilterItemBus" + productFilterItem.getId());
         callFilter(productFilterItem.getId(), sortName, sortType);
@@ -463,46 +443,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
         resetPage();
 
-//        List<ProductList> mProductListList = new ArrayList<>();
-//        mProductListList.add(new ProductList("1111","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-//                "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/0e5/oFp5mm.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-//                "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-//        mProductListList.add(new ProductList("2345","http://www.mx7.com/i/1cb/TL8yVR.png","Lenovo","Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)",35000,30000));
-//        mProductListList.add(new ProductList("1122","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
-//        mProductListList.add(new ProductList("2233","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-//                "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/0e5/oFp5mm.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-//                "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/1cb/TL8yVR.png","Lenovo","Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)",35000,30000));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-//                "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/0e5/oFp5mm.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-//                "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/1cb/TL8yVR.png","Lenovo","Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)",35000,30000));
-//        mProductListList.add(new ProductList("2222","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
-//        mProductDao = new ProductDao(mProductListList, 20, 20, 10, 5, 5, false);
-
-        // filter
-//        List<ProductFilterItem> productFilterItems1 = new ArrayList<>();
-//        productFilterItems1.add(new ProductFilterItem(1, "DSL", "dsl", "single", "", false));
-//        productFilterItems1.add(new ProductFilterItem(1, "Digital Compact", "digital_compact", "single", "", false));
-//        productFilterItems1.add(new ProductFilterItem(1, "Compact", "compact", "single", "", false));
-//        productFilterItems1.add(new ProductFilterItem(1, "DSLR", "dslr", "single", "", false));
-//        productFilterItems1.add(new ProductFilterItem(1, "SLR", "slr", "single", "", false));
-//
-//        List<ProductFilterItem> productFilterItems2 = new ArrayList<>();
-//        productFilterItems2.add(new ProductFilterItem(2, "Tablet 10", "tablet_10", "single", "", false));
-//        productFilterItems2.add(new ProductFilterItem(2, "iPhone", "iphone", "single", "", false));
-//        productFilterItems2.add(new ProductFilterItem(2, "Samsung", "samsung", "single", "", false));
-//        productFilterItems2.add(new ProductFilterItem(2, "OPPO", "oppo", "single", "", false));
-//        productFilterItems2.add(new ProductFilterItem(2, "Sony", "sony", "single", "", false));
-//
-//        List<ProductFilterHeader> productFilterHeaders = new ArrayList<>();
-//        productFilterHeaders.add(new ProductFilterHeader("1", "Camera", "camera", "multiple", productFilterItems1));
-//        productFilterHeaders.add(new ProductFilterHeader("2", "Mobile & Tablet", "mobile_tablet", "multiple", productFilterItems2));
-//
 //        mProductFilterList = new ProductFilterList(productFilterHeaders);
 
         // sorting
@@ -552,10 +492,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 }
                 break;
             case R.id.layout_brand:
-                if (mProductFilterByBrandList.isEmpty()) {
+                if (brands.isEmpty()) {
                     mPowerBuyPopupWindow.dismiss();
                 } else {
-                    mPowerBuyPopupWindow.setRecyclerViewFilterByBrand(mProductFilterByBrandList);
+                    mPowerBuyPopupWindow.setRecyclerViewFilterByBrand(brands, this);
                     mPowerBuyPopupWindow.showAsDropDown(v);
                 }
                 break;
@@ -610,21 +550,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
             } else {
                 showProgressDialog();
-//                HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-//                        "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-//                getProductList(departmentId);
                 retrieveProductList(departmentId);
             }
-            if (mProductFilterSubHeader != null) {
-//                mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
-            }
-        }
-////        else {
-////            mProductListAdapter.setProduct(mProductDao);
-////        }
-
-        if (mProductFilterSubHeader != null) {
-//            mProductFilterList = new ProductFilterList(mCategory.getFilterHeaders());
         }
 
         int scrollPosition = 0;
@@ -748,8 +675,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         resetPage();
         sortName = sortNameT;
         sortType = sortTypeT;
-//        HttpManagerMagentoOld.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-//                "finset", PER_PAGE, 1, sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
         retrieveProductList(departmentId);
     }
 
@@ -759,7 +684,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     private int totalPageCal(int total) {
         int num;
-        float x = ((float) total / 20);
+        float x = ((float) total / PER_PAGE);
         Log.d(TAG, "Calculator : " + x);
         num = (int) ceil(x);
         return num;
@@ -780,7 +705,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     }
 
-    private void retrieveProductList(String departmentId) {
+    private void retrieveProductList(final String departmentId) {
         HttpManagerMagento.Companion.getInstance().retrieveProductList(
                 departmentId,
                 PER_PAGE,
@@ -788,35 +713,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 new ApiResponseCallback<ProductResponse>() {
                     @Override
                     public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
-                        if (response != null) {
-                            totalItem = response.getTotalCount();
-                            totalPage = totalPageCal(totalItem);
-                            Log.d(TAG, " totalPage :" + totalPage);
-                            currentPage = getNextPage();
-                            response.setCurrentPage(currentPage);
-                            for (Product product : response.getProducts()) {
-                                if(mProductFilterByBrandList.indexOf(product.getBrand()) == -1){
-                                    mProductFilterByBrandList.add(product.getBrand());
-                                }
-                            }
-                            mProductListAdapter.setProduct(response);
-                            setTextHeader(totalItem, title);
-                            mProgressDialog.dismiss();
-                            if(mPowerBuyPopupWindow.isShowing()){
-                                mPowerBuyPopupWindow.dismiss();
-                            }
-                            layoutProgress.setVisibility(View.GONE);
-                        } else {
-                            if(mProductListAdapter.getItemCount() == 0){
-                                mProductListAdapter.setError();
-                            }
-                            setTextHeader(totalItem, title);
-                            mProgressDialog.dismiss();
-                            if(mPowerBuyPopupWindow.isShowing()){
-                                mPowerBuyPopupWindow.dismiss();
-                            }
-                            layoutProgress.setVisibility(View.GONE);
-                        }
+                        updateProductList(response);
                     }
 
                     @Override
@@ -827,4 +724,90 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 }
         );
     }
+
+    private void retrieveProductList(final String departmentId, Long brandId) {
+        if (mProgressDialog != null && !mProgressDialog.isShowing()) {
+            showProgressDialog();
+        }
+        HttpManagerMagento.Companion.getInstance().retrieveProductsFilterByBrand(
+                departmentId,
+                brandId,
+                PER_PAGE,
+                getNextPage(),
+                new ApiResponseCallback<ProductResponse>() {
+                    @Override
+                    public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                        updateProductList(response);
+                    }
+
+                    @Override
+                    public void failure(@NotNull APIError error) {
+                        Log.d("productDaoResponse", error.toString());
+                        layoutProgress.setVisibility(View.GONE);
+                    }
+                }
+        );
+    }
+
+    private void getBrands(String departmentId) {
+        Log.d("Start getBrands", "here we go!");
+        HttpManagerMagento.Companion.getInstance().getBrands(departmentId, new ApiResponseCallback<BrandResponse>() {
+            @Override
+            public void success(@org.jetbrains.annotations.Nullable BrandResponse response) {
+                if (response != null) {
+                    ProductListFragment.this.brands = response.getItems();
+                }
+                if (mPowerBuyPopupWindow.isShowing()) {
+                    mPowerBuyPopupWindow.dismiss();
+                }
+                layoutProgress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                Log.d("getBrands", error.toString());
+                if (mPowerBuyPopupWindow.isShowing()) {
+                    mPowerBuyPopupWindow.dismiss();
+                }
+                layoutProgress.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void updateProductList(ProductResponse response) {
+        if (response != null) {
+            totalItem = response.getTotalCount();
+            totalPage = totalPageCal(totalItem);
+            Log.d(TAG, " totalPage :" + totalPage);
+            currentPage = getNextPage();
+            response.setCurrentPage(currentPage);
+            mProductListAdapter.setProduct(response);
+            setTextHeader(totalItem, title);
+            mProgressDialog.dismiss();
+//            if (mPowerBuyPopupWindow.isShowing()) {
+//                mPowerBuyPopupWindow.dismiss();
+//            }
+//                            layoutProgress.setVisibility(View.GONE);
+        } else {
+            if (mProductListAdapter.getItemCount() == 0) {
+                mProductListAdapter.setError();
+            }
+            setTextHeader(totalItem, title);
+            mProgressDialog.dismiss();
+//            if (mPowerBuyPopupWindow.isShowing()) {
+//                mPowerBuyPopupWindow.dismiss();
+//            }
+//                            layoutProgress.setVisibility(View.GONE);
+        }
+
+        getBrands(departmentId);
+    }
+
+    // region {@link OnBrandFilterClickListener}
+    @Override
+    public void onClickedItem(@NotNull Brand brand) {
+        currentPage = 0; // clear current page
+        retrieveProductList(departmentId, brand.getBrandId());
+    }
+    // endregion
 }

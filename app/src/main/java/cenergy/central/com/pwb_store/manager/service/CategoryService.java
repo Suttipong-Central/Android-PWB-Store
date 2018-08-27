@@ -4,8 +4,10 @@ import java.util.List;
 
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
+import cenergy.central.com.pwb_store.model.response.BrandResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -26,6 +28,6 @@ public interface CategoryService {
 
     @GET("/rest/V1/headless/categories")
     Call<Category> getCategories(
-            @Query("categoryId") int parentId,
+            @Query("categoryId") int categoryId,
             @Query("categoryLevel") int categoryLevel);
 }
