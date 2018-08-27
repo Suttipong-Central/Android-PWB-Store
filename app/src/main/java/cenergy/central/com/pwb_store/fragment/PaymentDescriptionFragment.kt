@@ -121,7 +121,7 @@ class PaymentDescriptionFragment : Fragment() {
         totalPrice.text = getDisplayPrice(unit, total.toString())
         contactNumberEdt.setText(contactNo)
         paymentBtn.setOnClickListener {
-            showAlertCheckPayment("", resources.getString(R.string.comfrim_oder))
+            checkConfirm()
         }
     }
 
@@ -133,7 +133,7 @@ class PaymentDescriptionFragment : Fragment() {
             lastName = lastNameEdt.editText.text.toString()
             email = emailEdt.editText.text.toString()
             contactNo = contactNumberEdt.editText.text.toString()
-            createBilling()
+            showAlertCheckPayment("", resources.getString(R.string.comfrim_oder))
         } else {
             mProgressDialog?.dismiss()
             showAlertDialog("", resources.getString(R.string.fill_in_important_information))
@@ -191,7 +191,7 @@ class PaymentDescriptionFragment : Fragment() {
     private fun showAlertCheckPayment(title: String, message: String) {
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> checkConfirm() }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createBilling() }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
