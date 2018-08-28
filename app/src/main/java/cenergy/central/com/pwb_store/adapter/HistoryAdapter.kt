@@ -7,13 +7,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.HistoryViewHolder
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 
-class HistoryAdapter : RecyclerView.Adapter<HistoryViewHolder>() {
-
-    var orderResponses: List<OrderResponse> = arrayListOf()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+class HistoryAdapter(private val orderResponses: MutableList<OrderResponse>) : RecyclerView.Adapter<HistoryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         return HistoryViewHolder(LayoutInflater.from(parent.context)

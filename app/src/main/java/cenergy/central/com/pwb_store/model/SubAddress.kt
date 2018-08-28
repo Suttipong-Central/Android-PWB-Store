@@ -1,13 +1,14 @@
 package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 
 /**
  * Created by Anuphap Suwannamas on 26/8/2018 AD.
  * Email: Anupharpae@gmail.com
  */
 
-data class SubAddress(
+open class SubAddress(
         @SerializedName("tel_mobile")
         var mobile: String = "",
         @SerializedName("house_no")
@@ -23,4 +24,4 @@ data class SubAddress(
         var subDistrict: String = "",
         @SerializedName("postcode_id")
         var postcodeId: String = "",
-        var postcode: String = "")
+        var postcode: String = "") : RealmObject()

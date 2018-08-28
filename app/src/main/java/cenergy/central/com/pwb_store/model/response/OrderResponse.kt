@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model.response
 
 import cenergy.central.com.pwb_store.model.AddressInformation
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -35,7 +36,7 @@ open class OrderResponse(
         var updatedAt: String = "",
         var weight: Double = 0.0,
         @SerializedName("items")
-        var items: ArrayList<Item> = arrayListOf(),
+        var items: RealmList<Item>? = null,
         @SerializedName("billing_address")
         var billingAddress: AddressInformation? = null
 ) : RealmObject() {

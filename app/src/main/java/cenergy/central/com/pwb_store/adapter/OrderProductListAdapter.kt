@@ -9,7 +9,7 @@ import cenergy.central.com.pwb_store.model.response.Item
 
 class OrderProductListAdapter : RecyclerView.Adapter<OrderProductListViewHolder>() {
 
-    var listItems : ArrayList<Item> = arrayListOf()
+    var listItems : List<Item> = arrayListOf()
     set(value) {
         field = value
         notifyDataSetChanged()

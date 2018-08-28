@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmList
 import io.realm.RealmObject
 
 /**
@@ -13,7 +14,7 @@ open class AddressInformation(
         var regionId: String = "",
         var regionCode: String = "",
         var region: String = "",
-        var street: ArrayList<String> = arrayListOf(),
+        var street: RealmList<String>? = null,
         var company: String = "",
         var telephone: String = "",
         var postcode: String = "",
@@ -39,7 +40,7 @@ open class AddressInformation(
                     regionId = "668",
                     regionCode = "BKK",
                     region = "กรุงเทพมหานคร",
-                    street = arrayListOf("ถนนหนึ่ง", "ถนนสอง"),
+                    street = RealmList("ถนนหนึ่ง", "ถนนสอง"),
                     company = "",
                     telephone = contactNo,
                     postcode = "10600",

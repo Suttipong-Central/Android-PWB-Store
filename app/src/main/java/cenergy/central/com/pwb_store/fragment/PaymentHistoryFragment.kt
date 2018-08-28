@@ -16,7 +16,6 @@ class PaymentHistoryFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var txtResult: PowerBuyTextView
-    private var historyAdapter = HistoryAdapter()
     private var orderResponses = RealmController.getInstance().orderResponses
 
     companion object {
@@ -38,9 +37,8 @@ class PaymentHistoryFragment : Fragment() {
         recyclerView = rootView.findViewById(R.id.recycler_view_history)
         txtResult = rootView.findViewById(R.id.txt_result)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = HistoryAdapter()
+        recyclerView.adapter = HistoryAdapter(this.orderResponses)
         if (this.orderResponses.size > 0) {
-            historyAdapter.orderResponses = this.orderResponses
             recyclerView.visibility = View.VISIBLE
             txtResult.visibility = View.GONE
         } else {

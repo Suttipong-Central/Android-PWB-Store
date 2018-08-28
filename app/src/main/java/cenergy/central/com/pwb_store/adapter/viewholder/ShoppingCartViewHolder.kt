@@ -11,7 +11,8 @@ import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
-import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.*
+import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.ACTION_DECREASE
+import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.ACTION_INCREASE
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
@@ -29,28 +30,30 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
 
     // data
-    private val database = RealmController.with(itemView.context)
+    private val database = RealmController.getInstance()
     private var listener: ShoppingCartAdapter.ShoppingCartListener? = null
     private lateinit var cartItem: CartItem
 
     @SuppressLint("SetTextI18n")
     fun bindView(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
-        val unit = Contextor.getInstance().context.getString(R.string.baht)
-        this.listener = listener
-        this. cartItem = cartItem
-        productName.text = cartItem.name
-        productCode.text = "${itemView.context.resources.getString(
-                R.string.product_code)} ${cartItem.sku}"
-        productPrice.text = "${itemView.context.resources.getString(
-                R.string.product_price)} ${getDisplayPrice(unit, cartItem.price.toString())}"
         val cacheCartItem = database.getCartItem(cartItem.id) // get cacheCartItem
-        productQty.setOnClickQuantity(this)
-        productQty.setMaximum(cacheCartItem.maxQTY)
-        productQty.setQty(cartItem.qty!!)
-        totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), cartItem.price!!))
+        if (cacheCartItem != null) {
+            val unit = itemView.context.getString(R.string.baht)
+            this.listener = listener
+            this.cartItem = cartItem
+            productName.text = cartItem.name
+            productCode.text = "${itemView.context.resources.getString(
+                    R.string.product_code)} ${cartItem.sku}"
+            productPrice.text = "${itemView.context.resources.getString(
+                    R.string.product_price)} ${getDisplayPrice(unit, cartItem.price.toString())}"
+            productQty.setOnClickQuantity(this)
+            productQty.setMaximum(cacheCartItem.maxQTY ?: 1)
+            productQty.setQty(cartItem.qty!!)
+            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), cartItem.price!!))
 
-        deleteImageView.setOnClickListener {
-            confirmDelete(cartItem, listener)
+            deleteImageView.setOnClickListener {
+                confirmDelete(cartItem, listener)
+            }
         }
     }
 
@@ -65,7 +68,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 resultQty = qty - 1
             }
         }
-        cartItem.id?.let { itemId -> cartItem.cartId?.let { listener?.onUpdateItem(it, itemId,resultQty) } }
+        cartItem.id?.let { itemId -> cartItem.cartId?.let { listener?.onUpdateItem(it, itemId, resultQty) } }
     }
     // endregion
 

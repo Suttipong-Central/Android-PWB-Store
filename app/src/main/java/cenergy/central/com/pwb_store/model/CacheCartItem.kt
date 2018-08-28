@@ -16,7 +16,7 @@ open class CacheCartItem(
         var price: Double? = 0.0,
         var type: String? = "",
         var cartId: String? = "",
-        var maxQTY: Int = 0) : RealmObject() {
+        var maxQTY: Int? = 0) : RealmObject() {
 
     companion object {
         const val FIELD_ID = "itemId"
@@ -25,7 +25,7 @@ open class CacheCartItem(
         fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
             return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
                     name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
-                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 0)
+                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1)
         }
     }
 

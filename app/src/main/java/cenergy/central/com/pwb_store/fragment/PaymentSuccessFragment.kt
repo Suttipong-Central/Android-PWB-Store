@@ -44,7 +44,7 @@ class PaymentSuccessFragment : Fragment() {
     lateinit var openToday: PowerBuyTextView
     lateinit var finishButton: CardView
     private var orderId: String? = null
-    private var listItems: ArrayList<Item> = arrayListOf()
+    private var listItems: List<Item>? = arrayListOf()
     private var orderProductListAdapter = OrderProductListAdapter()
     private var mProgressDialog: ProgressDialog? = null
 
@@ -119,14 +119,14 @@ class PaymentSuccessFragment : Fragment() {
     private fun updateViewOrder(response: OrderResponse) {
         val unit = context!!.getString(R.string.baht)
         listItems = response.items
-        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems
+        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems?: arrayListOf()
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${response.orderId}"
 
         //Setup total price
         var total = 0.0
-        listItems.forEach {
-            total += it.baseTotalIncludeTax!!
+        for (item in listItems ?: arrayListOf()) {
+            total += item.baseTotalIncludeTax!!
         }
         totalPrice.text = getDisplayPrice(unit, total.toString())
 
