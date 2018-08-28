@@ -41,6 +41,7 @@ import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.PaymentHistoryFragment;
+import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
@@ -56,6 +57,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
+import cenergy.central.com.pwb_store.manager.listeners.HistoryClickListener;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
@@ -73,7 +75,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements MenuDrawerClickListener {
+public class MainActivity extends AppCompatActivity implements MenuDrawerClickListener, HistoryClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
@@ -539,6 +541,14 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
             }
             break;
         }
+    }
+
+    @Override
+    public void onClickHistory(@NotNull String orderResponseId) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction
+                .replace(R.id.container, PaymentSuccessFragment.Companion.newInstanceByHistory(orderResponseId), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                .commit();
     }
     // endregion
 }

@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.HistoryViewHolder
+import cenergy.central.com.pwb_store.manager.listeners.HistoryClickListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 
-class HistoryAdapter(private val orderResponses: MutableList<OrderResponse>) : RecyclerView.Adapter<HistoryViewHolder>() {
+class HistoryAdapter(var listener: HistoryClickListener, private val orderResponses: MutableList<OrderResponse>) : RecyclerView.Adapter<HistoryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         return HistoryViewHolder(LayoutInflater.from(parent.context)
@@ -19,7 +21,11 @@ class HistoryAdapter(private val orderResponses: MutableList<OrderResponse>) : R
     }
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
-        holder.bindView(orderResponses[position])
+        val orderResponse = orderResponses[position]
+        holder.cardView.setOnClickListener {
+            listener.onClickHistory(orderResponse.orderId!!)
+        }
+        holder.bindView(orderResponse)
     }
 
 }

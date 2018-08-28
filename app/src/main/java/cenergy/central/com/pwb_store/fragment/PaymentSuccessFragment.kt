@@ -44,12 +44,14 @@ class PaymentSuccessFragment : Fragment() {
     lateinit var openToday: PowerBuyTextView
     lateinit var finishButton: CardView
     private var orderId: String? = null
+    private var orderResponseId: String? = null
     private var listItems: List<Item>? = arrayListOf()
     private var orderProductListAdapter = OrderProductListAdapter()
     private var mProgressDialog: ProgressDialog? = null
 
     companion object {
         private const val ORDER_ID = "ORDER_ID"
+        private const val ORDER_RESPONSE_ID = "ORDER_RESPONSE_ID"
 
         fun newInstance(orderId: String): PaymentSuccessFragment {
             val fragment = PaymentSuccessFragment()
@@ -58,11 +60,20 @@ class PaymentSuccessFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+
+        fun newInstanceByHistory(orderResponseId: String): PaymentSuccessFragment {
+            val fragment = PaymentSuccessFragment()
+            val args = Bundle()
+            args.putString(ORDER_RESPONSE_ID, orderResponseId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         orderId = arguments?.getString(ORDER_ID)
+        orderResponseId = arguments?.getString(ORDER_RESPONSE_ID)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -94,6 +105,10 @@ class PaymentSuccessFragment : Fragment() {
         if (orderId != null) {
             getOrder()
         }
+
+        if(orderResponseId != null){
+            gerOrderByRealm(orderResponseId!!)
+        }
     }
 
     private fun getOrder() {
@@ -101,7 +116,7 @@ class PaymentSuccessFragment : Fragment() {
             override fun success(response: OrderResponse?) {
                 if (response != null) {
                     RealmController.with(context).saveOrderResponse(response)
-                    updateViewOrder(response)
+                        updateViewOrder(response)
                 } else {
                     mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -113,6 +128,11 @@ class PaymentSuccessFragment : Fragment() {
                 showAlertDialog("", error.errorMessage)
             }
         })
+    }
+
+    private fun gerOrderByRealm(orderResponseId: String) {
+        val orderResponse = RealmController.with(context).getOrderResponse(orderResponseId)
+        updateViewOrder(orderResponse)
     }
 
     @SuppressLint("SetTextI18n")

@@ -130,7 +130,7 @@
     <string name="sub_district">Sub district</string>
     <string name="post_code">Postcode</string>
     <string name="success">Your order is successful</string>
-    <string name="order_number">Order number: </string>
+    <string name="order_number">Order Number: </string>
     <string name="products">Products</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
@@ -173,4 +173,6 @@
     <string name="choose">เลือก</string>
     <string name="history">History</string>
     <string name="not_have_data">ไม่มีข้อมูล</string>
+    <string name="name_user_order">Username: </string>
+    <string name="order_date_history">Order Date: </string>
 </resources>
