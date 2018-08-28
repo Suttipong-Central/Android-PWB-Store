@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
+import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
@@ -26,6 +27,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 
 class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener,
         PaymentDescriptionListener, PaymentMembersListener, MemberClickListener {
+    var mToolbar: Toolbar? = null
     override fun getItemList(): List<CartItem> {
         return this.cartItemList
     }
@@ -69,6 +71,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
 
     override fun onPaymentClickListener(orderId: String) {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        mToolbar?.setNavigationOnClickListener(null)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId))
@@ -90,11 +93,13 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     }
 
     private fun initView() {
-        val mToolbar: Toolbar = findViewById(R.id.toolbar)
+        mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         preferenceManager = PreferenceManager(this)
-        mToolbar.setNavigationOnClickListener { finish() }
+        mToolbar?.setNavigationOnClickListener {
+            finish()
+        }
     }
 
     private fun showProgressDialog() {
