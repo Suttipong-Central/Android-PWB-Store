@@ -16,6 +16,7 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
     private var qty: Int = 0
     private var maximum: Int = 10 // default
     private var listener: OnViewClickListener? = null
+    private var enable: Boolean = true
 
     constructor(context: Context) : super(context) {
         prepareView()
@@ -47,8 +48,9 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
         }
     }
 
-    fun setOnClickQuantity(listener: OnViewClickListener) {
+    fun setOnClickQuantity(listener: OnViewClickListener, enable: Boolean) {
         this.listener = listener
+        this.enable =enable
     }
 
     private fun addQty() {
@@ -82,8 +84,13 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
 
     private fun notifyAttributeChanged() {
         qtyText.text = qty.toString()
-        removeButton.isEnabled = qty > 1
-        addButton.isEnabled = qty < maximum
+        if (enable) {
+            removeButton.isEnabled = qty > 1
+            addButton.isEnabled = qty < maximum
+        } else {
+            removeButton.isEnabled = false
+            addButton.isEnabled = false
+        }
         isDisableButton(addButton)
         isDisableButton(removeButton)
     }

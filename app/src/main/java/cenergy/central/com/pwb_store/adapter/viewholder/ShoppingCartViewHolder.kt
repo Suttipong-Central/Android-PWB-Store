@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
-import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
@@ -37,24 +36,30 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     @SuppressLint("SetTextI18n")
     fun bindView(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
         val cacheCartItem = database.getCartItem(cartItem.id) // get cacheCartItem
-        if (cacheCartItem != null) {
-            val unit = itemView.context.getString(R.string.baht)
-            this.listener = listener
-            this.cartItem = cartItem
-            productName.text = cartItem.name
-            productCode.text = "${itemView.context.resources.getString(
-                    R.string.product_code)} ${cartItem.sku}"
-            productPrice.text = "${itemView.context.resources.getString(
-                    R.string.product_price)} ${getDisplayPrice(unit, cartItem.price.toString())}"
-            productQty.setOnClickQuantity(this)
-            productQty.setMaximum(cacheCartItem.maxQTY ?: 1)
-            productQty.setQty(cartItem.qty!!)
-            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), cartItem.price!!))
+        val unit = itemView.context.getString(R.string.baht)
+        this.listener = listener
+        this.cartItem = cartItem
+        productName.text = cartItem.name
+        productCode.text = "${itemView.context.resources.getString(
+                R.string.product_code)} ${cartItem.sku}"
+        productPrice.text = "${itemView.context.resources.getString(
+                R.string.product_price)} ${getDisplayPrice(unit, cartItem.price.toString())}"
 
+        if (cacheCartItem != null) {
+            productQty.setOnClickQuantity(this, true)
+            deleteImageView.visibility = View.VISIBLE
             deleteImageView.setOnClickListener {
                 confirmDelete(cartItem, listener)
             }
+        } else {
+            totalPrice.setEnableStrikeThrough(true)
+            productQty.setOnClickQuantity(this, false)
+            deleteImageView.visibility = View.GONE
         }
+
+        productQty.setMaximum(if (cacheCartItem == null) 1 else cacheCartItem.maxQTY ?: 1)
+        productQty.setQty(cartItem.qty!!)
+        totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), cartItem.price!!))
     }
 
     // region {@link implement PowerBuyIncreaseOrDecreaseView.OnViewClickListener}

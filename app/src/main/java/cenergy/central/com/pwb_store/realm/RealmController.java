@@ -288,14 +288,14 @@ public class RealmController {
         });
     }
 
-    public List<OrderResponse> deleteOrderResponse(final Long itemId) {
+    public List<OrderResponse> deleteOrderResponse(final String orderId) {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                RealmResults<CacheCartItem> realmCompareProducts = realm.where(CacheCartItem.class).equalTo(
-                        CacheCartItem.FIELD_ID, itemId).findAll();
-                realmCompareProducts.deleteAllFromRealm();
+                RealmResults<OrderResponse> realmOrderResponses = realm.where(OrderResponse.class).equalTo(
+                        OrderResponse.FIELD_ORDER_ID, orderId).findAll();
+                realmOrderResponses.deleteAllFromRealm();
             }
         });
 

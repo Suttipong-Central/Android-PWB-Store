@@ -142,9 +142,12 @@ class PaymentDescriptionFragment : Fragment() {
         shoppingCartAdapter.cartItemList = this.cartItemList
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
+        val database = RealmController.getInstance()
         var total = 0.0
         cartItemList.forEach {
-            total += it.qty!! * it.price!!
+            if (database.getCartItem(it.id) != null) {
+                total += it.qty!! * it.price!!
+            }
         }
         totalPrice.text = getDisplayPrice(unit, total.toString())
         paymentBtn.setOnClickListener {

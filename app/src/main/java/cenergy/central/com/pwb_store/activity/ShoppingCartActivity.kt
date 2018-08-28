@@ -144,21 +144,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
                 if (response != null) {
-                    cartItemList = response
-                    shoppingCartAdapter.cartItemList = cartItemList
-
-                    var sum = 0
-                    for (item in cartItemList) {
-                        sum += item.qty ?: 0
-                    }
-                    updateTitle(sum)
-
-                    var total = 0.0
-                    cartItemList.forEach {
-                        total += it.qty!! * it.price!!
-                    }
-                    totalPrice.text = getDisplayPrice(unit, total.toString())
-                    checkCanClickPayment()
+                   updateViewShoppingCart(response)
                     mProgressDialog?.dismiss()
                 } else {
                     mProgressDialog?.dismiss()
@@ -171,6 +157,27 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
                 showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
             }
         })
+    }
+
+    private fun updateViewShoppingCart(response: List<CartItem>) {
+        val database = RealmController.getInstance()
+        cartItemList = response
+        shoppingCartAdapter.cartItemList = cartItemList
+
+        var sum = 0
+        for (item in cartItemList) {
+            sum += item.qty ?: 0
+        }
+        updateTitle(sum)
+
+        var total = 0.0
+        cartItemList.forEach {
+            if (database.getCartItem(it.id) != null) {
+                total += it.qty!! * it.price!!
+            }
+        }
+        totalPrice.text = getDisplayPrice(unit, total.toString())
+        checkCanClickPayment()
     }
 
     private fun checkCanClickPayment() {
