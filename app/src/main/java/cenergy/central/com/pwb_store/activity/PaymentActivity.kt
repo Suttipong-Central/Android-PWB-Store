@@ -68,7 +68,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     }
 
     override fun onPaymentClickListener(orderId: String) {
-        supportActionBar?.setDisplayShowHomeEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId))
