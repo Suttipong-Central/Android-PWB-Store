@@ -108,7 +108,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     }
 
     private fun getItems() {
-        preferenceManager.cartId?.let { cartId->
+        preferenceManager.cartId?.let { cartId ->
             HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
                 override fun success(response: List<CartItem>?) {
                     if (response != null) {
@@ -125,36 +125,44 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     }
 
     private fun getT1CMember(customerId: String) {
-        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member>{
+        showProgressDialog()
+        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member> {
             override fun success(response: Member?) {
-                if(response != null){
+                if (response != null) {
                     val fragmentTransaction = supportFragmentManager.beginTransaction()
                     fragmentTransaction
                             .replace(R.id.container, PaymentDescriptionFragment.newInstance(response))
                             .commit()
+                    mProgressDialog?.dismiss()
                 } else {
+                    mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
                 }
             }
 
             override fun failure(error: APIError) {
                 showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
+                mProgressDialog?.dismiss()
             }
         })
     }
 
     private fun getMembersT1C(mobile: String) {
-        HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ",object : ApiResponseCallback<List<MemberResponse>>{
+        showProgressDialog()
+        HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
             override fun success(response: List<MemberResponse>?) {
-                if (response != null && response.isNotEmpty()){
+                if (response != null && response.isNotEmpty()) {
                     membersList = response
                     startMembersFragment()
+                    mProgressDialog?.dismiss()
                 } else {
+                    mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.not_have_user), true)
                 }
             }
 
             override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
                 showAlertDialog("", resources.getString(R.string.not_have_user), true)
             }
         })
@@ -170,7 +178,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     fun showAlertDialog(title: String, message: String, checkSkip: Boolean) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-        if(checkSkip){
+        if (checkSkip) {
             builder.setPositiveButton(android.R.string.ok) { dialog, which -> skipToDescription() }
             builder.setNegativeButton(android.R.string.cancel) { dialog, which -> goToCheckOut() }
         } else {
