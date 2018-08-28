@@ -8,13 +8,11 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
-import android.util.Log
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
 import cenergy.central.com.pwb_store.fragment.PaymentMembersFragment
 import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
@@ -27,7 +25,7 @@ import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
 class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener,
-        PaymentDescriptionListener, PaymentMembersListener, MembersClickListener {
+        PaymentDescriptionListener, PaymentMembersListener, MemberClickListener {
     override fun getItemList(): List<CartItem> {
         return this.cartItemList
     }
@@ -61,27 +59,12 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         if (contactNo == null) {
             skipToDescription()
         } else {
-            getCustomerT1C(contactNo)
+            getMembersT1C(contactNo)
         }
     }
 
-    override fun onMembersClickList(customerId: String) {
-        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member>{
-            override fun success(response: Member?) {
-                if(response != null){
-                    val fragmentTransaction = supportFragmentManager.beginTransaction()
-                    fragmentTransaction
-                            .replace(R.id.container, PaymentDescriptionFragment.newInstance(response))
-                            .commit()
-                } else {
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
-                }
-            }
-
-            override fun failure(error: APIError) {
-                showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
-            }
-        })
+    override fun onClickedMember(customerId: String) {
+        getT1CMember(customerId)
     }
 
     override fun onPaymentClickListener(orderId: String) {
@@ -141,7 +124,26 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         }
     }
 
-    private fun getCustomerT1C(mobile: String) {
+    private fun getT1CMember(customerId: String) {
+        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member>{
+            override fun success(response: Member?) {
+                if(response != null){
+                    val fragmentTransaction = supportFragmentManager.beginTransaction()
+                    fragmentTransaction
+                            .replace(R.id.container, PaymentDescriptionFragment.newInstance(response))
+                            .commit()
+                } else {
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
+                }
+            }
+
+            override fun failure(error: APIError) {
+                showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
+            }
+        })
+    }
+
+    private fun getMembersT1C(mobile: String) {
         HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ",object : ApiResponseCallback<List<MemberResponse>>{
             override fun success(response: List<MemberResponse>?) {
                 if (response != null && response.isNotEmpty()){

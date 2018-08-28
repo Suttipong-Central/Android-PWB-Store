@@ -12,7 +12,6 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +19,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.response.Item
 import cenergy.central.com.pwb_store.model.response.OrderResponse
@@ -77,7 +74,6 @@ class PaymentSuccessFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun setupView(rootView: View) {
         showProgressDialog()
-        val unit = Contextor.getInstance().context.getString(R.string.baht)
         recycler = rootView.findViewById(R.id.recycler_view_order_detail_list)
         orderNumber = rootView.findViewById(R.id.order_number_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
@@ -96,41 +92,52 @@ class PaymentSuccessFragment : Fragment() {
         recycler.adapter = orderProductListAdapter
 
         if (orderId != null) {
-            HttpManagerMagento.getInstance().getOrder(orderId!!, object : ApiResponseCallback<OrderResponse> {
-                override fun success(response: OrderResponse?) {
-                    if (response != null) {
-                        listItems = response.items
-                        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems
-                        //Setup order number
-                        orderNumber.text = "${resources.getString(R.string.order_number)} ${response.orderId}"
+            getOrder()
+        }
+    }
 
-                        //Setup total price
-                        var total = 0.0
-                        listItems.forEach {
-                            total += it.baseTotalIncludeTax!!
-                        }
-                        totalPrice.text = getDisplayPrice(unit, total.toString())
-
-                        //Setup customer
-                        orderDate.text = response.updatedAt
-                        name.text = "${response.billingAddress!!.firstname} ${response.billingAddress!!.lastname}"
-                        email.text = response.billingAddress!!.email
-                        contactNo.text = response.billingAddress!!.telephone
-                        mProgressDialog?.dismiss()
-                        finishButton.setOnClickListener {
-                            finishThisPage()
-                        }
-                    } else {
-                        mProgressDialog?.dismiss()
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                    }
-                }
-
-                override fun failure(error: APIError) {
+    private fun getOrder() {
+        HttpManagerMagento.getInstance().getOrder(orderId!!, object : ApiResponseCallback<OrderResponse> {
+            override fun success(response: OrderResponse?) {
+                if (response != null) {
+                    RealmController.with(context).saveOrderResponse(response)
+                    updateViewOrder(response)
+                } else {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", error.errorMessage)
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
-            })
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                showAlertDialog("", error.errorMessage)
+            }
+        })
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateViewOrder(response: OrderResponse) {
+        val unit = context!!.getString(R.string.baht)
+        listItems = response.items
+        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems
+        //Setup order number
+        orderNumber.text = "${resources.getString(R.string.order_number)} ${response.orderId}"
+
+        //Setup total price
+        var total = 0.0
+        listItems.forEach {
+            total += it.baseTotalIncludeTax!!
+        }
+        totalPrice.text = getDisplayPrice(unit, total.toString())
+
+        //Setup customer
+        orderDate.text = response.updatedAt
+        name.text = "${response.billingAddress!!.firstname} ${response.billingAddress!!.lastname}"
+        email.text = response.billingAddress!!.email
+        contactNo.text = response.billingAddress!!.telephone
+        mProgressDialog?.dismiss()
+        finishButton.setOnClickListener {
+            finishThisPage()
         }
     }
 

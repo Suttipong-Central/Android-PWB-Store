@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model.response
 
 import cenergy.central.com.pwb_store.model.AddressInformation
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 /**
@@ -9,7 +10,8 @@ import io.realm.annotations.PrimaryKey
  * Email: Anupharpae@gmail.com
  */
 
-data class OrderResponse(
+open class OrderResponse(
+        @PrimaryKey
         @SerializedName("increment_id")
         var orderId: String? = "",
         @SerializedName("base_currency_code")
@@ -36,10 +38,13 @@ data class OrderResponse(
         var items: ArrayList<Item> = arrayListOf(),
         @SerializedName("billing_address")
         var billingAddress: AddressInformation? = null
+) : RealmObject() {
+        companion object {
+            const val FIELD_ORDER_ID = "orderId"
+        }
+}
 
-)
-
-data class Item(
+open class Item(
         @PrimaryKey
         @SerializedName("item_id")
         var id: Long? = 0,
@@ -67,4 +72,4 @@ data class Item(
         @SerializedName("tax_percent")
         var taxPercent: Double = 0.0,
         var weight: Double = 0.0
-)
+) : RealmObject()

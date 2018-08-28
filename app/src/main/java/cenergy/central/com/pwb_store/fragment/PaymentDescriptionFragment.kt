@@ -167,7 +167,7 @@ class PaymentDescriptionFragment : Fragment() {
         }
     }
 
-    private fun createBilling() {
+    private fun createShippingInformation() {
         if (cartId != null) {
             val shippingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
             val billingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
@@ -219,7 +219,7 @@ class PaymentDescriptionFragment : Fragment() {
     private fun showAlertCheckPayment(title: String, message: String) {
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createBilling() }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createShippingInformation() }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {

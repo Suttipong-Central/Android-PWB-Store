@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.model.CachedEndpoint;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
+import cenergy.central.com.pwb_store.model.response.OrderResponse;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -245,6 +246,79 @@ public class RealmController {
             @Override
             public void execute(Realm realm) {
                 realm.where(CacheCartItem.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
+
+    // region Order
+    public void saveOrderResponse(final OrderResponse orderResponse) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(orderResponse);
+            }
+        });
+    }
+
+    public void saveOrderResponse(final OrderResponse orderResponse, final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(orderResponse);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+
+            @Override
+            public void onSuccess() {
+                if (listener != null) {
+                    Log.d("Database", "stored orderResponse");
+                    listener.onSuccessfully();
+                }
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(@NonNull Throwable error) {
+                if (listener != null) {
+                    listener.onFailure(error);
+                }
+            }
+        });
+    }
+
+    public List<OrderResponse> deleteOrderResponse(final Long itemId) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                RealmResults<CacheCartItem> realmCompareProducts = realm.where(CacheCartItem.class).equalTo(
+                        CacheCartItem.FIELD_ID, itemId).findAll();
+                realmCompareProducts.deleteAllFromRealm();
+            }
+        });
+
+        return getOrderResponses();
+    }
+
+    public List<OrderResponse> getOrderResponses() {
+        Realm realm = getRealm();
+        RealmResults<OrderResponse> realmOrderResponses = realm.where(OrderResponse.class).sort(OrderResponse.FIELD_ORDER_ID, Sort.DESCENDING).findAll();
+        return realmOrderResponses == null ? null : realm.copyFromRealm(realmOrderResponses);
+    }
+
+    public OrderResponse getOrderResponse(String orderId) {
+        OrderResponse realmOrderResponse = realm.where(OrderResponse.class).equalTo(OrderResponse.FIELD_ORDER_ID, orderId).findFirst();
+        return realmOrderResponse == null ? null : realm.copyFromRealm(realmOrderResponse);
+    }
+
+    public void deleteAllOrderResponse() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(OrderResponse.class).findAll().deleteAllFromRealm();
             }
         });
     }
