@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.activity
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -14,6 +15,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
@@ -49,6 +51,23 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
     companion object {
         private const val CART_ID = "CART_ID"
+
+        @JvmStatic
+        fun startActivity(context: Context, view: View, cartId: String?){
+            val intent = Intent(context, ShoppingCartActivity::class.java)
+            intent.putExtra(CART_ID, cartId)
+            ActivityCompat.startActivity(context, intent,
+                    ActivityOptionsCompat
+                            .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
+                            .toBundle())
+        }
+
+        @JvmStatic
+        fun startActivity(context: Context, cartId: String?){
+            val intent = Intent(context, ShoppingCartActivity::class.java)
+            intent.putExtra(CART_ID, cartId)
+            context.startActivity(intent)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

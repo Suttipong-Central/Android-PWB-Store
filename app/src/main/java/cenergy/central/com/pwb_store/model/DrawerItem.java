@@ -19,13 +19,13 @@ public class DrawerItem implements IViewType,Parcelable{
     @SerializedName("entity_id")
     @Expose
     private String id;
-    private Category mCategory;
+    private ProductFilterHeader productFilterHeader;
 
     protected DrawerItem(Parcel in) {
         //icon = in.readInt();
         title = in.readString();
         id = in.readString();
-        mCategory = in.readParcelable(Category.class.getClassLoader());
+        productFilterHeader = in.readParcelable(ProductFilterHeader.class.getClassLoader());
     }
 
 //    public DrawerItem(String title, int departmentId, int parentId, int rootDeptId, String departmentNameEN) {
@@ -38,10 +38,10 @@ public class DrawerItem implements IViewType,Parcelable{
 //        //this.mStoreLists = storeLists;
 //    }
 
-        public DrawerItem(String title, String id, Category category) {
+        public DrawerItem(String title, String id, ProductFilterHeader productFilterHeader) {
         this.title = title;
         this.id = id;
-        this.mCategory = category;
+        this.productFilterHeader = productFilterHeader;
     }
 
     public static final Creator<DrawerItem> CREATOR = new Creator<DrawerItem>() {
@@ -81,7 +81,7 @@ public class DrawerItem implements IViewType,Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         //dest.writeInt(icon);
         dest.writeString(title);
-        dest.writeParcelable(mCategory, flags);
+        dest.writeParcelable(productFilterHeader, flags);
     }
 
     @Override
@@ -102,11 +102,11 @@ public class DrawerItem implements IViewType,Parcelable{
         this.id = id;
     }
 
-    public Category getCategory() {
-        return mCategory;
+    public ProductFilterHeader getProductFilterHeader() {
+        return productFilterHeader;
     }
 
-    public void setCategory(Category category) {
-        mCategory = category;
+    public void setProductFilterHeader(ProductFilterHeader productFilterHeader) {
+        this.productFilterHeader = productFilterHeader;
     }
 }

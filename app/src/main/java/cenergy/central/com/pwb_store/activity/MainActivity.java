@@ -17,6 +17,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -37,12 +38,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
+import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -54,21 +55,24 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
+import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MenuDrawerClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
@@ -89,95 +93,6 @@ public class MainActivity extends AppCompatActivity {
     private CategoryDao mCategoryDao;
     private String storeId;
     private ProgressDialog mProgressDialog;
-
-    final Callback<List<Category>> CALLBACK_CATEGORY = new Callback<List<Category>>() {
-        @Override
-        public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-            if (response.isSuccessful()) {
-                mCategoryDao = new CategoryDao(response.body());
-                if (mDrawerItemList.size() == 0) {
-                    for (Category category : mCategoryDao.getCategoryList()) {
-
-//                        mDrawerItemList.add(new DrawerItem(category.getDepartmentNameEN(), category.getDepartmentId(),
-//                                category.getParentId(), category.getRootDeptId(), category.getDepartmentNameEN()));
-                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), category.getId(), category));
-                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
-                    }
-                    mDrawerDao = new DrawerDao(mDrawerItemList);
-                    mDrawerDao.setStoreDao(mStoreDao);
-                    if (UserInfoManager.getInstance().getUserId() == null ||
-                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
-                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId().toString());
-                        storeId = "00096";
-                        UserInfoManager.getInstance().setUserIdLogin(storeId);
-                        for (StoreList storeList : mStoreDao.getStoreLists()) {
-                            if (storeList.getStoreId().equalsIgnoreCase(storeId)) {
-                                UserInfoManager.getInstance().setStore(storeList);
-                            }
-                        }
-                        if (!mStoreDao.isStoreEmpty()) {
-                            if (mStoreDao.isStoreListItemListAvailable()) {
-                                List<StoreList> storeLists = mStoreDao.getStoreLists();
-                                for (StoreList headerStore :
-                                        storeLists) {
-                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
-                                }
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId().toString());
-                        storeId = UserInfoManager.getInstance().getUserId();
-                        if (!mStoreDao.isStoreEmpty()) {
-                            if (mStoreDao.isStoreListItemListAvailable()) {
-                                List<StoreList> storeLists = mStoreDao.getStoreLists();
-                                for (StoreList headerStore :
-                                        storeLists) {
-                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
-                                }
-                            }
-                        }
-                    }
-                    mAdapter.setDrawItem(mDrawerDao);
-                } else {
-                    mAdapter.setDrawItem(mDrawerDao);
-                }
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction
-                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                        .commit();
-                mProgressDialog.dismiss();
-
-//                if (UserInfoManager.getInstance().getUserToken().equalsIgnoreCase("")){
-//                    UserInfoManager.getInstance().setToken(true);
-////                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
-////                            UserInfoManager.getInstance().getImei(),
-////                            UserInfoManager.getInstance().getImei(),
-////                            UserInfoManager.getInstance().getUserId())
-////                            .enqueue(CALLBACK_CREATE_TOKEN);
-//                    CreateTokenRequest createTokenRequest = new CreateTokenRequest(UserInfoManager.getInstance().getImei(),
-//                            UserInfoManager.getInstance().getImei(), "", UserInfoManager.getInstance().getUserId());
-//                    HttpManagerHDL.getInstance().getTokenService().createToken(getResources().getString(R.string.secret),
-//                            "application/json",
-//                            createTokenRequest).enqueue(CALLBACK_CREATE_TOKEN);
-//                } else {
-//                    UserInfoManager.getInstance().setToken(false);
-////                    String token = UserInfoManager.getInstance().getUserToken();
-////                    Log.d(TAG, "UserToken : " + UserInfoManager.getInstance().getUserToken());
-//                }
-            } else {
-                APIError error = APIErrorUtils.parseError(response);
-                Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                showAlertDialog(error.getErrorMessage(), false);
-                mProgressDialog.dismiss();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<Category>> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
-        }
-    };
 
     final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
         @Override
@@ -206,9 +121,12 @@ public class MainActivity extends AppCompatActivity {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
         Toast.makeText(this, "" + drawItemBus.getDrawerItem().getTitle(), Toast.LENGTH_SHORT).show();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction
+//                .replace(R.id.container, ProductListFragment.newInstance(drawerItem.getTitle(), false,
+//                        drawerItem.getProductFilterHeader().getId(), storeId, "", drawerItem.getProductFilterHeader()))
+//                .commit();
         fragmentTransaction
-                .replace(R.id.container, ProductListFragment.newInstance(drawerItem.getTitle(), false,
-                        drawerItem.getId(), storeId, drawerItem.getCategory(), ""))
+                .replace(R.id.container, SubHeaderProductFragment.Companion.newInstance(drawerItem.getProductFilterHeader()))
                 .commit();
     }
 
@@ -378,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        mAdapter = new DrawerAdapter(getApplicationContext());
+        mAdapter = new DrawerAdapter(this);
         mLayoutManager = new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false);
         RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
         recyclerViewMenu.setLayoutManager(mLayoutManager);
@@ -506,13 +424,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void success(@Nullable Category category) {
                 mCategoryDao = new CategoryDao(category);
-                mDrawerDao = new DrawerDao(mDrawerItemList);
-                // TODO: ignore getStores
-                if (mDrawerItemList.size() == 0 && category != null) {
-                    for (Category item : mCategoryDao.getCategoryList()) {
-                        mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), item.getId(), item));
-                        Log.d(TAG, "Detail : " + mDrawerItemList.toString());
-                    }
+                createDrawerMenu(category);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction
+                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                        .commit();
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                mProgressDialog.dismiss();
+            }
+        });
+    }
+
+    private void createDrawerMenu(Category category) {
+        mDrawerDao = new DrawerDao(mDrawerItemList);
+        // TODO: ignore getStores
+        if (mDrawerItemList.size() == 0 && category != null) {
+            for (ProductFilterHeader item : category.getFilterHeaders()) {
+                mDrawerItemList.add(new DrawerItem(item.getName(), item.getId(), item));
+                Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+            }
 //                    mDrawerDao.setStoreDao(mStoreDao);
 //                    if (UserInfoManager.getInstance().getUserId() == null ||
 //                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
@@ -546,23 +481,10 @@ public class MainActivity extends AppCompatActivity {
 //                            }
 //                        }
 //                    }
-                    mAdapter.setDrawItem(mDrawerDao);
-                } else {
-                    mAdapter.setDrawItem(mDrawerDao);
-                }
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction
-                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
-                        .commit();
-                mProgressDialog.dismiss();
-            }
-
-            @Override
-            public void failure(@NotNull APIError error) {
-                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                mProgressDialog.dismiss();
-            }
-        });
+            mAdapter.setDrawItem(mDrawerDao);
+        } else {
+            mAdapter.setDrawItem(mDrawerDao);
+        }
     }
 
     private void showAlertDialog(String message, final boolean shouldCloseActivity) {
@@ -578,4 +500,41 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void showAlertDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressDialog.dismiss();
+                    }
+                });
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title);
+        }
+        builder.show();
+    }
+
+    // region {@link implement MenuDrawerClickListener}
+    @Override
+    public void onMenuClickedItem(@NotNull DrawerAdapter.DrawerAction action) {
+        switch (action) {
+            case ACTION_CART: {
+                String cartId = new PreferenceManager(this).getCartId();
+                int count = RealmController.with(this).getCartItems().size();
+                if (cartId != null && count > 0) {
+                    ShoppingCartActivity.Companion.startActivity(this, cartId);
+                } else {
+                    showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
+                }
+            }
+            break;
+            case ACTION_HISTORY: {
+                // TODO: start history page
+            }
+            break;
+        }
+    }
+    // endregion
 }

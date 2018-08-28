@@ -3,19 +3,24 @@ package cenergy.central.com.pwb_store.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerChangeViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.DrawerCompareViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerDeliveryViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHelpViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerItemViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerSubHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
+import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.IViewType;
@@ -26,7 +31,7 @@ import cenergy.central.com.pwb_store.model.ViewType;
  * Created by napabhat on 6/29/2017 AD.
  */
 
-public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     //Static members
     private static final int VIEW_TYPE_ID_HEADER = 0;
     private static final int VIEW_TYPE_ID_ITEM = 1;
@@ -35,21 +40,27 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int VIEW_TYPE_ID_COMPARE = 4;
     private static final int VIEW_TYPE_ID_CHANGE = 5;
     private static final int VIEW_TYPE_ID_HELP = 6;
+    private static final int VIEW_TYPE_ID_CART = 7;
+    private static final int VIEW_TYPE_ID_HISTORY = 8;
 
     private static final ViewType VIEW_TYPE_HEADER = new ViewType(VIEW_TYPE_ID_HEADER);
     private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DELIVERY);
     private static final ViewType VIEW_TYPE_COMPARE = new ViewType(VIEW_TYPE_ID_COMPARE);
     private static final ViewType VIEW_TYPE_CHANGE = new ViewType(VIEW_TYPE_ID_CHANGE);
     private static final ViewType VIEW_TYPE_HELP = new ViewType(VIEW_TYPE_ID_HELP);
+    private static final ViewType VIEW_TYPE_CART = new ViewType(VIEW_TYPE_ID_CART);
+    private static final ViewType VIEW_TYPE_HISTORY = new ViewType(VIEW_TYPE_ID_HISTORY);
 
     private Context mContext;
+    private MenuDrawerClickListener listener;
     private List<IViewType> mListViewType = new ArrayList<>();
 
     public DrawerAdapter(Context context) {
         this.mContext = context;
+        this.listener = (MenuDrawerClickListener) context ;
     }
 
-        @Override
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_ID_HEADER:
@@ -81,10 +92,24 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 );
 
             case VIEW_TYPE_ID_COMPARE:
-                return new DrawerCompareViewHolder(
+                return new DrawerSubHeaderViewHolder(
                         LayoutInflater
                                 .from(parent.getContext())
-                                .inflate(R.layout.drawer_compare, parent, false)
+                                .inflate(R.layout.drawer_sub_header, parent, false)
+                );
+
+            case VIEW_TYPE_ID_CART:
+                return new DrawerSubHeaderViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_sub_header, parent, false)
+                );
+
+            case VIEW_TYPE_ID_HISTORY:
+                return new DrawerSubHeaderViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_sub_header, parent, false)
                 );
 
             case VIEW_TYPE_ID_CHANGE:
@@ -136,7 +161,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
 
             case VIEW_TYPE_ID_USER:
-                if (viewType instanceof StoreDao && holder instanceof DrawerUserViewHolder){
+                if (viewType instanceof StoreDao && holder instanceof DrawerUserViewHolder) {
                     StoreDao storeDao = (StoreDao) viewType;
                     DrawerUserViewHolder drawerUserViewHolder = (DrawerUserViewHolder) holder;
                     drawerUserViewHolder.setViewHolder(mContext, storeDao);
@@ -151,9 +176,41 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
 
             case VIEW_TYPE_ID_COMPARE:
-                if (holder instanceof DrawerCompareViewHolder) {
-                    DrawerCompareViewHolder drawerCompareViewHolder = (DrawerCompareViewHolder) holder;
-                    drawerCompareViewHolder.setViewHolder();
+                if (holder instanceof DrawerSubHeaderViewHolder) {
+                    DrawerSubHeaderViewHolder drawerSubHeaderViewHolder = (DrawerSubHeaderViewHolder) holder;
+                    drawerSubHeaderViewHolder.bindItem(mContext.getString(R.string.drawer_compare));
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EventBus.getDefault().post(new CompareMenuBus(v));
+                        }
+                    });
+                }
+                break;
+
+            case VIEW_TYPE_ID_CART:
+                if (holder instanceof DrawerSubHeaderViewHolder) {
+                    DrawerSubHeaderViewHolder drawerSubHeaderViewHolder = (DrawerSubHeaderViewHolder) holder;
+                    drawerSubHeaderViewHolder.bindItem(mContext.getString(R.string.drawer_cart));
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            listener.onMenuClickedItem(DrawerAction.ACTION_CART);
+                        }
+                    });
+                }
+                break;
+
+            case VIEW_TYPE_ID_HISTORY:
+                if (holder instanceof DrawerSubHeaderViewHolder) {
+                    DrawerSubHeaderViewHolder drawerSubHeaderViewHolder = (DrawerSubHeaderViewHolder) holder;
+                    drawerSubHeaderViewHolder.bindItem(mContext.getString(R.string.drawer_history));
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            listener.onMenuClickedItem(DrawerAction.ACTION_HISTORY);
+                        }
+                    });
                 }
                 break;
 
@@ -173,7 +230,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public void setStore(StoreDao storeDao){
+    public void setStore(StoreDao storeDao) {
         storeDao.setViewTypeId(VIEW_TYPE_ID_USER);
         mListViewType.add(storeDao);
     }
@@ -190,19 +247,21 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 //        notifyDataSetChanged();
 //    }
 
-    public void setDrawItem(DrawerDao drawerDao){
+    public void setDrawItem(DrawerDao drawerDao) {
         // TODO: ignore getStores
 //        setStore(drawerDao.getStoreDao());
 
         mListViewType.add(VIEW_TYPE_HEADER);
 
-        for (DrawerItem drawerItem : drawerDao.getDrawerItems()){
+        for (DrawerItem drawerItem : drawerDao.getDrawerItems()) {
             drawerItem.setViewTypeId(VIEW_TYPE_ID_ITEM);
             mListViewType.add(drawerItem);
         }
 
         //mListViewType.add(VIEW_TYPE_DELIVERY);
         mListViewType.add(VIEW_TYPE_COMPARE);
+        mListViewType.add(VIEW_TYPE_CART);
+        mListViewType.add(VIEW_TYPE_HISTORY);
         //mListViewType.add(VIEW_TYPE_CHANGE);
         //mListViewType.add(VIEW_TYPE_HELP);
 
@@ -218,4 +277,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 //        }
 //        notifyDataSetChanged();
 //    }
+
+    //region enum
+    public enum DrawerAction {
+        ACTION_CART, ACTION_HISTORY
+    }
+    //region enum
 }

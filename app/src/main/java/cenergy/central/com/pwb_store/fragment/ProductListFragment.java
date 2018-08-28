@@ -105,10 +105,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private GridLayoutManager mLayoutManger;
     private ProductDao mProductDao;
     private ProductFilterList mProductFilterList;
-    private ProductFilterList mTempProductFilterList;
+//    private ProductFilterList mTempProductFilterList;
     private List<Brand> brands = new ArrayList<>();
     private SortingList mSortingList;
-    private SortingList mTempSortingList;
+//    private SortingList mTempSortingList;
     private String title;
     private PowerBuyPopupWindow mPowerBuyPopupWindow;
     private ProgressDialog mProgressDialog;
@@ -140,58 +140,14 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
         @Override
         public void onDismiss() {
-            if (!isDoneFilter) {
-                Log.d(TAG, "DISMISS" + isDoneFilter);
-                mProductFilterList = mTempProductFilterList;
-                mSortingList = mTempSortingList;
-            }
-//            if (mProductFilterList != null) {
-//                if (mProductFilterList.getproductFilterItems() != null) {
-//                    for (ProductFilterItem productFilterHeader : mProductFilterList.getproductFilterItems()) {
-//                        productFilterHeader.setExpanded(false);
-//                    }
-//                }
-//            } else {
-//                for (SortingHeader sortingHeader : mSortingList.getSortingHeaders()) {
-//                    sortingHeader.setExpanded(false);
-//                }
+//            if (!isDoneFilter) {
+//                Log.d(TAG, "DISMISS" + isDoneFilter);
+//                mProductFilterList = mTempProductFilterList;
+//                mSortingList = mTempSortingList;
 //            }
-
             isDoneFilter = false;
         }
     };
-
-
-//    //Listeners
-//    final RecyclerView.OnScrollListener SCROLL_LISTENER = new RecyclerView.OnScrollListener() {
-//        @Override
-//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//            super.onScrolled(recyclerView, dx, dy);
-//            int totalItemCount = mLayoutManger.getItemCount();
-//            int visibleItemCount = mLayoutManger.getChildCount();
-//            int firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition();
-//
-//            if (isLoadingMore && totalItemCount > mPreviousTotal) {
-//                isLoadingMore = false;
-//                mPreviousTotal = totalItemCount;
-//            }
-//            int visibleThreshold = 10;
-//            if (!isLoadingMore
-//                    && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
-//                    && isStillHavePages()) {
-//
-//                if (isSearch == true) {
-//                    HttpManagerMagento.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
-//                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
-//                } else {
-//                    HttpManagerMagento.getInstance().getProductService().getProductList("category_id", departmentId, "in", "in_stores", storeId,
-//                            "finset", PER_PAGE, getNextPage(), sortName, sortType, getString(R.string.product_list)).enqueue(CALLBACK_PRODUCT);
-//                }
-//
-//                isLoadingMore = true;
-//            }
-//        }
-//    };
 
     final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
         @Override
@@ -210,7 +166,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
                     && isStillHavePages()) {
 
-                if (isSearch == true) {
+                if (isSearch) {
                     HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
                             keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                 } else {
@@ -304,28 +260,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
     };
 
-//    final Callback<List<ProductFilterHeader>> CALLBACK_PRODUCT_FILTER = new Callback<List<ProductFilterHeader>>() {
-//        @Override
-//        public void onResponse(Call<List<ProductFilterHeader>> call, Response<List<ProductFilterHeader>> response) {
-//            if (response.isSuccessful()) {
-//                mProductFilterList = new ProductFilterList(response.body());
-//                List<ProductFilterHeader> productFilterHeaders = new ArrayList<>();
-//                for (ProductFilterHeader productFilterHeader : mProductFilterList.getProductFilterHeaders()){
-//                    productFilterHeaders.add(new ProductFilterHeader(productFilterHeader.getDepartmentId(), productFilterHeader.getRootDeptId(),
-//                            productFilterHeader.getId(), productFilterHeader.getName(), productFilterHeader.getNameEN(),
-//                            productFilterHeader.getSlug(), productFilterHeader.getMetaDescription(), productFilterHeader.getUrlName(),
-//                            productFilterHeader.getUrlNameEN(), "single", productFilterHeader.getProductFilterItemList()));
-//                }
-//                mProductFilterList = new ProductFilterList(productFilterHeaders);
-//            }
-//        }
-//
-//        @Override
-//        public void onFailure(Call<List<ProductFilterHeader>> call, Throwable t) {
-//            Log.e(TAG, "onFailure: ", t);
-//        }
-//    };
-
     @Subscribe
     public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {
         showProgressDialog();
@@ -343,6 +277,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     public void onEvent(ProductFilterItemBus productFilterItemBus) {
         showProgressDialog();
         isDoneFilter = true;
+        isSorting = false;
         currentPage = 1; // clear current page
         ProductFilterItem productFilterItem = productFilterItemBus.getProductFilterItem();
         Log.d(TAG, "productFilterItemBus" + productFilterItem.getId());
@@ -475,20 +410,20 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     mPowerBuyPopupWindow.dismiss();
                 } else {
 //                    mTempProductFilterList = new ProductFilterList(mProductFilterList);
-                    mTempProductFilterList = mProductFilterList;
+//                    mTempProductFilterList = mProductFilterList;
                     mPowerBuyPopupWindow.setRecyclerViewFilter(mProductFilterList);
                     mPowerBuyPopupWindow.showAsDropDown(v);
-                    mTempSortingList = new SortingList(mSortingList);
+//                    mTempSortingList = new SortingList(mSortingList);
                 }
                 break;
             case R.id.layout_sort:
                 if (mSortingList == null) {
                     mPowerBuyPopupWindow.dismiss();
                 } else {
-                    mTempSortingList = new SortingList(mSortingList);
+//                    mTempSortingList = new SortingList(mSortingList);
                     mPowerBuyPopupWindow.setRecyclerViewSorting(mSortingList);
                     mPowerBuyPopupWindow.showAsDropDown(v);
-                    mTempProductFilterList = mProductFilterList;
+//                    mTempProductFilterList = mProductFilterList;
                 }
                 break;
             case R.id.layout_brand:
@@ -633,7 +568,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         // Save Instance State here
         outState.putParcelable(ARG_PRODUCT, mProductDao);
         outState.putParcelable(ARG_PRODUCT_FILTER, mProductFilterList);
-        outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
+//        outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
         outState.putString(ARG_DEPARTMENT_ID, departmentId);
         outState.putString(ARG_SORT_NAME, sortName);
         outState.putString(ARG_SORT_TYPE, sortType);
@@ -653,7 +588,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         // Restore Instance State here
         mProductDao = savedInstanceState.getParcelable(ARG_PRODUCT);
         mProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER);
-        mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
+//        mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
         departmentId = savedInstanceState.getString(ARG_DEPARTMENT_ID);
         sortName = savedInstanceState.getString(ARG_SORT_NAME);
         sortType = savedInstanceState.getString(ARG_SORT_TYPE);
@@ -806,6 +741,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     // region {@link OnBrandFilterClickListener}
     @Override
     public void onClickedItem(@NotNull Brand brand) {
+        isDoneFilter = true;
+        isSorting = false;
         currentPage = 0; // clear current page
         retrieveProductList(departmentId, brand.getBrandId());
     }

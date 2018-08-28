@@ -708,12 +708,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     @Override
     public void onAddShoppingCartClick(View view) {
         if (RealmController.with(this).getCartItems().size() > 0) {
-            Intent intent = new Intent(this, ShoppingCartActivity.class);
-            intent.putExtra(CART_ID, preferenceManager.getCartId());
-            ActivityCompat.startActivity(this, intent,
-                    ActivityOptionsCompat
-                            .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
-                            .toBundle());
+            ShoppingCartActivity.Companion.startActivity(this,  view, preferenceManager.getCartId());
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
         }

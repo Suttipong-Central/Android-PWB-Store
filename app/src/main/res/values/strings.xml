@@ -69,6 +69,8 @@
     <string name="drawer_delivery" translatable="false">Delivery Schedule</string>
     <string name="drawer_compare" translatable="false">Compare Product</string>
     <string name="drawer_change" translatable="false">Change Language</string>
+    <string name="drawer_cart" translatable="false">Shopping Cart</string>
+    <string name="drawer_history" translatable="false">History</string>
     <string name="drawer_help" translatable="false">Help</string>
 
     <!-- AppSecret -->

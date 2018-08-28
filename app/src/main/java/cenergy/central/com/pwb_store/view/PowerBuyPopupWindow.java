@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.view;
 
-import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,7 +26,6 @@ import cenergy.central.com.pwb_store.adapter.ProductFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.SortingAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.model.Brand;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -40,7 +39,7 @@ import cenergy.central.com.pwb_store.model.StoreFilterList;
  * Created by napabhat on 7/13/2017 AD.
  */
 
-public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickListener{
+public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickListener {
     private static final String TAG = "PowerBuyPopupWindow";
     //View Members
     @BindView(R.id.recycler_view_filter)
@@ -61,7 +60,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
 
 
     public PowerBuyPopupWindow(Context context, LayoutInflater layoutInflater) {
-        super(layoutInflater.inflate(R.layout.popup_filter, null, false),  ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        super(layoutInflater.inflate(R.layout.popup_filter, null, false), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         ButterKnife.bind(this, getContentView());
 //        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 //                ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -87,14 +86,14 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mSortingAdapter = new SortingAdapter(mContext);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         mSortingAdapter.setSorting(sorting);
-        for(SortingHeader sortingHeader : sorting.getSortingHeaders()){
+        for (SortingHeader sortingHeader : sorting.getSortingHeaders()) {
             mSortingAdapter.addSortLevel2(sortingHeader.getSortingItems());
         }
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mSortingAdapter);
     }
 
-    public void setRecyclerViewStore(StoreFilterList storeFilterList){
+    public void setRecyclerViewStore(StoreFilterList storeFilterList) {
         this.mStoreFilterList = storeFilterList;
         mAvaliableStoreFilterAdapter = new AvaliableStoreFilterAdapter(mContext);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
@@ -121,7 +120,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
 
     public void setSortingItem(SortingHeader sortingHeader) {
         //if (sortingHeader.isExpanded()) {
- //           mSortingAdapter.addSortLevel2(sortingHeader);
+        //           mSortingAdapter.addSortLevel2(sortingHeader);
 //        } else {
 //            mSortingAdapter.removeSortingLevel3(mSortingList);
 //        }
@@ -135,10 +134,14 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     public void showAsDropDown(View anchor) {
+//        Rect location = locateView(anchor);
+//        showAtLocation((View) anchor.getParent(), Gravity.TOP|Gravity.END, location.left - location.right, location.bottom);
+//        //super.showAsDropDown(anchor, 25, 25, Gravity.BOTTOM);
+//        this.showAtLocation(anchor, Gravity.CENTER, 45, 0);
         super.showAsDropDown(anchor, 25, 25, Gravity.BOTTOM | Gravity.RIGHT);
-        //super.showAsDropDown(anchor, 25, 25, Gravity.BOTTOM);
+
+        // setup shadow
         View container;
         //if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -155,7 +158,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         wm.updateViewLayout(container, p);
     }
 
-    public void setLayoutParams(RelativeLayout.LayoutParams layoutParams){
+    public void setLayoutParams(RelativeLayout.LayoutParams layoutParams) {
 
     }
 
@@ -179,5 +182,22 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mFilterByBrandAdapter.setBrandForFilter(brands);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
+    }
+
+    private Rect locateView(View v) {
+        int[] loc_int = new int[2];
+        if (v == null) return null;
+        try {
+            v.getLocationOnScreen(loc_int);
+        } catch (NullPointerException npe) {
+            //Happens when the view doesn't exist on screen anymore.
+            return null;
+        }
+        Rect location = new Rect();
+        location.left = loc_int[0];
+        location.top = loc_int[1];
+        location.right = location.left + v.getWidth();
+        location.bottom = location.top + v.getHeight();
+        return location;
     }
 }
