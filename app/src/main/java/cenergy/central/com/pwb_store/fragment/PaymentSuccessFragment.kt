@@ -106,7 +106,7 @@ class PaymentSuccessFragment : Fragment() {
             getOrder()
         }
 
-        if(orderResponseId != null){
+        if (orderResponseId != null) {
             gerOrderByRealm(orderResponseId!!)
         }
     }
@@ -116,7 +116,7 @@ class PaymentSuccessFragment : Fragment() {
             override fun success(response: OrderResponse?) {
                 if (response != null) {
                     RealmController.with(context).saveOrderResponse(response)
-                        updateViewOrder(response)
+                    updateViewOrder(response)
                 } else {
                     mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -138,17 +138,14 @@ class PaymentSuccessFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(response: OrderResponse) {
         val unit = context!!.getString(R.string.baht)
+
         listItems = response.items
-        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems?: arrayListOf()
+        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems ?: arrayListOf()
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${response.orderId}"
 
         //Setup total price
-        var total = 0.0
-        for (item in listItems ?: arrayListOf()) {
-            total += item.baseTotalIncludeTax!!
-        }
-        totalPrice.text = getDisplayPrice(unit, total.toString())
+        totalPrice.text = getDisplayPrice(unit, response.baseTotal.toString())
 
         //Setup customer
         orderDate.text = response.updatedAt

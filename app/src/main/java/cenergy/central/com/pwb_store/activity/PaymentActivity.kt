@@ -68,6 +68,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     }
 
     override fun onPaymentClickListener(orderId: String) {
+        supportActionBar?.setDisplayShowHomeEnabled(false)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId))
@@ -91,9 +92,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     private fun initView() {
         val mToolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayShowTitleEnabled(false)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         preferenceManager = PreferenceManager(this)
         mToolbar.setNavigationOnClickListener { finish() }
     }

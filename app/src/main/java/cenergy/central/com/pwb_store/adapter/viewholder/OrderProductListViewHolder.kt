@@ -11,7 +11,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
 
-class OrderProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+class OrderProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 
     var productImage: ImageView = itemView.findViewById(R.id.product_image_list_order)
