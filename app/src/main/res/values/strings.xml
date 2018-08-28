@@ -171,4 +171,5 @@
     <string name="not_have_products_in_cart">ไม่มีสินค้าอยู่ในตะกร้า กรุณาเพิ่มสิาค้าที่ท่านต้องการ</string>
     <string name="not_have_user">ไม่มีผู้ใช้ในระบบ ต้องการที่จะข้ามขั้นตอนนี้หรือไม่</string>
     <string name="choose">เลือก</string>
+    <string name="history">History</string>
 </resources>

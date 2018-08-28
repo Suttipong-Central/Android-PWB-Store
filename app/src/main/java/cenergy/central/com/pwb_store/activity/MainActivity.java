@@ -40,6 +40,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
+import cenergy.central.com.pwb_store.fragment.PaymentHistoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
@@ -531,7 +532,10 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
             }
             break;
             case ACTION_HISTORY: {
-                // TODO: start history page
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction
+                        .replace(R.id.container, PaymentHistoryFragment.Companion.newInstance(), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                        .commit();
             }
             break;
         }

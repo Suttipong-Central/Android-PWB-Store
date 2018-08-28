@@ -1,13 +1,14 @@
 package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 
 /**
  * Created by Anuphap Suwannamas on 25/8/2018 AD.
  * Email: Anupharpae@gmail.com
  */
 
-data class AddressInformation(
+open class AddressInformation(
         var countryId: String = "",
         var regionId: String = "",
         var regionCode: String = "",
@@ -21,7 +22,7 @@ data class AddressInformation(
         var email: String = "",
         var vatId: String = "",
         @SerializedName("customAttributes")
-        var subAddress: SubAddress? = null) {
+        var subAddress: SubAddress? = null) : RealmObject() {
 
     companion object {
         fun createTestAddress(firstName: String, lastName: String, email: String, contactNo: String): AddressInformation {
@@ -47,6 +48,14 @@ data class AddressInformation(
                     email = email,
                     vatId = "",
                     subAddress = subAddress)
+        }
+    }
+
+    fun getDisplayName(): String {
+        return if (firstname.isNotEmpty() && lastname.isNotEmpty()) {
+            "$firstname $lastname"
+        } else {
+            ""
         }
     }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:background="@color/powerBuyWhite"
+    app:cardCornerRadius="10dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/order_number_history"
+            style="@style/textSubCheck"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toTopOf="@+id/date_history"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Order Number: PWBNO2598165195159197416" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/date_history"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@id/order_name_history"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/order_number_history"
+            tools:text="Date: 2016/11/16: 10:00:20" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/order_name_history"
+            style="@style/textSubCheck"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_history"
+            tools:text="Name: Android Test" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
