@@ -10,10 +10,12 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.HistoryAdapter
 import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class PaymentHistoryFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var txtResult: PowerBuyTextView
     private var historyAdapter = HistoryAdapter()
     private var orderResponses = RealmController.getInstance().orderResponses
 
@@ -34,9 +36,16 @@ class PaymentHistoryFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         recyclerView = rootView.findViewById(R.id.recycler_view_history)
+        txtResult = rootView.findViewById(R.id.txt_result)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = HistoryAdapter()
-        historyAdapter.orderResponses = orderResponses
-
+        if (this.orderResponses.size > 0) {
+            historyAdapter.orderResponses = this.orderResponses
+            recyclerView.visibility = View.VISIBLE
+            txtResult.visibility = View.GONE
+        } else {
+            recyclerView.visibility = View.GONE
+            txtResult.visibility = View.VISIBLE
+        }
     }
 }
