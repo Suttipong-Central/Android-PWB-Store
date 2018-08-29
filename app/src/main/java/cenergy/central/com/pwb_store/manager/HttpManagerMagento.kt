@@ -339,7 +339,7 @@ class HttpManagerMagento {
                                 }
 
                                 "image" -> {
-                                    product.imageUrl = attrArray.getJSONObject(i).getString("value")
+                                    product.image = attrArray.getJSONObject(i).getString("value")
                                 }
 
                                 "brand" -> {

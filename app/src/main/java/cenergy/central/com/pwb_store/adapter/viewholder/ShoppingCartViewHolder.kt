@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
 import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.ACTION_DECREASE
 import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.ACTION_INCREASE
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
 
@@ -27,6 +28,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val qtyTextTitle: PowerBuyTextView = itemView.findViewById(R.id.qty_title_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
     private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
+    private val productImage: ImageView = itemView.findViewById(R.id.product_image_list_shopping_cart)
 
     // data
     private val database = RealmController.getInstance()
@@ -46,6 +48,14 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 R.string.product_price)} ${getDisplayPrice(unit, cartItem.price.toString())}"
 
         if (cacheCartItem != null) {
+            // get image from cache
+            Glide.with(itemView.context)
+                    .load(cacheCartItem.imageUrl)
+                    .placeholder(R.drawable.ic_pwb_logo_detail)
+                    .crossFade()
+                    .fitCenter()
+                    .into(productImage)
+            
             productQty.setOnClickQuantity(this, true)
             deleteImageView.visibility = View.VISIBLE
             deleteImageView.setOnClickListener {

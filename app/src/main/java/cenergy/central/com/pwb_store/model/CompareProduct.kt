@@ -37,7 +37,7 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
         @JvmStatic
         fun asCompareProduct(product: Product): CompareProduct {
             return CompareProduct(sku = product.sku, name = product.name,
-                    price = product.price, specialPrice = product.specialPrice, imageUrl = product.imageUrl,
+                    price = product.price, specialPrice = product.specialPrice, imageUrl = product.getImageUrl(),
                     brand = product.brand)
         }
     }

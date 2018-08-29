@@ -23,8 +23,7 @@ class Product() : IViewType, Parcelable {
     @SerializedName("special_to_date")
     var specialToDate: String? = null
     var brand: String = ""
-    @SerializedName("image")
-    var imageUrl: String = ""
+    var image: String = ""
     @SerializedName("media_gallery_entries")
     var gallery: List<ProductGallery> = arrayListOf()
     var viewTypeID: Int = 0
@@ -43,7 +42,7 @@ class Product() : IViewType, Parcelable {
         specialFromDate = parcel.readString()
         specialToDate = parcel.readString()
         brand = parcel.readString()
-        imageUrl = parcel.readString()
+        image = parcel.readString()
         gallery = parcel.createTypedArrayList(ProductGallery)
         viewTypeID = parcel.readInt()
         attributeID = parcel.readInt()
@@ -89,6 +88,15 @@ class Product() : IViewType, Parcelable {
         return productImageList as ProductDetailImage
     }
 
+    fun getImageUrl(): String {
+        val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
+        return if (!image.contains(hostname, true)) {
+            "$hostname$image"
+        } else {
+            image
+        }
+    }
+
     fun isSpecialPrice(): Boolean {
         return if (specialFromDate != null && specialToDate != null) {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
@@ -113,7 +121,7 @@ class Product() : IViewType, Parcelable {
         parcel.writeString(specialFromDate)
         parcel.writeString(specialToDate)
         parcel.writeString(brand)
-        parcel.writeString(imageUrl)
+        parcel.writeString(image)
         parcel.writeTypedList(gallery)
         parcel.writeInt(viewTypeID)
         parcel.writeInt(attributeID)

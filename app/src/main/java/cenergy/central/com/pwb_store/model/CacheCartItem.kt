@@ -16,6 +16,7 @@ open class CacheCartItem(
         var price: Double? = 0.0,
         var type: String? = "",
         var cartId: String? = "",
+        var imageUrl: String = "",
         var maxQTY: Int? = 0) : RealmObject() {
 
     companion object {
@@ -25,7 +26,7 @@ open class CacheCartItem(
         fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
             return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
                     name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
-                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1)
+                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1, imageUrl= product.getImageUrl())
         }
     }
 
@@ -37,5 +38,6 @@ open class CacheCartItem(
         this.price = cartItem.price
         this.type = cartItem.type
         this.cartId = cartItem.cartId
+        this.imageUrl = imageUrl
     }
 }
