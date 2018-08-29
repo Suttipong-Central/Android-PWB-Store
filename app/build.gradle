@@ -30,7 +30,6 @@ android {
         targetSdkVersion 26
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "mode"
-
         multiDexEnabled true
     }
     buildTypes {
@@ -59,15 +58,17 @@ android {
         }
 
         staging {
-            manifestPlaceholders = [applicationLabel: "PowerBuy Staging"]
             applicationIdSuffix ".staging"
+            manifestPlaceholders = [applicationLabel: "PowerBuy Staging"]
+            resValue 'string', 'app_name', '\"PoweBuy Staging\"'
             versionCode 1
             versionName "0.0.1"
         }
 
         develop {
-            manifestPlaceholders = [applicationLabel: "PowerBuy Dev"]
             applicationIdSuffix ".dev"
+            manifestPlaceholders = [applicationLabel: "PowerBuy Dev"]
+            resValue 'string', 'app_name', '\"PoweBuy Dev\"'
             versionCode 8
             versionName "0.0.4"
         }

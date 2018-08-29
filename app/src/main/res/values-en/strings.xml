@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PowerBuy Store</string>
+    <!--<string name="app_name">PowerBuy Store</string>-->
 
     <!--API-->
     <!--<string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>-->
