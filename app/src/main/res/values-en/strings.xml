@@ -86,5 +86,6 @@
     <string name="order_date_history">Order Date: </string>
     <string name="product">Product</string>
     <string name="sort">Sort</string>
+    <string name="regular_price">Regular Price: </string>
 
 </resources>

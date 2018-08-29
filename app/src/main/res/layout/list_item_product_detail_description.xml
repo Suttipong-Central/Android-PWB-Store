@@ -129,6 +129,15 @@
             android:orientation="horizontal">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textColor="@color/nameProductColor"
+                android:textSize="18sp"
+                app:typeFaceAsset="RobotoLight.ttf"
+                android:text="@string/regular_price"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +145,7 @@
                 android:textColor="@color/nameProductColor"
                 android:textSize="18sp"
                 app:typeFaceAsset="RobotoLight.ttf"
-                tools:text="Regular Price : ฿4,200" />
+                tools:text="฿4,200" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_save"

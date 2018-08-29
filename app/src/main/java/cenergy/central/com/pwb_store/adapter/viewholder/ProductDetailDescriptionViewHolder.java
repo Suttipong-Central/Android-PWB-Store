@@ -192,11 +192,12 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
 
         mProductName.setText(product.getName());
         mProductCode.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_code) + "  " + product.getSku());
-        mRegular.setText("Regular Price: " + product.getDisplayOldPrice(unit));
+        mRegular.setText(product.getDisplayOldPrice(unit));
         if(product.getSpecialPrice() > 0){
             if(product.getPrice() != product.getSpecialPrice()){
                 mSalePrice.setText(product.getDisplaySpecialPrice(unit));
                 namePrice.setText(itemView.getContext().getResources().getString(R.string.name_price));
+                mRegular.setEnableStrikeThrough(true);
             } else {
                 mSalePrice.setText("");
                 namePrice.setText("");
@@ -214,30 +215,6 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
             addToCartButton.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.hintColor));
         }
 
-
-//        ExtensionProductDetail extensionProductDetail = productDetailNew.getExtensionProductDetail();
-//        if (extensionProductDetail != null){
-//            for (ProductDetailStore productDetailStore : extensionProductDetail.getProductDetailStores()){
-//                float oldPrice = Float.parseFloat(productDetailStore.getPrice());
-//                float newPrice = Float.parseFloat(productDetailStore.getSpecialPrice());
-//                if (oldPrice > newPrice){
-//                    mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
-//                }else {
-//                    mSalePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.powerBuyPurple));
-//                    namePrice.setTextColor(ContextCompat.getColor(Contextor.getInstance().getContext(),R.color.headerTextColor));
-//                    mSalePrice.setText(productDetailStore.getDisplayNewPrice(unit));
-//                }
-//
-//                mRegular.setText("Regular Price : " +productDetailStore.getDisplayOldPrice(unit));
-//
-//                if (Integer.parseInt(productDetailStore.getStockAvailable()) > 0){
-//                    mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
-//                }else {
-//                    mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
-//                    mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
-//                }
-//            }
-//        }
         mCardViewStore.setTag(product);
         mCardViewStore.setOnClickListener(this);
         mCardViewCompare.setTag(product);
