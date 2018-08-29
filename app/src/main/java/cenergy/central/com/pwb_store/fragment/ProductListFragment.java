@@ -115,6 +115,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private boolean isDoneFilter;
     private boolean isSearch;
     private String departmentId;
+    private Long brandId;
     private String storeId;
     private String sortName;
     private Category mCategory;
@@ -171,8 +172,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                             keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                 } else {
                     layoutProgress.setVisibility(View.VISIBLE);
+                    if(brandId != null){
+                        retrieveProductList(departmentId, brandId);
+                    } else {
 //                    getProductList(departmentId);
-                    retrieveProductList(departmentId);
+                        retrieveProductList(departmentId);
+                    }
                 }
 
                 isLoadingMore = true;
@@ -661,9 +666,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     private void retrieveProductList(final String departmentId, Long brandId) {
-        if (mProgressDialog != null && !mProgressDialog.isShowing()) {
-            showProgressDialog();
-        }
         HttpManagerMagento.Companion.getInstance().retrieveProductsFilterByBrand(
                 departmentId,
                 brandId,
@@ -692,18 +694,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 if (response != null) {
                     ProductListFragment.this.brands = response.getItems();
                 }
-                if (mPowerBuyPopupWindow.isShowing()) {
-                    mPowerBuyPopupWindow.dismiss();
-                }
                 layoutProgress.setVisibility(View.GONE);
             }
 
             @Override
             public void failure(@NotNull APIError error) {
                 Log.d("getBrands", error.toString());
-                if (mPowerBuyPopupWindow.isShowing()) {
-                    mPowerBuyPopupWindow.dismiss();
-                }
                 layoutProgress.setVisibility(View.GONE);
             }
         });
@@ -743,8 +739,15 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     public void onClickedItem(@NotNull Brand brand) {
         isDoneFilter = true;
         isSorting = false;
+        brandId = brand.getBrandId();
         currentPage = 0; // clear current page
-        retrieveProductList(departmentId, brand.getBrandId());
+        if (mProgressDialog != null && !mProgressDialog.isShowing()) {
+            showProgressDialog();
+        }
+        if (mPowerBuyPopupWindow.isShowing()) {
+            mPowerBuyPopupWindow.dismiss();
+        }
+        retrieveProductList(departmentId, brandId);
     }
     // endregion
 }
