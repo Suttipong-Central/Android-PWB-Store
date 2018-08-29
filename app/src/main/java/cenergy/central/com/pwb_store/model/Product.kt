@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import java.text.NumberFormat
@@ -74,20 +75,16 @@ class Product() : IViewType, Parcelable {
     fun getProductImageList(): ProductDetailImage {
         if (productImageList == null) {
             val productDetailImageItems = ArrayList<ProductDetailImageItem>()
-            var url = ""
-            url = if (!imageUrl.contains("https://staging.powerbuy.co.th/media/catalog/product", true)) {
-                "https://staging.powerbuy.co.th/media/catalog/product$imageUrl"
-            } else {
-                imageUrl
+            val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
+            for (image in gallery) {
+                if (!image.file.contains(hostname, true)) {
+                    productDetailImageItems.add(ProductDetailImageItem(image.id, "$hostname${image.file}"))
+                } else {
+                    image.file
+                }
             }
-            productDetailImageItems.add(ProductDetailImageItem("1", url))
-            productDetailImageItems.add(ProductDetailImageItem("2", ""))
-            productDetailImageItems.add(ProductDetailImageItem("3", ""))
-            productDetailImageItems.add(ProductDetailImageItem("4", ""))
-            productDetailImageItems.add(ProductDetailImageItem("5", ""))
-            productDetailImageItems.add(ProductDetailImageItem("6", ""))
 
-            productImageList = ProductDetailImage(4, productDetailImageItems)
+            productImageList = ProductDetailImage(gallery.size, productDetailImageItems)
         }
         return productImageList as ProductDetailImage
     }
