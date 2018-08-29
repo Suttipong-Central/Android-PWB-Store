@@ -234,7 +234,7 @@ class PaymentDescriptionFragment : Fragment() {
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)

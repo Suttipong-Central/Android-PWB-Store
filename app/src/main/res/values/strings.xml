@@ -161,7 +161,7 @@
     <string name="skip"><u>SKIP</u></string>
     <string name="billing_address">Billing Address</string>
     <string name="qty_title">Qty:</string>
-    <string name="fill_in_important_information">Please fill in the important information.</string>
+    <string name="fill_in_important_information">กรุณากรอกข้อมูลที่สำคัญให้ถูกต้อง</string>
     <string name="sorry">ขออภัย</string>
     <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
     <string name="comfrim_oder">ยืนยันการซื้อสินค้า</string>
@@ -175,4 +175,6 @@
     <string name="not_have_data">ไม่มีข้อมูล</string>
     <string name="name_user_order">Username: </string>
     <string name="order_date_history">Order Date: </string>
+    <string name="product">Product</string>
+    <string name="sort">Sort</string>
 </resources>

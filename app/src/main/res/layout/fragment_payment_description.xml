@@ -101,7 +101,7 @@
             android:layout_height="1dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:background="@color/graySelect" />
+            android:background="@color/lightgray" />
 
         <LinearLayout
             android:id="@+id/billing_address_layout_payment"
@@ -247,7 +247,7 @@
             android:layout_height="1dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:background="@color/graySelect" />
+            android:background="@color/lightgray" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_product_list_payment"

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/head_frame"
-    android:layout_width="350dp"
+    android:layout_width="200dp"
     android:layout_height="wrap_content"
     android:background="@color/powerBuyWhite">
 
@@ -13,20 +13,23 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="3dp"
-        android:layout_gravity="start|center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/line"
+        app:layout_constraintEnd_toStartOf="@id/txt_header_filter"
         android:contentDescription="@string/app_name" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/txt_header_filter"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:ellipsize="end"
-        android:padding="10dp"
-        android:textColor="@drawable/text_selector_orange"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="10dp"
-        style="@style/textFilterHead"
+        android:padding="16dp"
+        app:layout_constraintStart_toEndOf="@id/img_fill_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/line"
+        app:layout_constraintEnd_toStartOf="@id/img_filter_header"
+        style="@style/textSub"
         app:typeFaceAsset="RobotoLight.ttf"
         tools:text="Categories"/>
 
@@ -35,7 +38,19 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="3dp"
-        android:layout_gravity="end|center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/txt_header_filter"
+        app:layout_constraintBottom_toTopOf="@+id/line"
+        app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="@string/app_name" />
 
-</FrameLayout>
+    <View
+        android:id="@+id/line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/lightgray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>

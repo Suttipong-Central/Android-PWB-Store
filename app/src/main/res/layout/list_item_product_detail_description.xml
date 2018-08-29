@@ -191,7 +191,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="15dp"
-            android:background="@color/viewColor"
+            android:background="@color/lightgray"
             android:padding="5dp" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView

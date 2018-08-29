@@ -57,6 +57,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     private Context mContext;
     private int index;
     private int top;
+    private Boolean isBrand = false;
 
 
     public PowerBuyPopupWindow(Context context, LayoutInflater layoutInflater) {
@@ -73,6 +74,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     }
 
     public void setRecyclerViewFilter(ProductFilterList productFilterList) {
+        this.isBrand = false;
         this.mProductFilterList = productFilterList;
         mProductFilterAdapter = new ProductFilterAdapter(mContext);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
@@ -139,11 +141,10 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
 //        showAtLocation((View) anchor.getParent(), Gravity.TOP|Gravity.END, location.left - location.right, location.bottom);
 //        //super.showAsDropDown(anchor, 25, 25, Gravity.BOTTOM);
 //        this.showAtLocation(anchor, Gravity.CENTER, 45, 0);
-        super.showAsDropDown(anchor, 25, 25, Gravity.BOTTOM | Gravity.RIGHT);
+        super.showAsDropDown(anchor, 0, 25, Gravity.BOTTOM| Gravity.END);
 
         // setup shadow
         View container;
-        //if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             container = (View) getContentView().getParent().getParent();
         } else {
@@ -154,7 +155,9 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
         p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         p.dimAmount = 0.1f;
-        //p.x = 405;
+        if(isBrand){
+            p.x = 860;
+        }
         wm.updateViewLayout(container, p);
     }
 
@@ -176,6 +179,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     }
 
     public void setRecyclerViewFilterByBrand(List<Brand> brands, OnBrandFilterClickListener listener) {
+        this.isBrand = true;
         this.brands = brands;
         FilterByBrandAdapter mFilterByBrandAdapter = new FilterByBrandAdapter(listener);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
