@@ -97,8 +97,15 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     public void bindItem(final CompareProduct compareProduct) {
         String unit = itemView.getContext().getString(R.string.baht);
         oldPrice.setText(compareProduct.normalPrice(unit));
-        productName.setText("Brand");
+        productName.setText(compareProduct.getBrand());
         productDescription.setText(compareProduct.getName());
+
+        Glide.with(Contextor.getInstance().getContext())
+                .load(compareProduct.getImageUrl())
+                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .crossFade()
+                .fitCenter()
+                .into(imgProduct);
 
         // setup OnClick
         imgCancel.setOnClickListener(new View.OnClickListener() {

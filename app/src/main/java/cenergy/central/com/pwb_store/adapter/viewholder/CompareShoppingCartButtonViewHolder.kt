@@ -8,17 +8,15 @@ import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CompareProduct
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import java.util.*
 
 class CompareShoppingCartButtonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    var shoppingCartCardView: CardView = itemView.findViewById(R.id.card_view_shopping_cart)
-    var cartImg: ImageView = itemView.findViewById(R.id.img_cart)
-    var shoppingCartText: PowerBuyTextView = itemView.findViewById(R.id.shopping_cart_txt)
+    private var shoppingCartCardView: CardView = itemView.findViewById(R.id.card_view_shopping_cart)
+    private var cartImg: ImageView = itemView.findViewById(R.id.img_cart)
+    private var shoppingCartText: PowerBuyTextView = itemView.findViewById(R.id.shopping_cart_txt)
 
     fun setProductCompare(productCompare: CompareProduct) {
-        val randStock = Random().nextInt(2)
-        if (randStock > 0) {
+        if (productCompare.inStock) {
             shoppingCartCardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.powerBuyPurple))
             cartImg.visibility = View.VISIBLE
             shoppingCartText.text = itemView.resources.getString(R.string.add_to_cart)

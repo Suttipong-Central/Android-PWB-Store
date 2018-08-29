@@ -15,6 +15,7 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                           var price: Double? = 0.0,
                           var specialPrice: Double? = 0.0,
                           var imageUrl: String? = "",
+                          var inStock: Boolean = false,
                           var brand: String? = "") : RealmObject(), IViewType {
 
     // for set view type in adapter
@@ -38,7 +39,7 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
         fun asCompareProduct(product: Product): CompareProduct {
             return CompareProduct(sku = product.sku, name = product.name,
                     price = product.price, specialPrice = product.specialPrice, imageUrl = product.getImageUrl(),
-                    brand = product.brand)
+                    inStock = product.extension?.stokeItem?.isInStock?: false, brand = product.brand)
         }
     }
 }

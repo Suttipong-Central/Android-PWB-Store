@@ -149,6 +149,7 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void actionAddToCompare(Product product) {
+        showProgressDialog();
         RealmController database = RealmController.with(this);
         long count = database.getCompareProducts().size();
         Log.d(TAG, "" + count);
@@ -169,12 +170,11 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void saveCompareProduct(Product product) {
-        showProgressDialog();
         RealmController.with(this).saveCompareProduct(product, new DatabaseListener() {
             @Override
             public void onSuccessfully() {
-                EventBus.getDefault().post(new UpdateBageBus(true));
                 mProgressDialog.dismiss();
+                EventBus.getDefault().post(new UpdateBageBus(true));
                 Toast.makeText(getContext(), "Generate compare complete.", Toast.LENGTH_SHORT).show();
             }
 

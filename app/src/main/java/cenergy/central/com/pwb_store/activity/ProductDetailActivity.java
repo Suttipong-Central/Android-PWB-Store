@@ -310,7 +310,6 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     public void onEvent(ProductBus productBus) {
         Product product = productBus.getProduct();
         String action = productBus.getAction();
-        showProgressDialog();
         switch (action) {
             case ProductBus.ACTION_ADD_TO_CART: {
                 actionAddToCart(product);
