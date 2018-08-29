@@ -288,6 +288,7 @@ class HttpManagerMagento {
                     val product = Product()
                     val productExtension = ProductExtension()
                     val stockItem = StockItem()
+                    val images = arrayListOf<ProductGallery>()
 
                     try {
                         val productObject = JSONObject(data?.string())
@@ -308,6 +309,17 @@ class HttpManagerMagento {
 
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 //                    product.extension = productExtension // add product extension to product
+                        val galleryArray = productObject.getJSONArray("media_gallery_entries")
+                        for (i in 0 until galleryArray.length()) {
+                            val id = galleryArray.getJSONObject(i).getString("id")
+                            val type = galleryArray.getJSONObject(i).getString("media_type")
+                            val label = galleryArray.getJSONObject(i).getString("label")
+                            val position = galleryArray.getJSONObject(i).getInt("position")
+                            val disabled = galleryArray.getJSONObject(i).getBoolean("disabled")
+                            val file = galleryArray.getJSONObject(i).getString("file")
+                            images.add(ProductGallery(id, type, label, position, disabled, file))
+                        }
+                        product.gallery = images
 
                         val attrArray = productObject.getJSONArray("custom_attributes")
                         for (i in 0 until attrArray.length()) {
@@ -345,8 +357,8 @@ class HttpManagerMagento {
                         }
                         product.extension = productExtension // add product extension to product
                         callback.success(product)
-                    }catch (e: Exception) {
-                        APIErrorUtils.parseError(response)?.let { callback.failure(it) }
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
                         Log.e("JSON Parser", "Error parsing data " + e.toString())
                     }
                 } else {

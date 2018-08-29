@@ -38,7 +38,6 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
 
     public void setViewHolder(ProductDetailImage productDetailImage, FragmentManager fragmentManager){
 
-        Log.d("ProductDetail", productDetailImage.getProductDetailImageItems().get(0).getImgUrl());
         Glide.with(Contextor.getInstance().getContext())
                 .load(productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
                 .placeholder(R.drawable.ic_pwb_logo_detail)

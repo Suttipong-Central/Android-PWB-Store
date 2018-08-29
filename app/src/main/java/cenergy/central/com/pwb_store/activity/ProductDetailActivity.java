@@ -397,22 +397,26 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     private void retrieveProduct(String sku) {
         HttpManagerMagento.Companion.getInstance().getProductDetail(sku, new ApiResponseCallback<Product>() {
-                    @Override
-                    public void success(@Nullable Product response) {
-                        if (response != null) {
-                            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                            fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
-                            mProgressDialog.dismiss();
-                        }
-                    }
+            @Override
+            public void success(@Nullable Product response) {
+                if (response != null) {
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.container, ProductDetailFragment.newInstance(response)).commit();
+                    mProgressDialog.dismiss();
+                }
+            }
 
-                    @Override
-                    public void failure(@NotNull APIError error) {
-                        Log.e(TAG, "onResponse: " + error.getErrorMessage());
+            @Override
+            public void failure(@NotNull final APIError error) {
+                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+                runOnUiThread(new Runnable() {
+                    public void run() {
                         showAlertDialog(error.getErrorUserMessage(), false);
                         mProgressDialog.dismiss();
                     }
                 });
+            }
+        });
     }
     // end region
 
@@ -708,7 +712,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     @Override
     public void onAddShoppingCartClick(View view) {
         if (RealmController.with(this).getCartItems().size() > 0) {
-            ShoppingCartActivity.Companion.startActivity(this,  view, preferenceManager.getCartId());
+            ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
         }
@@ -792,8 +796,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private void updateShoppingCartBadge() {
         int count = 0;
         List<CacheCartItem> items = RealmController.with(this).getCartItems();
-        for( CacheCartItem item : items){
-            if(item.getQty() != null){
+        for (CacheCartItem item : items) {
+            if (item.getQty() != null) {
                 count += item.getQty();
             }
         }

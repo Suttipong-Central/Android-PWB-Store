@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Product() : Parcelable, IViewType {
+class Product() : IViewType, Parcelable {
 
     var id: Int = 0
     var sku: String = ""
@@ -24,12 +24,13 @@ class Product() : Parcelable, IViewType {
     var brand: String = ""
     @SerializedName("image")
     var imageUrl: String = ""
+    @SerializedName("media_gallery_entries")
+    var gallery: List<ProductGallery> = arrayListOf()
     var viewTypeID: Int = 0
     var attributeID: Int = 0
     var status: Int = 1
     @SerializedName("extension_attributes")
     var extension: ProductExtension? = null
-
     private var productImageList: ProductDetailImage? = null
 
     constructor(parcel: Parcel) : this() {
@@ -42,13 +43,13 @@ class Product() : Parcelable, IViewType {
         specialToDate = parcel.readString()
         brand = parcel.readString()
         imageUrl = parcel.readString()
+        gallery = parcel.createTypedArrayList(ProductGallery)
         viewTypeID = parcel.readInt()
         attributeID = parcel.readInt()
         status = parcel.readInt()
         extension = parcel.readParcelable(ProductExtension::class.java.classLoader)
         productImageList = parcel.readParcelable(ProductDetailImage::class.java.classLoader)
     }
-
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -116,6 +117,7 @@ class Product() : Parcelable, IViewType {
         parcel.writeString(specialToDate)
         parcel.writeString(brand)
         parcel.writeString(imageUrl)
+        parcel.writeTypedList(gallery)
         parcel.writeInt(viewTypeID)
         parcel.writeInt(attributeID)
         parcel.writeInt(status)
