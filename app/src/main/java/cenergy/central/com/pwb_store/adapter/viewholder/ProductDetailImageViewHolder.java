@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter.viewholder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -37,10 +38,9 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
 
     public void setViewHolder(ProductDetailImage productDetailImage, FragmentManager fragmentManager){
 
+        Log.d("ProductDetail", productDetailImage.getProductDetailImageItems().get(0).getImgUrl());
         Glide.with(Contextor.getInstance().getContext())
                 .load(productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
-                //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+productDetailImage.getProductDetailImageItems().get(0).getImgUrl())
-                //.error(R.drawable.ic_error_placeholder)
                 .placeholder(R.drawable.ic_pwb_logo_detail)
                 .crossFade()
                 .fitCenter()
@@ -50,8 +50,6 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
             if (productDetailImageItem.isSelected()) {
                 Glide.with(Contextor.getInstance().getContext())
                         .load(productDetailImageItem.getImgUrl())
-                        //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+productDetailImageItem.getImgUrl())
-                        //.error(R.drawable.ic_error_placeholder)
                         .placeholder(R.drawable.ic_pwb_logo_detail)
                         .crossFade()
                         .fitCenter()

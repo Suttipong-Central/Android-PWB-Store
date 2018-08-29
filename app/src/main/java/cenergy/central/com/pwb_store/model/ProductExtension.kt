@@ -10,9 +10,9 @@ import com.google.gson.annotations.SerializedName
  */
 
 data class ProductExtension(@SerializedName("description")
-                            private var description: String? = "",
+                            var description: String? = "",
                             @SerializedName("short_description")
-                            private var shortDescription: String? = "",
+                            var shortDescription: String? = "",
                             @SerializedName("stock_item")
                             var stokeItem: StockItem? = null) : Parcelable {
     constructor(parcel: Parcel) : this(

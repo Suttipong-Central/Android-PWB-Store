@@ -73,7 +73,13 @@ class Product() : Parcelable, IViewType {
     fun getProductImageList(): ProductDetailImage {
         if (productImageList == null) {
             val productDetailImageItems = ArrayList<ProductDetailImageItem>()
-            productDetailImageItems.add(ProductDetailImageItem("1", ""))
+            var url = ""
+            url = if (!imageUrl.contains("https://staging.powerbuy.co.th/media/catalog/product", true)) {
+                "https://staging.powerbuy.co.th/media/catalog/product$imageUrl"
+            } else {
+                imageUrl
+            }
+            productDetailImageItems.add(ProductDetailImageItem("1", url))
             productDetailImageItems.add(ProductDetailImageItem("2", ""))
             productDetailImageItems.add(ProductDetailImageItem("3", ""))
             productDetailImageItems.add(ProductDetailImageItem("4", ""))

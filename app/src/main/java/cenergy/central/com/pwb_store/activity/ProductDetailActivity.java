@@ -396,7 +396,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void retrieveProduct(String sku) {
-        HttpManagerMagento.Companion.getInstance().retrieveProductDetail(sku, new ApiResponseCallback<Product>() {
+        HttpManagerMagento.Companion.getInstance().getProductDetail(sku, new ApiResponseCallback<Product>() {
                     @Override
                     public void success(@Nullable Product response) {
                         if (response != null) {

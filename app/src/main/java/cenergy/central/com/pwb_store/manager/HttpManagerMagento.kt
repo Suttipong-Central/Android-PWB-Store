@@ -16,23 +16,29 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import java.util.concurrent.TimeUnit
+
 
 class HttpManagerMagento {
     private val mContext: Context = Contextor.getInstance().context
     private var retrofit: Retrofit
+    private var defaultHttpClient: OkHttpClient
 
     init {
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val defaultHttpClient = OkHttpClient.Builder()
+        defaultHttpClient = OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
@@ -251,6 +257,107 @@ class HttpManagerMagento {
                         callback.failure(APIError(t))
                     }
                 })
+    }
+
+    /*
+    * @Hardcode for get custom_attributes
+    *
+    * */
+    fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
+        val url = "staging.powerbuy.co.th"
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(url)
+                .addPathSegment("rest")
+                .addPathSegment("V1")
+                .addPathSegment("products")
+                .addPathSegment(sku)
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "status")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][conditionType]", "eq")
+                .build()
+
+        val request = Request.Builder()
+                .url(httpUrl)
+                .build()
+
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
+                if (response != null) {
+                    val data = response.body()
+                    val product = Product()
+                    val productExtension = ProductExtension()
+                    val stockItem = StockItem()
+
+                    try {
+                        val productObject = JSONObject(data?.string())
+                        product.id = productObject.getInt("id")
+                        product.sku = productObject.getString("sku")
+                        product.name = productObject.getString("name")
+                        product.price = productObject.getDouble("price")
+                        product.status = productObject.getInt("status")
+
+                        val extensionObject = productObject.getJSONObject("extension_attributes")
+                        val stockObject = extensionObject.getJSONObject("stock_item")
+                        stockItem.itemId = stockObject.getLong("item_id")
+                        stockItem.productId = stockObject.getLong("product_id")
+                        stockItem.stockId = stockObject.getLong("stock_id")
+                        stockItem.qty = stockObject.getInt("qty")
+                        stockItem.isInStock = stockObject.getBoolean("is_in_stock")
+                        stockItem.maxQTY = stockObject.getInt("max_sale_qty")
+
+                        productExtension.stokeItem = stockItem // add stockItem to productExtension
+//                    product.extension = productExtension // add product extension to product
+
+                        val attrArray = productObject.getJSONArray("custom_attributes")
+                        for (i in 0 until attrArray.length()) {
+                            val attrName = attrArray.getJSONObject(i).getString("name")
+                            when (attrName) {
+                                "special_price" -> {
+                                    val specialPrice = attrArray.getJSONObject(i).getString("value")
+                                    product.specialPrice = if (specialPrice.trim() == "") 0.0 else specialPrice.toDouble()
+                                }
+
+                                "special_from_date" -> {
+                                    product.specialFromDate = attrArray.getJSONObject(i).getString("value")
+                                }
+
+                                "special_to_date" -> {
+                                    product.specialToDate = attrArray.getJSONObject(i).getString("value")
+                                }
+
+                                "image" -> {
+                                    product.imageUrl = attrArray.getJSONObject(i).getString("value")
+                                }
+
+                                "brand" -> {
+                                    product.brand = attrArray.getJSONObject(i).getString("value")
+                                }
+
+                                "description" -> {
+                                    productExtension.description = attrArray.getJSONObject(i).getString("value")
+                                }
+
+                                "short_description" -> {
+                                    productExtension.shortDescription = attrArray.getJSONObject(i).getString("value")
+                                }
+                            }
+                        }
+                        product.extension = productExtension // add product extension to product
+                        callback.success(product)
+                    }catch (e: Exception) {
+                        APIErrorUtils.parseError(response)?.let { callback.failure(it) }
+                        Log.e("JSON Parser", "Error parsing data " + e.toString())
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: okhttp3.Call?, e: IOException?) {
+                callback.failure(APIError(e))
+            }
+        })
     }
 
     fun getProductFromBarcode(filterBarcode: String, barcode: String, eq: String, orderBy: String,
