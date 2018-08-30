@@ -48,7 +48,7 @@ open class OrderResponse(
 open class Item(
         @PrimaryKey
         @SerializedName("item_id")
-        var id: Long? = 0,
+        var itemId: Long? = 0,
         var sku: String? = "",
         @SerializedName("qty_ordered")
         var qty: Int = 0,
@@ -72,5 +72,6 @@ open class Item(
         var taxAmount: Double = 0.0,
         @SerializedName("tax_percent")
         var taxPercent: Double = 0.0,
-        var weight: Double = 0.0
+        var weight: Double = 0.0,
+        var imageUrl: String = "" // image cache for demo will delete later
 ) : RealmObject()

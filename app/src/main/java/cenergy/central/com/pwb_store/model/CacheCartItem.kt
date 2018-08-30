@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -17,18 +19,18 @@ open class CacheCartItem(
         var type: String? = "",
         var cartId: String? = "",
         var imageUrl: String = "",
-        var maxQTY: Int? = 0) : RealmObject() {
+        var maxQTY: Int? = 0) : RealmObject(), Parcelable {
 
-    companion object {
-        const val FIELD_ID = "itemId"
-
-        @JvmStatic
-        fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
-            return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
-                    name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
-                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1, imageUrl= product.getImageUrl())
-        }
-    }
+    constructor(parcel: Parcel) : this(
+            parcel.readValue(Long::class.java.classLoader) as? Long,
+            parcel.readString(),
+            parcel.readValue(Int::class.java.classLoader) as? Int,
+            parcel.readString(),
+            parcel.readValue(Double::class.java.classLoader) as? Double,
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readValue(Int::class.java.classLoader) as? Int)
 
     fun updateItem(cartItem: CartItem) {
         this.itemId = cartItem.id
@@ -38,6 +40,40 @@ open class CacheCartItem(
         this.price = cartItem.price
         this.type = cartItem.type
         this.cartId = cartItem.cartId
-        this.imageUrl = imageUrl
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(itemId)
+        parcel.writeString(sku)
+        parcel.writeValue(qty)
+        parcel.writeString(name)
+        parcel.writeValue(price)
+        parcel.writeString(type)
+        parcel.writeString(cartId)
+        parcel.writeString(imageUrl)
+        parcel.writeValue(maxQTY)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<CacheCartItem> {
+        const val FIELD_ID = "itemId"
+
+        @JvmStatic
+        fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
+            return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
+                    name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
+                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1, imageUrl= product.getImageUrl())
+        }
+
+        override fun createFromParcel(parcel: Parcel): CacheCartItem {
+            return CacheCartItem(parcel)
+        }
+
+        override fun newArray(size: Int): Array<CacheCartItem?> {
+            return arrayOfNulls(size)
+        }
     }
 }

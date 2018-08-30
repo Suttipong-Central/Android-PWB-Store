@@ -8,7 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
-import android.widget.Toast
+import android.util.Log
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
 import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
@@ -20,9 +20,11 @@ import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.listeners.*
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
 class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener,
@@ -72,9 +74,15 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     override fun onPaymentClickListener(orderId: String) {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         mToolbar?.setNavigationOnClickListener(null)
+
+        val cacheCartItems = arrayListOf<CacheCartItem>()
+        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems?: arrayListOf())
+        
+        clearCachedCart()
+
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
-                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId))
+                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
                 .commit()
     }
 
@@ -192,5 +200,12 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
             builder.setTitle(title)
         }
         builder.show()
+    }
+
+
+    private fun clearCachedCart() {
+        preferenceManager.clearCartId()
+        RealmController.getInstance().deleteAllCacheCartItem()
+        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

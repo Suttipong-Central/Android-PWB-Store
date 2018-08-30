@@ -172,7 +172,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
         var total = 0.0
         cartItemList.forEach {
-            if (database.getCartItem(it.id) != null) {
+            if (database.getCacheCartItem(it.id) != null) {
                 total += it.qty!! * it.price!!
             }
         }
@@ -237,7 +237,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
     private fun saveCartItemInLocal(cartItem: CartItem?) {
         if (cartItem != null) {
-            val cacheCartItem = database.getCartItem(cartItem.id)
+            val cacheCartItem = database.getCacheCartItem(cartItem.id)
             cacheCartItem.updateItem(cartItem)
             database.saveCartItem(cacheCartItem)
         } else {

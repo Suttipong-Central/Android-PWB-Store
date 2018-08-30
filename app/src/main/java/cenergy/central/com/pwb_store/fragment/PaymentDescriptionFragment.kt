@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputType
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -145,7 +144,7 @@ class PaymentDescriptionFragment : Fragment() {
         val database = RealmController.getInstance()
         var total = 0.0
         cartItemList.forEach {
-            if (database.getCartItem(it.id) != null) {
+            if (database.getCacheCartItem(it.id) != null) {
                 total += it.qty!! * it.price!!
             }
         }
@@ -199,7 +198,6 @@ class PaymentDescriptionFragment : Fragment() {
             override fun success(response: String?) {
                 if (response != null) {
                     mProgressDialog?.dismiss()
-                    clearCachedCart()
                     paymentClickListener?.onPaymentClickListener(response)
                 } else {
                     mProgressDialog?.dismiss()
@@ -249,12 +247,5 @@ class PaymentDescriptionFragment : Fragment() {
         } else {
             mProgressDialog?.show()
         }
-    }
-
-    private fun clearCachedCart() {
-        val preferenceManager = context?.let { PreferenceManager(it) }
-        preferenceManager?.clearCartId()
-        RealmController.getInstance().deleteAllCacheCartItem()
-        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

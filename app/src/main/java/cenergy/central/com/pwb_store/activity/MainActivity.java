@@ -525,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         switch (action) {
             case ACTION_CART: {
                 String cartId = new PreferenceManager(this).getCartId();
-                int count = RealmController.with(this).getCartItems().size();
+                int count = RealmController.with(this).getCacheCartItems().size();
                 if (cartId != null && count > 0) {
                     ShoppingCartActivity.Companion.startActivity(this, cartId);
                 } else {

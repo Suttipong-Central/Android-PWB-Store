@@ -710,7 +710,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     @Override
     public void onAddShoppingCartClick(View view) {
-        if (RealmController.with(this).getCartItems().size() > 0) {
+        if (RealmController.with(this).getCacheCartItems().size() > 0) {
             ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
@@ -794,7 +794,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     private void updateShoppingCartBadge() {
         int count = 0;
-        List<CacheCartItem> items = RealmController.with(this).getCartItems();
+        List<CacheCartItem> items = RealmController.with(this).getCacheCartItems();
         for (CacheCartItem item : items) {
             if (item.getQty() != null) {
                 count += item.getQty();

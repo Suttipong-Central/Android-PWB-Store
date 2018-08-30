@@ -226,16 +226,16 @@ public class RealmController {
             }
         });
 
-        return getCartItems();
+        return getCacheCartItems();
     }
 
-    public List<CacheCartItem> getCartItems() {
+    public List<CacheCartItem> getCacheCartItems() {
         Realm realm = getRealm();
         RealmResults<CacheCartItem> realmCartItems = realm.where(CacheCartItem.class).sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAll();
         return realmCartItems == null ? null : realm.copyFromRealm(realmCartItems);
     }
 
-    public CacheCartItem getCartItem(Long itemId) {
+    public CacheCartItem getCacheCartItem(Long itemId) {
         CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_ID, itemId).findFirst();
         return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
     }
@@ -258,32 +258,6 @@ public class RealmController {
             @Override
             public void execute(@NonNull Realm realm) {
                 realm.copyToRealmOrUpdate(orderResponse);
-            }
-        });
-    }
-
-    public void saveOrderResponse(final OrderResponse orderResponse, final DatabaseListener listener) {
-        Realm realm = getRealm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                realm.copyToRealmOrUpdate(orderResponse);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-
-            @Override
-            public void onSuccess() {
-                if (listener != null) {
-                    Log.d("Database", "stored orderResponse");
-                    listener.onSuccessfully();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                if (listener != null) {
-                    listener.onFailure(error);
-                }
             }
         });
     }

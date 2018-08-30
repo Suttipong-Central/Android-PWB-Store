@@ -37,7 +37,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     @SuppressLint("SetTextI18n")
     fun bindView(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
-        val cacheCartItem = database.getCartItem(cartItem.id) // get cacheCartItem
+        val cacheCartItem = database.getCacheCartItem(cartItem.id) // get cacheCartItem
         val unit = itemView.context.getString(R.string.baht)
         this.listener = listener
         this.cartItem = cartItem

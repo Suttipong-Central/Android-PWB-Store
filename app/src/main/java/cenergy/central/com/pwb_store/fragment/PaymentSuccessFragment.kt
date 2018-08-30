@@ -12,6 +12,7 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.response.Item
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -29,8 +31,9 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
 
-class PaymentSuccessFragment : Fragment() {
+class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
+    // widget view
     lateinit var recycler: RecyclerView
     lateinit var orderNumber: PowerBuyTextView
     lateinit var totalPrice: PowerBuyTextView
@@ -43,28 +46,33 @@ class PaymentSuccessFragment : Fragment() {
     lateinit var tell: PowerBuyTextView
     lateinit var openToday: PowerBuyTextView
     lateinit var finishButton: CardView
-    private var orderId: String? = null
-    private var orderResponseId: String? = null
-    private var listItems: List<Item>? = arrayListOf()
-    private var orderProductListAdapter = OrderProductListAdapter()
     private var mProgressDialog: ProgressDialog? = null
 
-    companion object {
-        private const val ORDER_ID = "ORDER_ID"
-        private const val ORDER_RESPONSE_ID = "ORDER_RESPONSE_ID"
+    // data
+    private var orderId: String? = null
+    private var cacheOrderId: String? = null
+    private var listItems: List<Item>? = arrayListOf()
+    private var orderProductListAdapter = OrderProductListAdapter()
+    private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
 
-        fun newInstance(orderId: String): PaymentSuccessFragment {
+    companion object {
+        private const val ARG_ORDER_ID = "ARG_ORDER_ID"
+        private const val ARG_CART_ITEMS = "ARG_CART_ITEMS"
+        private const val ARG_CACHE_ORDER_ID = "ARG_CACHE_ORDER_ID"
+
+        fun newInstance(orderId: String, cacheCartItems: ArrayList<CacheCartItem>): PaymentSuccessFragment {
             val fragment = PaymentSuccessFragment()
             val args = Bundle()
-            args.putString(ORDER_ID, orderId)
+            args.putString(ARG_ORDER_ID, orderId)
+            args.putParcelableArrayList(ARG_CART_ITEMS, cacheCartItems)
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstanceByHistory(orderResponseId: String): PaymentSuccessFragment {
+        fun newInstanceByHistory(orderId: String): PaymentSuccessFragment {
             val fragment = PaymentSuccessFragment()
             val args = Bundle()
-            args.putString(ORDER_RESPONSE_ID, orderResponseId)
+            args.putString(ARG_CACHE_ORDER_ID, orderId)
             fragment.arguments = args
             return fragment
         }
@@ -72,8 +80,9 @@ class PaymentSuccessFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        orderId = arguments?.getString(ORDER_ID)
-        orderResponseId = arguments?.getString(ORDER_RESPONSE_ID)
+        orderId = arguments?.getString(ARG_ORDER_ID)
+        cacheOrderId = arguments?.getString(ARG_CACHE_ORDER_ID)
+        cacheCartItems = arguments?.getParcelableArrayList(ARG_CART_ITEMS)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -106,28 +115,13 @@ class PaymentSuccessFragment : Fragment() {
             getOrder()
         }
 
-        if (orderResponseId != null) {
-            gerOrderByRealm(orderResponseId!!)
+        if (cacheOrderId != null) {
+            gerOrderByRealm(cacheOrderId!!)
         }
     }
 
     private fun getOrder() {
-        HttpManagerMagento.getInstance().getOrder(orderId!!, object : ApiResponseCallback<OrderResponse> {
-            override fun success(response: OrderResponse?) {
-                if (response != null) {
-                    RealmController.with(context).saveOrderResponse(response)
-                    updateViewOrder(response)
-                } else {
-                    mProgressDialog?.dismiss()
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                }
-            }
-
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
-            }
-        })
+        HttpManagerMagento.getInstance().getOrder(orderId!!, this)
     }
 
     private fun gerOrderByRealm(orderResponseId: String) {
@@ -137,10 +131,11 @@ class PaymentSuccessFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(response: OrderResponse) {
+        listItems = response.items
+
         val unit = context!!.getString(R.string.baht)
 
-        listItems = response.items
-        orderProductListAdapter.listItems = this@PaymentSuccessFragment.listItems ?: arrayListOf()
+        orderProductListAdapter.listItems = listItems ?: arrayListOf()
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${response.orderId}"
 
@@ -192,4 +187,32 @@ class PaymentSuccessFragment : Fragment() {
         }
         builder.show()
     }
+
+    // {@like implement ApiResponseCallback<OrderResponse>}
+    override fun success(response: OrderResponse?) {
+        if (response != null) {
+            // TBD- keep imageUrl .... remove later waiting API have imageURL
+            for (cacheItem in cacheCartItems!!) {
+                val item = response.items?.filter { it.sku == cacheItem.sku }
+                if (item != null && item.isNotEmpty()) {
+                    Log.d("OrderResponse", cacheItem.imageUrl)
+                    item[0].imageUrl = cacheItem.imageUrl
+                }
+            }
+            // save order to local database
+            RealmController.with(context).saveOrderResponse(response)
+
+            updateViewOrder(response)
+        } else {
+            mProgressDialog?.dismiss()
+            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+        }
+    }
+
+    override fun failure(error: APIError) {
+        mProgressDialog?.dismiss()
+        showAlertDialog("", error.errorMessage)
+    }
+    //endregion
+
 }

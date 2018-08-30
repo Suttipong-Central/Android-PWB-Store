@@ -105,10 +105,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private GridLayoutManager mLayoutManger;
     private ProductDao mProductDao;
     private ProductFilterList mProductFilterList;
-//    private ProductFilterList mTempProductFilterList;
+    //    private ProductFilterList mTempProductFilterList;
     private List<Brand> brands = new ArrayList<>();
     private SortingList mSortingList;
-//    private SortingList mTempSortingList;
+    //    private SortingList mTempSortingList;
     private String title;
     private PowerBuyPopupWindow mPowerBuyPopupWindow;
     private ProgressDialog mProgressDialog;
@@ -172,7 +172,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                             keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                 } else {
                     layoutProgress.setVisibility(View.VISIBLE);
-                    if(brandId != null){
+                    if (brandId != null) {
                         retrieveProductList(departmentId, brandId);
                     } else {
 //                    getProductList(departmentId);
@@ -243,8 +243,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     mProductListAdapter.setError();
                 }
                 setTextHeader(totalItem, title);
-                mProgressDialog.dismiss();
                 layoutProgress.setVisibility(View.GONE);
+                mProgressDialog.dismiss();
             } else {
                 mProductListAdapter.setError();
                 setTextHeader(totalItem, title);
@@ -680,7 +680,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     @Override
                     public void failure(@NotNull APIError error) {
                         Log.d("productDaoResponse", error.toString());
+
                         layoutProgress.setVisibility(View.GONE);
+                        mProgressDialog.dismiss();
                     }
                 }
         );
@@ -695,12 +697,14 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     ProductListFragment.this.brands = response.getItems();
                 }
                 layoutProgress.setVisibility(View.GONE);
+                mProgressDialog.dismiss();
             }
 
             @Override
             public void failure(@NotNull APIError error) {
                 Log.d("getBrands", error.toString());
                 layoutProgress.setVisibility(View.GONE);
+                mProgressDialog.dismiss();
             }
         });
     }
@@ -714,21 +718,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             response.setCurrentPage(currentPage);
             mProductListAdapter.setProduct(response);
             setTextHeader(totalItem, title);
-            mProgressDialog.dismiss();
-//            if (mPowerBuyPopupWindow.isShowing()) {
-//                mPowerBuyPopupWindow.dismiss();
-//            }
-//                            layoutProgress.setVisibility(View.GONE);
         } else {
             if (mProductListAdapter.getItemCount() == 0) {
                 mProductListAdapter.setError();
             }
             setTextHeader(totalItem, title);
-            mProgressDialog.dismiss();
-//            if (mPowerBuyPopupWindow.isShowing()) {
-//                mPowerBuyPopupWindow.dismiss();
-//            }
-//                            layoutProgress.setVisibility(View.GONE);
         }
 
         getBrands(departmentId);
