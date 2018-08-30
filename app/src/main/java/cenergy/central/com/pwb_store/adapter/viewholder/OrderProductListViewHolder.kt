@@ -2,12 +2,11 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.extensions.setImage
 import cenergy.central.com.pwb_store.extensions.setImageUrl
-import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.response.Item
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
@@ -16,14 +15,15 @@ import java.util.*
 
 class OrderProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    var productImage: ImageView = itemView.findViewById(R.id.product_image_list_order)
-    var productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_order)
-    var productPrice: PowerBuyTextView = itemView.findViewById(R.id.product_price_list_order)
-    var productQty: PowerBuyTextView = itemView.findViewById(R.id.product_qty_list_order)
-    var productTotalPrice: PowerBuyTextView = itemView.findViewById(R.id.product_total_price_list_order)
+    private var productImage: ImageView = itemView.findViewById(R.id.product_image_list_order)
+    private var productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_order)
+    private var productPrice: PowerBuyTextView = itemView.findViewById(R.id.product_price_list_order)
+    private var productQty: PowerBuyTextView = itemView.findViewById(R.id.product_qty_list_order)
+    private var productTotalPrice: PowerBuyTextView = itemView.findViewById(R.id.product_total_price_list_order)
 
     fun bindView(item: Item) {
         val unit = itemView.context.getString(R.string.baht)
+        Log.d("ImageUrl", item.imageUrl)
         productImage.setImageUrl(item.imageUrl)
         productImage.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_pwb_logo_detail))
         productName.text = item.name
