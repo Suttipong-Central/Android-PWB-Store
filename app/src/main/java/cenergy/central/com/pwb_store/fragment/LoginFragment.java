@@ -7,10 +7,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.CardView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,17 +22,23 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jetbrains.annotations.NotNull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.manager.PwbApiManager;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.response.LoginResponse;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 
 @SuppressWarnings("unused")
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements TextWatcher, View.OnClickListener {
     public static final String TAG = LoginFragment.class.getSimpleName();
 
     //View Members
@@ -52,6 +61,9 @@ public class LoginFragment extends Fragment {
     CardView mLoginButton;
 
     private ProgressDialog mProgressDialog;
+    private String username;
+    private String password;
+    private PreferenceManager preferenceManager;
 
 
     public LoginFragment() {
@@ -81,31 +93,31 @@ public class LoginFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_login, container, false);
         initInstances(rootView, savedInstanceState);
 
+//        String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
+//        String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
+
         // setup onClick login
         rootView.findViewById(R.id.card_view_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hideSoftKeyboard(v);
                 showProgressDialog();
-                try {
-                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
-                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
-
-//                    String username = "PwbUserName";
-//                    String password = "Pwb1199";
-                    if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) &&
-                            password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))) {
-                        EventBus.getDefault().post(new LoginSuccessBus(true));
-                        mProgressDialog.dismiss();
-                    } else {
-                        mProgressDialog.dismiss();
-                        showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
-                    }
-
-                } catch (NullPointerException ex) {
-                    mProgressDialog.dismiss();
-                    Log.e(TAG, "onCardViewLoginClick: ", ex);
-                }
+//                try {
+//                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
+//                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
+//
+//                    if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) && password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))) {
+//                        EventBus.getDefault().post(new LoginSuccessBus(true));
+//                        mProgressDialog.dismiss();
+//                    } else {
+//                        mProgressDialog.dismiss();
+//                        showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
+//                    }
+//
+//                } catch (NullPointerException ex) {
+//                    mProgressDialog.dismiss();
+//                    Log.e(TAG, "onCardViewLoginClick: ", ex);
+//                }
             }
         });
 
@@ -114,13 +126,16 @@ public class LoginFragment extends Fragment {
 
     private void init(Bundle savedInstanceState) {
         // Init Fragment level's variable(s) here
-
+        preferenceManager = new PreferenceManager(getContext());
     }
 
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
-        // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
+        mEditTextUserName = rootView.findViewById(R.id.edit_text_username);
+        mEditTextPassword = rootView.findViewById(R.id.edit_text_password);
+        mLoginButton = rootView.findViewById(R.id.card_view_login);
+        mEditTextUserName.addTextChangedListener(this);
+        mEditTextPassword.addTextChangedListener(this);
     }
 
     @Override
@@ -180,5 +195,58 @@ public class LoginFragment extends Fragment {
             InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        checkLogin();
+    }
+
+    private void checkLogin() {
+        if( !mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()){
+            username = mEditTextUserName.getText().toString();
+            password = mEditTextPassword.getText().toString();
+            mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.powerBuyPurple));
+            mLoginButton.setOnClickListener(this);
+        } else {
+            mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.hintColor));
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        hideSoftKeyboard(v);
+        showProgressDialog();
+        PwbApiManager.Companion.getInstance().userLogin(username, password, new ApiResponseCallback<LoginResponse>() {
+            @Override
+            public void success(@org.jetbrains.annotations.Nullable LoginResponse response) {
+                if (response != null){
+                    String userToken = response.getSuccesses().getToken();
+                    preferenceManager.setUserToken(userToken);
+                    getUserDetail();
+                } else {
+                    showAlertDialog("", getContext().getResources().getString(R.string.some_thing_wrong));
+                }
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                showAlertDialog("", error.getErrorMessage());
+            }
+        });
+    }
+
+    private void getUserDetail() {
+        String bearerToken = "Bearer " + preferenceManager.getUserToken();
     }
 }

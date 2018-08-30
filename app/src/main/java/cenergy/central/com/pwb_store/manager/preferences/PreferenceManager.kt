@@ -14,17 +14,31 @@ class PreferenceManager(private var context: Context) {
     val cartId: String?
         get() = pref.getString(PREF_CART_ID, null)
 
+    val userToken: String?
+        get() = pref.getString(PREF_USER_TOKEN, null)
+
     fun setCartId(cartId: String?) {
         val editor = pref.edit()
         editor.putString(PREF_CART_ID, cartId)
         editor.apply()
     }
 
+    fun setUserToken(userToken: String?) {
+        val editor = pref.edit()
+        editor.putString(PREF_USER_TOKEN, userToken)
+        editor.apply()
+    }
+
     fun clearCartId() {
-        pref.edit().clear().apply()
+        pref.edit().remove(PREF_CART_ID).apply()
+    }
+
+    fun clearUserToken() {
+        pref.edit().remove(PREF_USER_TOKEN).apply()
     }
 
     companion object {
         const val PREF_CART_ID = "cart_id"
+        const val PREF_USER_TOKEN = "user_token"
     }
 }

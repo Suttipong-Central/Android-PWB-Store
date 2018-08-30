@@ -3,8 +3,18 @@ package cenergy.central.com.pwb_store.manager
 import android.annotation.SuppressLint
 import android.content.Context
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.manager.service.CartService
+import cenergy.central.com.pwb_store.manager.service.UserService
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.body.UserBody
+import cenergy.central.com.pwb_store.model.response.LoginResponse
+import cenergy.central.com.pwb_store.model.response.UserResponse
+import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -15,6 +25,7 @@ import java.util.concurrent.TimeUnit
  */
 
 class PwbApiManager {
+
         private val mContext: Context = Contextor.getInstance().context
         private var retrofit: Retrofit
         private var httpClient: OkHttpClient
@@ -27,7 +38,6 @@ class PwbApiManager {
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .addInterceptor { chain ->
                         val request = chain.request().newBuilder()
-                                .addHeader(HEADER_AUTHORIZATION, "//TODO: add client")
                                 .build()
                         chain.proceed(request)
                     }
@@ -35,15 +45,14 @@ class PwbApiManager {
                     .build()
 
             retrofit = Retrofit.Builder()
-                    .baseUrl("//TODO: Add hostname")
+                    .baseUrl(HOST_NAME)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient)
                     .build()
         }
 
         companion object {
-            //Specific Header
-            private const val HEADER_AUTHORIZATION = "Authorization"
+            private const val HOST_NAME = "http://chuanl.ddns.net"
 
             @SuppressLint("StaticFieldLeak")
             private var instance: PwbApiManager? = null
@@ -54,4 +63,28 @@ class PwbApiManager {
                 return instance as PwbApiManager
             }
         }
+
+    fun userLogin(username: String, password: String, callback: ApiResponseCallback<LoginResponse> ){
+        val userService = retrofit.create(UserService::class.java)
+        val userBody = UserBody(username = username, password = password)
+        userService.userLogin(userBody).enqueue(object : Callback<LoginResponse>{
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val loginResponse = response.body()
+                    callback.success(loginResponse)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getUserDetail(bearerToken: String, callback: ApiResponseCallback<UserResponse> ){
+        val userService = retrofit.create(UserService::class.java)
+        //todo get user detail here krub P'Aa
+    }
 }
