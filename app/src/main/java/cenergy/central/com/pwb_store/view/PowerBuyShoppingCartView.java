@@ -81,7 +81,7 @@ public class PowerBuyShoppingCartView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onAddShoppingCartClick(v);
+                    mListener.onShoppingCartClick(v);
                 }
             }
         });
@@ -267,6 +267,6 @@ public class PowerBuyShoppingCartView extends FrameLayout {
     }
 
     public interface OnClickListener {
-        void onAddShoppingCartClick(View view);
+        void onShoppingCartClick(View view);
     }
 }

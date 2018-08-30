@@ -695,7 +695,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Override
-    public void onAddShoppingCartClick(View view) {
+    public void onShoppingCartClick(View view) {
         if (RealmController.with(this).getCacheCartItems().size() > 0) {
             ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
