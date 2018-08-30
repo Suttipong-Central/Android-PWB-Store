@@ -5,6 +5,7 @@ import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import cenergy.central.com.pwb_store.model.response.BrandResponse;
+import cenergy.central.com.pwb_store.model.response.ProductByBarcodeResponse;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -125,7 +126,7 @@ public interface ProductService {
             @Path("sku") String sku);
 
     @GET("/rest/V1/products")
-    Call<ProductResponse> getProductFromBarcode(
+    Call<ProductByBarcodeResponse> getProductFromBarcode(
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String barCodeName,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") String barCode,
             @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String eq,

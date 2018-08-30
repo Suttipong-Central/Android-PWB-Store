@@ -10,10 +10,7 @@ import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
-import cenergy.central.com.pwb_store.model.response.BrandResponse
-import cenergy.central.com.pwb_store.model.response.OrderResponse
-import cenergy.central.com.pwb_store.model.response.ProductResponse
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import okhttp3.HttpUrl
@@ -382,13 +379,13 @@ class HttpManagerMagento {
                               pageSize: Int, currentPage: Int, callback: ApiResponseCallback<Product?>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getProductFromBarcode(filterBarcode, barcode, eq, orderBy, pageSize, currentPage)
-                .enqueue(object : Callback<ProductResponse> {
+                .enqueue(object : Callback<ProductByBarcodeResponse> {
 
-                    override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                    override fun onResponse(call: Call<ProductByBarcodeResponse>?, response: Response<ProductByBarcodeResponse>?) {
                         if (response != null) {
                             val productResponse = response.body()
                             if (productResponse?.products!!.size > 0) {
-                                callback.success(productResponse.products[0])
+                                getProductDetail(productResponse.products[0].sku, callback)
                             } else {
                                 callback.success(null)
                             }
@@ -397,7 +394,7 @@ class HttpManagerMagento {
                         }
                     }
 
-                    override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                    override fun onFailure(call: Call<ProductByBarcodeResponse>?, t: Throwable?) {
                         callback.failure(APIError(t))
                     }
                 })
