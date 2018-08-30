@@ -29,12 +29,11 @@ import cenergy.central.com.pwb_store.fragment.ProductDetailFragment;
 import cenergy.central.com.pwb_store.fragment.WebViewFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.PromotionItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.RecommendBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SpecDaoBus;
-import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
+import cenergy.central.com.pwb_store.manager.bus.event.UpdateBadgeBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.CacheCartItem;
@@ -256,19 +255,6 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Subscribe
-    public void onEvent(OverviewBus overviewBus) {
-        Intent intent = new Intent(this, WebViewActivity.class);
-        intent.putExtra(WebViewActivity.ARG_WEB_URL, overviewBus.getReviewDetailText().getHtml());
-        intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML);
-        intent.putExtra(WebViewActivity.ARG_TITLE, "Web");
-
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(overviewBus.getView(), 0, 0, overviewBus.getView().getWidth(), overviewBus.getView().getHeight())
-                        .toBundle());
-    }
-
-    @Subscribe
     public void onEvent(SpecDaoBus specDaoBus) {
         if (specDaoBus.getSpecDao().getSpecItems().size() == 0) {
             showAlertDialog("ไม่มีข้อมูล", false);
@@ -285,8 +271,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     @Subscribe
-    public void onEvent(UpdateBageBus updateBageBus) {
-        if (updateBageBus.isUpdate()) {
+    public void onEvent(UpdateBadgeBus updateBadgeBus) {
+        if (updateBadgeBus.isUpdate()) {
 //            long count = RealmController.with(this).getCount();
             long count = RealmController.with(this).getCompareProducts().size();
             mBuyCompareView.updateCartCount((int) count);

@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import org.greenrobot.eventbus.EventBus;
@@ -20,31 +19,26 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.SpecFragment;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
-import cenergy.central.com.pwb_store.manager.UserInfoManager;
-import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
-import cenergy.central.com.pwb_store.model.APIError;
-import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
+import cenergy.central.com.pwb_store.manager.bus.event.UpdateBadgeBus;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.realm.RealmController;
-import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
 import io.realm.Realm;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by napabhat on 7/26/2017 AD.
  */
 
 public class SpecActivity extends AppCompatActivity implements PowerBuyCompareView.OnClickListener{
+
     private static final String TAG = SpecActivity.class.getSimpleName();
     public static final String ARG_SPEC_DAO = "ARG_SPEC_DAO";
     public static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
     public static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
+    public static final String ARG_PRODUCT = "ARG_PRODUCT";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -58,45 +52,47 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     private ProgressDialog mProgressDialog;
     private String productId;
 
-    final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
-        @Override
-        public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
-            if (response.isSuccessful()){
-                mProductDetail = response.body();
-                if (mProductDetail != null){
-                    ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
-                    if (extensionProductDetail.getSpecItems() != null){
-                        mSpecDao = new SpecDao(extensionProductDetail.getSpecItems());
-                        mProductDetail.setSpecDao(mSpecDao);
-                    }
+    private Product product;
 
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction
-                            .replace(R.id.container, SpecFragment.newInstance(mSpecDao, mProductDetail))
-                            .commit();
-                    mProgressDialog.dismiss();
-                }else {
-                    //MockData();
-                    mProgressDialog.dismiss();
-                }
-            }else {
-                APIError error = APIErrorUtils.parseError(response);
-                Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                showAlertDialog(error.getErrorMessage(), false);
-                mProgressDialog.dismiss();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<ProductDetail> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
-        }
-    };
+//    final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
+//        @Override
+//        public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
+//            if (response.isSuccessful()){
+//                mProductDetail = response.body();
+//                if (mProductDetail != null){
+//                    ExtensionProductDetail extensionProductDetail = mProductDetail.getExtensionProductDetail();
+//                    if (extensionProductDetail.getSpecItems() != null){
+//                        mSpecDao = new SpecDao(extensionProductDetail.getSpecItems());
+//                        mProductDetail.setSpecDao(mSpecDao);
+//                    }
+//
+//                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                    fragmentTransaction
+//                            .replace(R.id.container, SpecFragment.newInstance(mSpecDao, mProductDetail))
+//                            .commit();
+//                    mProgressDialog.dismiss();
+//                }else {
+//                    //MockData();
+//                    mProgressDialog.dismiss();
+//                }
+//            }else {
+//                APIError error = APIErrorUtils.parseError(response);
+//                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+//                showAlertDialog(error.getErrorMessage(), false);
+//                mProgressDialog.dismiss();
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call<ProductDetail> call, Throwable t) {
+//            Log.e(TAG, "onFailure: ", t);
+//            mProgressDialog.dismiss();
+//        }
+//    };
 
     @Subscribe
-    public void onEvent(UpdateBageBus updateBageBus){
-        if (updateBageBus.isUpdate()){
+    public void onEvent(UpdateBadgeBus updateBadgeBus){
+        if (updateBadgeBus.isUpdate()){
 //            long count = RealmController.with(this).getCount();
             long count = RealmController.with(this).getCompareProducts().size();
             mBuyCompareView.updateCartCount((int) count);
@@ -115,21 +111,30 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
         if (extras != null) {
             mSpecDao = extras.getParcelable("ARG_SPEC_DAO");
             productId = extras.getString(ARG_PRODUCT_ID);
-        }
-        if (savedInstanceState == null){
-            showProgressDialog();
-            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
-                    getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
 
-        } else {
+            product = extras.getParcelable(ARG_PRODUCT);
+        }
+
+        if (product != null){
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.container, SpecFragment.newInstance(product))
+                    .commit();
+        }
+//        if (savedInstanceState == null){
+//            showProgressDialog();
+//            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+//                    getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
+//
+//        } else {
 //            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 //            fragmentTransaction
 //                    .replace(R.id.container, SpecFragment.newInstance(mSpecDao, mProductDetail))
 //                    .commit();
-            showProgressDialog();
-            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
-                    getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
-        }
+//            showProgressDialog();
+//            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),
+//                    getString(R.string.product_detail)).enqueue(CALLBACK_PRODUCT_DETAIL);
+//        }
 
     }
 

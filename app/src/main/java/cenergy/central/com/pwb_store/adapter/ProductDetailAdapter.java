@@ -20,6 +20,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.ProductPromotionViewHold
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductSpecViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
+import cenergy.central.com.pwb_store.model.Overview;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailAvailableOptionItem;
 import cenergy.central.com.pwb_store.model.ProductDetailImage;
@@ -180,6 +181,10 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                     ReviewDetailText reviewDetailText = (ReviewDetailText) viewType;
                     ProductOverviewViewHolder productOverviewViewHolder = (ProductOverviewViewHolder) holder;
                     productOverviewViewHolder.setViewHolder(reviewDetailText);
+                } else if(viewType instanceof Overview && holder instanceof ProductOverviewViewHolder) {
+                    Overview productOverview = (Overview) viewType;
+                    ProductOverviewViewHolder productOverviewViewHolder = (ProductOverviewViewHolder) holder;
+                    productOverviewViewHolder.setViewHolder(productOverview);
                 }
                 break;
 
@@ -188,6 +193,10 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                     SpecDao specDao = (SpecDao) viewType;
                     ProductSpecViewHolder productSpecViewHolder = (ProductSpecViewHolder) holder;
                     productSpecViewHolder.setViewHolder(specDao);
+                } else if(viewType instanceof Overview && holder instanceof ProductSpecViewHolder) {
+                    Overview productSpec = (Overview) viewType;
+                    ProductSpecViewHolder productSpecViewHolder = (ProductSpecViewHolder) holder;
+                    productSpecViewHolder.setViewHolder(productSpec);
                 }
                 break;
 
@@ -317,14 +326,24 @@ public class ProductDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 //            reviewDetailText.setViewTypeId(VIEW_TYPE_ID_DETAIL_OVERVIEW);
 //            mListViewType.add(reviewDetailText);
 //        } else {
-            mListViewType.add(VIEW_TYPE_OVERVIEW);
+//            mListViewType.add(VIEW_TYPE_OVERVIEW);
 //        }
 
 //        SpecDao specDao = productDetailNew.getSpecDao();
 //        specDao.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);
 //        mListViewType.add(specDao);
-//
-        mListViewType.add(VIEW_TYPE_SPEC);
+
+        if (!product.getExtension().getDescription().isEmpty()){
+            Overview productOverview = new Overview(product.getSku(), product.getExtension().getDescription());
+            productOverview.setViewTypeId(VIEW_TYPE_ID_DETAIL_OVERVIEW);
+            mListViewType.add(productOverview);
+        }
+
+        if (!product.getExtension().getShortDescription().isEmpty()){
+            Overview productSpec = new Overview(product.getSku(), product.getExtension().getShortDescription());
+            productSpec.setViewTypeId(VIEW_TYPE_ID_DETAIL_SPEC);
+            mListViewType.add(productSpec);
+        }
 //        mListViewType.add(VIEW_TYPE_PROMOTION);
 //        mListViewType.add(VIEW_TYPE_DELIVERY);
 

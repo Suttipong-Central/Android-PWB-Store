@@ -18,6 +18,7 @@ import cenergy.central.com.pwb_store.model.CompareDao;
 import cenergy.central.com.pwb_store.model.CompareDetail;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.IViewType;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.SpecDao;
 import cenergy.central.com.pwb_store.model.SpecItem;
 import cenergy.central.com.pwb_store.model.ViewType;
@@ -30,6 +31,7 @@ public class SpecDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     //Static Members
     private static final int VIEW_TYPE_ID_SPEC_HEADER = 0;
     private static final int VIEW_TYPE_ID_SPEC_ITEM = 1;
+    private static final int VIEW_TYPE_ID_SPEC = 2;
 
     private static final ViewType VIEW_TYPE_SPEC_HEADER = new ViewType(VIEW_TYPE_ID_SPEC_HEADER);
 
@@ -116,5 +118,13 @@ public class SpecDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public GridLayoutManager.SpanSizeLookup getSpanSize() {
         return mSpanSize;
+    }
+
+    public void setProduct(Product product) {
+        mListViewType.add(VIEW_TYPE_SPEC_HEADER);
+        product.setViewTypeId(VIEW_TYPE_ID_SPEC);
+        mListViewType.add(product);
+
+        notifyDataSetChanged();
     }
 }

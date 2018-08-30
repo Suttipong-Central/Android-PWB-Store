@@ -1,42 +1,59 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import org.greenrobot.eventbus.EventBus;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.manager.bus.event.OverviewBus;
-import cenergy.central.com.pwb_store.model.Event;
+import cenergy.central.com.pwb_store.activity.WebViewActivity;
+import cenergy.central.com.pwb_store.fragment.WebViewFragment;
+import cenergy.central.com.pwb_store.model.Overview;
 import cenergy.central.com.pwb_store.model.ReviewDetailText;
-import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
  * Created by napabhat on 7/18/2017 AD.
  */
 
-public class ProductOverviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-    @BindView(R.id.layout_overview)
-    LinearLayout overView;
+public class ProductOverviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public ProductOverviewViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
-        itemView.setOnClickListener(this);
+        LinearLayout overViewLayout = itemView.findViewById(R.id.layout_overview);
+        overViewLayout.setOnClickListener(this);
     }
 
-    public void setViewHolder(ReviewDetailText reviewDetailText){
+    public void setViewHolder(ReviewDetailText reviewDetailText) {
         itemView.setTag(reviewDetailText);
-        itemView.setOnClickListener(this);
+    }
+
+    public void setViewHolder(Overview productOverview) {
+        itemView.setTag(productOverview);
     }
 
     @Override
     public void onClick(View v) {
-        ReviewDetailText reviewDetailText = (ReviewDetailText) itemView.getTag();
-        EventBus.getDefault().post(new OverviewBus(v, reviewDetailText));
+        if (v.getId() == R.id.layout_overview) {
+            if (itemView.getTag() instanceof Overview) {
+                Overview overview = (Overview) itemView.getTag();
+                openWebViewActivity(v, overview.getOverviewHTML());
+            } else {
+                ReviewDetailText reviewDetailText = (ReviewDetailText) itemView.getTag();
+                openWebViewActivity(v, reviewDetailText.getHtml());
+            }
+        }
+    }
+
+    private void openWebViewActivity(View view, String html) {
+        Intent intent = new Intent(itemView.getContext(), WebViewActivity.class);
+        intent.putExtra(WebViewActivity.ARG_WEB_URL, html);
+        intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML);
+        intent.putExtra(WebViewActivity.ARG_TITLE, "Web");
+        ActivityCompat.startActivity(itemView.getContext(), intent,
+                ActivityOptionsCompat
+                        .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
+                        .toBundle());
     }
 }

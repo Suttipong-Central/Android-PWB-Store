@@ -31,8 +31,7 @@ import cenergy.central.com.pwb_store.adapter.decoration.ProductGridSpacesItemDec
 import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBus;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreAvaliableBus;
-import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.manager.bus.event.UpdateBadgeBus;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
@@ -174,7 +173,7 @@ public class ProductDetailFragment extends Fragment {
             @Override
             public void onSuccessfully() {
                 mProgressDialog.dismiss();
-                EventBus.getDefault().post(new UpdateBageBus(true));
+                EventBus.getDefault().post(new UpdateBadgeBus(true));
                 Toast.makeText(getContext(), "Generate compare complete.", Toast.LENGTH_SHORT).show();
             }
 

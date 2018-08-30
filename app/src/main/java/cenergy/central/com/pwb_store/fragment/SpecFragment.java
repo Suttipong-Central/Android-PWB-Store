@@ -26,9 +26,10 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.SpecDetailAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.manager.bus.event.SpecAddToCompareBus;
-import cenergy.central.com.pwb_store.manager.bus.event.UpdateBageBus;
+import cenergy.central.com.pwb_store.manager.bus.event.UpdateBadgeBus;
 import cenergy.central.com.pwb_store.model.AddCompare;
 import cenergy.central.com.pwb_store.model.ExtensionProductDetail;
+import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDetail;
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem;
 import cenergy.central.com.pwb_store.model.ProductDetailStore;
@@ -44,10 +45,13 @@ import io.realm.Realm;
 public class SpecFragment extends Fragment {
     private static final String TAG = SpecFragment.class.getSimpleName();
     private static final String ARG_SPEC_DAO = "ARG_SPEC_DAO";
+    private static final String ARG_PRODUCT = "ARG_PRODUCT";
     private static final String ARG_PRODUCT_DETAIL = "ARG_PRODUCT_DETAIL";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+
+    private Product product;
 
     private SpecDao mSpecDao;
     private SpecDetailAdapter mAdapter;
@@ -97,6 +101,14 @@ public class SpecFragment extends Fragment {
         return fragment;
     }
 
+    public static SpecFragment newInstance(Product product) {
+        SpecFragment fragment = new SpecFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_PRODUCT, product);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +133,7 @@ public class SpecFragment extends Fragment {
         if (getArguments() != null) {
             mSpecDao = getArguments().getParcelable(ARG_SPEC_DAO);
             mRealmProductDetail = getArguments().getParcelable(ARG_PRODUCT_DETAIL);
+            product = getArguments().getParcelable(ARG_PRODUCT);
         }
 
         mHandler = new Handler();
@@ -147,7 +160,8 @@ public class SpecFragment extends Fragment {
         mAdapter = new SpecDetailAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
-        mAdapter.setSpecDetail(mSpecDao);
+//        mAdapter.setSpecDetail(mSpecDao);
+        mAdapter.setProduct(product);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mAdapter);
@@ -214,7 +228,7 @@ public class SpecFragment extends Fragment {
                                 //mRealm.copyToRealm(addCompare);
                                 mRealm.copyToRealmOrUpdate(addCompare);
                                 mRealm.commitTransaction();
-                                EventBus.getDefault().post(new UpdateBageBus(true));
+                                EventBus.getDefault().post(new UpdateBadgeBus(true));
                                 mProgressDialog.dismiss();
                                 Toast.makeText(getContext(), "Generate compare complete.", Toast.LENGTH_SHORT).show();
 
