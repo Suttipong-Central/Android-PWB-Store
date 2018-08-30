@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDetailBus;
+import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.CompareList;
 import cenergy.central.com.pwb_store.model.CompareListStore;
 import cenergy.central.com.pwb_store.model.CompareProduct;
@@ -99,7 +100,8 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     public void bindItem(final CompareProduct compareProduct) {
         String unit = itemView.getContext().getString(R.string.baht);
         oldPrice.setText(compareProduct.normalPrice(unit));
-        productBrand.setText(database.getBrand(Long.parseLong(compareProduct.getBrand())).getName());
+       Brand brand =  database.getBrand(Long.parseLong(compareProduct.getBrand()));
+        productBrand.setText((brand == null)? compareProduct.getBrand() : brand.getName());
         productDescription.setText(compareProduct.getName());
 
         Glide.with(Contextor.getInstance().getContext())
