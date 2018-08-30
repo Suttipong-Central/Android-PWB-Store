@@ -56,6 +56,7 @@ public class ProductDetailImageViewHolder extends RecyclerView.ViewHolder implem
 
             }
         }
+
         if (mViewPager.getAdapter() == null) {
             mAdapter = new ProductDetailPagerAdapter(fragmentManager, productDetailImage);
             mViewPager.setAdapter(mAdapter);

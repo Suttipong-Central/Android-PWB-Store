@@ -9,7 +9,6 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.response.Item
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
 
