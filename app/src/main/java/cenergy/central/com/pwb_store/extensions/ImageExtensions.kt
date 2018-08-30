@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.extensions
 
+import android.content.Context
 import android.support.annotation.DrawableRes
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
@@ -15,7 +16,15 @@ fun ImageView.setImage(@DrawableRes res: Int) {
 }
 
 fun ImageView.setImageUrl(url: String) {
-    Glide.with(this.context)
+    Glide.with(context)
+            .load(url)
+            .placeholder(R.drawable.ic_pwb_logo_detail)
+            .fitCenter()
+            .into(this)
+}
+
+fun ImageView.setImageUrl(context:Context ,url: String) {
+    Glide.with(context)
             .load(url)
             .placeholder(R.drawable.ic_pwb_logo_detail)
             .crossFade()
@@ -24,9 +33,9 @@ fun ImageView.setImageUrl(url: String) {
 }
 
 fun ImageView.setImageUrl(url: String, @DrawableRes placeHolder: Int) {
-    Glide.with(this.context)
+    Glide.with(context)
             .load(url)
-            .placeholder(R.drawable.ic_pwb_logo_detail)
+            .placeholder(placeHolder)
             .crossFade()
             .fitCenter()
             .into(this)
