@@ -25,16 +25,6 @@
         <!--android:layout_width="200dp"-->
         <!--android:layout_height="269dp">-->
 
-        <ImageView
-            android:id="@+id/img_cancel"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_cancel_copy"
-            android:contentDescription="@string/app_name" />
-
         <LinearLayout
             android:id="@+id/layout_image_view"
             android:layout_marginLeft="6dp"
@@ -55,6 +45,16 @@
                 android:contentDescription="@string/app_name" />
 
         </LinearLayout>
+        
+        <ImageView
+            android:id="@+id/img_cancel"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_cancel_copy"
+            android:contentDescription="@string/app_name" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -8,6 +8,7 @@ import android.view.View
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.CompareShoppingCartAdapter
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
+import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.model.CompareList
 
 class CompareShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -20,8 +21,8 @@ class CompareShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(it
     private var mAdapter: CompareShoppingCartAdapter? = null
     private var mLayoutManager: GridLayoutManager? = null
 
-    fun setViewHolder(context: Context, compareList: CompareList) {
-        mAdapter = CompareShoppingCartAdapter(context)
+    fun setViewHolder(context: Context, listener: CompareItemListener, compareList: CompareList) {
+        mAdapter = CompareShoppingCartAdapter(listener)
         //mLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         mLayoutManager = GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false)
         mLayoutManager?.reverseLayout = true// Show Start Right.

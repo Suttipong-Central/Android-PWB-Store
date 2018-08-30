@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareDetailViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareListProductViewHolder;
@@ -40,6 +41,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     //Data Members
     private Context mContext;
+    private CompareItemListener listener;
     private List<IViewType> mListViewType = new ArrayList<>();
     private CompareDao mCompareDao;
     private List<CompareDetail> mCompareDetail = new ArrayList<>();
@@ -53,7 +55,7 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     return 4;
                 case VIEW_TYPE_ID_COMPARE_DETAIL:
                     return 4;
-                case  VIEW_TYPE_ID_SHOPPING_CART:
+                case VIEW_TYPE_ID_SHOPPING_CART:
                     return 4;
                 default:
                     return 1;
@@ -62,8 +64,9 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     };
 
 
-    public CompareProductAdapter(Context mContext) {
-        this.mContext = mContext;
+    public CompareProductAdapter(Context context) {
+        this.mContext = context;
+        this.listener = (CompareItemListener) context;
     }
 
     @Override
@@ -117,11 +120,12 @@ public class CompareProductAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     compareDetailViewHolder.setViewHolder(mContext, compareDao);
                 }
                 break;
+
             case VIEW_TYPE_ID_SHOPPING_CART:
                 if (holder instanceof CompareShoppingCartViewHolder) {
                     CompareList compareList = (CompareList) viewType;
                     CompareShoppingCartViewHolder compareDetailViewHolder = (CompareShoppingCartViewHolder) holder;
-                    compareDetailViewHolder.setViewHolder(mContext, compareList);
+                    compareDetailViewHolder.setViewHolder(mContext, listener, compareList);
                 }
                 break;
         }

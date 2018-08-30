@@ -1,15 +1,15 @@
 package cenergy.central.com.pwb_store.adapter
 
-import android.content.Context
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareShoppingCartButtonViewHolder
 import cenergy.central.com.pwb_store.model.CompareList
 
-class CompareShoppingCartAdapter(context: Context) : RecyclerView.Adapter<CompareShoppingCartButtonViewHolder>() {
+class CompareShoppingCartAdapter(val listener: CompareItemListener?) : RecyclerView.Adapter<CompareShoppingCartButtonViewHolder>() {
 
     companion object {
         const val VIEW_TYPE_ID_PRODUCT = 1
@@ -42,8 +42,11 @@ class CompareShoppingCartAdapter(context: Context) : RecyclerView.Adapter<Compar
     }
 
     override fun onBindViewHolder(holder: CompareShoppingCartButtonViewHolder, position: Int) {
-        val shoppingCart = productCompareLists.compareProducts[position]
-        holder.setProductCompare(shoppingCart)
+        val compareProduct = productCompareLists.compareProducts[position]
+        holder.setProductCompare(compareProduct)
+
+        // set onclick shopping cart
+        holder.itemView.setOnClickListener { listener?.onClickShoppingCart(compareProduct) }
     }
 
     fun getSpanSize(): GridLayoutManager.SpanSizeLookup {

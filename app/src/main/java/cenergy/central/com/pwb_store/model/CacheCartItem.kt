@@ -65,7 +65,15 @@ open class CacheCartItem(
         fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
             return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
                     name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
-                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1, imageUrl= product.getImageUrl())
+                    maxQTY = product.extension?.stokeItem?.maxQTY
+                            ?: 1, imageUrl = product.getImageUrl())
+        }
+
+        @JvmStatic
+        fun asCartItem(cartItem: CartItem, compareProduct: CompareProduct): CacheCartItem {
+            return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
+                    name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
+                    maxQTY = compareProduct.maxQty ?: 1, imageUrl = compareProduct.imageUrl)
         }
 
         override fun createFromParcel(parcel: Parcel): CacheCartItem {

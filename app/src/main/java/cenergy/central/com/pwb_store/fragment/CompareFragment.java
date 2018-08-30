@@ -25,7 +25,6 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CompareProductAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
-import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AddCompare;
@@ -78,12 +77,12 @@ public class CompareFragment extends Fragment {
     final Callback<CompareList> CALLBACK_COMPARE = new Callback<CompareList>() {
         @Override
         public void onResponse(Call<CompareList> call, Response<CompareList> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 //mProgressDialog.dismiss();
                 mCompareList = response.body();
                 HttpManagerMagentoOld.getInstance().getCompareService().getCompareItem(sku).enqueue(CALLBACK_ITEM);
 
-            }else {
+            } else {
                 mProgressDialog.dismiss();
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -102,17 +101,17 @@ public class CompareFragment extends Fragment {
     final Callback<List<CompareDao>> CALLBACK_ITEM = new Callback<List<CompareDao>>() {
         @Override
         public void onResponse(Call<List<CompareDao>> call, Response<List<CompareDao>> response) {
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 mProgressDialog.dismiss();
                 mCompareDao = response.body().get(0);
                 mCompareList.setCompareDao(mCompareDao);
-                if (isDelete == true){
+                if (isDelete == true) {
                     mAdapter.setUpdateCompare(mCompareList);
-                }else {
+                } else {
                     mAdapter.setCompare(mCompareList);
                 }
 
-            }else {
+            } else {
                 mProgressDialog.dismiss();
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -130,7 +129,7 @@ public class CompareFragment extends Fragment {
     };
 
     @Subscribe
-    public void onEvent(CompareDeleteBus compareDeleteBus){
+    public void onEvent(CompareDeleteBus compareDeleteBus) {
         isDelete = true;
 //        ProductCompareList productList = compareDeleteBus.getProductCompareList();
 //        results = RealmController.with(this).deletedCompare(productList.getProductId());
@@ -260,17 +259,17 @@ public class CompareFragment extends Fragment {
 
     }
 
-    private void mockData(){
+    private void mockData() {
 
 //        results = RealmController.with(this).getCompares();
-        if (results == null){
+        if (results == null) {
             List<ProductCompareList> mProductCompareListList = new ArrayList<>();
-            mProductCompareListList.add(new ProductCompareList("1111","http://www.mx7.com/i/004/aOc9VL.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-                    "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-            mProductCompareListList.add(new ProductCompareList("2222","http://www.mx7.com/i/0e5/oFp5mm.png","iPhone SE","หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
-                    "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s",16500,12600));
-            mProductCompareListList.add(new ProductCompareList("2345","http://www.mx7.com/i/1cb/TL8yVR.png","Lenovo","Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)",35000,30000));
-            mProductCompareListList.add(new ProductCompareList("1122","http://www.mx7.com/i/215/WAY0dD.png","EPSON","เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)",9490,9000));
+            mProductCompareListList.add(new ProductCompareList("1111", "http://www.mx7.com/i/004/aOc9VL.png", "iPhone SE", "หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
+                    "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s", 16500, 12600));
+            mProductCompareListList.add(new ProductCompareList("2222", "http://www.mx7.com/i/0e5/oFp5mm.png", "iPhone SE", "หัวใจหลักของ iPhone SE ก็คือชิพ A9 ซึ่งเป็น\n" +
+                    "ชิพอันล้ำสมัยแบบเดียวกับที่ใช้ใน iPhone 6s", 16500, 12600));
+            mProductCompareListList.add(new ProductCompareList("2345", "http://www.mx7.com/i/1cb/TL8yVR.png", "Lenovo", "Lenovo Yoga 720 เป็นแล็ปท็อป Windows 10 มีสองโมเดลคือ 13 นิ้ว (น้ำหนัก 1.3 กิโลกรัม)", 35000, 30000));
+            mProductCompareListList.add(new ProductCompareList("1122", "http://www.mx7.com/i/215/WAY0dD.png", "EPSON", "เครื่องพิมพ์มัลติฟังก์ชั่นอิงค์เจ็ท Print/ Copy/ Scan/ Fax(With ADF)", 9490, 9000));
 
             List<CompareDetailItem> compareDetailItems1 = new ArrayList<>();
             compareDetailItems1.add(new CompareDetailItem(""));
@@ -311,10 +310,10 @@ public class CompareFragment extends Fragment {
 
             mCompareDao = new CompareDao(5, compareDetails);
             mCompareList = new CompareList(4, mProductCompareListList, mCompareDao);
-        }else {
+        } else {
 
             List<ProductCompareList> mProductCompareListList = new ArrayList<>();
-            for (AddCompare addCompare : results){
+            for (AddCompare addCompare : results) {
                 mProductCompareListList.add(new ProductCompareList(addCompare.getProductId(), addCompare.getUrlName(), addCompare.getProductName(),
                         addCompare.getDescription(), addCompare.getOriginalPrice(), addCompare.getPrice()));
             }
@@ -419,14 +418,14 @@ public class CompareFragment extends Fragment {
         }
     }
 
-    public String getSku(){
+    public String getSku() {
         String result = "";
         String listString1 = "";
         String listString2 = "";
         String detail = "";
         results = RealmController.with(this).getCompares();
         ArrayList<String> list = new ArrayList<String>();
-        if (results != null){
+        if (results != null) {
             for (AddCompare addCompare :
                     results) {
                 list.add(addCompare.getProductSku());
@@ -439,5 +438,4 @@ public class CompareFragment extends Fragment {
 
         return result;
     }
-
 }

@@ -11,15 +11,31 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener;
 import cenergy.central.com.pwb_store.fragment.CompareFragment;
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDetailBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.CacheCartItem;
+import cenergy.central.com.pwb_store.model.CartItem;
+import cenergy.central.com.pwb_store.model.CompareProduct;
+import cenergy.central.com.pwb_store.model.body.CartBody;
+import cenergy.central.com.pwb_store.model.body.CartItemBody;
+import cenergy.central.com.pwb_store.realm.DatabaseListener;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
@@ -28,7 +44,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
  * Created by napabhat on 7/26/2017 AD.
  */
 
-public class CompareActivity extends AppCompatActivity implements PowerBuyShoppingCartView.OnClickListener {
+public class CompareActivity extends AppCompatActivity implements CompareItemListener, PowerBuyShoppingCartView.OnClickListener {
 
     Toolbar mToolbar;
     PowerBuyShoppingCartView mBuyShoppingCartView;
@@ -36,7 +52,7 @@ public class CompareActivity extends AppCompatActivity implements PowerBuyShoppi
     private ProgressDialog mProgressDialog;
 
     @Subscribe
-    public void onEvent(CompareDetailBus compareDetailBus){
+    public void onEvent(CompareDetailBus compareDetailBus) {
 //        Intent intent = new Intent(this, ProductDetailActivity.class);
 //        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, compareDetailBus.getProductCompareList().getProductId());
 //        ActivityCompat.startActivity(this, intent,
@@ -68,7 +84,7 @@ public class CompareActivity extends AppCompatActivity implements PowerBuyShoppi
     }
 
     private void initView() {
-        mToolbar  = findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         mBuyShoppingCartView = findViewById(R.id.shopping_cart_compare);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -97,6 +113,7 @@ public class CompareActivity extends AppCompatActivity implements PowerBuyShoppi
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        updateShoppingCartBadge();
     }
 
     @Override
@@ -117,7 +134,6 @@ public class CompareActivity extends AppCompatActivity implements PowerBuyShoppi
 
     @Override
     public void onShoppingCartClick(View view) {
-        showProgressDialog();
         if (RealmController.with(this).getCacheCartItems().size() > 0) {
             ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
@@ -146,12 +162,101 @@ public class CompareActivity extends AppCompatActivity implements PowerBuyShoppi
             mProgressDialog = DialogUtils.createProgressDialog(this);
             mProgressDialog.show();
         } else {
-            mProgressDialog.show();
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
         }
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    // region {@link {Implement CompareItemListener}
+    @Override
+    public void onClickShoppingCart(CompareProduct compareProduct) {
+        String cartId = preferenceManager.getCartId();
+        if (preferenceManager.getCartId() != null) {
+            Log.d("ProductDetail", "has cart id");
+            addProductToCart(cartId, compareProduct);
+        } else {
+            Log.d("ProductDetail", "new cart id");
+            retrieveCart(compareProduct);
+        }
+    }
+    // endregion
+
+    private void retrieveCart(final CompareProduct compareProduct) {
+        showProgressDialog();
+        HttpManagerMagento.Companion.getInstance().getCart(new ApiResponseCallback<String>() {
+            @Override
+            public void success(@Nullable String cartId) {
+                if (cartId != null) {
+                    preferenceManager.setCartId(cartId);
+                    addProductToCart(cartId, compareProduct);
+                }
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+                showAlertDialog("", error.getErrorUserMessage());
+            }
+        });
+    }
+
+    private void addProductToCart(final String cartId, final CompareProduct compareProduct) {
+        showProgressDialog();
+        CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, compareProduct.getSku(), 1)); // default add qty 1
+        HttpManagerMagento.Companion.getInstance().addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
+            @Override
+            public void success(@Nullable CartItem cartItem) {
+                saveCartItem(cartItem, compareProduct);
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+                showAlertDialog("", error.getErrorMessage());
+            }
+        });
+    }
+
+    private void saveCartItem(CartItem cartItem, final CompareProduct compareProduct) {
+        RealmController.with(this).saveCartItem(CacheCartItem.asCartItem(cartItem, compareProduct), new DatabaseListener() {
+            @Override
+            public void onSuccessfully() {
+                updateShoppingCartBadge();
+                Toast.makeText(CompareActivity.this, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                mProgressDialog.dismiss();
+                if (error != null) {
+                    showAlertDialog("", error.getMessage());
+                }
+            }
+        });
+    }
+
+    private void updateShoppingCartBadge() {
+        int count = 0;
+        List<CacheCartItem> items = RealmController.with(this).getCacheCartItems();
+        for (CacheCartItem item : items) {
+            if (item.getQty() != null) {
+                count += item.getQty();
+            }
+        }
+        mBuyShoppingCartView.setBadgeCart(count);
+        Log.d("ProductDetail", "count shopping badge" + count);
     }
 }
