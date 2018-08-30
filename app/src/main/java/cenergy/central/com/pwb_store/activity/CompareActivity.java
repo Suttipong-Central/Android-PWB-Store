@@ -1,31 +1,39 @@
 package cenergy.central.com.pwb_store.activity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.CompareFragment;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDetailBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.utils.DialogUtils;
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
 
 /**
  * Created by napabhat on 7/26/2017 AD.
  */
 
-public class CompareActivity extends AppCompatActivity {
+public class CompareActivity extends AppCompatActivity implements PowerBuyShoppingCartView.OnClickListener {
 
-    @BindView(R.id.toolbar)
     Toolbar mToolbar;
+    PowerBuyShoppingCartView mBuyShoppingCartView;
+    private PreferenceManager preferenceManager;
+    private ProgressDialog mProgressDialog;
 
     @Subscribe
     public void onEvent(CompareDetailBus compareDetailBus){
@@ -49,6 +57,8 @@ public class CompareActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compare);
 
+        preferenceManager = new PreferenceManager(this); // get pref
+
         initView();
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -58,7 +68,8 @@ public class CompareActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        ButterKnife.bind(this);
+        mToolbar  = findViewById(R.id.toolbar);
+        mBuyShoppingCartView = findViewById(R.id.shopping_cart_compare);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -69,7 +80,7 @@ public class CompareActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        mBuyShoppingCartView.setListener(this);
     }
 
     @Override
@@ -102,5 +113,45 @@ public class CompareActivity extends AppCompatActivity {
         if (resultCode == RESULT_CANCELED) {
             finish();
         }
+    }
+
+    @Override
+    public void onShoppingCartClick(View view) {
+        showProgressDialog();
+        if (RealmController.with(this).getCacheCartItems().size() > 0) {
+            ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
+        } else {
+            showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
+        }
+    }
+
+    private void showAlertDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressDialog.dismiss();
+                    }
+                });
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title);
+        }
+        builder.show();
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtils.createProgressDialog(this);
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.show();
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }
