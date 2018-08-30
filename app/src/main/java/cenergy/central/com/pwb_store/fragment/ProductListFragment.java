@@ -690,11 +690,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     private void getBrands(String departmentId) {
         Log.d("Start getBrands", "here we go!");
-        HttpManagerMagento.Companion.getInstance().getBrands(departmentId, new ApiResponseCallback<BrandResponse>() {
+        HttpManagerMagento.Companion.getInstance().getBrands(departmentId, new ApiResponseCallback<List<Brand>>() {
             @Override
-            public void success(@org.jetbrains.annotations.Nullable BrandResponse response) {
+            public void success(@org.jetbrains.annotations.Nullable List<Brand> response) {
                 if (response != null) {
-                    ProductListFragment.this.brands = response.getItems();
+                    ProductListFragment.this.brands = response;
                 }
                 layoutProgress.setVisibility(View.GONE);
                 mProgressDialog.dismiss();

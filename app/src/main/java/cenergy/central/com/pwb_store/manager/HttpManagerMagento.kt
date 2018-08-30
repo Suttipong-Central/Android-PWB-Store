@@ -222,13 +222,19 @@ class HttpManagerMagento {
         })
     }
 
-    fun getBrands(categoryId: String, callback: ApiResponseCallback<BrandResponse>) {
+    fun getBrands(categoryId: String, callback: ApiResponseCallback<List<Brand>>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getBrands(categoryId).enqueue(object : Callback<BrandResponse> {
             override fun onResponse(call: Call<BrandResponse>?, response: Response<BrandResponse>?) {
                 if (response != null) {
-                    val product = response.body()
-                    callback.success(product)
+                    val brandResponse = response.body()
+                    val brands = brandResponse?.items ?: arrayListOf()
+                    val database = RealmController.getInstance()
+                    for (brand in brands) {
+                        database.saveBands(brand)
+                    }
+
+                    callback.success(brands)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }

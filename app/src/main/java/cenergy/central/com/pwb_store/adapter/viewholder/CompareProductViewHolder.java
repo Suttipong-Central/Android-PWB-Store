@@ -20,6 +20,7 @@ import cenergy.central.com.pwb_store.model.CompareListStore;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.ExtensionCompare;
 import cenergy.central.com.pwb_store.model.ProductCompareList;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
@@ -35,8 +36,8 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     @BindView(R.id.img_product)
     ImageView imgProduct;
 
-    @BindView(R.id.txt_product_name)
-    PowerBuyTextView productName;
+    @BindView(R.id.txt_product_brand)
+    PowerBuyTextView productBrand;
 
     @BindView(R.id.txt_product_description)
     PowerBuyTextView productDescription;
@@ -51,6 +52,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     RelativeLayout cardLayout;
 
     private CompareList mCompareList;
+    private RealmController database = RealmController.getInstance();
 
     public CompareProductViewHolder(View itemView) {
         super(itemView);
@@ -83,7 +85,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
                     newPrice.setText(compareListStore.getDisplayNewPrice(unit));
                 }
             }
-            productName.setText(extensionCompare.getBrand());
+            productBrand.setText(extensionCompare.getBrand());
         }
 
         //itemView.setOnClickListener(this);
@@ -97,7 +99,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
     public void bindItem(final CompareProduct compareProduct) {
         String unit = itemView.getContext().getString(R.string.baht);
         oldPrice.setText(compareProduct.normalPrice(unit));
-        productName.setText(compareProduct.getBrand());
+        productBrand.setText(database.getBrand(Long.parseLong(compareProduct.getBrand())).getName());
         productDescription.setText(compareProduct.getName());
 
         Glide.with(Contextor.getInstance().getContext())

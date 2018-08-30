@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
 import cenergy.central.com.pwb_store.model.Category;
@@ -293,6 +294,33 @@ public class RealmController {
             @Override
             public void execute(Realm realm) {
                 realm.where(OrderResponse.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
+
+    // region brands
+    public void saveBands(final Brand brand) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(brand);
+            }
+        });
+    }
+
+    public Brand getBrand(Long orderId) {
+        Brand realmBrand = realm.where(Brand.class).equalTo(Brand.FIELD_BRAN_ID, orderId).findFirst();
+        return realmBrand == null ? null : realm.copyFromRealm(realmBrand);
+    }
+
+    public void deleteBrans() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Brand.class).findAll().deleteAllFromRealm();
             }
         });
     }

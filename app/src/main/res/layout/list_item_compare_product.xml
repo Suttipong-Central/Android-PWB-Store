@@ -67,7 +67,7 @@
             android:orientation="vertical">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/txt_product_name"
+                android:id="@+id/txt_product_brand"
                 style="@style/textNameProduct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
