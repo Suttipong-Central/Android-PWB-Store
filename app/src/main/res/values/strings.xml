@@ -178,4 +178,5 @@
     <string name="product">Product</string>
     <string name="sort">Sort</string>
     <string name="regular_price">Regular Price: </string>
+    <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
 </resources>

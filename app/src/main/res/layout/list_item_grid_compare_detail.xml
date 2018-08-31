@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="16dp"
-    tools:context=".activity.CompareActivity"
-    >
+    tools:context=".activity.CompareActivity" >
     <!--
         How to show border between GridView items?
              First we set a background color for GridView.
@@ -34,4 +33,5 @@
         android:layout_height="wrap_content"
         android:overScrollMode="never"
         android:background="@color/powerBuyWhite"/>
+
 </RelativeLayout>

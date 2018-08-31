@@ -147,7 +147,9 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
                 .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mProgressDialog.dismiss();
+                        if(mProgressDialog != null && mProgressDialog.isShowing()){
+                            mProgressDialog.dismiss();
+                        }
                     }
                 });
 
