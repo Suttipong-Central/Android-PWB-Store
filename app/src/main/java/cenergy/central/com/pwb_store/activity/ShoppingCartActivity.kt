@@ -90,13 +90,14 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
         mToolbar.setNavigationOnClickListener { finish() }
-        searchImageView.setOnClickListener { v ->
-            val intent = Intent(this, SearchActivity::class.java)
-            ActivityCompat.startActivity(this, intent,
-                    ActivityOptionsCompat
-                            .makeScaleUpAnimation(v, 0, 0, v.width, v.height)
-                            .toBundle())
-        }
+        searchImageView.visibility = View.GONE
+//        searchImageView.setOnClickListener { v ->
+//            val intent = Intent(this, SearchActivity::class.java)
+//            ActivityCompat.startActivity(this, intent,
+//                    ActivityOptionsCompat
+//                            .makeScaleUpAnimation(v, 0, 0, v.width, v.height)
+//                            .toBundle())
+//        }
     }
 
     private fun initView() {
