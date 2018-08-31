@@ -102,11 +102,12 @@ class PaymentDescriptionFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
-        recycler = rootView.findViewById(R.id.recycler_product_list_payment)
+        //User
         firstNameEdt = rootView.findViewById(R.id.first_name_payment)
         lastNameEdt = rootView.findViewById(R.id.last_name_payment)
         contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
         emailEdt = rootView.findViewById(R.id.email_payment)
+        //Billing address
         houseNoEdt = rootView.findViewById(R.id.house_no_payment)
         placeOrBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         soiEdt = rootView.findViewById(R.id.soi_payment)
@@ -116,8 +117,10 @@ class PaymentDescriptionFragment : Fragment() {
         subDistrictEdt = rootView.findViewById(R.id.sub_district_payment)
         postCodeEdt = rootView.findViewById(R.id.post_code_payment)
         tellEdt = rootView.findViewById(R.id.tell_payment)
-        paymentBtn = rootView.findViewById(R.id.payment_button_payment)
+
+        recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
+        paymentBtn = rootView.findViewById(R.id.payment_button_payment)
 
         //Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
@@ -132,6 +135,15 @@ class PaymentDescriptionFragment : Fragment() {
             lastNameEdt.setText(member.getLastName())
             emailEdt.setText(member.email)
             contactNumberEdt.setText(member.mobilePhone)
+            houseNoEdt.setText(member.homeNo)
+            placeOrBuildingEdit.setText(member.homeBuilding)
+            soiEdt.setText(member.homeSoi)
+            streetEdt.setText(member.homeRoad)
+            provinceEdt.setText(member.homeCity)
+            districtEdt.setText(member.homeDistrict)
+            subDistrictEdt.setText(member.homeSubDistrict)
+            postCodeEdt.setText(member.homePostalCode)
+            tellEdt.setText(member.homePhone)
         }
 
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
