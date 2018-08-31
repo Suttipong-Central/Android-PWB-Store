@@ -5,20 +5,20 @@ import io.realm.RealmObject
 
 open class Store(
         @SerializedName("id")
-        var storeId: Long = 0,
-        var storeCode: String = "",
-        var storeName: String = "",
+        var storeId: Long? = 0,
+        var storeCode: String? = "",
+        var storeName: String? = "",
         @SerializedName("number")
-        var houseNo: String = "",
-        var building: String = "",
-        var moo: String = "",
-        var soi: String = "",
-        var road: String = "",
-        var subDistricrt: String = "",
-        var district: String = "",
-        var province: String = "",
-        var postalCode: String = "",
+        var houseNo: String? = "",
+        var building: String? = "",
+        var moo: String? = "",
+        var soi: String? = "",
+        var road: String? = "",
+        var subDistricrt: String? = "",
+        var district: String? = "",
+        var province: String? = "",
+        var postalCode: String? = "",
         @SerializedName("created_at")
-        var createdAt: String = "",
+        var createdAt: String? = "",
         @SerializedName("updated_at")
-        var updateAt: String = ""):RealmObject()
+        var updateAt: String? = ""):RealmObject()

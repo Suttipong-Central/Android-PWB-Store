@@ -11,7 +11,7 @@ open class User(
         var staffId: String = "",
         @SerializedName("store_id")
         var storeId: Long = 0,
-        var email: String = "",
+        var email: String? = "",
         var username: String = "",
         @SerializedName("created_at")
         var createdAt: String = "",
