@@ -61,10 +61,11 @@
     <!-- Store -->
     <string name="select_store" translatable="false">Select store</string>
     <string name="store_avaliable" translatable="false">Avaliable Store</string>
-    <string name="store" translatable="false">Store</string>
+    <string name="store_code" translatable="false">Store Code</string>
+    <string name="store_name" translatable="false">Store Name</string>
     <string name="address" translatable="false">Address</string>
     <string name="stock" translatable="false">Stock</string>
-    <string name="telephone" translatable="false">Telephone No.</string>
+    <string name="telephone" translatable="false">Tel.</string>
 
     <!-- Drawer -->
     <string name="drawer_delivery" translatable="false">Delivery Schedule</string>
@@ -180,5 +181,4 @@
     <string name="sort">Sort</string>
     <string name="regular_price">Regular Price: </string>
     <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
-    <string name="store_name">Name</string>
 </resources>

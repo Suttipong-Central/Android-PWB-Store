@@ -12,7 +12,6 @@ import io.realm.annotations.PrimaryKey
  */
 
 open class OrderResponse(
-        @PrimaryKey
         @SerializedName("increment_id")
         var orderId: String? = "",
         @SerializedName("base_currency_code")

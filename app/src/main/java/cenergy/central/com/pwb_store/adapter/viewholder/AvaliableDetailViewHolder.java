@@ -18,9 +18,9 @@ public class AvaliableDetailViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.text_store)
     PowerBuyTextView nameStore;
-
-    @BindView(R.id.text_address)
-    PowerBuyTextView storeAddress;
+//
+//    @BindView(R.id.text_address)
+//    PowerBuyTextView storeAddress;
 
     @BindView(R.id.text_stock)
     PowerBuyTextView stock;
@@ -42,7 +42,7 @@ public class AvaliableDetailViewHolder extends RecyclerView.ViewHolder {
         this.mStoreDao = storeDao;
 
         nameStore.setText(avaliableStoreItem.getStoreName());
-        storeAddress.setText(avaliableStoreItem.getAddress());
+//        storeAddress.setText(avaliableStoreItem.getAddress());
         stock.setText(String.valueOf(String.valueOf(avaliableStoreItem.getStock())));
         tel.setText(avaliableStoreItem.getTelephone());
         name.setText(avaliableStoreItem.getName());
