@@ -615,7 +615,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         resetPage();
         sortName = sortNameT;
         sortType = sortTypeT;
-        retrieveProductList(departmentId);
+        if (brandId != null) {
+            retrieveProductList(departmentId, brandId);
+        } else {
+            retrieveProductList(departmentId);
+        }
     }
 
     private void setTextHeader(int total, String name) {
@@ -650,6 +654,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 departmentId,
                 PER_PAGE,
                 getNextPage(),
+                sortName,
+                sortType,
                 new ApiResponseCallback<ProductResponse>() {
                     @Override
                     public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
@@ -671,6 +677,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 brandId,
                 PER_PAGE,
                 getNextPage(),
+                sortName,
+                sortType,
                 new ApiResponseCallback<ProductResponse>() {
                     @Override
                     public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {

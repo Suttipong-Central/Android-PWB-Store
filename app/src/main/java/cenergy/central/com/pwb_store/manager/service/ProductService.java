@@ -107,6 +107,17 @@ public interface ProductService {
             @Query("searchCriteria[currentPage]") int currentPage);
 
     @GET("/rest/V1/headless/categories/{categoryId}/products")
+    Call<ProductResponse> getProductList(
+            @Path("categoryId") String categoryId,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") int statusValue,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String conditionType,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("searchCriteria[sortOrders][0][field]") String orderName,
+            @Query("searchCriteria[sortOrders][0][direction]") String dir);
+
+    @GET("/rest/V1/headless/categories/{categoryId}/products")
     Call<ProductResponse> getProductsFilterByBrand(
             @Path("categoryId") String categoryId,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
@@ -117,6 +128,20 @@ public interface ProductService {
             @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String brandConditionType,
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage);
+
+    @GET("/rest/V1/headless/categories/{categoryId}/products")
+    Call<ProductResponse> getProductsFilterByBrand(
+            @Path("categoryId") String categoryId,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") int statusValue,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String conditionType,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") String brandQuery,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") Long brandId,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String brandConditionType,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("searchCriteria[sortOrders][0][field]") String orderName,
+            @Query("searchCriteria[sortOrders][0][direction]") String dir);
 
     @GET("/rest/V1/headless/categories/{categoryId}/brands")
     Call<BrandResponse> getBrands(@Path("categoryId") String categoryId);

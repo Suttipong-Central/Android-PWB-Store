@@ -201,9 +201,46 @@ class HttpManagerMagento {
         })
     }
 
+    fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
+            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                if (response != null) {
+                    val product = response.body()
+                    callback.success(product)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+
+            }
+        })
+    }
+
     fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getProductsFilterByBrand(categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
+            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                if (response != null) {
+                    val product = response.body()
+                    callback.success(product)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductsFilterByBrand(categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                 if (response != null) {
                     val product = response.body()
