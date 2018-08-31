@@ -118,7 +118,7 @@
                             style="@style/RaisedButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/product_available"
+                            android:text="@string/shopping"
                             android:textColor="@android:color/white"
                             android:textSize="14sp"
                             app:typeFaceAsset="RobotoLight.ttf" />

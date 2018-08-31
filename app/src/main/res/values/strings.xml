@@ -1,7 +1,7 @@
 <resources>
     <!--<string name="app_name">PowerBuy Store</string>-->
 
-    <string name="home" translatable="false">Home</string>
+    <string name="home" translatable="false">หน้าหลัก</string>
     <string name="home_tv" translatable="false">TV &amp; Home Entertainment</string>
     <string name="home_app" translatable="false">Home Appliances</string>
     <string name="home_cooling" translatable="false">Cooling &amp; Heating</string>
@@ -12,25 +12,25 @@
     <string name="home_wearable" translatable="false">Wearable &amp; Gadgets</string>
     <string name="home_accessories" translatable="false">Accessories</string>
     <string name="schedule" translatable="false">HDL Schedule</string>
-    <string name="compare" translatable="false">Compare</string>
+    <string name="compare" translatable="false">เปรียบเทียบ</string>
     <string name="change" translatable="false">Change Language to Thai</string>
-    <string name="help" translatable="false">Help</string>
+    <string name="help" translatable="false">ช่วยเหลือ</string>
 
     <!-- Category -->
-    <string name="category" translatable="false">SHOP BY CATEGORY</string>
+    <string name="category" translatable="false">หมวกหมู่ในการเลือกซื้อสินค้า</string>
     <!-- Search -->
-    <string name="search_hint" translatable="false">I\'m Looking for</string>
+    <string name="search_hint" translatable="false">ค้นหา</string>
     <!-- ProductList -->
     <string name="baht" translatable="false">฿</string>
-    <string name="product_overview" translatable="false">Overview</string>
-    <string name="product_available" translatable="false">Available store</string>
-    <string name="product_compare" translatable="false">Add to Compare</string>
+    <string name="product_overview" translatable="false">ภาพรวม</string>
+    <string name="product_available" translatable="false">สาขาที่มีอยู่</string>
+    <string name="product_compare" translatable="false">เปรียบเทียบ</string>
     <string name="product_read" translatable="false">Read More >></string>
-    <string name="product_promotion" translatable="false">Promotion</string>
-    <string name="product_spec" translatable="false">Specification</string>
+    <string name="product_promotion" translatable="false">โปรโมชั่น</string>
+    <string name="product_spec" translatable="false">ลักษณะของสินค้า</string>
     <string name="product_delivery" translatable="false">Delivery / Warranty / Refund</string>
-    <string name="product_stock" translatable="false">In Stock</string>
-    <string name="product_out_stock" translatable="false">Out Stock</string>
+    <string name="product_stock" translatable="false">มีสินค้า</string>
+    <string name="product_out_stock" translatable="false">ไม่มีสินค้า</string>
     <string name="filter_count" translatable="false">(%1$s)</string>
 
     <!-- Product Detail -->
@@ -40,16 +40,16 @@
     <string name="spec_product" translatable="false">คุณสมบัติ</string>
     <string name="book_time" translatable="false">จองเวลานัดส่งสินค้า</string>
     <string name="hdl_url" translatable="false">http://hdl.powerbuy.co.th/Users/Login</string>
-    <string name="ok" translatable="false">OK</string>
-    <string name="cancel" translatable="false">CANCEL</string>
-    <string name="product_code" translatable="false">Product Code: </string>
+    <string name="ok" translatable="false">ตกลง</string>
+    <string name="cancel" translatable="false">ยกเลิก</string>
+    <string name="product_code" translatable="false">รหัสสินค้า: </string>
     <string name="the_1_card" translatable="false">Redeem your point %1$,d points</string>ฟ
     <string name="alert_compare" translatable="false">มีการเพิ่มสินค้า</string>
     <string name="alert_compare_yes" translatable="false">\nเรียบร้อยแล้ว</string>
     <string name="alert_count" translatable="false">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
-    <string name="alert_stock" translatable="false">สินค้า Out Stock</string>
+    <string name="alert_stock" translatable="false">สินค้าไม่มีในคลังสินค้า</string>
     <!-- Compare -->
-    <string name="compare_header" translatable="false">Compare Product</string>
+    <string name="compare_header" translatable="false">เปรียบเทียบสินค้า</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
@@ -60,7 +60,7 @@
 
     <!-- Store -->
     <string name="select_store" translatable="false">เลือกสาขา</string>
-    <string name="store_avaliable" translatable="false">ตรวจสอบสินค้าในสาขาอื่น</string>
+    <string name="store_avaliable" translatable="false">สาขาที่มีอยู่</string>
     <string name="store_code" translatable="false">รหัสสาขา</string>
     <string name="store_name" translatable="false">ชื่อสาขา</string>
     <string name="address" translatable="false">ที่อยู่</string>
@@ -69,11 +69,11 @@
 
     <!-- Drawer -->
     <string name="drawer_delivery" translatable="false">Delivery Schedule</string>
-    <string name="drawer_compare" translatable="false">Compare Product</string>
-    <string name="drawer_change" translatable="false">Change Language</string>
-    <string name="drawer_cart" translatable="false">Shopping Cart</string>
-    <string name="drawer_history" translatable="false">History</string>
-    <string name="drawer_help" translatable="false">Help</string>
+    <string name="drawer_compare" translatable="false">เปรียบเทียบสินค้า</string>
+    <string name="drawer_change" translatable="false">เปลี่ยนภาษา</string>
+    <string name="drawer_cart" translatable="false">ตะกร้า</string>
+    <string name="drawer_history" translatable="false">ประวัติการสร้างรายการ</string>
+    <string name="drawer_help" translatable="false">ช่วยเหลือ</string>
 
     <!-- AppSecret -->
     <string name="secret" translatable="false">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
@@ -183,4 +183,5 @@
     <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
     <string name="drawer_logout">ออกจากระบบ</string>
     <string name="user_logout">คุณต้องการจะออกจากระบบใช่หรือไม่</string>
+    <string name="shopping">ช้อปต่อ</string>
 </resources>
