@@ -16,6 +16,8 @@ import cenergy.central.com.pwb_store.adapter.StoreAdapter
 import cenergy.central.com.pwb_store.manager.UserInfoManager
 import cenergy.central.com.pwb_store.model.StoreDao
 import cenergy.central.com.pwb_store.model.StoreList
+import cenergy.central.com.pwb_store.model.UserInformation
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyListDialog
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
@@ -27,14 +29,13 @@ class DrawerUserNewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
     private val imgProfile: ImageView = itemView.findViewById(R.id.image_view_profile)
     private val fullName: PowerBuyTextView = itemView.findViewById(R.id.txt_view_full_name)
     private val storeName: PowerBuyTextView = itemView.findViewById(R.id.txt_store)
-    private val layout: LinearLayout = itemView.findViewById(R.id.layout_header_user)
 
     fun setViewHolder(context: Context) {
-        imgProfile.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_person))
-        fullName.text = "Anuphab Suwannamas"
-        storeName.text = "Central world"
-        layout.setOnClickListener {
-            //TODO Open user detail
+        val userInformation = RealmController.getInstance().userInformation
+//        imgProfile.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_person))
+        fullName.text = userInformation.user?.username
+        if(userInformation.stores != null && userInformation.stores!!.size > 0){
+            storeName.text = userInformation.stores!![0]!!.storeName?:""
         }
     }
 }

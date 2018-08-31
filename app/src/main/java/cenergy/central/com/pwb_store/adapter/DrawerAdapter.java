@@ -26,7 +26,9 @@ import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.StoreDao;
+import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.ViewType;
+import cenergy.central.com.pwb_store.realm.RealmController;
 
 /**
  * Created by napabhat on 6/29/2017 AD.
@@ -236,10 +238,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public void setStore(StoreDao storeDao) {
-        storeDao.setViewTypeId(VIEW_TYPE_ID_USER);
-        mListViewType.add(storeDao);
-    }
+//    public void setStore(StoreDao storeDao) {
+//        storeDao.setViewTypeId(VIEW_TYPE_ID_USER);
+//        mListViewType.add(storeDao);
+//    }
 
 //    public void setDrawItem(ArrayList<DrawerItem> drawItem){
 //
@@ -256,9 +258,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void setDrawItem(DrawerDao drawerDao) {
         // TODO: ignore getStores
 //        setStore(drawerDao.getStoreDao());
-        //Mock user
         mListViewType.add(VIEW_TYPE_USER);
-
         mListViewType.add(VIEW_TYPE_HEADER);
 
         for (DrawerItem drawerItem : drawerDao.getDrawerItems()) {
