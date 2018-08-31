@@ -15,6 +15,7 @@ import android.util.Log;
 
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.realm.RealmController;
 
 /**
  * Created by napabhat on 9/21/2017 AD.
@@ -25,12 +26,12 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     private TelephonyManager mTelephonyManager;
-    private PreferenceManager preferenceManager;
+    private RealmController database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferenceManager = new PreferenceManager(this);
+        database = RealmController.with(this);
         initView();
     }
 
@@ -62,7 +63,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         @SuppressLint("MissingPermission") String deviceId = mTelephonyManager.getDeviceId();
         Log.d(TAG, "DeviceImei " + deviceId);
 
-        if (preferenceManager.getUserToken() != null) {
+        if (database.getUserToken() != null) {
             // start main page
             Intent intent = new Intent(this, MainActivity.class);
             ActivityCompat.startActivity(this, intent,

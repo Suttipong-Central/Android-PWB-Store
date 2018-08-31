@@ -8,6 +8,7 @@ import cenergy.central.com.pwb_store.manager.service.UserService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Store
 import cenergy.central.com.pwb_store.model.UserInformation
+import cenergy.central.com.pwb_store.model.UserToken
 import cenergy.central.com.pwb_store.model.body.UserBody
 import cenergy.central.com.pwb_store.model.response.LoginResponse
 import cenergy.central.com.pwb_store.model.response.LogoutResponse
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit
 class PwbApiManager(context: Context) {
     private var retrofit: Retrofit
     private var httpClient: OkHttpClient
-    private var preferenceManager: PreferenceManager = PreferenceManager(context)
     private var database: RealmController = RealmController.with(context)
 
     private lateinit var userToken: String
@@ -57,8 +57,8 @@ class PwbApiManager(context: Context) {
                 .client(httpClient)
                 .build()
 
-        if (preferenceManager.userToken != null) {
-            setUserToken(preferenceManager.userToken!!)
+        if (database.userToken != null) {
+            setUserToken(database.userToken.token)
         }
     }
 
@@ -113,7 +113,7 @@ class PwbApiManager(context: Context) {
                     val userResponse = response.body()
                     if (userResponse != null) {
                         // save user token
-                        preferenceManager.setUserToken(userToken)
+                        database.saveUserToken(UserToken(token = userToken))
                         // save user information
                         val stores = RealmList<Store>()
                         if (userResponse.store != null) {

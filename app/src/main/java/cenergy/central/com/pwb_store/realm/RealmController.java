@@ -19,6 +19,7 @@ import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Order;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.UserInformation;
+import cenergy.central.com.pwb_store.model.UserToken;
 import cenergy.central.com.pwb_store.model.response.OrderResponse;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -365,6 +366,33 @@ public class RealmController {
     }
     // endregion
 
+    // region userToken
+    public void saveUserToken(final UserToken userToken) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.insertOrUpdate(userToken);
+            }
+        });
+    }
+
+    public UserToken getUserToken() {
+        UserToken realmUserToken = realm.where(UserToken.class).findFirst();
+        return realmUserToken == null ? null : realm.copyFromRealm(realmUserToken);
+    }
+
+    public void deleteUserToken() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(UserToken.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // end region userToken
+
     // region caching
     public void updateCachedEndpoint(String endpoint) {
         final CachedEndpoint cachedEndpoint = new CachedEndpoint();
@@ -404,5 +432,6 @@ public class RealmController {
     public void userLogout() {
         deleteAllCacheCartItem();
         deleteAllCompareProduct();
+        deleteUserInformation();
     }
 }

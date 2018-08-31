@@ -581,8 +581,8 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
 
     private void clearData() {
         PreferenceManager preferenceManager = new PreferenceManager(this);
+        RealmController realmController = RealmController.with(this);
         preferenceManager.userLogout();
-        RealmController realmController = new RealmController();
         realmController.userLogout();
 
         Intent intent = new Intent(this, LoginActivity.class);
