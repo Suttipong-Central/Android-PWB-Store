@@ -108,7 +108,7 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="20dp"
                         android:foreground="?android:attr/selectableItemBackground"
-                        app:cardBackgroundColor="@color/categoryColor">
+                        app:cardBackgroundColor="@color/hintColor">
 
                         <cenergy.central.com.pwb_store.view.PowerBuyTextView
                             style="@style/RaisedButton"

@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 
 /**
  * Created by napabhat on 9/21/2017 AD.
@@ -22,10 +25,12 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     private TelephonyManager mTelephonyManager;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferenceManager = new PreferenceManager(this);
         initView();
     }
 
@@ -53,14 +58,25 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void getDeviceImeI() {
-
         mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         @SuppressLint("MissingPermission") String deviceId = mTelephonyManager.getDeviceId();
         Log.d(TAG, "DeviceImei " + deviceId);
-        UserInfoManager.getInstance().setKeyImei(deviceId);
-        Intent intent = new Intent(this, LoginActivity.class);
-        //Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+
+        if (preferenceManager.getUserToken() != null) {
+            // start main page
+            Intent intent = new Intent(this, MainActivity.class);
+            ActivityCompat.startActivity(this, intent,
+                    ActivityOptionsCompat
+                            .makeBasic()
+                            .toBundle());
+        } else {
+            // start login page
+            UserInfoManager.getInstance().setKeyImei(deviceId);
+            Intent intent = new Intent(this, LoginActivity.class);
+            //Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
+
         finish();
     }
 }

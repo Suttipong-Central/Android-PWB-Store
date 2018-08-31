@@ -14,26 +14,21 @@ import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
-import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.PwbApiManager;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
-import cenergy.central.com.pwb_store.model.response.LoginResponse;
+import cenergy.central.com.pwb_store.model.response.UserResponse;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 
@@ -63,7 +58,6 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     private ProgressDialog mProgressDialog;
     private String username;
     private String password;
-    private PreferenceManager preferenceManager;
 
 
     public LoginFragment() {
@@ -97,11 +91,11 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 //        String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
 
         // setup onClick login
-        rootView.findViewById(R.id.card_view_login).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideSoftKeyboard(v);
-                showProgressDialog();
+//        rootView.findViewById(R.id.card_view_login).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                hideSoftKeyboard(v);
+//                showProgressDialog();
 //                try {
 //                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
 //                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
@@ -117,16 +111,16 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 //                } catch (NullPointerException ex) {
 //                    mProgressDialog.dismiss();
 //                    Log.e(TAG, "onCardViewLoginClick: ", ex);
-//                }
-            }
-        });
+///               }
+//            }
+//        });
 
         return rootView;
     }
 
     private void init(Bundle savedInstanceState) {
         // Init Fragment level's variable(s) here
-        preferenceManager = new PreferenceManager(getContext());
+//        preferenceManager = new PreferenceManager(getContext());
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -204,49 +198,49 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+        checkLogin();
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-        checkLogin();
     }
 
     private void checkLogin() {
-        if( !mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()){
+        if (!mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
             username = mEditTextUserName.getText().toString();
             password = mEditTextPassword.getText().toString();
-            mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.powerBuyPurple));
+            mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.powerBuyOrange));
             mLoginButton.setOnClickListener(this);
         } else {
             mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.hintColor));
+            mLoginButton.setOnClickListener(null);
         }
     }
 
     @Override
     public void onClick(View v) {
-        hideSoftKeyboard(v);
-        showProgressDialog();
-        PwbApiManager.Companion.getInstance().userLogin(username, password, new ApiResponseCallback<LoginResponse>() {
-            @Override
-            public void success(@org.jetbrains.annotations.Nullable LoginResponse response) {
-                if (response != null){
-                    String userToken = response.getSuccesses().getToken();
-                    preferenceManager.setUserToken(userToken);
-                    getUserDetail();
-                } else {
-                    showAlertDialog("", getContext().getResources().getString(R.string.some_thing_wrong));
+        if (v.getId() == R.id.card_view_login) {
+            hideSoftKeyboard(v);
+            showProgressDialog();
+            PwbApiManager.Companion.getInstance(getContext()).userLogin(username, password, new ApiResponseCallback<UserResponse>() {
+                @Override
+                public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
+                    if (response != null) {
+                        EventBus.getDefault().post(new LoginSuccessBus(true));
+                        mProgressDialog.dismiss();
+                    } else {
+                        mProgressDialog.dismiss();
+                        showAlertDialog("", getContext().getResources().getString(R.string.some_thing_wrong));
+                    }
                 }
-            }
 
-            @Override
-            public void failure(@NotNull APIError error) {
-                showAlertDialog("", error.getErrorMessage());
-            }
-        });
+                @Override
+                public void failure(@NotNull APIError error) {
+                    showAlertDialog("", error.getErrorMessage());
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
     }
 
-    private void getUserDetail() {
-        String bearerToken = "Bearer " + preferenceManager.getUserToken();
-    }
 }
