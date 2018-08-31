@@ -231,6 +231,10 @@ class HttpManagerMagento {
                         database.saveBands(brand)
                     }
 
+                    if (brands.isNotEmpty()) {
+                        brands.sortedBy { it.name }
+                    }
+
                     callback.success(brands)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
