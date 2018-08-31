@@ -433,5 +433,7 @@ public class RealmController {
         deleteAllCacheCartItem();
         deleteAllCompareProduct();
         deleteUserInformation();
+        deleteAllOrder();
+        deleteUserToken();
     }
 }
