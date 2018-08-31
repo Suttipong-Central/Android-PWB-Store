@@ -33,7 +33,7 @@ class DrawerUserNewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
     fun setViewHolder(context: Context) {
         val userInformation = RealmController.with(context).userInformation
 //        imgProfile.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_person))
-        fullName.text = userInformation.user?.username
+        fullName.text = userInformation.user?.name
         if(userInformation.stores != null && userInformation.stores!!.size > 0){
             storeName.text = userInformation.stores!![0]!!.storeName?:""
         }

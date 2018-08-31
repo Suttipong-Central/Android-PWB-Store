@@ -59,13 +59,13 @@
     <string name="search_result_header" translatable="false">search result for</string>
 
     <!-- Store -->
-    <string name="select_store" translatable="false">Select store</string>
-    <string name="store_avaliable" translatable="false">Avaliable Store</string>
-    <string name="store_code" translatable="false">Store Code</string>
-    <string name="store_name" translatable="false">Store Name</string>
-    <string name="address" translatable="false">Address</string>
-    <string name="stock" translatable="false">Stock</string>
-    <string name="telephone" translatable="false">Tel.</string>
+    <string name="select_store" translatable="false">เลือกสาขา</string>
+    <string name="store_avaliable" translatable="false">ตรวจสอบสินค้าในสาขาอื่น</string>
+    <string name="store_code" translatable="false">รหัสสาขา</string>
+    <string name="store_name" translatable="false">ชื่อสาขา</string>
+    <string name="address" translatable="false">ที่อยู่</string>
+    <string name="stock" translatable="false">จำนวนสินค้าในสาขา</string>
+    <string name="telephone" translatable="false">เบอร์ติดต่อ</string>
 
     <!-- Drawer -->
     <string name="drawer_delivery" translatable="false">Delivery Schedule</string>
