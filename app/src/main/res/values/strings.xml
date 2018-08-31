@@ -181,4 +181,6 @@
     <string name="sort">Sort</string>
     <string name="regular_price">Regular Price: </string>
     <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
+    <string name="drawer_logout">Logout</string>
+    <string name="user_logout">คุณต้องการจะออกจากระบบใช่หรือไม่</string>
 </resources>

@@ -400,7 +400,7 @@ public class RealmController {
     }
     // end region
 
-    public void logout() {
+    public void userLogout() {
         deleteAllCacheCartItem();
         deleteAllCompareProduct();
     }

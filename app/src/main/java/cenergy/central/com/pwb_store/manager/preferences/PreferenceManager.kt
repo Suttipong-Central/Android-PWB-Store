@@ -33,7 +33,7 @@ class PreferenceManager(private var context: Context) {
         pref.edit().remove(PREF_CART_ID).apply()
     }
 
-    fun logout() {
+    fun userLogout() {
         clearPreference()
     }
 

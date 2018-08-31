@@ -44,6 +44,7 @@ import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.PwbApiManager;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -64,6 +65,7 @@ import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
+import cenergy.central.com.pwb_store.model.response.LogoutResponse;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
@@ -507,13 +509,32 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                 .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mProgressDialog.dismiss();
+                        dialog.dismiss();
                     }
                 });
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title);
         }
+        builder.show();
+    }
+
+    private void showAlertLogoutDialog(String message) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        userLogout();
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel_alert), new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
         builder.show();
     }
 
@@ -535,7 +556,37 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                 HistoryActivity.Companion.startActivity(this);
             }
             break;
+            case ACTION_LOGOUT: {
+                showAlertLogoutDialog(getResources().getString(R.string.user_logout));
+            }
+            break;
         }
     }
-    // endregion
+
+    private void userLogout() {
+        PwbApiManager.Companion.getInstance(this).userLogout(new ApiResponseCallback<LogoutResponse>() {
+            @Override
+            public void success(@Nullable LogoutResponse response) {
+                if(response != null){
+                    clearData();
+                }
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+
+            }
+        });
+    }
+
+    private void clearData() {
+        PreferenceManager preferenceManager = new PreferenceManager(this);
+        preferenceManager.userLogout();
+        RealmController realmController = new RealmController();
+        realmController.userLogout();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
 }

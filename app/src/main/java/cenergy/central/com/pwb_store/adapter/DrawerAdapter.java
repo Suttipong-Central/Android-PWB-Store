@@ -26,9 +26,7 @@ import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.StoreDao;
-import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.ViewType;
-import cenergy.central.com.pwb_store.realm.RealmController;
 
 /**
  * Created by napabhat on 6/29/2017 AD.
@@ -45,6 +43,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int VIEW_TYPE_ID_HELP = 6;
     private static final int VIEW_TYPE_ID_CART = 7;
     private static final int VIEW_TYPE_ID_HISTORY = 8;
+    private static final int VIEW_TYPE_ID_LOGOUT = 9;
 
     private static final ViewType VIEW_TYPE_USER = new ViewType(VIEW_TYPE_ID_USER);
     private static final ViewType VIEW_TYPE_HEADER = new ViewType(VIEW_TYPE_ID_HEADER);
@@ -54,6 +53,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final ViewType VIEW_TYPE_HELP = new ViewType(VIEW_TYPE_ID_HELP);
     private static final ViewType VIEW_TYPE_CART = new ViewType(VIEW_TYPE_ID_CART);
     private static final ViewType VIEW_TYPE_HISTORY = new ViewType(VIEW_TYPE_ID_HISTORY);
+    private static final ViewType VIEW_TYPE_LOGOUT = new ViewType(VIEW_TYPE_ID_LOGOUT);
 
     private Context mContext;
     private MenuDrawerClickListener listener;
@@ -128,6 +128,13 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         LayoutInflater
                                 .from(parent.getContext())
                                 .inflate(R.layout.drawer_help, parent, false)
+                );
+
+            case VIEW_TYPE_ID_LOGOUT:
+                return new DrawerSubHeaderViewHolder(
+                        LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.drawer_sub_header, parent, false)
                 );
         }
         return null;
@@ -235,6 +242,19 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     drawerHelpViewHolder.setViewHolder();
                 }
                 break;
+
+            case VIEW_TYPE_ID_LOGOUT:
+                if (holder instanceof DrawerSubHeaderViewHolder) {
+                    DrawerSubHeaderViewHolder drawerSubHeaderViewHolder = (DrawerSubHeaderViewHolder) holder;
+                    drawerSubHeaderViewHolder.bindItem(mContext.getString(R.string.drawer_logout));
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            listener.onMenuClickedItem(DrawerAction.ACTION_LOGOUT);
+                        }
+                    });
+                }
+                break;
         }
     }
 
@@ -272,6 +292,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         mListViewType.add(VIEW_TYPE_HISTORY);
         //mListViewType.add(VIEW_TYPE_CHANGE);
         //mListViewType.add(VIEW_TYPE_HELP);
+        mListViewType.add(VIEW_TYPE_LOGOUT);
 
         notifyDataSetChanged();
     }
@@ -288,7 +309,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     //region enum
     public enum DrawerAction {
-        ACTION_CART, ACTION_HISTORY
+        ACTION_CART, ACTION_HISTORY, ACTION_LOGOUT
     }
     //region enum
 }
