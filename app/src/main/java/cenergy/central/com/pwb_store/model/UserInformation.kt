@@ -12,7 +12,7 @@ import io.realm.annotations.PrimaryKey
 open class UserInformation(@PrimaryKey
                            var userId: Long = 0,
                            var user: User? = null,
-                           var stores: RealmList<Store>? = null):RealmObject() {
+                           var stores: RealmList<Store>? = RealmList()):RealmObject() {
     companion object {
         const val FIELD_USER_ID = "userId"
     }

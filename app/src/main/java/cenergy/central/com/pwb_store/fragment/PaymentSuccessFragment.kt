@@ -23,6 +23,8 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CacheCartItem
+import cenergy.central.com.pwb_store.model.Order
+import cenergy.central.com.pwb_store.model.UserInformation
 import cenergy.central.com.pwb_store.model.response.Item
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -43,7 +45,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     lateinit var contactNo: PowerBuyTextView
     lateinit var branch: PowerBuyTextView
     lateinit var address: PowerBuyTextView
-    lateinit var tell: PowerBuyTextView
+    lateinit var tel: PowerBuyTextView
     lateinit var openToday: PowerBuyTextView
     lateinit var finishButton: CardView
     private var mProgressDialog: ProgressDialog? = null
@@ -54,6 +56,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var listItems: List<Item>? = arrayListOf()
     private var orderProductListAdapter = OrderProductListAdapter()
     private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
+    private var database = RealmController.with(context)
 
     companion object {
         private const val ARG_ORDER_ID = "ARG_ORDER_ID"
@@ -98,12 +101,14 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderNumber = rootView.findViewById(R.id.order_number_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
         orderDate = rootView.findViewById(R.id.txt_order_date_order_success)
+        // customer
         name = rootView.findViewById(R.id.txt_name_order_success)
         email = rootView.findViewById(R.id.txt_email_order_success)
         contactNo = rootView.findViewById(R.id.txt_contact_no_order_success)
+        // staff
         branch = rootView.findViewById(R.id.txt_branch_order_success)
         address = rootView.findViewById(R.id.txt_address_order_success)
-        tell = rootView.findViewById(R.id.txt_tell_order_success)
+        tel = rootView.findViewById(R.id.txt_tell_order_success)
         openToday = rootView.findViewById(R.id.txt_open_today_order_success)
         finishButton = rootView.findViewById(R.id.finish_btn_order_success)
 
@@ -117,6 +122,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
         if (cacheOrderId != null) {
             gerOrderByRealm(cacheOrderId!!)
+            finishButton.visibility = View.GONE
         }
     }
 
@@ -125,12 +131,13 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     private fun gerOrderByRealm(orderResponseId: String) {
-        val orderResponse = RealmController.with(context).getOrderResponse(orderResponseId)
-        updateViewOrder(orderResponse)
+        val orderResponse = database.getOrder(orderResponseId).orderResponse
+        val userInformation = database.getOrder(orderResponseId).userInformation
+        orderResponse?.let { userInformation?.let { it1 -> updateViewOrder(it, it1) } }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateViewOrder(response: OrderResponse) {
+    private fun updateViewOrder(response: OrderResponse, userInformation: UserInformation) {
         listItems = response.items
 
         val unit = context!!.getString(R.string.baht)
@@ -150,6 +157,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         mProgressDialog?.dismiss()
         finishButton.setOnClickListener {
             finishThisPage()
+        }
+
+        // setup user
+        if (userInformation.stores != null && userInformation.stores!!.size > 0) {
+            val store = userInformation.stores!![0]
+            branch.text = store?.storeName
+            address.text = "${store?.houseNo ?: ""} ${store?.moo ?: ""} ${store?.soi
+                    ?: ""} ${store?.road ?: ""} ${store?.building ?: ""} ${store?.subDistricrt
+                    ?: ""} ${store?.district ?: ""} ${store?.province ?: ""} ${store?.postalCode
+                    ?: ""}".trim()
+            tel.text = "-"
+            openToday.text = "-"
         }
     }
 
@@ -189,20 +208,21 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     // {@like implement ApiResponseCallback<OrderResponse>}
-    override fun success(response: OrderResponse?) {
-        if (response != null) {
+    override fun success(orderResponse: OrderResponse?) {
+        if (orderResponse != null) {
             // TBD- keep imageUrl .... remove later waiting API have imageURL
             for (cacheItem in cacheCartItems!!) {
-                val item = response.items?.filter { it.sku == cacheItem.sku }
+                val item = orderResponse.items?.filter { it.sku == cacheItem.sku }
                 if (item != null && item.isNotEmpty()) {
                     Log.d("OrderResponse", cacheItem.imageUrl)
                     item[0].imageUrl = cacheItem.imageUrl
                 }
             }
             // save order to local database
-            RealmController.with(context).saveOrderResponse(response)
+            val userInformation = database.userInformation
+            database.saveOrder(Order(orderId = orderResponse.orderId?:"", userInformation = userInformation, orderResponse = orderResponse))
 
-            updateViewOrder(response)
+            updateViewOrder(orderResponse, userInformation)
         } else {
             mProgressDialog?.dismiss()
             showAlertDialog("", resources.getString(R.string.some_thing_wrong))

@@ -38,11 +38,7 @@ open class OrderResponse(
         var items: RealmList<Item>? = null,
         @SerializedName("billing_address")
         var billingAddress: AddressInformation? = null
-) : RealmObject() {
-        companion object {
-            const val FIELD_ORDER_ID = "orderId"
-        }
-}
+) : RealmObject()
 
 open class Item(
         @PrimaryKey

@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.HistoryAdapter
 import cenergy.central.com.pwb_store.manager.listeners.HistoryClickListener
-import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
@@ -20,7 +19,7 @@ class PaymentHistoryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var txtResult: PowerBuyTextView
     private var listener: HistoryClickListener? = null
-    private var orderResponses = RealmController.getInstance().orderResponses
+    private var orders = RealmController.getInstance().orders
 
     companion object {
         fun newInstance(): PaymentHistoryFragment {
@@ -46,8 +45,8 @@ class PaymentHistoryFragment : Fragment() {
         recyclerView = rootView.findViewById(R.id.recycler_view_history)
         txtResult = rootView.findViewById(R.id.txt_result)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = listener?.let { HistoryAdapter(it, this.orderResponses) }
-        if (this.orderResponses.size > 0) {
+        recyclerView.adapter = listener?.let { HistoryAdapter(it, this.orders) }
+        if (this.orders.size > 0) {
             recyclerView.visibility = View.VISIBLE
             txtResult.visibility = View.INVISIBLE
         } else {

@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
+import cenergy.central.com.pwb_store.model.Order;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.response.OrderResponse;
@@ -264,47 +265,47 @@ public class RealmController {
     // endregion
 
     // region Order
-    public void saveOrderResponse(final OrderResponse orderResponse) {
+    public void saveOrder(final Order order) {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                realm.copyToRealmOrUpdate(orderResponse);
+                realm.copyToRealmOrUpdate(order);
             }
         });
     }
 
-    public List<OrderResponse> deleteOrderResponse(final String orderId) {
+    public List<Order> deleteOrder(final String orderId) {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                RealmResults<OrderResponse> realmOrderResponses = realm.where(OrderResponse.class).equalTo(
-                        OrderResponse.FIELD_ORDER_ID, orderId).findAll();
+                RealmResults<Order> realmOrderResponses = realm.where(Order.class).equalTo(
+                        Order.FIELD_ORDER_ID, orderId).findAll();
                 realmOrderResponses.deleteAllFromRealm();
             }
         });
 
-        return getOrderResponses();
+        return getOrders();
     }
 
-    public List<OrderResponse> getOrderResponses() {
+    public List<Order> getOrders() {
         Realm realm = getRealm();
-        RealmResults<OrderResponse> realmOrderResponses = realm.where(OrderResponse.class).sort(OrderResponse.FIELD_ORDER_ID, Sort.DESCENDING).findAll();
+        RealmResults<Order> realmOrderResponses = realm.where(Order.class).sort(Order.FIELD_ORDER_ID, Sort.DESCENDING).findAll();
         return realmOrderResponses == null ? null : realm.copyFromRealm(realmOrderResponses);
     }
 
-    public OrderResponse getOrderResponse(String orderId) {
-        OrderResponse realmOrderResponse = realm.where(OrderResponse.class).equalTo(OrderResponse.FIELD_ORDER_ID, orderId).findFirst();
+    public Order getOrder(String orderId) {
+        Order realmOrderResponse = realm.where(Order.class).equalTo(Order.FIELD_ORDER_ID, orderId).findFirst();
         return realmOrderResponse == null ? null : realm.copyFromRealm(realmOrderResponse);
     }
 
-    public void deleteAllOrderResponse() {
+    public void deleteAllOrder() {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.where(OrderResponse.class).findAll().deleteAllFromRealm();
+                realm.where(Order.class).findAll().deleteAllFromRealm();
             }
         });
     }
