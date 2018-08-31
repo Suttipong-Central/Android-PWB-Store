@@ -6,5 +6,5 @@ import cenergy.central.com.pwb_store.model.User
 class UserResponse(
         var status: String,
         var user: User,
-        var store: Store
+        var store: Store?
 )

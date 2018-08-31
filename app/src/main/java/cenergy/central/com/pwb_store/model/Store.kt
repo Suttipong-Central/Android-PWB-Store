@@ -1,8 +1,9 @@
 package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 
-class Store(
+open class Store(
         @SerializedName("id")
         var storeId: Long = 0,
         var storeCode: String = "",
@@ -17,8 +18,7 @@ class Store(
         var district: String = "",
         var province: String = "",
         var postalCode: String = "",
-        @SerializedName("create_at")
-        var userCreate: String = "",
-        @SerializedName("update_at")
-        var userUpdate: String = ""
-)
+        @SerializedName("created_at")
+        var createdAt: String = "",
+        @SerializedName("updated_at")
+        var updateAt: String = ""):RealmObject()

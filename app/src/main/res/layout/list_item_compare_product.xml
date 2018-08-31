@@ -45,7 +45,7 @@
                 android:contentDescription="@string/app_name" />
 
         </LinearLayout>
-        
+
         <ImageView
             android:id="@+id/img_cancel"
             android:layout_width="24dp"

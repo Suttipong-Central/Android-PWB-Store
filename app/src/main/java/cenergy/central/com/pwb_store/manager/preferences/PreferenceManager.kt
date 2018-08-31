@@ -33,8 +33,12 @@ class PreferenceManager(private var context: Context) {
         pref.edit().remove(PREF_CART_ID).apply()
     }
 
-    fun clearUserToken() {
-        pref.edit().remove(PREF_USER_TOKEN).apply()
+    fun logout() {
+        clearPreference()
+    }
+
+    private fun clearPreference() {
+        pref.edit().clear().apply()
     }
 
     companion object {

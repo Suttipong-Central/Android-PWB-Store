@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.model.CachedEndpoint;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.Product;
+import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.response.OrderResponse;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -174,6 +175,16 @@ public class RealmController {
         return realmCompareProducts == null ? null : realm.copyFromRealm(realmCompareProducts);
     }
 
+    public void deleteAllCompareProduct() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(CompareProduct.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+
     public CompareProduct getCompareProduct(String sku) {
         return realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findFirst();
     }
@@ -326,6 +337,33 @@ public class RealmController {
     }
     // endregion
 
+    // region user
+    public void  saveUserInformation(final UserInformation userInformation) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(userInformation);
+            }
+        });
+    }
+
+    public UserInformation getUserInformation() {
+        UserInformation realmUser = realm.where(UserInformation.class).findFirst();
+        return realmUser == null ? null : realm.copyFromRealm(realmUser);
+    }
+
+    public void deleteUserInformation() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(UserInformation.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
+
     // region caching
     public void updateCachedEndpoint(String endpoint) {
         final CachedEndpoint cachedEndpoint = new CachedEndpoint();
@@ -361,4 +399,9 @@ public class RealmController {
         return cachedEndpoint != null && cachedEndpoint.getLastUpdated().after(new Date(System.currentTimeMillis() - (hours * 60 * 60 * 1000)));
     }
     // end region
+
+    public void logout() {
+        deleteAllCacheCartItem();
+        deleteAllCompareProduct();
+    }
 }
