@@ -19,6 +19,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHelpViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerItemViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerSubHeaderViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserNewViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.model.DrawerDao;
@@ -43,6 +44,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int VIEW_TYPE_ID_CART = 7;
     private static final int VIEW_TYPE_ID_HISTORY = 8;
 
+    private static final ViewType VIEW_TYPE_USER = new ViewType(VIEW_TYPE_ID_USER);
     private static final ViewType VIEW_TYPE_HEADER = new ViewType(VIEW_TYPE_ID_HEADER);
     private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DELIVERY);
     private static final ViewType VIEW_TYPE_COMPARE = new ViewType(VIEW_TYPE_ID_COMPARE);
@@ -78,10 +80,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 );
 
             case VIEW_TYPE_ID_USER:
-                return new DrawerUserViewHolder(
+                return new DrawerUserNewViewHolder(
                         LayoutInflater
                                 .from(parent.getContext())
-                                .inflate(R.layout.drawer_user, parent, false)
+                                .inflate(R.layout.drawer_user_new, parent, false)
                 );
 
             case VIEW_TYPE_ID_DELIVERY:
@@ -162,9 +164,13 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             case VIEW_TYPE_ID_USER:
                 if (viewType instanceof StoreDao && holder instanceof DrawerUserViewHolder) {
-                    StoreDao storeDao = (StoreDao) viewType;
-                    DrawerUserViewHolder drawerUserViewHolder = (DrawerUserViewHolder) holder;
-                    drawerUserViewHolder.setViewHolder(mContext, storeDao);
+//                    StoreDao storeDao = (StoreDao) viewType;
+//                    DrawerUserViewHolder drawerUserViewHolder = (DrawerUserViewHolder) holder;
+//                    drawerUserViewHolder.setViewHolder(mContext, storeDao);
+                }
+                if (holder instanceof DrawerUserNewViewHolder) {
+                    DrawerUserNewViewHolder drawerUserViewHolder = (DrawerUserNewViewHolder) holder;
+                    drawerUserViewHolder.setViewHolder(mContext);
                 }
                 break;
 
@@ -250,6 +256,8 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void setDrawItem(DrawerDao drawerDao) {
         // TODO: ignore getStores
 //        setStore(drawerDao.getStoreDao());
+        //Mock user
+        mListViewType.add(VIEW_TYPE_USER);
 
         mListViewType.add(VIEW_TYPE_HEADER);
 
