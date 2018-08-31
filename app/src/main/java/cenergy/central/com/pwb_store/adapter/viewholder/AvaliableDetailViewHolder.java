@@ -25,6 +25,10 @@ public class AvaliableDetailViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.text_stock)
     PowerBuyTextView stock;
 
+    private PowerBuyTextView tel = itemView.findViewById(R.id.text_telephone);
+    private PowerBuyTextView name = itemView.findViewById(R.id.text_name);
+
+
     //Data Member
     private StoreDao mStoreDao;
 
@@ -37,14 +41,10 @@ public class AvaliableDetailViewHolder extends RecyclerView.ViewHolder {
     public void setViewHolder(AvaliableStoreItem avaliableStoreItem, StoreDao storeDao) {
         this.mStoreDao = storeDao;
 
-//        for (StoreList storeList : mStoreDao.getStoreLists()) {
-//            if (avaliableStoreItem.getStoreName().equals(storeList.getStoreId())) {
         nameStore.setText(avaliableStoreItem.getStoreName());
         storeAddress.setText(avaliableStoreItem.getAddress());
         stock.setText(String.valueOf(String.valueOf(avaliableStoreItem.getStock())));
-//            }
-//        }
-
+        tel.setText(avaliableStoreItem.getTelephone());
+        name.setText(avaliableStoreItem.getName());
     }
-
 }

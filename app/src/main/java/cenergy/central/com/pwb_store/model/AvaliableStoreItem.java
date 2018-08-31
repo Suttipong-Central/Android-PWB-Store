@@ -20,12 +20,15 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
     @SerializedName("quantity")
     @Expose
     private int stock;
+    private String telephone;
+    private String name;
 
-    public AvaliableStoreItem(String storeName, String address, int stock){
+    public AvaliableStoreItem(String storeName, String address, int stock, String telephone, String name){
         this.storeName = storeName;
         this.address = address;
         this.stock = stock;
-
+        this.telephone = telephone;
+        this.name = name;
     }
 
     protected AvaliableStoreItem(Parcel in) {
@@ -33,6 +36,8 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         storeName = in.readString();
         address = in.readString();
         stock = in.readInt();
+        telephone = in.readString();
+        name = in.readString();
     }
 
     @Override
@@ -41,6 +46,8 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
         dest.writeString(storeName);
         dest.writeString(address);
         dest.writeInt(stock);
+        dest.writeString(telephone);
+        dest.writeString(name);
     }
 
     @Override
@@ -92,5 +99,21 @@ public class AvaliableStoreItem implements IViewType,Parcelable {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

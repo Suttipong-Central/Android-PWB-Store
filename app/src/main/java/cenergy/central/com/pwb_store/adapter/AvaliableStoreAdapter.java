@@ -123,7 +123,12 @@ public class AvaliableStoreAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         for (AvaliableStoreItem avaliableStoreItem : avaliableStoreDao.getAvaliableProducts().get(0).getAvaliableStoreItems()) {
             for (StoreList storeList : mStoreDao.getStoreLists()){
                 if (avaliableStoreItem.getStoreName().equals(storeList.getStoreId())){
-                    makeAvaliableStoreItems.add(new AvaliableStoreItem(avaliableStoreItem.getStoreName(), storeList.getStoreAddrNo(), avaliableStoreItem.getStock()));
+                    makeAvaliableStoreItems.add(new AvaliableStoreItem(
+                            avaliableStoreItem.getStoreName(),
+                            storeList.getStoreAddrNo(),
+                            avaliableStoreItem.getStock(),
+                            storeList.getTelephone(),
+                            storeList.getStoreName()));
                 }
             }
         }

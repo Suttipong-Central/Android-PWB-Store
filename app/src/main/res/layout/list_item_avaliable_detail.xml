@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:weightSum="5"
         android:orientation="horizontal">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -27,16 +26,40 @@
             tools:text="@string/store"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/text_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:inputType="textMultiLine"
+            android:textColor="@color/nameProductColor"
+            tools:text="Name"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/text_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:gravity="left|center_vertical"
+            android:gravity="start|center_vertical"
             android:layout_gravity="center"
             android:textSize="16sp"
             android:inputType="textMultiLine"
             android:textColor="@color/nameProductColor"
             tools:text="@string/address"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/text_telephone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="start|center_vertical"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:inputType="textMultiLine"
+            android:textColor="@color/nameProductColor"
+            tools:text="Tel"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/text_stock"
