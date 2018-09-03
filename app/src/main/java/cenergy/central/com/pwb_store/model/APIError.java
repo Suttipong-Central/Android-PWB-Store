@@ -34,6 +34,9 @@ public class APIError implements Parcelable {
     @SerializedName("errorMessage")
     @Expose
     private String errorUserMessage;
+    @SerializedName("error")
+    @Expose
+    private String error;
 
     /**
      * No args constructor for use in serialization
@@ -46,10 +49,11 @@ public class APIError implements Parcelable {
      * @param errorCode
      * @param errorUserMessage
      */
-    public APIError(String errorCode, String errorMessage, String errorUserMessage) {
+    public APIError(String errorCode, String errorMessage, String errorUserMessage, String error) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
         this.errorUserMessage = errorUserMessage;
+        this.error = error;
     }
 
     public APIError(Throwable e) {
@@ -69,6 +73,7 @@ public class APIError implements Parcelable {
         errorCode = in.readString();
         errorMessage = in.readString();
         errorUserMessage = in.readString();
+        error = in.readString();
     }
 
     @Override
@@ -76,6 +81,7 @@ public class APIError implements Parcelable {
         dest.writeString(errorCode);
         dest.writeString(errorMessage);
         dest.writeString(errorUserMessage);
+        dest.writeString(error);
     }
 
     @Override
@@ -102,6 +108,10 @@ public class APIError implements Parcelable {
      */
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public String getError() {
+        return error;
     }
 
     /**

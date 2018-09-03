@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.manager
 import android.annotation.SuppressLint
 import android.content.Context
 import cenergy.central.com.pwb_store.BuildConfig
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.UserService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Store

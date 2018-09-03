@@ -236,11 +236,10 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
                 @Override
                 public void failure(@NotNull APIError error) {
-                    showAlertDialog("", error.getErrorMessage());
+                    showAlertDialog("", error.getError());
                     mProgressDialog.dismiss();
                 }
             });
         }
     }
-
 }
