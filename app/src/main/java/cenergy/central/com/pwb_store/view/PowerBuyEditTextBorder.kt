@@ -62,7 +62,11 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     fun getText(): String {
-        return this.editText.text.toString()
+        return if(editText.text.isNotEmpty()) {
+            this.editText.text.toString()
+        } else {
+            ""
+        }
     }
 
     fun setText(input: String) {

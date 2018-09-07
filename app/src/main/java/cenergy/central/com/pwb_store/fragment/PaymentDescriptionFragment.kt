@@ -21,10 +21,7 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.Member
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -40,15 +37,15 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
     private lateinit var contactNumberEdt: PowerBuyEditTextBorder
     private lateinit var emailEdt: PowerBuyEditTextBorder
-    private lateinit var houseNoEdt: PowerBuyEditTextBorder
-    private lateinit var placeOrBuildingEdit: PowerBuyEditTextBorder
-    private lateinit var soiEdt: PowerBuyEditTextBorder
-    private lateinit var streetEdt: PowerBuyEditTextBorder
-    private lateinit var provinceEdt: PowerBuyEditTextBorder
-    private lateinit var districtEdt: PowerBuyEditTextBorder
-    private lateinit var subDistrictEdt: PowerBuyEditTextBorder
-    private lateinit var postCodeEdt: PowerBuyEditTextBorder
-    private lateinit var tellEdt: PowerBuyEditTextBorder
+    private lateinit var homeNoEdt: PowerBuyEditTextBorder
+    private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
+    private lateinit var homeSoiEdt: PowerBuyEditTextBorder
+    private lateinit var homeRoadEdt: PowerBuyEditTextBorder
+    private lateinit var homeCityEdt: PowerBuyEditTextBorder
+    private lateinit var homeDistrictEdt: PowerBuyEditTextBorder
+    private lateinit var homeSubDistrictEdt: PowerBuyEditTextBorder
+    private lateinit var homePostalCodeEdt: PowerBuyEditTextBorder
+    private lateinit var homePhoneEdt: PowerBuyEditTextBorder
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var paymentBtn: CardView
     private var cartItemList: List<CartItem> = listOf()
@@ -61,6 +58,17 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var lastName: String
     private lateinit var email: String
     private lateinit var contactNo: String
+    private lateinit var homeNo: String
+    private lateinit var homeBuilding: String
+    private lateinit var homeSoi: String
+    private lateinit var homeRoad: String
+    private lateinit var homeCity: String
+    private lateinit var homeDistrict: String
+    private lateinit var homeSubDistrict: String
+    private lateinit var homePostalCode: String
+    private lateinit var homePhone: String
+    private lateinit var userInformation: UserInformation
+    private lateinit var shippingAddress: AddressInformation
 
     companion object {
         private const val MEMBER = "MEMBER"
@@ -91,6 +99,7 @@ class PaymentDescriptionFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val preferenceManager = context?.let { PreferenceManager(it) }
+        userInformation = RealmController.with(context).userInformation
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(MEMBER)
     }
@@ -108,15 +117,15 @@ class PaymentDescriptionFragment : Fragment() {
         contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
         emailEdt = rootView.findViewById(R.id.email_payment)
         //Billing address
-        houseNoEdt = rootView.findViewById(R.id.house_no_payment)
-        placeOrBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
-        soiEdt = rootView.findViewById(R.id.soi_payment)
-        streetEdt = rootView.findViewById(R.id.street_payment)
-        provinceEdt = rootView.findViewById(R.id.province_payment)
-        districtEdt = rootView.findViewById(R.id.district_payment)
-        subDistrictEdt = rootView.findViewById(R.id.sub_district_payment)
-        postCodeEdt = rootView.findViewById(R.id.post_code_payment)
-        tellEdt = rootView.findViewById(R.id.tell_payment)
+        homeNoEdt = rootView.findViewById(R.id.house_no_payment)
+        homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
+        homeSoiEdt = rootView.findViewById(R.id.soi_payment)
+        homeRoadEdt = rootView.findViewById(R.id.street_payment)
+        homeCityEdt = rootView.findViewById(R.id.province_payment)
+        homeDistrictEdt = rootView.findViewById(R.id.district_payment)
+        homeSubDistrictEdt = rootView.findViewById(R.id.sub_district_payment)
+        homePostalCodeEdt = rootView.findViewById(R.id.post_code_payment)
+        homePhoneEdt = rootView.findViewById(R.id.tell_payment)
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
@@ -125,25 +134,26 @@ class PaymentDescriptionFragment : Fragment() {
         //Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         contactNumberEdt.setTextLength(10)
-        tellEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        tellEdt.setTextLength(10)
+        homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        homePhoneEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS)
 
         //Set Member
         member?.let { member ->
             firstNameEdt.setText(member.getFirstName())
             lastNameEdt.setText(member.getLastName())
-            emailEdt.setText(member.email)
             contactNumberEdt.setText(member.mobilePhone)
-            houseNoEdt.setText(member.homeNo)
-            placeOrBuildingEdit.setText(member.homeBuilding)
-            soiEdt.setText(member.homeSoi)
-            streetEdt.setText(member.homeRoad)
-            provinceEdt.setText(member.homeCity)
-            districtEdt.setText(member.homeDistrict)
-            subDistrictEdt.setText(member.homeSubDistrict)
-            postCodeEdt.setText(member.homePostalCode)
-            tellEdt.setText(member.homePhone)
+            emailEdt.setText(member.email)
+
+            homeNoEdt.setText(member.homeNo)
+            homeBuildingEdit.setText(member.homeBuilding)
+            homeSoiEdt.setText(member.homeSoi)
+            homeRoadEdt.setText(member.homeRoad)
+            homeCityEdt.setText(member.homeCity)
+            homeDistrictEdt.setText(member.homeDistrict)
+            homeSubDistrictEdt.setText(member.homeSubDistrict)
+            homePostalCodeEdt.setText(member.homePostalCode)
+            homePhoneEdt.setText(member.homePhone)
         }
 
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
@@ -174,6 +184,17 @@ class PaymentDescriptionFragment : Fragment() {
             lastName = lastNameEdt.getText()
             email = emailEdt.getText()
             contactNo = contactNumberEdt.getText()
+
+            homeNo = homeNoEdt.getText()
+            homeBuilding = homeBuildingEdit.getText()
+            homeSoi = homeSoiEdt.getText()
+            homeRoad = homeRoadEdt.getText()
+            homeCity = homeCityEdt.getText()
+            homeDistrict = homeDistrictEdt.getText()
+            homeSubDistrict = homeSubDistrictEdt.getText()
+            homePostalCode = homePostalCodeEdt.getText()
+            homePhone = homePhoneEdt.getText()
+
             showAlertCheckPayment("", resources.getString(R.string.comfrim_oder))
         } else {
             mProgressDialog?.dismiss()
@@ -183,9 +204,20 @@ class PaymentDescriptionFragment : Fragment() {
 
     private fun createShippingInformation() {
         if (cartId != null) {
-            val shippingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
-            val billingAddress = AddressInformation.createTestAddress(firstName, lastName, email, contactNo)
+            val billingAddress = AddressInformation.createTestAddress(
+                    firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
+                    homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
 
+            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
+                val staff = userInformation.user!!
+                val store = userInformation.stores!![0]!!
+                shippingAddress = AddressInformation.createTestAddress(
+                        staff.name, staff.name, staff.email ?: "",
+                        store.number ?: "", store.number ?: "", store.building ?: "",
+                        store.soi ?: "", store.road ?: "", store.province ?: "",
+                        store.district ?: "", store.subDistricrt ?: "",
+                        store.postalCode ?: "", store.number ?: "")
+            }
             HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress,
                     object : ApiResponseCallback<ShippingInformationResponse> {
                         override fun success(response: ShippingInformationResponse?) {

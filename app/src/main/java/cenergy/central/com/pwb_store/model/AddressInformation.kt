@@ -26,24 +26,27 @@ open class AddressInformation(
         var subAddress: SubAddress? = null) : RealmObject() {
 
     companion object {
-        fun createTestAddress(firstName: String, lastName: String, email: String, contactNo: String): AddressInformation {
-            val subAddress = SubAddress(mobile = "",
-                    houseNumber = "99",
-                    building = "Apptitude Park",
-                    soi = "-",
+        fun createTestAddress(firstName: String, lastName: String, email: String, contactNo: String,
+                              homeNo: String, homeBuilding: String, homeSoi: String, homeRoad: String,
+                              homeCity: String, homeDistrict: String, homeSubDistrict: String,
+                              homePostalCode: String, homePhone: String): AddressInformation {
+            val subAddress = SubAddress(mobile = homePhone,
+                    houseNumber = homeNo,
+                    building = homeBuilding,
+                    soi = homeSoi,
                     t1cNo = "",
-                    district = "คลองสาน",
-                    subDistrict = "คลองต้นไทร",
-                    postcode = "10600",
+                    district = homeDistrict,
+                    subDistrict = homeSubDistrict,
+                    postcode = homePostalCode,
                     districtId = "36", subDistrictId = "199", postcodeId = "213")
             return AddressInformation(countryId = "TH",
                     regionId = "668",
                     regionCode = "BKK",
-                    region = "กรุงเทพมหานคร",
-                    street = RealmList("ถนนหนึ่ง", "ถนนสอง"),
+                    region = homeCity,
+                    street = RealmList(homeRoad),
                     company = "",
                     telephone = contactNo,
-                    postcode = "10600",
+                    postcode = homePostalCode,
                     firstname = firstName,
                     lastname = lastName,
                     email = email,

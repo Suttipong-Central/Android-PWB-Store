@@ -163,7 +163,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         if (userInformation.stores != null && userInformation.stores!!.size > 0) {
             val store = userInformation.stores!![0]
             branch.text = store?.storeName
-            address.text = "${store?.houseNo ?: ""} ${store?.moo ?: ""} ${store?.soi
+            address.text = "${store?.number ?: ""} ${store?.moo ?: ""} ${store?.soi
                     ?: ""} ${store?.road ?: ""} ${store?.building ?: ""} ${store?.subDistricrt
                     ?: ""} ${store?.district ?: ""} ${store?.province ?: ""} ${store?.postalCode
                     ?: ""}".trim()

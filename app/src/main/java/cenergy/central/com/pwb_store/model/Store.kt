@@ -9,7 +9,7 @@ open class Store(
         var storeCode: String? = "",
         var storeName: String? = "",
         @SerializedName("number")
-        var houseNo: String? = "",
+        var number: String? = "",
         var building: String? = "",
         var moo: String? = "",
         var soi: String? = "",
