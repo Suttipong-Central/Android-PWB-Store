@@ -184,4 +184,6 @@
     <string name="drawer_logout">ออกจากระบบ</string>
     <string name="user_logout">คุณต้องการจะออกจากระบบใช่หรือไม่</string>
     <string name="shopping">ช้อปต่อ</string>
+    <string name="please_select_date">กรุณาเลือกวันที่คุณต้องการ</string>
+    <string name="check_your_date">กรุณาตรวจสอบวันที่เลือก</string>
 </resources>

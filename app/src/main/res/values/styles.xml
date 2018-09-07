@@ -154,4 +154,14 @@
         <item name="colorControlActivated">#FF000000</item>
     </style>
 
+    <style name="ThemeDatePicker" parent="">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorControlNormal">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="android:textColor">@color/grayTextColor</item>
+        <item name="android:textColorPrimary">@color/grayTextColor</item>
+        <item name="android:spinnersShown">false</item>
+    </style>
+
 </resources>
