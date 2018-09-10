@@ -308,10 +308,9 @@ class HttpManagerMagento {
     *
     * */
     fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
-        val url = "staging.powerbuy.co.th"
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(url)
+                .host(Constants.HOST_NAME)
                 .addPathSegment("rest")
                 .addPathSegment("V1")
                 .addPathSegment("products")
