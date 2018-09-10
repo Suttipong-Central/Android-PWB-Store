@@ -10,25 +10,21 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.fragment.PaymentCheckOutFragment
-import cenergy.central.com.pwb_store.fragment.PaymentDescriptionFragment
-import cenergy.central.com.pwb_store.fragment.PaymentMembersFragment
-import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
+import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.listeners.*
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.Member
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
 class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener,
-        PaymentDescriptionListener, PaymentMembersListener, MemberClickListener {
+        PaymentDescriptionListener, PaymentMembersListener, MemberClickListener,
+        DeliveryOptionsListener, GetDeliveryOptionsListener {
+
     var mToolbar: Toolbar? = null
     override fun getItemList(): List<CartItem> {
         return this.cartItemList
@@ -38,8 +34,14 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         return this.membersList
     }
 
+    override fun getDeliveryOptionsList(): List<DeliveryOption> {
+        return this.deliveryOptionsList
+    }
+
+    private var cartId: String? = null
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
+    private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private lateinit var preferenceManager: PreferenceManager
     private var mProgressDialog: ProgressDialog? = null
 
@@ -53,6 +55,8 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
         showProgressDialog()
+        val preferenceManager = PreferenceManager(this)
+        cartId = preferenceManager.cartId
         initView()
         getItems()
         goToCheckOut()
@@ -71,18 +75,45 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         getT1CMember(customerId)
     }
 
+    override fun onDeliveryOptions(shippingAddress: AddressInformation) {
+        HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId!!, shippingAddress,
+                object : ApiResponseCallback<List<DeliveryOption>> {
+                    override fun success(response: List<DeliveryOption>?) {
+                        if (response != null) {
+                            deliveryOptionsList = response
+                            gotoDeliveryOptions()
+                        } else {
+                            mProgressDialog?.dismiss()
+                            showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showResponseAlertDialog("", error.errorMessage)
+                    }
+                })
+    }
+
     override fun onPaymentClickListener(orderId: String) {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         mToolbar?.setNavigationOnClickListener(null)
 
         val cacheCartItems = arrayListOf<CacheCartItem>()
-        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems?: arrayListOf())
-        
+        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
+
         clearCachedCart()
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
+                .commit()
+    }
+
+    private fun gotoDeliveryOptions() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, DeliveryOptionsFragment.newInstance())
                 .commit()
     }
 
@@ -202,6 +233,15 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         builder.show()
     }
 
+    private fun showResponseAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+            builder.setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
+    }
 
     private fun clearCachedCart() {
         preferenceManager.clearCartId()

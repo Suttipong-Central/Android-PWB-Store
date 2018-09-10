@@ -18,11 +18,11 @@ import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -47,10 +47,11 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var homePostalCodeEdt: PowerBuyEditTextBorder
     private lateinit var homePhoneEdt: PowerBuyEditTextBorder
     private lateinit var totalPrice: PowerBuyTextView
-    private lateinit var paymentBtn: CardView
+    private lateinit var deliveryBtn: CardView
     private var cartItemList: List<CartItem> = listOf()
     private var paymentClickListener: PaymentClickListener? = null
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
+    private var getDeliveryOptionsListenerListener: DeliveryOptionsListener? = null
     private var mProgressDialog: ProgressDialog? = null
     private var cartId: String? = null
     private var member: Member? = null
@@ -68,7 +69,6 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var homePostalCode: String
     private lateinit var homePhone: String
     private lateinit var userInformation: UserInformation
-    private lateinit var shippingAddress: AddressInformation
 
     companion object {
         private const val MEMBER = "MEMBER"
@@ -93,6 +93,7 @@ class PaymentDescriptionFragment : Fragment() {
         super.onAttach(context)
         paymentClickListener = context as PaymentClickListener
         paymentDescriptionListener = context as PaymentDescriptionListener
+        getDeliveryOptionsListenerListener = context as DeliveryOptionsListener
         cartItemList = paymentDescriptionListener!!.getItemList()
     }
 
@@ -129,7 +130,7 @@ class PaymentDescriptionFragment : Fragment() {
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
-        paymentBtn = rootView.findViewById(R.id.payment_button_payment)
+        deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
 
         //Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
@@ -171,7 +172,7 @@ class PaymentDescriptionFragment : Fragment() {
             }
         }
         totalPrice.text = getDisplayPrice(unit, total.toString())
-        paymentBtn.setOnClickListener {
+        deliveryBtn.setOnClickListener {
             checkConfirm()
         }
     }
@@ -195,7 +196,14 @@ class PaymentDescriptionFragment : Fragment() {
             homePostalCode = homePostalCodeEdt.getText()
             homePhone = homePhoneEdt.getText()
 
-            showAlertCheckPayment("", resources.getString(R.string.comfrim_oder))
+//            showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
+            val shippingAddress = AddressInformation.createAddress(
+                    firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
+                    homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
+
+            mProgressDialog?.dismiss()
+            getDeliveryOptionsListenerListener?.onDeliveryOptions(shippingAddress)
+
         } else {
             mProgressDialog?.dismiss()
             showAlertDialog("", resources.getString(R.string.fill_in_important_information))
@@ -204,36 +212,36 @@ class PaymentDescriptionFragment : Fragment() {
 
     private fun createShippingInformation() {
         if (cartId != null) {
-            val billingAddress = AddressInformation.createTestAddress(
-                    firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
-                    homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
-
-            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
-                val staff = userInformation.user!!
-                val store = userInformation.stores!![0]!!
-                shippingAddress = AddressInformation.createTestAddress(
-                        staff.name, staff.name, staff.email ?: "",
-                        store.number ?: "", store.number ?: "", store.building ?: "",
-                        store.soi ?: "", store.road ?: "", store.province ?: "",
-                        store.district ?: "", store.subDistricrt ?: "",
-                        store.postalCode ?: "", store.number ?: "")
-            }
-            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress,
-                    object : ApiResponseCallback<ShippingInformationResponse> {
-                        override fun success(response: ShippingInformationResponse?) {
-                            if (response != null) {
-                                updateOrder()
-                            } else {
-                                mProgressDialog?.dismiss()
-                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                            }
-                        }
-
-                        override fun failure(error: APIError) {
-                            mProgressDialog?.dismiss()
-                            showAlertDialog("", error.errorMessage)
-                        }
-                    })
+//            val billingAddress = AddressInformation.createTestAddress(
+//                    firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
+//                    homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
+//
+//            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
+//                val staff = userInformation.user!!
+//                val store = userInformation.stores!![0]!!
+//                shippingAddress = AddressInformation.createTestAddress(
+//                        staff.name, staff.name, staff.email ?: "",
+//                        store.number ?: "", store.number ?: "", store.building ?: "",
+//                        store.soi ?: "", store.road ?: "", store.province ?: "",
+//                        store.district ?: "", store.subDistricrt ?: "",
+//                        store.postalCode ?: "", store.number ?: "")
+//            }
+//            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress,
+//                    object : ApiResponseCallback<ShippingInformationResponse> {
+//                        override fun success(response: ShippingInformationResponse?) {
+//                            if (response != null) {
+//                                updateOrder()
+//                            } else {
+//                                mProgressDialog?.dismiss()
+//                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+//                            }
+//                        }
+//
+//                        override fun failure(error: APIError) {
+//                            mProgressDialog?.dismiss()
+//                            showAlertDialog("", error.errorMessage)
+//                        }
+//                    })
         }
     }
 

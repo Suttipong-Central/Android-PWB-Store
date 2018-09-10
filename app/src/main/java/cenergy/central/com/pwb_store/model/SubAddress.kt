@@ -15,13 +15,14 @@ open class SubAddress(
         var houseNumber: String = "",
         var building: String = "",
         var soi: String = "",
+        @SerializedName("t1c_no")
         var t1cNo: String = "",
+        var district: String = "",
+        var subDistrict: String = "",
+        var postcode: String = "",
         @SerializedName("district_id")
         var districtId: String = "",
-        var district: String = "",
         @SerializedName("subdistrict_id")
         var subDistrictId: String = "",
-        var subDistrict: String = "",
         @SerializedName("postcode_id")
-        var postcodeId: String = "",
-        var postcode: String = "") : RealmObject()
+        var postcodeId: String = "") : RealmObject()

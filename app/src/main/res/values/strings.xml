@@ -166,7 +166,7 @@
     <string name="fill_in_important_information">กรุณากรอกข้อมูลที่สำคัญให้ถูกต้อง</string>
     <string name="sorry">ขออภัย</string>
     <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
-    <string name="comfrim_oder">ยืนยันการซื้อสินค้า</string>
+    <string name="confrim_oder">ยืนยันการซื้อสินค้า</string>
     <string name="ok_alert">ตกลง</string>
     <string name="cancel_alert">ยกเลิก</string>
     <string name="cannot_get_cart_item">ไม่สามารถเรียกสินค้าในตะกร้าได้</string>
@@ -186,4 +186,5 @@
     <string name="shopping">ช้อปต่อ</string>
     <string name="please_select_date">กรุณาเลือกวันที่คุณต้องการ</string>
     <string name="check_your_date">กรุณาตรวจสอบวันที่เลือก</string>
+    <string name="choose_delivery_option">เลือกการจัดส่งสินค้า</string>
 </resources>

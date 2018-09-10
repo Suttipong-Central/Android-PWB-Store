@@ -10,27 +10,33 @@ import io.realm.RealmObject
  */
 
 open class AddressInformation(
-        var countryId: String = "",
-        var regionId: String = "",
-        var regionCode: String = "",
         var region: String = "",
+        @SerializedName("region_id")
+        var regionId: String = "",
+        @SerializedName("region_code")
+        var regionCode: String = "",
+        @SerializedName("country_id")
+        var countryId: String = "",
         var street: RealmList<String>? = null,
-        var company: String = "",
-        var telephone: String = "",
         var postcode: String = "",
         var firstname: String = "",
         var lastname: String = "",
         var email: String = "",
-        var vatId: String = "",
+        var telephone: String = "",
         @SerializedName("customAttributes")
-        var subAddress: SubAddress? = null) : RealmObject() {
+        var subAddress: SubAddress? = null,
+        @SerializedName("same_as_billing")
+        var sameBuilling: Int = 0
+) : RealmObject() {
 
     companion object {
         fun createTestAddress(firstName: String, lastName: String, email: String, contactNo: String,
-                              homeNo: String, homeBuilding: String, homeSoi: String, homeRoad: String,
-                              homeCity: String, homeDistrict: String, homeSubDistrict: String,
+                              homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
+                              homeSubDistrict: String, homeCity: String, homeRoad: String,
                               homePostalCode: String, homePhone: String): AddressInformation {
-            val subAddress = SubAddress(mobile = homePhone,
+
+            val subAddress = SubAddress(
+                    mobile = homePhone,
                     houseNumber = homeNo,
                     building = homeBuilding,
                     soi = homeSoi,
@@ -38,20 +44,53 @@ open class AddressInformation(
                     district = homeDistrict,
                     subDistrict = homeSubDistrict,
                     postcode = homePostalCode,
-                    districtId = "36", subDistrictId = "199", postcodeId = "213")
-            return AddressInformation(countryId = "TH",
+                    districtId = "50",
+                    subDistrictId = "256",
+                    postcodeId = "213")
+            return AddressInformation(
+                    region = homeCity,
                     regionId = "668",
                     regionCode = "BKK",
-                    region = homeCity,
+                    countryId = "TH",
                     street = RealmList(homeRoad),
-                    company = "",
-                    telephone = contactNo,
                     postcode = homePostalCode,
                     firstname = firstName,
                     lastname = lastName,
                     email = email,
-                    vatId = "",
+                    telephone = contactNo,
                     subAddress = subAddress)
+        }
+
+        fun createAddress(firstName: String, lastName: String, email: String, contactNo: String,
+                              homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
+                              homeSubDistrict: String, homeCity: String, homeRoad: String,
+                              homePostalCode: String, homePhone: String): AddressInformation {
+
+            val subAddress = SubAddress(
+                    mobile = homePhone,
+                    houseNumber = homeNo,
+                    building = homeBuilding,
+                    soi = homeSoi,
+                    t1cNo = "",
+                    district = homeDistrict,
+                    subDistrict = homeSubDistrict,
+                    postcode = homePostalCode,
+                    districtId = "50",
+                    subDistrictId = "256",
+                    postcodeId = "213")
+            return AddressInformation(
+                    region = homeCity,
+                    regionId = "668",
+                    regionCode = "BKK",
+                    countryId = "TH",
+                    street = RealmList(homeRoad),
+                    postcode = homePostalCode,
+                    firstname = firstName,
+                    lastname = lastName,
+                    email = email,
+                    telephone = contactNo,
+                    subAddress = subAddress,
+                    sameBuilling = 1)
         }
     }
 
