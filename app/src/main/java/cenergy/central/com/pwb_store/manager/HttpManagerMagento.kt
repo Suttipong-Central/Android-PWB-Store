@@ -553,10 +553,12 @@ class HttpManagerMagento {
         })
     }
 
-    fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation
-                                  , callback: ApiResponseCallback<ShippingInformationResponse>) {
+    fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation,
+                                  deliveryOption: DeliveryOption, subscribeCheckOut: SubscribeCheckOut,
+                                  callback: ApiResponseCallback<ShippingInformationResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, "storepickup", "storepickup")
+        val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress,
+                deliveryOption.methodCode, deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
         cartService.createShippingInformation(cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
             override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {

@@ -26,7 +26,10 @@ open class AddressInformation(
         @SerializedName("customAttributes")
         var subAddress: SubAddress? = null,
         @SerializedName("same_as_billing")
-        var sameBuilling: Int = 0
+        var sameBilling: Int = 0,
+        @SerializedName("save_in_address_book")
+        var saveInAddress: Int = 0,
+        var saveInAddressBook: String? = null
 ) : RealmObject() {
 
     companion object {
@@ -90,7 +93,7 @@ open class AddressInformation(
                     email = email,
                     telephone = contactNo,
                     subAddress = subAddress,
-                    sameBuilling = 1)
+                    sameBilling = 1)
         }
     }
 

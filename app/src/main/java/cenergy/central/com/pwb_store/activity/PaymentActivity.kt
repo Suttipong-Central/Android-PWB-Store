@@ -18,12 +18,13 @@ import cenergy.central.com.pwb_store.manager.listeners.*
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClickListener,
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         PaymentDescriptionListener, PaymentMembersListener, MemberClickListener,
-        DeliveryOptionsListener, GetDeliveryOptionsListener {
+        DeliveryOptionsListener, GetDeliveryOptionsListener, DeliveryOptionsClickListener {
 
     var mToolbar: Toolbar? = null
     override fun getItemList(): List<CartItem> {
@@ -38,11 +39,13 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         return this.deliveryOptionsList
     }
 
+    private lateinit var preferenceManager: PreferenceManager
+    private lateinit var shippingAddress: AddressInformation
+    private lateinit var deliveryOption: DeliveryOption
     private var cartId: String? = null
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
-    private lateinit var preferenceManager: PreferenceManager
     private var mProgressDialog: ProgressDialog? = null
 
     companion object {
@@ -76,6 +79,8 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     }
 
     override fun onDeliveryOptions(shippingAddress: AddressInformation) {
+        showProgressDialog()
+        this.shippingAddress = shippingAddress
         HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId!!, shippingAddress,
                 object : ApiResponseCallback<List<DeliveryOption>> {
                     override fun success(response: List<DeliveryOption>?) {
@@ -95,22 +100,14 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
                 })
     }
 
-    override fun onPaymentClickListener(orderId: String) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        mToolbar?.setNavigationOnClickListener(null)
-
-        val cacheCartItems = arrayListOf<CacheCartItem>()
-        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
-
-        clearCachedCart()
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
-                .commit()
+    override fun onDeliveryOptionsClickListener(deliveryOptions: DeliveryOption) {
+        showProgressDialog()
+        this.deliveryOption = deliveryOptions
+        showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
     }
 
     private fun gotoDeliveryOptions() {
+        mProgressDialog?.dismiss()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, DeliveryOptionsFragment.newInstance())
@@ -179,12 +176,12 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
                     mProgressDialog?.dismiss()
                 } else {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
+                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
                 }
             }
 
             override fun failure(error: APIError) {
-                showAlertDialog("", resources.getString(R.string.some_thing_wrong), false)
+                showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
                 mProgressDialog?.dismiss()
             }
         })
@@ -200,13 +197,13 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
                     mProgressDialog?.dismiss()
                 } else {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", resources.getString(R.string.not_have_user), true)
+                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.not_have_user), true)
+                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
             }
         })
     }
@@ -218,7 +215,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
                 .commit()
     }
 
-    fun showAlertDialog(title: String, message: String, checkSkip: Boolean) {
+    fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
         if (checkSkip) {
@@ -236,7 +233,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
     private fun showResponseAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-            builder.setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+        builder.setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }
@@ -247,5 +244,86 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentClick
         preferenceManager.clearCartId()
         RealmController.getInstance().deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
+    }
+
+    private fun showAlertCheckPayment(title: String, message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createShippingInformation() }
+                .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which ->
+                    dialog.dismiss()
+                    mProgressDialog?.dismiss()
+                }
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
+    }
+
+    private fun createShippingInformation() {
+        val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
+        if (cartId != null) {
+            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, shippingAddress,
+                    deliveryOption, subscribeCheckOut, object : ApiResponseCallback<ShippingInformationResponse> {
+                override fun success(response: ShippingInformationResponse?) {
+                    if (response != null) {
+                        updateOrder()
+                    } else {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", error.errorMessage)
+                }
+            })
+        }
+    }
+
+    private fun updateOrder() {
+        HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String> {
+            override fun success(response: String?) {
+                if (response != null) {
+                    getOrder(response)
+                } else {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                showAlertDialog("", error.errorMessage)
+            }
+        })
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
+    }
+
+    fun getOrder(orderId: String) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        mToolbar?.setNavigationOnClickListener(null)
+
+        val cacheCartItems = arrayListOf<CacheCartItem>()
+        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
+
+        clearCachedCart()
+        mProgressDialog?.dismiss()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
+                .commit()
     }
 }

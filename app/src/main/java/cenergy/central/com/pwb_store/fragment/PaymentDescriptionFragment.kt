@@ -49,7 +49,6 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: CardView
     private var cartItemList: List<CartItem> = listOf()
-    private var paymentClickListener: PaymentClickListener? = null
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
     private var getDeliveryOptionsListenerListener: DeliveryOptionsListener? = null
     private var mProgressDialog: ProgressDialog? = null
@@ -91,7 +90,6 @@ class PaymentDescriptionFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        paymentClickListener = context as PaymentClickListener
         paymentDescriptionListener = context as PaymentDescriptionListener
         getDeliveryOptionsListenerListener = context as DeliveryOptionsListener
         cartItemList = paymentDescriptionListener!!.getItemList()
@@ -196,7 +194,6 @@ class PaymentDescriptionFragment : Fragment() {
             homePostalCode = homePostalCodeEdt.getText()
             homePhone = homePhoneEdt.getText()
 
-//            showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
             val shippingAddress = AddressInformation.createAddress(
                     firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
                     homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
@@ -210,75 +207,9 @@ class PaymentDescriptionFragment : Fragment() {
         }
     }
 
-    private fun createShippingInformation() {
-        if (cartId != null) {
-//            val billingAddress = AddressInformation.createTestAddress(
-//                    firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
-//                    homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
-//
-//            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
-//                val staff = userInformation.user!!
-//                val store = userInformation.stores!![0]!!
-//                shippingAddress = AddressInformation.createTestAddress(
-//                        staff.name, staff.name, staff.email ?: "",
-//                        store.number ?: "", store.number ?: "", store.building ?: "",
-//                        store.soi ?: "", store.road ?: "", store.province ?: "",
-//                        store.district ?: "", store.subDistricrt ?: "",
-//                        store.postalCode ?: "", store.number ?: "")
-//            }
-//            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, billingAddress,
-//                    object : ApiResponseCallback<ShippingInformationResponse> {
-//                        override fun success(response: ShippingInformationResponse?) {
-//                            if (response != null) {
-//                                updateOrder()
-//                            } else {
-//                                mProgressDialog?.dismiss()
-//                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-//                            }
-//                        }
-//
-//                        override fun failure(error: APIError) {
-//                            mProgressDialog?.dismiss()
-//                            showAlertDialog("", error.errorMessage)
-//                        }
-//                    })
-        }
-    }
-
-    private fun updateOrder() {
-        HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String> {
-            override fun success(response: String?) {
-                if (response != null) {
-                    mProgressDialog?.dismiss()
-                    paymentClickListener?.onPaymentClickListener(response)
-                } else {
-                    mProgressDialog?.dismiss()
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                }
-            }
-
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
-            }
-        })
-    }
-
     private fun getDisplayPrice(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
-    }
-
-    private fun showAlertCheckPayment(title: String, message: String) {
-        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createShippingInformation() }
-                .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
     }
 
     private fun showAlertDialog(title: String, message: String) {
