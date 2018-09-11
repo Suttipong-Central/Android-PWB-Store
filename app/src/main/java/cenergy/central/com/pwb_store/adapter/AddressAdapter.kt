@@ -20,9 +20,11 @@ import cenergy.central.com.pwb_store.R
 class AddressAdapter(private val mContext: Context, private val mLayoutResourceId: Int,
                      private var items: List<Pair<Long, String>>) : ArrayAdapter<Pair<Long, String>>(mContext, mLayoutResourceId, items) {
     private var listener: FilterClickListener? = null
+    private var cacheItems: List<Pair<Long, String>> = arrayListOf()
 
     fun setItems(items: List<Pair<Long, String>>) {
         this.items = items
+        this.cacheItems = items
         Log.d("MainActivity", "update adapter --> ${items.size}")
         notifyDataSetChanged()
     }
@@ -101,7 +103,7 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
             items = if (results!!.values != null && results.count > 0) {
                 results.values as ArrayList<Pair<Long, String>>
             } else {
-                items
+                cacheItems
             }
 
             Log.d("MainActivity", "publishResults: ${results.values}")
