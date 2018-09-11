@@ -98,7 +98,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         if (database.getUserToken() != null) {
             // start main page
-            Intent intent = new Intent(this, PaymentActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             ActivityCompat.startActivity(this, intent,
                     ActivityOptionsCompat
                             .makeBasic()
@@ -106,7 +106,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         } else {
             // start login page
             UserInfoManager.getInstance().setKeyImei(deviceId);
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
 
