@@ -2,9 +2,9 @@
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/powerBuyWhite"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/powerBuyWhite">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -121,8 +121,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="16dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -177,23 +177,26 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/province_payment"
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/inputProvince"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    app:header="@string/province"
-                    app:required="false" />
+                    android:completionThreshold="1"
+                    android:hint="@string/province"
+                    android:inputType="textNoSuggestions" />
 
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/district_payment"
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/inputDistrict"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
-                    app:header="@string/district"
-                    app:required="false" />
+                    android:completionThreshold="1"
+                    android:hint="@string/district"
+                    android:inputType="textNoSuggestions"
+                    app:layout_constraintTop_toBottomOf="@+id/inputProvince" />
 
             </LinearLayout>
 
@@ -203,23 +206,27 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/sub_district_payment"
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/inputSubDistrict"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    app:header="@string/sub_district"
-                    app:required="false" />
+                    android:completionThreshold="1"
+                    android:hint="@string/sub_district"
+                    android:inputType="textNoSuggestions"
+                    app:layout_constraintTop_toBottomOf="@+id/inputDistrict" />
 
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/post_code_payment"
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/inputPostcode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
-                    app:header="@string/post_code"
-                    app:required="false" />
+                    android:completionThreshold="1"
+                    android:hint="@string/post_code"
+                    android:inputType="textNoSuggestions"
+                    app:layout_constraintTop_toBottomOf="@+id/inputSubDistrict" />
 
             </LinearLayout>
 
@@ -268,8 +275,8 @@
                 style="@style/textNameProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="@string/total_price" />
+                android:text="@string/total_price"
+                android:textSize="18sp" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_total_price_payment_description"

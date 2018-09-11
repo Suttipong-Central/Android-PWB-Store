@@ -57,12 +57,12 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
-        showProgressDialog()
+//        showProgressDialog()
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         initView()
         getItems()
-        goToCheckOut()
+        startCheckOut()
     }
 
     override fun onCheckOutListener(contactNo: String?) {
@@ -114,7 +114,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                 .commit()
     }
 
-    private fun goToCheckOut() {
+    private fun startCheckOut() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentCheckOutFragment.newInstance())
@@ -169,10 +169,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member> {
             override fun success(response: Member?) {
                 if (response != null) {
-                    val fragmentTransaction = supportFragmentManager.beginTransaction()
-                    fragmentTransaction
-                            .replace(R.id.container, PaymentDescriptionFragment.newInstance(response))
-                            .commit()
+                    startPaymentDescription(response)
                     mProgressDialog?.dismiss()
                 } else {
                     mProgressDialog?.dismiss()
@@ -185,6 +182,15 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                 mProgressDialog?.dismiss()
             }
         })
+    }
+
+    private fun startPaymentDescription(response: Member?) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        val fragment = if (response != null) PaymentDescriptionFragment.newInstance(response) else
+            PaymentDescriptionFragment.newInstance()
+        fragmentTransaction
+                .replace(R.id.container, fragment)
+                .commit()
     }
 
     private fun getMembersT1C(mobile: String) {
@@ -220,9 +226,9 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                 .setMessage(message)
         if (checkSkip) {
             builder.setPositiveButton(android.R.string.ok) { dialog, which -> skipToDescription() }
-            builder.setNegativeButton(android.R.string.cancel) { dialog, which -> goToCheckOut() }
+            builder.setNegativeButton(android.R.string.cancel) { dialog, which -> startCheckOut() }
         } else {
-            builder.setPositiveButton(android.R.string.ok) { dialog, which -> goToCheckOut() }
+            builder.setPositiveButton(android.R.string.ok) { dialog, which -> startCheckOut() }
         }
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)

@@ -20,10 +20,13 @@ import cenergy.central.com.pwb_store.model.Order;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
-import cenergy.central.com.pwb_store.model.response.OrderResponse;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import me.a3cha.android.thaiaddress.models.District;
+import me.a3cha.android.thaiaddress.models.Postcode;
+import me.a3cha.android.thaiaddress.models.Province;
+import me.a3cha.android.thaiaddress.models.SubDistrict;
 
 /**
  * Created by napabhat on 9/13/2017 AD.
@@ -340,7 +343,7 @@ public class RealmController {
     // endregion
 
     // region user
-    public void  saveUserInformation(final UserInformation userInformation) {
+    public void saveUserInformation(final UserInformation userInformation) {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -428,6 +431,155 @@ public class RealmController {
         return cachedEndpoint != null && cachedEndpoint.getLastUpdated().after(new Date(System.currentTimeMillis() - (hours * 60 * 60 * 1000)));
     }
     // end region
+
+    // region province
+    public void storeProvince(final Province province) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(province);
+            }
+        });
+    }
+
+    public Province getProvince(Long provinceId) {
+        Realm realm = getRealm();
+        return realm.where(Province.class).equalTo(Province.FIELD_ID, provinceId).findFirst();
+    }
+
+    public List<Province> getProvinces() {
+        Realm realm = getRealm();
+        return realm.where(Province.class).sort(Province.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public void deleteProvinces() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Province.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
+
+    // region district
+    public void storeDistrict(final District district) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(district);
+            }
+        });
+    }
+
+    public District getDistrict(Long districtId) {
+        Realm realm = getRealm();
+        return realm.where(District.class).equalTo(District.FIELD_ID, districtId).findFirst();
+    }
+
+    public List<District> getDistricts() {
+        Realm realm = getRealm();
+        return realm.where(District.class).sort(District.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public List<District> getDistrictsByProvinceId(Long provinceId) {
+        Realm realm = getRealm();
+        return realm.where(District.class)
+                .equalTo(District.FIELD_PROVINCE_ID, provinceId)
+                .sort(District.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public void deleteDistricts() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(District.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
+
+    // region sub district
+    public void storeSubDistrict(final SubDistrict subDistrict) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(subDistrict);
+            }
+        });
+    }
+
+    public SubDistrict getSubDistrict(Long subDistrictId) {
+        Realm realm = getRealm();
+        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_ID, subDistrictId).findFirst();
+    }
+
+    public List<SubDistrict> getSubDistricts() {
+        Realm realm = getRealm();
+        return realm.where(SubDistrict.class).sort(SubDistrict.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public List<SubDistrict> getSubDistrictsByDistrictId(Long districtId) {
+        Realm realm = getRealm();
+        return realm.where(SubDistrict.class)
+                .equalTo(SubDistrict.FIELD_DISTRICT_ID, districtId)
+                .sort(SubDistrict.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public void deleteSubDistricts() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(SubDistrict.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
+
+    // region postcode
+    public void storePostcode(final Postcode postcode) {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                realm.copyToRealmOrUpdate(postcode);
+            }
+        });
+    }
+
+    public Postcode getPostcode(Long id) {
+        Realm realm = getRealm();
+        return realm.where(Postcode.class).equalTo(Postcode.FIELD_ID, id).findFirst();
+    }
+
+    public List<Postcode> getPostcodes() {
+        Realm realm = getRealm();
+        return realm.where(Postcode.class).sort(Postcode.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public List<Postcode> getPostcodeBySubDistrictId(Long subDistrictId) {
+        Realm realm = getRealm();
+        return realm.where(Postcode.class)
+                .equalTo(Postcode.FIELD_SUB_DISTRICT_ID, subDistrictId)
+                .sort(Postcode.FIELD_ID, Sort.ASCENDING).findAll();
+    }
+
+    public void deletePostcodes() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Postcode.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+    // endregion
 
     public void userLogout() {
         deleteAllCacheCartItem();

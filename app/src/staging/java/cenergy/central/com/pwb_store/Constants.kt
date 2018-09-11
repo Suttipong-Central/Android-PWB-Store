@@ -10,5 +10,8 @@ class Constants {
         const val BASE_URL_MAGENTO = "https://staging.powerbuy.co.th"
         const val HOST_NAME = "staging.powerbuy.co.th"
         const val CLIENT_MAGENTO = "Bearer ba102y6thpckeoqgo196u82tllvlf50q"
+
+        // formatter
+        val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
     }
 }

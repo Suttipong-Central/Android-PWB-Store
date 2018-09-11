@@ -13,25 +13,56 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.AutoCompleteTextView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
-import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
-import cenergy.central.com.pwb_store.manager.listeners.PaymentClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
-import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.AddressInformation
+import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.Member
+import cenergy.central.com.pwb_store.model.UserInformation
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import me.a3cha.android.thaiaddress.models.District
+import me.a3cha.android.thaiaddress.models.Postcode
+import me.a3cha.android.thaiaddress.models.SubDistrict
 import java.text.NumberFormat
 import java.util.*
 
-class PaymentDescriptionFragment : Fragment() {
+class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
+    override fun onFocusChange(v: View?, hasFocus: Boolean) {
+        when (v?.id) {
+            R.id.inputProvince -> {
+                if (hasFocus) {
+                    provinceInput.showDropDown()
+                }
+            }
+            R.id.inputDistrict -> {
+                if (hasFocus) {
+                    districtInput.showDropDown()
+                }
+            }
+            R.id.inputSubDistrict -> {
+                if (hasFocus) {
+                    subDistrictInput.showDropDown()
+                }
+            }
+            R.id.inputPostcode -> {
+                if (hasFocus) {
+                    postcodeInput.showDropDown()
+                }
+            }
+        }
+    }
 
+    // widget view
     private lateinit var recycler: RecyclerView
     private lateinit var firstNameEdt: PowerBuyEditTextBorder
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
@@ -41,13 +72,17 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var homeSoiEdt: PowerBuyEditTextBorder
     private lateinit var homeRoadEdt: PowerBuyEditTextBorder
-    private lateinit var homeCityEdt: PowerBuyEditTextBorder
-    private lateinit var homeDistrictEdt: PowerBuyEditTextBorder
-    private lateinit var homeSubDistrictEdt: PowerBuyEditTextBorder
-    private lateinit var homePostalCodeEdt: PowerBuyEditTextBorder
     private lateinit var homePhoneEdt: PowerBuyEditTextBorder
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: CardView
+
+    private lateinit var provinceInput: AutoCompleteTextView
+    private lateinit var districtInput: AutoCompleteTextView
+    private lateinit var subDistrictInput: AutoCompleteTextView
+    private lateinit var postcodeInput: AutoCompleteTextView
+
+    // data
+    private val database = RealmController.with(context)
     private var cartItemList: List<CartItem> = listOf()
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
     private var getDeliveryOptionsListenerListener: DeliveryOptionsListener? = null
@@ -68,6 +103,15 @@ class PaymentDescriptionFragment : Fragment() {
     private lateinit var homePostalCode: String
     private lateinit var homePhone: String
     private lateinit var userInformation: UserInformation
+    private val provinces = database.provinces
+    private var districts = emptyList<District>()
+    private var subDistricts = emptyList<SubDistrict>()
+    private var postcodes = emptyList<Postcode>()
+    // adapter
+    private var provinceAdapter: AddressAdapter? = null
+    private var districtAdapter: AddressAdapter? = null
+    private var subDistrictAdapter: AddressAdapter? = null
+    private var postcodeAdapter: AddressAdapter? = null
 
     companion object {
         private const val MEMBER = "MEMBER"
@@ -98,7 +142,7 @@ class PaymentDescriptionFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val preferenceManager = context?.let { PreferenceManager(it) }
-        userInformation = RealmController.with(context).userInformation
+        userInformation = database.userInformation
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(MEMBER)
     }
@@ -120,15 +164,19 @@ class PaymentDescriptionFragment : Fragment() {
         homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         homeSoiEdt = rootView.findViewById(R.id.soi_payment)
         homeRoadEdt = rootView.findViewById(R.id.street_payment)
-        homeCityEdt = rootView.findViewById(R.id.province_payment)
-        homeDistrictEdt = rootView.findViewById(R.id.district_payment)
-        homeSubDistrictEdt = rootView.findViewById(R.id.sub_district_payment)
-        homePostalCodeEdt = rootView.findViewById(R.id.post_code_payment)
         homePhoneEdt = rootView.findViewById(R.id.tell_payment)
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
+
+        // setup view input address
+        provinceInput = rootView.findViewById(R.id.inputProvince)
+        districtInput = rootView.findViewById(R.id.inputDistrict)
+        subDistrictInput = rootView.findViewById(R.id.inputSubDistrict)
+        postcodeInput = rootView.findViewById(R.id.inputPostcode)
+
+        setupInputAddress()
 
         //Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
@@ -143,15 +191,14 @@ class PaymentDescriptionFragment : Fragment() {
             lastNameEdt.setText(member.getLastName())
             contactNumberEdt.setText(member.mobilePhone)
             emailEdt.setText(member.email)
-
             homeNoEdt.setText(member.homeNo)
             homeBuildingEdit.setText(member.homeBuilding)
             homeSoiEdt.setText(member.homeSoi)
             homeRoadEdt.setText(member.homeRoad)
-            homeCityEdt.setText(member.homeCity)
-            homeDistrictEdt.setText(member.homeDistrict)
-            homeSubDistrictEdt.setText(member.homeSubDistrict)
-            homePostalCodeEdt.setText(member.homePostalCode)
+            provinceInput.setText(member.homeCity)
+            districtInput.setText(member.homeDistrict)
+            subDistrictInput.setText(member.homeSubDistrict)
+            postcodeInput.setText(member.homePostalCode)
             homePhoneEdt.setText(member.homePhone)
         }
 
@@ -162,7 +209,6 @@ class PaymentDescriptionFragment : Fragment() {
         shoppingCartAdapter.cartItemList = this.cartItemList
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-        val database = RealmController.getInstance()
         var total = 0.0
         cartItemList.forEach {
             if (database.getCacheCartItem(it.id) != null) {
@@ -173,6 +219,94 @@ class PaymentDescriptionFragment : Fragment() {
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
+    }
+
+    private fun setupInputAddress() {
+        val provinceNameList = provinces.map { Pair(first = it.provinceId, second = it.nameTh) }
+        var districtNameList = districts.map { Pair(first = it.districtId, second = it.nameTh) }
+        var subDistrictNameList = subDistricts.map { Pair(first = it.subDistrictId, second = it.nameTh) }
+        var postcodeList = postcodes.map { Pair(first = it.id, second = it.postcode.toString()) }
+
+
+        // setup province
+        provinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, provinceNameList)
+        provinceAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: Pair<Long, String>) {
+                provinceInput.setText(item.second)
+                provinceInput.clearFocus()
+
+                districtInput.setText("")
+
+                districts = database.getDistrictsByProvinceId(item.first)
+                districtNameList = districts.map { Pair(first = it.districtId, second = it.nameTh) }
+                districtAdapter?.setItems(districtNameList)
+
+                hideKeyboard()
+            }
+        })
+
+        // setup district
+        districtAdapter = AddressAdapter(context!!, R.layout.layout_text_item, districtNameList)
+        districtAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: Pair<Long, String>) {
+                districtInput.setText(item.second)
+                districtInput.clearFocus()
+
+                subDistrictInput.setText("")
+                subDistricts = database.getSubDistrictsByDistrictId(item.first)
+                subDistrictNameList = subDistricts.map { Pair(first = it.subDistrictId, second = it.nameTh) }
+
+                subDistrictAdapter?.setItems(subDistrictNameList)
+
+                hideKeyboard()
+            }
+
+        })
+
+        // setup sub district
+        subDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, subDistrictNameList)
+        subDistrictAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: Pair<Long, String>) {
+                subDistrictInput.setText(item.second)
+                subDistrictInput.clearFocus()
+
+                postcodeInput.setText("")
+                postcodes = database.getPostcodeBySubDistrictId(item.first)
+                postcodeList = postcodes.map { Pair(first = it.id, second = it.postcode.toString()) }
+                postcodeAdapter?.setItems(postcodeList)
+
+                hideKeyboard()
+            }
+        })
+
+        // setup postcode
+        postcodeAdapter = AddressAdapter(context!!, R.layout.layout_text_item, postcodeList)
+        postcodeAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: Pair<Long, String>) {
+                postcodeInput.setText(item.second)
+
+                hideKeyboard()
+            }
+
+        })
+
+        // setup adapter
+        provinceInput.setAdapter(provinceAdapter)
+        districtInput.setAdapter(districtAdapter)
+        subDistrictInput.setAdapter(subDistrictAdapter)
+        postcodeInput.setAdapter(postcodeAdapter)
+
+        // setup onClick
+        provinceInput.setOnClickListener { provinceInput.showDropDown() }
+        districtInput.setOnClickListener { districtInput.showDropDown() }
+        subDistrictInput.setOnClickListener { subDistrictInput.showDropDown() }
+        postcodeInput.setOnClickListener { postcodeInput.showDropDown() }
+
+        // setup onFocus
+        provinceInput.onFocusChangeListener = this
+        districtInput.onFocusChangeListener = this
+        subDistrictInput.onFocusChangeListener = this
+        postcodeInput.onFocusChangeListener = this
     }
 
     private fun checkConfirm() {
@@ -188,10 +322,10 @@ class PaymentDescriptionFragment : Fragment() {
             homeBuilding = homeBuildingEdit.getText()
             homeSoi = homeSoiEdt.getText()
             homeRoad = homeRoadEdt.getText()
-            homeCity = homeCityEdt.getText()
-            homeDistrict = homeDistrictEdt.getText()
-            homeSubDistrict = homeSubDistrictEdt.getText()
-            homePostalCode = homePostalCodeEdt.getText()
+            homeCity = provinceInput.text.toString()
+            homeDistrict = districtInput.text.toString()
+            homeSubDistrict = subDistrictInput.text.toString()
+            homePostalCode = postcodeInput.text.toString()
             homePhone = homePhoneEdt.getText()
 
             val shippingAddress = AddressInformation.createAddress(
@@ -229,6 +363,15 @@ class PaymentDescriptionFragment : Fragment() {
             mProgressDialog?.show()
         } else {
             mProgressDialog?.show()
+        }
+    }
+
+    private fun hideKeyboard() {
+        val inputManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocus = activity?.currentFocus
+        if (currentFocus != null) {
+            inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+            inputManager.hideSoftInputFromInputMethod(currentFocus.windowToken, 0)
         }
     }
 }

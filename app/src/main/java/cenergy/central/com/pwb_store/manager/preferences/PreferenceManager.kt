@@ -20,6 +20,15 @@ class PreferenceManager(private var context: Context) {
         editor.apply()
     }
 
+    val isAddressLoaded: Boolean
+        get() = pref.getBoolean(PREF_ADDRESS_LOADED, false)
+
+    fun setAddessLoaded(loaded: Boolean) {
+        val editor = pref.edit()
+        editor.putBoolean(PREF_ADDRESS_LOADED, loaded)
+        editor.apply()
+    }
+
     fun clearCartId() {
         pref.edit().remove(PREF_CART_ID).apply()
     }
@@ -34,5 +43,6 @@ class PreferenceManager(private var context: Context) {
 
     companion object {
         const val PREF_CART_ID = "cart_id"
+        const val PREF_ADDRESS_LOADED = "address_loaded"
     }
 }

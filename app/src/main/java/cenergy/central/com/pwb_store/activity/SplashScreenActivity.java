@@ -13,9 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.realm.seeder.DistrictSeeder;
+import cenergy.central.com.pwb_store.realm.seeder.PostcodeSeeder;
+import cenergy.central.com.pwb_store.realm.seeder.ProvinceSeeder;
+import cenergy.central.com.pwb_store.realm.seeder.SubDistrictSeeder;
 
 /**
  * Created by napabhat on 9/21/2017 AD.
@@ -27,11 +32,13 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private TelephonyManager mTelephonyManager;
     private RealmController database;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         database = RealmController.with(this);
+        preferenceManager= new PreferenceManager(this);
         initView();
     }
 
@@ -42,10 +49,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
                         PERMISSIONS_REQUEST_READ_PHONE_STATE);
             } else {
-                getDeviceImeI();
+                forward();
             }
         } else {
-            getDeviceImeI();
+            forward();
         }
     }
 
@@ -54,18 +61,44 @@ public class SplashScreenActivity extends AppCompatActivity {
                                            int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_PHONE_STATE
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getDeviceImeI();
+            forward();
         }
     }
 
-    private void getDeviceImeI() {
+    private void forward() {
+        if (preferenceManager.isAddressLoaded()) {
+            start();
+        }else  {
+            storeAddressRawJson();
+        }
+    }
+
+    private void storeAddressRawJson() {
+        // clear database
+        database.deleteProvinces();
+        database.deleteDistricts();
+        database.deleteSubDistricts();
+        database.deletePostcodes();
+
+        // seeder
+        new ProvinceSeeder(this, database, R.raw.seed_province).seed();
+        new DistrictSeeder(this, database, R.raw.seed_district).seed();
+        new SubDistrictSeeder(this, database, R.raw.seed_sub_district).seed();
+        new PostcodeSeeder(this, database, R.raw.seed_postcode).seed();
+
+        preferenceManager.setAddessLoaded(true);
+
+        start();
+    }
+
+    private void start() {
         mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         @SuppressLint("MissingPermission") String deviceId = mTelephonyManager.getDeviceId();
         Log.d(TAG, "DeviceImei " + deviceId);
 
         if (database.getUserToken() != null) {
             // start main page
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, PaymentActivity.class);
             ActivityCompat.startActivity(this, intent,
                     ActivityOptionsCompat
                             .makeBasic()
@@ -73,8 +106,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         } else {
             // start login page
             UserInfoManager.getInstance().setKeyImei(deviceId);
-            Intent intent = new Intent(this, LoginActivity.class);
-            //Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
 
