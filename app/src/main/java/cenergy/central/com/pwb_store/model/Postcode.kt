@@ -20,5 +20,6 @@ open class Postcode(
         companion object {
             const val FIELD_ID = "id"
             const val FIELD_SUB_DISTRICT_ID = "subDistrictId"
+            const val FIELD_POST_CODE = "postcode"
         }
 }

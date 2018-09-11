@@ -22,5 +22,6 @@ open class Province(
 
         companion object {
                 const val FIELD_ID = "provinceId"
+                const val FIELD_NAME_TH = "nameTh"
         }
 }

@@ -448,6 +448,14 @@ public class RealmController {
         return realm.where(Province.class).equalTo(Province.FIELD_ID, provinceId).findFirst();
     }
 
+    public Province getProvinceByNameTh(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(Province.class).equalTo(Province.FIELD_NAME_TH, name).findFirst();
+    }
+
     public List<Province> getProvinces() {
         Realm realm = getRealm();
         return realm.where(Province.class).sort(Province.FIELD_ID, Sort.ASCENDING).findAll();
@@ -478,6 +486,14 @@ public class RealmController {
     public District getDistrict(Long districtId) {
         Realm realm = getRealm();
         return realm.where(District.class).equalTo(District.FIELD_ID, districtId).findFirst();
+    }
+
+    public District getDistrictByNameTh(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(District.class).equalTo(District.FIELD_NAME_TH, name).findFirst();
     }
 
     public List<District> getDistricts() {
@@ -519,6 +535,14 @@ public class RealmController {
         return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_ID, subDistrictId).findFirst();
     }
 
+    public SubDistrict getSubDistrictByNameTh(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_NAME_TH, name).findFirst();
+    }
+
     public List<SubDistrict> getSubDistricts() {
         Realm realm = getRealm();
         return realm.where(SubDistrict.class).sort(SubDistrict.FIELD_ID, Sort.ASCENDING).findAll();
@@ -557,6 +581,15 @@ public class RealmController {
         Realm realm = getRealm();
         return realm.where(Postcode.class).equalTo(Postcode.FIELD_ID, id).findFirst();
     }
+
+    public Postcode getPostcodeByCode(String postcode) {
+        if (postcode == null || postcode.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(Postcode.class).equalTo(Postcode.FIELD_POST_CODE, Long.parseLong(postcode)).findFirst();
+    }
+
 
     public List<Postcode> getPostcodes() {
         Realm realm = getRealm();
