@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -20,15 +21,16 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         methodTitle.text = deliveryOption.methodTitle
         if(deliveryOption.available){
             layout.setOnClickListener {
+                Log.d("OptionClick", deliveryOption.methodCode)
                 when(deliveryOption.methodCode){
                     "express","standard" -> {
-                        deliveryOptionsClickListener?.onDeliveryOptionsClickListener(deliveryOption)
+                        deliveryOptionsClickListener?.onExpressOrStandardClickListener(deliveryOption)
                     }
                     "storepickup" -> {
                         Toast.makeText(itemView.context, "Store Pickup", Toast.LENGTH_SHORT).show()
                     }
                     "homedelivery" -> {
-                        Toast.makeText(itemView.context, "Home Delivery", Toast.LENGTH_SHORT).show()
+                        deliveryOptionsClickListener?.onHomeClickListener(deliveryOption)
                     }
                 }
             }

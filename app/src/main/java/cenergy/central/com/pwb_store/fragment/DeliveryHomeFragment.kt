@@ -16,8 +16,7 @@ import org.joda.time.DateTime
 import java.util.*
 
 @SuppressLint("SetTextI18n")
-
-class DeliveryFragment : Fragment(), OnPickDateListener {
+class DeliveryHomeFragment : Fragment(), OnPickDateListener {
 
     private var datePickerDialogFragment = DatePickerDialogFragment
     private lateinit var dateText: AppCompatAutoCompleteTextView
@@ -25,16 +24,12 @@ class DeliveryFragment : Fragment(), OnPickDateListener {
     private var pickedDateTime: DateTime? = null
 
     companion object {
-        fun newInstance(): DeliveryFragment {
-            val fragment = DeliveryFragment()
+        fun newInstance(): DeliveryHomeFragment {
+            val fragment = DeliveryHomeFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

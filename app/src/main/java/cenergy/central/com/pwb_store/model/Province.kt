@@ -15,6 +15,7 @@ open class Province(
         var provinceId: Long = 0,
         @SerializedName("country_id")
         var countryId: String = "",
+        var code: String = "",
         @SerializedName("name_en")
         var nameEn: String = "",
         @SerializedName("name_th")

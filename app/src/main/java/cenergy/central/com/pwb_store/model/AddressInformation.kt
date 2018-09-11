@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.model
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
+import me.a3cha.android.thaiaddress.models.Province
 
 /**
  * Created by Anuphap Suwannamas on 25/8/2018 AD.
@@ -65,9 +66,10 @@ open class AddressInformation(
         }
 
         fun createAddress(firstName: String, lastName: String, email: String, contactNo: String,
-                              homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
-                              homeSubDistrict: String, homeCity: String, homeRoad: String,
-                              homePostalCode: String, homePhone: String): AddressInformation {
+                          homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
+                          homeSubDistrict: String, homeCity: String, homeRoad: String, homePostalCode: String,
+                          homePhone: String, provinceId: String, provinceCode: String, countryId: String,
+                          districtId: String, subDistrictId: String, postcodeId: String): AddressInformation {
 
             val subAddress = SubAddress(
                     mobile = homePhone,
@@ -78,14 +80,14 @@ open class AddressInformation(
                     district = homeDistrict,
                     subDistrict = homeSubDistrict,
                     postcode = homePostalCode,
-                    districtId = "50",
-                    subDistrictId = "256",
-                    postcodeId = "213")
+                    districtId = districtId,
+                    subDistrictId = subDistrictId,
+                    postcodeId = postcodeId)
             return AddressInformation(
                     region = homeCity,
-                    regionId = "668",
-                    regionCode = "BKK",
-                    countryId = "TH",
+                    regionId = provinceId,
+                    regionCode = provinceCode,
+                    countryId = countryId,
                     street = RealmList(homeRoad),
                     postcode = homePostalCode,
                     firstname = firstName,

@@ -32,6 +32,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import me.a3cha.android.thaiaddress.models.District
 import me.a3cha.android.thaiaddress.models.Postcode
+import me.a3cha.android.thaiaddress.models.Province
 import me.a3cha.android.thaiaddress.models.SubDistrict
 import java.text.NumberFormat
 import java.util.*
@@ -85,28 +86,38 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
     private val database = RealmController.with(context)
     private var cartItemList: List<CartItem> = listOf()
     private var paymentDescriptionListener: PaymentDescriptionListener? = null
-    private var getDeliveryOptionsListenerListener: DeliveryOptionsListener? = null
+    private var deliveryOptionsListener: DeliveryOptionsListener? = null
     private var mProgressDialog: ProgressDialog? = null
     private var cartId: String? = null
     private var member: Member? = null
-    private lateinit var firstName: String
-    private lateinit var lastName: String
-    private lateinit var email: String
-    private lateinit var contactNo: String
-    private lateinit var homeNo: String
-    private lateinit var homeBuilding: String
-    private lateinit var homeSoi: String
-    private lateinit var homeRoad: String
-    private lateinit var homeCity: String
-    private lateinit var homeDistrict: String
-    private lateinit var homeSubDistrict: String
-    private lateinit var homePostalCode: String
-    private lateinit var homePhone: String
-    private lateinit var userInformation: UserInformation
+    private var firstName: String = ""
+    private var lastName: String = ""
+    private var email: String = ""
+    private var contactNo: String = ""
+    private var homeNo: String = ""
+    private var homeBuilding: String = ""
+    private var homeSoi: String = ""
+    private var homeRoad: String = ""
+    private var homeProvinceId: String = ""
+    private var homeProvince: String = ""
+    private var homeProvinceCode: String = ""
+    private var homeDistrictId: String = ""
+    private var homeDistrict: String = ""
+    private var homeSubDistrictId: String = ""
+    private var homeSubDistrict: String = ""
+    private var homeCountryId: String = ""
+    private var homePostalCodeId: String = ""
+    private var homePostalCode: String = ""
+    private var homePhone: String = ""
+    private var userInformation: UserInformation? = null
     private val provinces = database.provinces
     private var districts = emptyList<District>()
     private var subDistricts = emptyList<SubDistrict>()
     private var postcodes = emptyList<Postcode>()
+    private var province: Province? = null
+    private var district: District? = null
+    private var subDistrict: SubDistrict? = null
+    private var postcode: Postcode? = null
     // adapter
     private var provinceAdapter: AddressAdapter? = null
     private var districtAdapter: AddressAdapter? = null
@@ -135,7 +146,7 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         paymentDescriptionListener = context as PaymentDescriptionListener
-        getDeliveryOptionsListenerListener = context as DeliveryOptionsListener
+        deliveryOptionsListener = context as DeliveryOptionsListener
         cartItemList = paymentDescriptionListener!!.getItemList()
     }
 
@@ -234,13 +245,11 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 provinceInput.setText(item.second)
                 provinceInput.clearFocus()
-
+                province = database.getProvince(item.first)
                 districtInput.setText("")
-
                 districts = database.getDistrictsByProvinceId(item.first)
                 districtNameList = districts.map { Pair(first = it.districtId, second = it.nameTh) }
                 districtAdapter?.setItems(districtNameList)
-
                 hideKeyboard()
             }
         })
@@ -251,13 +260,11 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 districtInput.setText(item.second)
                 districtInput.clearFocus()
-
+                district = database.getDistrict(item.first)
                 subDistrictInput.setText("")
                 subDistricts = database.getSubDistrictsByDistrictId(item.first)
                 subDistrictNameList = subDistricts.map { Pair(first = it.subDistrictId, second = it.nameTh) }
-
                 subDistrictAdapter?.setItems(subDistrictNameList)
-
                 hideKeyboard()
             }
 
@@ -269,12 +276,11 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 subDistrictInput.setText(item.second)
                 subDistrictInput.clearFocus()
-
+                subDistrict = database.getSubDistrict(item.first)
                 postcodeInput.setText("")
                 postcodes = database.getPostcodeBySubDistrictId(item.first)
                 postcodeList = postcodes.map { Pair(first = it.id, second = it.postcode.toString()) }
                 postcodeAdapter?.setItems(postcodeList)
-
                 hideKeyboard()
             }
         })
@@ -284,10 +290,10 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
         postcodeAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 postcodeInput.setText(item.second)
-
+                postcodeInput.clearFocus()
+                postcode = database.getPostcode(item.first)
                 hideKeyboard()
             }
-
         })
 
         // setup adapter
@@ -322,18 +328,28 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
             homeBuilding = homeBuildingEdit.getText()
             homeSoi = homeSoiEdt.getText()
             homeRoad = homeRoadEdt.getText()
-            homeCity = provinceInput.text.toString()
-            homeDistrict = districtInput.text.toString()
-            homeSubDistrict = subDistrictInput.text.toString()
-            homePostalCode = postcodeInput.text.toString()
+            homeProvinceId = province!!.provinceId.toString()
+            homeProvince = province!!.nameTh
+            homeCountryId = province!!.countryId
+            homeProvinceCode = province!!.code
+            homeDistrictId = district!!.districtId.toString()
+            homeDistrict = district!!.nameTh
+            homeSubDistrictId = subDistrict!!.subDistrictId.toString()
+            homeSubDistrict = subDistrict!!.nameTh
+            homePostalCodeId = postcode!!.id.toString()
+            homePostalCode = postcode!!.postcode.toString()
             homePhone = homePhoneEdt.getText()
 
             val shippingAddress = AddressInformation.createAddress(
-                    firstName, lastName, email, contactNo, homeNo, homeBuilding, homeSoi,
-                    homeRoad, homeCity, homeDistrict, homeSubDistrict, homePostalCode, homePhone)
+                    firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
+                    homeNo = homeNo, homeBuilding = homeBuilding, homeSoi = homeSoi, homeRoad = homeRoad,
+                    homePostalCode = homePostalCode, homePhone =  homePhone, provinceId =  homeProvinceId,
+                    provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
+                    subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
+                    homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict)
 
             mProgressDialog?.dismiss()
-            getDeliveryOptionsListenerListener?.onDeliveryOptions(shippingAddress)
+            deliveryOptionsListener?.onDeliveryOptions(shippingAddress)
 
         } else {
             mProgressDialog?.dismiss()

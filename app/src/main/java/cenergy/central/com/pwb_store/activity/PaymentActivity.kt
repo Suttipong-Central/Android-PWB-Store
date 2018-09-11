@@ -22,9 +22,9 @@ import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
-        PaymentDescriptionListener, PaymentMembersListener, MemberClickListener,
-        DeliveryOptionsListener, GetDeliveryOptionsListener, DeliveryOptionsClickListener {
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescriptionListener,
+        PaymentMembersListener, MemberClickListener, DeliveryOptionsListener,
+        GetDeliveryOptionsListener, DeliveryOptionsClickListener {
 
     var mToolbar: Toolbar? = null
     override fun getItemList(): List<CartItem> {
@@ -86,6 +86,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                     override fun success(response: List<DeliveryOption>?) {
                         if (response != null) {
                             deliveryOptionsList = response
+                            mProgressDialog?.dismiss()
                             gotoDeliveryOptions()
                         } else {
                             mProgressDialog?.dismiss()
@@ -100,14 +101,20 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                 })
     }
 
-    override fun onDeliveryOptionsClickListener(deliveryOptions: DeliveryOption) {
+    override fun onExpressOrStandardClickListener(deliveryOptions: DeliveryOption) {
         showProgressDialog()
         this.deliveryOption = deliveryOptions
         showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
     }
 
+    override fun onHomeClickListener(deliveryOptions: DeliveryOption) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, DeliveryHomeFragment.newInstance())
+                .commit()
+    }
+
     private fun gotoDeliveryOptions() {
-        mProgressDialog?.dismiss()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, DeliveryOptionsFragment.newInstance())
@@ -125,6 +132,13 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, PaymentDescriptionFragment.newInstance())
+                .commit()
+    }
+
+    private fun startMembersFragment() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentMembersFragment.newInstance())
                 .commit()
     }
 
@@ -212,13 +226,6 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                 showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
             }
         })
-    }
-
-    private fun startMembersFragment() {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentMembersFragment.newInstance())
-                .commit()
     }
 
     fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
