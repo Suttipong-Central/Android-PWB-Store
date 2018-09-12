@@ -28,6 +28,7 @@ import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.UserInformation
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import me.a3cha.android.thaiaddress.models.District
@@ -53,7 +54,7 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: CardView
 
-    private lateinit var provinceInput: AutoCompleteTextView
+    private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
     private lateinit var districtInput: AutoCompleteTextView
     private lateinit var subDistrictInput: AutoCompleteTextView
     private lateinit var postcodeInput: AutoCompleteTextView
@@ -142,11 +143,6 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {
         when (v?.id) {
-            R.id.inputProvince -> {
-                if (hasFocus) {
-                    provinceInput.showDropDown()
-                }
-            }
             R.id.inputDistrict -> {
                 if (hasFocus) {
                     districtInput.showDropDown()
@@ -246,7 +242,7 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
         provinceAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 provinceInput.setText(item.second)
-                provinceInput.clearFocus()
+                provinceInput.clearAllFocus()
                 province = database.getProvince(item.first)
                 districtInput.setText("")
                 districts = database.getDistrictsByProvinceId(item.first)

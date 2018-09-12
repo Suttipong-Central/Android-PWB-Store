@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.*
@@ -63,6 +64,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     override fun onCheckOutListener(contactNo: String?) {
         // skip?
         if (contactNo == null) {
+            membersList = listOf() // clear membersList
             startBilling()
         } else {
             memberContact = contactNo
@@ -140,6 +142,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     }
 
     private fun startFragment(fragment: Fragment) {
+        hideKeyboard()
         currentFragment = fragment
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
@@ -373,7 +376,6 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     }
     // endregion
 
-
     private fun backPressed() {
         if (currentFragment is DeliveryHomeFragment) {
             startDeliveryOptions()
@@ -400,8 +402,18 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         }
 
         if (currentFragment is PaymentCheckOutFragment) {
+            hideKeyboard()
             finish()
             return
+        }
+    }
+
+
+    private fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (currentFocus != null) {
+            inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+            inputManager.hideSoftInputFromInputMethod(currentFocus.windowToken, 0)
         }
     }
 }
