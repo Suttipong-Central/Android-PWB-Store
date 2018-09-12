@@ -10,12 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.MembersAdapter
-import cenergy.central.com.pwb_store.manager.listeners.PaymentMembersListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentProtocol
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class PaymentMembersFragment : Fragment() {
 
-    var listener: PaymentMembersListener? = null
+    var listener: PaymentProtocol? = null
     var membersList: List<MemberResponse> = listOf()
     private lateinit var recycler: RecyclerView
 
@@ -30,8 +30,8 @@ class PaymentMembersFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        listener = context as PaymentMembersListener
-        membersList = listener!!.getMembersList()
+        listener = context as PaymentProtocol
+        membersList = listener!!.getMembers()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

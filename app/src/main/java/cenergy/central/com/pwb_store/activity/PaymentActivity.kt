@@ -4,11 +4,13 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
+import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -22,22 +24,11 @@ import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescriptionListener,
-        PaymentMembersListener, MemberClickListener, DeliveryOptionsListener,
-        GetDeliveryOptionsListener, DeliveryOptionsClickListener {
+class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
+        MemberClickListener, PaymentBillingListener,
+        DeliveryOptionsListener, PaymentProtocol {
 
     var mToolbar: Toolbar? = null
-    override fun getItemList(): List<CartItem> {
-        return this.cartItemList
-    }
-
-    override fun getMembersList(): List<MemberResponse> {
-        return this.membersList
-    }
-
-    override fun getDeliveryOptionsList(): List<DeliveryOption> {
-        return this.deliveryOptionsList
-    }
 
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var shippingAddress: AddressInformation
@@ -47,6 +38,9 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescr
     private var membersList: List<MemberResponse> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
+    private var currentFragment: Fragment? = null
+    private var memberContact: String? = null
+
 
     companion object {
         fun intent(context: Context): Intent {
@@ -65,80 +59,91 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescr
         startCheckOut()
     }
 
+    // region {@link CheckOutClickListener}
     override fun onCheckOutListener(contactNo: String?) {
         // skip?
         if (contactNo == null) {
-            skipToDescription()
+            startBilling()
         } else {
+            memberContact = contactNo
             getMembersT1C(contactNo)
         }
     }
+    // endregion
 
+    // region {@link MemberClickListener}
     override fun onClickedMember(customerId: String) {
         getT1CMember(customerId)
     }
+    // endregion
 
-    override fun onDeliveryOptions(shippingAddress: AddressInformation) {
+    // region {@link PaymentBillingListener}
+    override fun setShippingAddressInfo(shippingAddress: AddressInformation) {
         showProgressDialog()
         this.shippingAddress = shippingAddress
-        HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId!!, shippingAddress,
-                object : ApiResponseCallback<List<DeliveryOption>> {
-                    override fun success(response: List<DeliveryOption>?) {
-                        if (response != null) {
-                            deliveryOptionsList = response
-                            mProgressDialog?.dismiss()
-                            gotoDeliveryOptions()
-                        } else {
-                            mProgressDialog?.dismiss()
-                            showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                        }
-                    }
+        cartId?.let { getDeliveryOptions(it) } // request delivery options
+    }
+    // endregion
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        showResponseAlertDialog("", error.errorMessage)
-                    }
-                })
+    // region {@link DeliveryOptionsListener}
+    override fun onSelectedOptionListener(deliveryOption: DeliveryOption) {
+        when (deliveryOption.methodCode) {
+            "express", "standard" -> {
+                showProgressDialog()
+                this.deliveryOption = deliveryOption
+                showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
+            }
+            "storepickup" -> {
+                Toast.makeText(this@PaymentActivity, "Store Pickup", Toast.LENGTH_SHORT).show()
+            }
+            "homedelivery" -> {
+                startHomeDelivery()
+            }
+        }
+    }
+    // endregion
+
+    override fun onBackPressed() {
+       backPressed()
     }
 
-    override fun onExpressOrStandardClickListener(deliveryOptions: DeliveryOption) {
-        showProgressDialog()
-        this.deliveryOption = deliveryOptions
-        showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
+    private fun startHomeDelivery() {
+        val fragment = DeliveryHomeFragment.newInstance()
+        startFragment(fragment)
     }
 
-    override fun onHomeClickListener(deliveryOptions: DeliveryOption) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, DeliveryHomeFragment.newInstance())
-                .commit()
-    }
-
-    private fun gotoDeliveryOptions() {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, DeliveryOptionsFragment.newInstance())
-                .commit()
+    private fun startDeliveryOptions() {
+        val fragment = DeliveryOptionsFragment.newInstance()
+        startFragment(fragment)
     }
 
     private fun startCheckOut() {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentCheckOutFragment.newInstance())
-                .commit()
+        val fragment = PaymentCheckOutFragment.newInstance()
+        startFragment(fragment)
     }
 
-    private fun skipToDescription() {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentDescriptionFragment.newInstance())
-                .commit()
+    private fun startBilling() {
+        val fragment = PaymentBillingFragment.newInstance()
+        startFragment(fragment)
+    }
+
+
+    private fun startBilling(response: Member?) {
+        val fragment = if (response != null) PaymentBillingFragment.newInstance(response) else
+            PaymentBillingFragment.newInstance()
+        startFragment(fragment)
     }
 
     private fun startMembersFragment() {
+        val fragment = PaymentMembersFragment.newInstance()
+        startFragment(fragment)
+    }
+
+    private fun startFragment(fragment: Fragment) {
+        currentFragment = fragment
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
-                .replace(R.id.container, PaymentMembersFragment.newInstance())
+                .replace(R.id.container, fragment)
                 .commit()
     }
 
@@ -148,7 +153,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescr
         supportActionBar?.setDisplayShowTitleEnabled(false)
         preferenceManager = PreferenceManager(this)
         mToolbar?.setNavigationOnClickListener {
-            finish()
+            backPressed()
         }
     }
 
@@ -178,61 +183,11 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescr
         }
     }
 
-    private fun getT1CMember(customerId: String) {
-        showProgressDialog()
-        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member> {
-            override fun success(response: Member?) {
-                if (response != null) {
-                    startPaymentDescription(response)
-                    mProgressDialog?.dismiss()
-                } else {
-                    mProgressDialog?.dismiss()
-                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
-                }
-            }
-
-            override fun failure(error: APIError) {
-                showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
-                mProgressDialog?.dismiss()
-            }
-        })
-    }
-
-    private fun startPaymentDescription(response: Member?) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val fragment = if (response != null) PaymentDescriptionFragment.newInstance(response) else
-            PaymentDescriptionFragment.newInstance()
-        fragmentTransaction
-                .replace(R.id.container, fragment)
-                .commit()
-    }
-
-    private fun getMembersT1C(mobile: String) {
-        showProgressDialog()
-        HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
-            override fun success(response: List<MemberResponse>?) {
-                if (response != null && response.isNotEmpty()) {
-                    membersList = response
-                    startMembersFragment()
-                    mProgressDialog?.dismiss()
-                } else {
-                    mProgressDialog?.dismiss()
-                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
-                }
-            }
-
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
-            }
-        })
-    }
-
     fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
         if (checkSkip) {
-            builder.setPositiveButton(android.R.string.ok) { dialog, which -> skipToDescription() }
+            builder.setPositiveButton(android.R.string.ok) { dialog, which -> startBilling() }
             builder.setNegativeButton(android.R.string.cancel) { dialog, which -> startCheckOut() }
         } else {
             builder.setPositiveButton(android.R.string.ok) { dialog, which -> startCheckOut() }
@@ -296,6 +251,70 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescr
         }
     }
 
+    private fun getMembersT1C(mobile: String) {
+        showProgressDialog()
+        HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
+            override fun success(response: List<MemberResponse>?) {
+                if (response != null && response.isNotEmpty()) {
+                    this@PaymentActivity.membersList = response
+                    startMembersFragment()
+                    mProgressDialog?.dismiss()
+                } else {
+                    mProgressDialog?.dismiss()
+                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+            }
+        })
+    }
+
+
+    private fun getT1CMember(customerId: String) {
+        showProgressDialog()
+        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member> {
+            override fun success(response: Member?) {
+                if (response != null) {
+                    startBilling(response)
+                    mProgressDialog?.dismiss()
+                } else {
+                    mProgressDialog?.dismiss()
+                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                }
+            }
+
+            override fun failure(error: APIError) {
+                showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                mProgressDialog?.dismiss()
+            }
+        })
+    }
+
+
+    private fun getDeliveryOptions(cartId: String) {
+        HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId, shippingAddress,
+                object : ApiResponseCallback<List<DeliveryOption>> {
+                    override fun success(response: List<DeliveryOption>?) {
+                        if (response != null) {
+                            deliveryOptionsList = response
+                            mProgressDialog?.dismiss()
+                            startDeliveryOptions()
+                        } else {
+                            mProgressDialog?.dismiss()
+                            showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showResponseAlertDialog("", error.errorMessage)
+                    }
+                })
+    }
+
     private fun updateOrder() {
         HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
@@ -338,5 +357,52 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener, PaymentDescr
         fragmentTransaction
                 .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
                 .commit()
+    }
+
+    // region {@link PaymentProtocol}
+    override fun getItems(): List<CartItem> {
+        return this.cartItemList
+    }
+
+    override fun getMembers(): List<MemberResponse> {
+        return this.membersList
+    }
+
+    override fun getDeliveryOptions(): List<DeliveryOption> {
+        return this.deliveryOptionsList
+    }
+    // endregion
+
+
+    private fun backPressed() {
+        if (currentFragment is DeliveryHomeFragment) {
+            startDeliveryOptions()
+            return
+        }
+
+        if (currentFragment is DeliveryOptionsFragment) {
+            startBilling()
+            return
+        }
+
+        if (currentFragment is PaymentBillingFragment) {
+            Log.d("Payment", "member size ${membersList.size}")
+            if (this.membersList.isNotEmpty()) {
+                startMembersFragment()
+            } else {
+                startCheckOut()
+            }
+            return
+        }
+
+        if (currentFragment is PaymentMembersFragment) {
+            startCheckOut()
+            return
+        }
+
+        if (currentFragment is PaymentCheckOutFragment) {
+            finish()
+            return
+        }
     }
 }

@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.manager.listeners
 
-import cenergy.central.com.pwb_store.model.AddressInformation
+import cenergy.central.com.pwb_store.model.DeliveryOption
 
 interface DeliveryOptionsListener{
-    fun onDeliveryOptions(shippingAddress: AddressInformation)
+    fun onSelectedOptionListener(deliveryOption: DeliveryOption)
 }

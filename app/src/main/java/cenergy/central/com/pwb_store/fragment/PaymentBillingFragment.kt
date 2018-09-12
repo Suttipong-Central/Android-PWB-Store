@@ -19,8 +19,8 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.Contextor
-import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
-import cenergy.central.com.pwb_store.manager.listeners.PaymentDescriptionListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentProtocol
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
@@ -37,31 +37,7 @@ import me.a3cha.android.thaiaddress.models.SubDistrict
 import java.text.NumberFormat
 import java.util.*
 
-class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
-    override fun onFocusChange(v: View?, hasFocus: Boolean) {
-        when (v?.id) {
-            R.id.inputProvince -> {
-                if (hasFocus) {
-                    provinceInput.showDropDown()
-                }
-            }
-            R.id.inputDistrict -> {
-                if (hasFocus) {
-                    districtInput.showDropDown()
-                }
-            }
-            R.id.inputSubDistrict -> {
-                if (hasFocus) {
-                    subDistrictInput.showDropDown()
-                }
-            }
-            R.id.inputPostcode -> {
-                if (hasFocus) {
-                    postcodeInput.showDropDown()
-                }
-            }
-        }
-    }
+class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
 
     // widget view
     private lateinit var recycler: RecyclerView
@@ -85,8 +61,8 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
     // data
     private val database = RealmController.with(context)
     private var cartItemList: List<CartItem> = listOf()
-    private var paymentDescriptionListener: PaymentDescriptionListener? = null
-    private var deliveryOptionsListener: DeliveryOptionsListener? = null
+    private var paymentProtocol: PaymentProtocol? = null
+    private var paymentBillingListener: PaymentBillingListener? = null
     private var mProgressDialog: ProgressDialog? = null
     private var cartId: String? = null
     private var member: Member? = null
@@ -127,15 +103,15 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
     companion object {
         private const val MEMBER = "MEMBER"
 
-        fun newInstance(): PaymentDescriptionFragment {
-            val fragment = PaymentDescriptionFragment()
+        fun newInstance(): PaymentBillingFragment {
+            val fragment = PaymentBillingFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(member: Member): PaymentDescriptionFragment {
-            val fragment = PaymentDescriptionFragment()
+        fun newInstance(member: Member): PaymentBillingFragment {
+            val fragment = PaymentBillingFragment()
             val args = Bundle()
             args.putParcelable(MEMBER, member)
             fragment.arguments = args
@@ -145,9 +121,9 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        paymentDescriptionListener = context as PaymentDescriptionListener
-        deliveryOptionsListener = context as DeliveryOptionsListener
-        cartItemList = paymentDescriptionListener!!.getItemList()
+        paymentProtocol = context as PaymentProtocol
+        paymentBillingListener = context as PaymentBillingListener
+        cartItemList = paymentProtocol!!.getItems()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,10 +135,36 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_payment_description, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_payment_billing, container, false)
         setupView(rootView)
         return rootView
     }
+
+    override fun onFocusChange(v: View?, hasFocus: Boolean) {
+        when (v?.id) {
+            R.id.inputProvince -> {
+                if (hasFocus) {
+                    provinceInput.showDropDown()
+                }
+            }
+            R.id.inputDistrict -> {
+                if (hasFocus) {
+                    districtInput.showDropDown()
+                }
+            }
+            R.id.inputSubDistrict -> {
+                if (hasFocus) {
+                    subDistrictInput.showDropDown()
+                }
+            }
+            R.id.inputPostcode -> {
+                if (hasFocus) {
+                    postcodeInput.showDropDown()
+                }
+            }
+        }
+    }
+
 
     private fun setupView(rootView: View) {
         //User
@@ -349,7 +351,7 @@ class PaymentDescriptionFragment : Fragment(), View.OnFocusChangeListener {
                     homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict)
 
             mProgressDialog?.dismiss()
-            deliveryOptionsListener?.onDeliveryOptions(shippingAddress)
+            paymentBillingListener?.setShippingAddressInfo(shippingAddress)
 
         } else {
             mProgressDialog?.dismiss()

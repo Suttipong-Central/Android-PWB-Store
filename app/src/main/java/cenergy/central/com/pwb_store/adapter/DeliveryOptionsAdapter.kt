@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.DeliveryOptionViewHolder
-import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsClickListener
+import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.model.DeliveryOption
 
-class DeliveryOptionsAdapter(var deliveryOptionsClickListener: DeliveryOptionsClickListener?) : RecyclerView.Adapter<DeliveryOptionViewHolder>() {
+class DeliveryOptionsAdapter(var deliveryOptionsListener: DeliveryOptionsListener?) : RecyclerView.Adapter<DeliveryOptionViewHolder>() {
 
     var deliveryOptionList: List<DeliveryOption> = arrayListOf()
     set(value) {
@@ -27,6 +27,6 @@ class DeliveryOptionsAdapter(var deliveryOptionsClickListener: DeliveryOptionsCl
     }
 
     override fun onBindViewHolder(holder: DeliveryOptionViewHolder, position: Int) {
-        holder.bindView(deliveryOptionList[position], deliveryOptionsClickListener)
+        holder.bindView(deliveryOptionList[position], deliveryOptionsListener)
     }
 }

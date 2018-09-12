@@ -11,16 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.DeliveryOptionsAdapter
-import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsClickListener
-import cenergy.central.com.pwb_store.manager.listeners.GetDeliveryOptionsListener
+import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentProtocol
 import cenergy.central.com.pwb_store.model.DeliveryOption
 
 class DeliveryOptionsFragment : Fragment() {
 
     lateinit var recyclerView: RecyclerView
     var deliveryOptionsList: List<DeliveryOption> = arrayListOf()
-    var getDeliveryOptionListener: GetDeliveryOptionsListener? = null
-    var deliveryOptionsClickListener: DeliveryOptionsClickListener? = null
+    var paymentListener: PaymentProtocol? = null
+    var deliveryOptionsListener: DeliveryOptionsListener? = null
 
     companion object {
         fun newInstance(): DeliveryOptionsFragment {
@@ -33,11 +33,9 @@ class DeliveryOptionsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        getDeliveryOptionListener = context as GetDeliveryOptionsListener
-        deliveryOptionsClickListener = context as DeliveryOptionsClickListener
-        if (getDeliveryOptionListener != null) {
-            deliveryOptionsList = getDeliveryOptionListener!!.getDeliveryOptionsList()
-        }
+        paymentListener = context as PaymentProtocol
+        deliveryOptionsListener = context as DeliveryOptionsListener
+        paymentListener?.getDeliveryOptions()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -48,7 +46,7 @@ class DeliveryOptionsFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         recyclerView = rootView.findViewById(R.id.delivery_options_recycler)
-        val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsClickListener)
+        val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsListener)
         val gridLayoutManager = GridLayoutManager(rootView.context, 2, LinearLayoutManager.VERTICAL, false)
         recyclerView.layoutManager = gridLayoutManager
         deliveryOptionsAdapter.deliveryOptionList = deliveryOptionsList
