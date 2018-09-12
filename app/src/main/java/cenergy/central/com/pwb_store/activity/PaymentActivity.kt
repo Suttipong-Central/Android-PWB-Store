@@ -55,7 +55,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         initView()
-        getItems()
+        getCartItems()
         startCheckOut()
     }
 
@@ -104,7 +104,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     // endregion
 
     override fun onBackPressed() {
-       backPressed()
+        backPressed()
     }
 
     private fun startHomeDelivery() {
@@ -166,7 +166,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         }
     }
 
-    private fun getItems() {
+    private fun getCartItems() {
         preferenceManager.cartId?.let { cartId ->
             HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
                 override fun success(response: List<CartItem>?) {
@@ -386,7 +386,6 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
         }
 
         if (currentFragment is PaymentBillingFragment) {
-            Log.d("Payment", "member size ${membersList.size}")
             if (this.membersList.isNotEmpty()) {
                 startMembersFragment()
             } else {
