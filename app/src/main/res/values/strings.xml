@@ -187,4 +187,17 @@
     <string name="please_select_date">กรุณาเลือกวันที่คุณต้องการ</string>
     <string name="check_your_date">กรุณาตรวจสอบวันที่เลือก</string>
     <string name="choose_delivery_option">เลือกการจัดส่งสินค้า</string>
+
+    <!-- Error -->
+    <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
+    <string name="error_form_email_pattern_not_match">อีเมลต้องอยู่ในรูปแบบ example@mail.com</string>
+    <string name="error_form_password_too_short">รหัสผ่านต้องมากกว่า %d ตัวอักษร</string>
+    <string name="error_form_confirmation_password_not_matched">ยืนยันรหัสผ่านไม่ถูกต้อง</string>
+    <string name="error_form_phone_number_invalid">เบอร์โทรศัพท์ไม่ถูกต้อง</string>
+    <string name="error_form_has_special">ข้อมูลจะต้องไม่มีสัญลักษณ์พิเศษ</string>
+    <string name="error_form_name">ชื่อหรือนามสกุลจะต้องไม่มีสัญลักษณ์พิเศษ และตัวเลข</string>
+    <string name="error_form_password_not_correctly">อย่างน้อย 9 ตัว ประกอบด้วยตัวพิมพ์ใหญ่ พิมพ์เล็ก และตัวเลข</string>
+    <string name="error_form_passport_invalid">พาสปอร์ตไม่ถูกต้อง</string>
+    <string name="error_form_name_en">Invalid name</string>
+    <string name="error_verify_otp_time_out">ขออภัยการเชื่อมต่อผิดพลาด</string>
 </resources>

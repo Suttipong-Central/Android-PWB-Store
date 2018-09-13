@@ -24,7 +24,7 @@ import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 
-class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
+class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener,
         DeliveryOptionsListener, PaymentProtocol {
 
@@ -60,7 +60,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     }
 
     // region {@link CheckOutClickListener}
-    override fun onCheckOutListener(contactNo: String?) {
+    override fun startCheckout(contactNo: String?) {
         // skip?
         if (contactNo == null) {
             membersList = listOf() // clear membersList

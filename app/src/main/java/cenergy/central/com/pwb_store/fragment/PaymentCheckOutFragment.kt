@@ -12,14 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.manager.listeners.CheckOutClickListener
+import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
+import cenergy.central.com.pwb_store.utils.ValidationHelper
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
 
 class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
-    private var checkOutClickListener: CheckOutClickListener? = null
+    private var checkoutListener: CheckoutListener? = null
 
-    private lateinit var contactNoEdt : PowerBuyEditText
+    private lateinit var contactInput : PowerBuyEditText
     private lateinit var okBtn : CardView
 
     companion object {
@@ -33,7 +34,7 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        checkOutClickListener = context as CheckOutClickListener
+        checkoutListener = context as CheckoutListener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,20 +52,23 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+        if (count == 10) {
+            val textError =  ValidationHelper.getInstance(context!!).validThaiPhoneNumber(contactInput.text.toString())
+            contactInput.error = textError
+        }
     }
 
     private fun setupView(rootView: View) {
-        contactNoEdt = rootView.findViewById(R.id.contact_number_check_out)
+        contactInput = rootView.findViewById(R.id.contact_number_check_out)
         okBtn = rootView.findViewById(R.id.ok_btn_check_out)
         val skipBtn: TextView = rootView.findViewById(R.id.skipButton)
         okBtn.isEnabled = false
-        contactNoEdt.addTextChangedListener(this)
-        skipBtn.setOnClickListener { checkOutClickListener?.onCheckOutListener(null) }
+        contactInput.addTextChangedListener(this)
+        skipBtn.setOnClickListener { checkoutListener?.startCheckout(null) }
     }
 
     private fun checkCanSave() {
-        if (contactNoEdt.text.toString().length == 10){
+        if (contactInput.text.toString().length == 10){
             context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
             okBtn.isEnabled = true
             okBtn.setOnClickListener { checkOnClick() }
@@ -75,8 +79,16 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
     }
 
     private fun checkOnClick() {
-        if( contactNoEdt.text != null && contactNoEdt.text.toString().isNotEmpty() && contactNoEdt.text.toString().length == 10){
-            checkOutClickListener?.onCheckOutListener(contactNoEdt.text.toString())
+        val validator = context?.let {
+            ValidationHelper.getInstance(it)
+        }
+
+        val textError = validator?.validThaiPhoneNumber(contactInput.text.toString())
+        if (textError ==  null) {
+            contactInput.error = null
+            checkoutListener?.startCheckout(contactInput.text.toString())
+        } else {
+            contactInput.error = textError
         }
     }
 }
