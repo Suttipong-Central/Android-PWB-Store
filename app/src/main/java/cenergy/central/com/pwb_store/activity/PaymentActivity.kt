@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -96,7 +95,7 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
             }
             "storepickup" -> {
-                Toast.makeText(this@PaymentActivity, "Store Pickup", Toast.LENGTH_SHORT).show()
+                startStorePickupFragment()
             }
             "homedelivery" -> {
                 startHomeDelivery()
@@ -107,6 +106,11 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
 
     override fun onBackPressed() {
         backPressed()
+    }
+
+    private fun startStorePickupFragment() {
+        val fragment = DeliveryStorePickUpFragment.newInstance()
+        startFragment(fragment)
     }
 
     private fun startHomeDelivery() {
@@ -377,6 +381,11 @@ class PaymentActivity : AppCompatActivity(), CheckOutClickListener,
     // endregion
 
     private fun backPressed() {
+        if(currentFragment is DeliveryStorePickUpFragment){
+            startDeliveryOptions()
+            return
+        }
+
         if (currentFragment is DeliveryHomeFragment) {
             startDeliveryOptions()
             return

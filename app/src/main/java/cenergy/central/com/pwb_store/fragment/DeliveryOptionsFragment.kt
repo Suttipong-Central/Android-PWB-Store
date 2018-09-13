@@ -18,7 +18,7 @@ import cenergy.central.com.pwb_store.model.DeliveryOption
 class DeliveryOptionsFragment : Fragment() {
 
     lateinit var recyclerView: RecyclerView
-    var deliveryOptionsList: List<DeliveryOption> = arrayListOf()
+    var deliveryOptions: List<DeliveryOption> = arrayListOf()
     var paymentListener: PaymentProtocol? = null
     var deliveryOptionsListener: DeliveryOptionsListener? = null
 
@@ -35,7 +35,9 @@ class DeliveryOptionsFragment : Fragment() {
         super.onAttach(context)
         paymentListener = context as PaymentProtocol
         deliveryOptionsListener = context as DeliveryOptionsListener
-        paymentListener?.getDeliveryOptions()
+        if(paymentListener != null){
+            deliveryOptions = paymentListener!!.getDeliveryOptions()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,7 +51,7 @@ class DeliveryOptionsFragment : Fragment() {
         val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsListener)
         val gridLayoutManager = GridLayoutManager(rootView.context, 2, LinearLayoutManager.VERTICAL, false)
         recyclerView.layoutManager = gridLayoutManager
-        deliveryOptionsAdapter.deliveryOptionList = deliveryOptionsList
         recyclerView.adapter = deliveryOptionsAdapter
+        deliveryOptionsAdapter.deliveryOptionList = deliveryOptions
     }
 }
