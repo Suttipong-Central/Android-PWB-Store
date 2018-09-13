@@ -164,7 +164,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             val store = userInformation.stores!![0]
             branch.text = store?.storeName
             address.text = "${store?.number ?: ""} ${store?.moo ?: ""} ${store?.soi
-                    ?: ""} ${store?.road ?: ""} ${store?.building ?: ""} ${store?.subDistricrt
+                    ?: ""} ${store?.road ?: ""} ${store?.building ?: ""} ${store?.subDistrict
                     ?: ""} ${store?.district ?: ""} ${store?.province ?: ""} ${store?.postalCode
                     ?: ""}".trim()
             tel.text = "-"

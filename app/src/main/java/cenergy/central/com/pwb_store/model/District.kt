@@ -26,5 +26,6 @@ open class District(
         const val FIELD_ID = "districtId"
         const val FIELD_PROVINCE_ID = "provinceId"
         const val FIELD_NAME_TH = "nameTh"
+        const val FIELD_NAME_EN = "nameEn"
     }
 }

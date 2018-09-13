@@ -25,7 +25,6 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.Member
-import cenergy.central.com.pwb_store.model.UserInformation
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -86,7 +85,6 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
     private var homePostalCodeId: String = ""
     private var homePostalCode: String = ""
     private var homePhone: String = ""
-    private var userInformation: UserInformation? = null
     private val provinces = database.provinces
     private var districts = emptyList<District>()
     private var subDistricts = emptyList<SubDistrict>()
@@ -130,7 +128,6 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val preferenceManager = context?.let { PreferenceManager(it) }
-        userInformation = database.userInformation
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(MEMBER)
     }

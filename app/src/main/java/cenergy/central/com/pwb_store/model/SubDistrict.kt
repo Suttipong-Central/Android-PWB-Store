@@ -26,5 +26,6 @@ open class SubDistrict(
         const val FIELD_ID = "subDistrictId"
         const val FIELD_DISTRICT_ID = "districtId"
         const val FIELD_NAME_TH = "nameTh"
+        const val FIELD_NAME_EN = "nameEn"
     }
 }

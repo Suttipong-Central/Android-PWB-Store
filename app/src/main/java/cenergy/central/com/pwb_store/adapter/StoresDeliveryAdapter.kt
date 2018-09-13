@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.StoresViewHolder
+import cenergy.central.com.pwb_store.model.AddressInformation
 
 class StoresDeliveryAdapter : RecyclerView.Adapter<StoresViewHolder>() {
 
-    var stores = arrayListOf<String>()
+    var stores = arrayListOf<AddressInformation>()
     set(value) {
         field = value
         notifyDataSetChanged()
@@ -26,5 +27,4 @@ class StoresDeliveryAdapter : RecyclerView.Adapter<StoresViewHolder>() {
     override fun onBindViewHolder(holder: StoresViewHolder, position: Int) {
         holder.bindView(stores[position])
     }
-
 }

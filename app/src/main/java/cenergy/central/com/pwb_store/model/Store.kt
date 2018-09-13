@@ -14,7 +14,7 @@ open class Store(
         var moo: String? = "",
         var soi: String? = "",
         var road: String? = "",
-        var subDistricrt: String? = "",
+        var subDistrict: String? = "",
         var district: String? = "",
         var province: String? = "",
         var postalCode: String? = "",

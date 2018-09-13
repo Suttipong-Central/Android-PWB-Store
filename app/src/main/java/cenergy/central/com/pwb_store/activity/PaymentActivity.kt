@@ -98,7 +98,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 startStorePickupFragment()
             }
             "homedelivery" -> {
-                startHomeDelivery()
+                startDeliveryHomeFragment()
             }
         }
     }
@@ -113,7 +113,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         startFragment(fragment)
     }
 
-    private fun startHomeDelivery() {
+    private fun startDeliveryHomeFragment() {
         val fragment = DeliveryHomeFragment.newInstance()
         startFragment(fragment)
     }

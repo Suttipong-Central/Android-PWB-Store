@@ -456,6 +456,14 @@ public class RealmController {
         return realm.where(Province.class).equalTo(Province.FIELD_NAME_TH, name).findFirst();
     }
 
+    public Province getProvinceByNameEn(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(Province.class).equalTo(Province.FIELD_NAME_EN, name).findFirst();
+    }
+
     public List<Province> getProvinces() {
         Realm realm = getRealm();
         return realm.where(Province.class).sort(Province.FIELD_ID, Sort.ASCENDING).findAll();
@@ -494,6 +502,14 @@ public class RealmController {
         }
         Realm realm = getRealm();
         return realm.where(District.class).equalTo(District.FIELD_NAME_TH, name).findFirst();
+    }
+
+    public District getDistrictByNameEn(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(District.class).equalTo(District.FIELD_NAME_EN, name).findFirst();
     }
 
     public List<District> getDistricts() {
@@ -541,6 +557,14 @@ public class RealmController {
         }
         Realm realm = getRealm();
         return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_NAME_TH, name).findFirst();
+    }
+
+    public SubDistrict getSubDistrictByNameEn(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        Realm realm = getRealm();
+        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_NAME_EN, name).findFirst();
     }
 
     public List<SubDistrict> getSubDistricts() {
