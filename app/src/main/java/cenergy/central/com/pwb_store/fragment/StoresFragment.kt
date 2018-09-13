@@ -35,9 +35,9 @@ class StoresFragment : Fragment(), StoreClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = LayoutInflater.from(context).inflate(R.layout.fragment_stores, container)
+        val rootView = LayoutInflater.from(context).inflate(R.layout.fragment_stores, container, false)
         setupView(rootView)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return rootView
     }
 
     private fun setupView(rootView: View) {

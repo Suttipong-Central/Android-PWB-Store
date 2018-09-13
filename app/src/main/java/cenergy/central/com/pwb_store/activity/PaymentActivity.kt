@@ -11,13 +11,18 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
+import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
-import cenergy.central.com.pwb_store.manager.listeners.*
+import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
+import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
+import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
+import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
@@ -27,7 +32,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener,
-        DeliveryOptionsListener, PaymentProtocol {
+        DeliveryOptionsListener, PaymentProtocol, StorePickUpListener {
 
     var mToolbar: Toolbar? = null
 
@@ -396,8 +401,24 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
     // endregion
 
+    // region {@link StorePickUpListener}
+    override fun onUpdateStoreDetail(store: String) {
+        //TODO: update storeDetail
+        if (currentFragment is DeliveryStorePickUpFragment) {
+            (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(store)
+        }
+
+    }
+
+    override fun onSeletedStore(store: String) {
+        // TODO: on selected store
+
+        Toast.makeText(this@PaymentActivity, "Selected $store", Toast.LENGTH_SHORT).show()
+    }
+    // endregion
+
     private fun backPressed() {
-        if(currentFragment is DeliveryStorePickUpFragment){
+        if (currentFragment is DeliveryStorePickUpFragment) {
             stores.clear() // clear stores
             startDeliveryOptions()
             return

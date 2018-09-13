@@ -106,7 +106,7 @@
         app:typeFaceAsset="RobotoLight.ttf" />
 
     <android.support.v7.widget.CardView
-        android:id="@+id/delivery_button_payment"
+        android:id="@+id/select_button"
         style="@style/RaisedButtonCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
