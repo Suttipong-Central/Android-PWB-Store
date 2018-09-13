@@ -68,12 +68,9 @@ class DeliveryStorePickUpFragment : Fragment(), StorePickUpListener {
     }
 
     private fun setupView() {
-        val fragmentTransaction = childFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.content_stores, StoresFragment.newInstance(), TAG_FRAGMENT_STORES)
-                .commit()
+        childFragmentManager.beginTransaction().replace(R.id.content_stores, StoresFragment.newInstance(), TAG_FRAGMENT_STORES).commit()
 
-        fragmentTransaction.replace(R.id.content_store_detail, StoreDetailFragment.newInstance(), TAG_FRAGMENT_STORE_DETAIL)
-                .commit()
+        childFragmentManager.beginTransaction().replace(R.id.content_store_detail, StoreDetailFragment.newInstance(), TAG_FRAGMENT_STORE_DETAIL).commit()
     }
 
     // region {@link StorePickUpListener}
