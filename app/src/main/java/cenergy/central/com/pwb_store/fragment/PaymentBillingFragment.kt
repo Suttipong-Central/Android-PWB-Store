@@ -55,9 +55,9 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
     private lateinit var deliveryBtn: CardView
 
     private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
-    private lateinit var districtInput: AutoCompleteTextView
-    private lateinit var subDistrictInput: AutoCompleteTextView
-    private lateinit var postcodeInput: AutoCompleteTextView
+    private lateinit var districtInput: PowerBuyAutoCompleteTextStroke
+    private lateinit var subDistrictInput: PowerBuyAutoCompleteTextStroke
+    private lateinit var postcodeInput: PowerBuyAutoCompleteTextStroke
 
     // data
     private val database = RealmController.with(context)
@@ -143,11 +143,6 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
 
     override fun onFocusChange(v: View?, hasFocus: Boolean) {
         when (v?.id) {
-            R.id.inputDistrict -> {
-                if (hasFocus) {
-                    districtInput.showDropDown()
-                }
-            }
             R.id.inputSubDistrict -> {
                 if (hasFocus) {
                     subDistrictInput.showDropDown()
@@ -257,7 +252,7 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
         districtAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 districtInput.setText(item.second)
-                districtInput.clearFocus()
+                districtInput.clearAllFocus()
                 district = database.getDistrict(item.first)
                 subDistrictInput.setText("")
                 subDistricts = database.getSubDistrictsByDistrictId(item.first)
@@ -273,7 +268,7 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
         subDistrictAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 subDistrictInput.setText(item.second)
-                subDistrictInput.clearFocus()
+                subDistrictInput.clearAllFocus()
                 subDistrict = database.getSubDistrict(item.first)
                 postcodeInput.setText("")
                 postcodes = database.getPostcodeBySubDistrictId(item.first)
@@ -288,7 +283,7 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
         postcodeAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
                 postcodeInput.setText(item.second)
-                postcodeInput.clearFocus()
+                postcodeInput.clearAllFocus()
                 postcode = database.getPostcode(item.first)
                 hideKeyboard()
             }
@@ -307,8 +302,6 @@ class PaymentBillingFragment : Fragment(), View.OnFocusChangeListener {
         postcodeInput.setOnClickListener { postcodeInput.showDropDown() }
 
         // setup onFocus
-        provinceInput.onFocusChangeListener = this
-        districtInput.onFocusChangeListener = this
         subDistrictInput.onFocusChangeListener = this
         postcodeInput.onFocusChangeListener = this
     }

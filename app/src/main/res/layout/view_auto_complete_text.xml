@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <LinearLayout
@@ -31,8 +32,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:focusableInTouchMode="true"
-        android:background="@drawable/border_grey">
+        android:theme="@style/Form.EditTextLayoutTheme"
+        android:background="@drawable/border_grey"
+        android:focusableInTouchMode="true">
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/inputText"
@@ -45,6 +47,7 @@
             android:completionThreshold="1"
             android:inputType="textNoSuggestions"
             android:maxLines="1"
+            android:textCursorDrawable="@drawable/cursor_orange"
             android:textSize="18sp" />
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

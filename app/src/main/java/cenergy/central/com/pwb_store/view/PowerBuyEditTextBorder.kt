@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
+import android.support.design.widget.TextInputEditText
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.view.View
@@ -12,7 +13,7 @@ class PowerBuyEditTextBorder : LinearLayout {
 
     private var header: PowerBuyTextView? = null
     private var requiredField: PowerBuyTextView? = null
-    lateinit var editText: PowerBuyEditText
+    lateinit var editText: TextInputEditText
     private var required = false
     private var textHeader = ""
     private var textEditText = ""
