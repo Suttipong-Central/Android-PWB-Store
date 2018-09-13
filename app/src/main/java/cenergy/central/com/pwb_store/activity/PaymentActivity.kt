@@ -12,6 +12,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -33,6 +34,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var shippingAddress: AddressInformation
     private lateinit var deliveryOption: DeliveryOption
+
+    // data
     private var cartId: String? = null
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
@@ -40,7 +43,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-
+    private var stores: ArrayList<String> = arrayListOf()
 
     companion object {
         fun intent(context: Context): Intent {
@@ -378,10 +381,24 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun getDeliveryOptions(): List<DeliveryOption> {
         return this.deliveryOptionsList
     }
+
+    override fun retrieveStores() {
+        //TODO: get stores
+        if (currentFragment is DeliveryStorePickUpFragment) {
+            stores.add("store 1")
+            stores.add("store 2")
+            stores.add("store 3")
+            stores.add("store 4")
+            stores.add("store 5")
+
+            (currentFragment as DeliveryStorePickUpFragment).updateStores(stores)
+        }
+    }
     // endregion
 
     private fun backPressed() {
         if(currentFragment is DeliveryStorePickUpFragment){
+            stores.clear() // clear stores
             startDeliveryOptions()
             return
         }

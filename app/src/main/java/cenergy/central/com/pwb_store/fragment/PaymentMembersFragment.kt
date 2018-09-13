@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.MembersAdapter
-import cenergy.central.com.pwb_store.manager.listeners.PaymentProtocol
+import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class PaymentMembersFragment : Fragment() {

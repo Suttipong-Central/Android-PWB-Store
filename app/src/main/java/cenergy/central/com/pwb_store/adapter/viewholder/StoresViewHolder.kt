@@ -10,7 +10,7 @@ class StoresViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val storeName: PowerBuyTextView = itemView.findViewById(R.id.store_name)
 
-    fun bindView(store: AddressInformation) {
-        storeName.text = store.subAddress?.houseNumber ?: ""
+    fun bindView(store: String) {
+        storeName.text = store
     }
 }

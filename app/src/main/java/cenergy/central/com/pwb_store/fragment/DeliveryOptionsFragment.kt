@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,7 +11,7 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.DeliveryOptionsAdapter
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
-import cenergy.central.com.pwb_store.manager.listeners.PaymentProtocol
+import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.model.DeliveryOption
 
 class DeliveryOptionsFragment : Fragment() {

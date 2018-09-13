@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -9,12 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.StoresDeliveryAdapter
-import cenergy.central.com.pwb_store.model.AddressInformation
+import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
+import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 
-class StoresFragment : Fragment(){
+class StoresFragment : Fragment(), StoreClickListener {
 
-    var stores: ArrayList<AddressInformation> = arrayListOf()
+    val storesAdapter = StoresDeliveryAdapter(this)
+    var stores: ArrayList<String> = arrayListOf()
     private lateinit var storesRecycler: RecyclerView
+    private var listener: StorePickUpListener? = null
 
     companion object {
         fun newInstance(): StoresFragment {
@@ -23,6 +27,11 @@ class StoresFragment : Fragment(){
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        listener = context as StorePickUpListener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,8 +43,19 @@ class StoresFragment : Fragment(){
     private fun setupView(rootView: View) {
         storesRecycler = rootView.findViewById(R.id.recycler_view_list_stores)
         storesRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val storesDeliveryAdapter = StoresDeliveryAdapter()
-        storesRecycler.adapter = storesDeliveryAdapter
-        storesDeliveryAdapter.stores = stores
+        storesRecycler.adapter = storesAdapter
+        storesAdapter.stores = stores
     }
+
+    fun updateStores(stores: ArrayList<String>) {
+        this.stores = stores
+        storesAdapter.stores = stores
+    }
+
+    // region {@link StoreClickListener.onItemClicked}
+    override fun onItemClicked(store: String) {
+        //TODO: update
+        listener?.onUpdateStoreDetail(store)
+    }
+    // endregion
 }

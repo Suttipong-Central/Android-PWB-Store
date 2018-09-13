@@ -1,22 +1,25 @@
 package cenergy.central.com.pwb_store.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.UserInformation
-import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 
-class DeliveryStorePickUpFragment : Fragment() {
+class DeliveryStorePickUpFragment : Fragment(), StorePickUpListener {
 
-    private val database = RealmController.with(context)
-    private var userInformation: UserInformation? = null
-    private var stores: ArrayList<AddressInformation> = arrayListOf()
+    private var listener: PaymentProtocol? = null
+
+    private var stores: ArrayList<String> = arrayListOf()
 
     companion object {
+        const val TAG_FRAGMENT_STORES = "fragment_stores"
+        const val TAG_FRAGMENT_STORE_DETAIL = "fragment_store_detail"
+
         fun newInstance(): DeliveryStorePickUpFragment {
             val fragment = DeliveryStorePickUpFragment()
             val args = Bundle()
@@ -25,10 +28,9 @@ class DeliveryStorePickUpFragment : Fragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        userInformation = database.userInformation
-
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        listener = context as PaymentProtocol
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -37,34 +39,51 @@ class DeliveryStorePickUpFragment : Fragment() {
         return rootView
     }
 
-    private fun setupView() {
-        val fragmentTransaction = childFragmentManager.beginTransaction()
-        val storesFragment = StoresFragment.newInstance()
-        fragmentTransaction.replace(R.id.stores_fragment, storesFragment)
-                .commit()
-        val storeDetailFragment = StoresFragment.newInstance()
-        fragmentTransaction.replace(R.id.store_detail_fragment, storeDetailFragment)
-                .commit()
-
-        userInformation?.let { userInformation ->
-            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
-                val staff = userInformation.user
-                val store = userInformation.stores!![0]
-                //Check this if change to use PWB login
-                val province = database.getProvinceByNameEn(store?.province ?: "")
-                val district = database.getDistrictByNameEn(store?.district ?: "")
-                val subDistrict = database.getSubDistrictByNameEn(store?.subDistrict ?: "")
-                val storeAddress = AddressInformation.createAddress(
-                        firstName = staff?.name ?: "", lastName = staff?.name ?: "", email = staff?.email ?: "",
-                        contactNo = store?.number ?: "", homeNo = store?.storeName ?: "", homeBuilding = store?.building ?: "",
-                        homeSoi = store?.soi ?: "", homeRoad = store?.road ?: "", homePostalCode = store?.postalCode ?: "",
-                        homePhone = store?.number ?: "", provinceId = province?.provinceId?.toString() ?: "",
-                        provinceCode = province?.code ?: "", countryId = province?.countryId ?: "",
-                        districtId = district?.districtId?.toString() ?: "", subDistrictId = subDistrict?.subDistrictId?.toString() ?: "",
-                        postcodeId = store?.postalCode ?: "", homeCity = province?.nameTh ?: "",
-                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh ?: "")
-                stores.add(storeAddress)
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (stores.isEmpty()) {
+            retrieveStores()
         }
     }
+
+    private fun retrieveStores() {
+        listener?.retrieveStores() //TODO: get stores
+    }
+
+    fun updateStores(stores: ArrayList<String>) {
+        this.stores = stores
+        val fragment = childFragmentManager.findFragmentByTag(TAG_FRAGMENT_STORES)
+        if (fragment != null) {
+            val storesFragment = fragment as StoresFragment
+            storesFragment.updateStores(this.stores)
+        }
+    }
+
+    private fun updateStoreDetail(store: String) {
+        val fragment = childFragmentManager.findFragmentByTag(TAG_FRAGMENT_STORE_DETAIL)
+        if (fragment != null) {
+            val storeDetailFragment = fragment as StoreDetailFragment
+            storeDetailFragment.updateStoreDetail(store)
+        }
+    }
+
+    private fun setupView() {
+        val fragmentTransaction = childFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.content_stores, StoresFragment.newInstance(), TAG_FRAGMENT_STORES)
+                .commit()
+
+        fragmentTransaction.replace(R.id.content_store_detail, StoreDetailFragment.newInstance(), TAG_FRAGMENT_STORE_DETAIL)
+                .commit()
+    }
+
+    // region {@link StorePickUpListener}
+    override fun onUpdateStoreDetail(store: String) {
+        //TODO: update storeDetail
+        updateStoreDetail(store)
+    }
+
+    override fun onSeletedStore(store: String) {
+        // TODO: on selected store
+    }
+    // endregion
 }
