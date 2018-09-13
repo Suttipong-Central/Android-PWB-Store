@@ -27,6 +27,6 @@ class DeliveryOptionsAdapter(var deliveryOptionsListener: DeliveryOptionsListene
     }
 
     override fun onBindViewHolder(holder: DeliveryOptionViewHolder, position: Int) {
-        holder.bindView(deliveryOptionList[position], deliveryOptionsListener)
+        holder.bindItem(deliveryOptionList[position], deliveryOptionsListener)
     }
 }

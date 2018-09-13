@@ -35,9 +35,7 @@ class DeliveryOptionsFragment : Fragment() {
         super.onAttach(context)
         paymentListener = context as PaymentProtocol
         deliveryOptionsListener = context as DeliveryOptionsListener
-        if(paymentListener != null){
-            deliveryOptions = paymentListener!!.getDeliveryOptions()
-        }
+        deliveryOptions = paymentListener?.getDeliveryOptions() ?: arrayListOf()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,8 +47,7 @@ class DeliveryOptionsFragment : Fragment() {
     private fun setupView(rootView: View) {
         recyclerView = rootView.findViewById(R.id.delivery_options_recycler)
         val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsListener)
-        val gridLayoutManager = GridLayoutManager(rootView.context, 2, LinearLayoutManager.VERTICAL, false)
-        recyclerView.layoutManager = gridLayoutManager
+        recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = deliveryOptionsAdapter
         deliveryOptionsAdapter.deliveryOptionList = deliveryOptions
     }
