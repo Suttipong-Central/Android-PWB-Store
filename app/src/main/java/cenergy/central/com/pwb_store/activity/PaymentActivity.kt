@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
@@ -99,11 +98,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     // region {@link DeliveryOptionsListener}
     override fun onSelectedOptionListener(deliveryOption: DeliveryOption) {
+        this.deliveryOption = deliveryOption
         when (deliveryOption.methodCode) {
             "express", "standard" -> {
                 showProgressDialog()
-                this.deliveryOption = deliveryOption
-                showAlertCheckPayment("", resources.getString(R.string.confrim_oder))
+                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null)
             }
             "storepickup" -> {
                 startStorePickupFragment()
@@ -232,10 +231,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 
-    private fun showAlertCheckPayment(title: String, message: String) {
+    private fun showAlertCheckPayment(title: String, message: String, storeAddress: AddressInformation?) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createShippingInformation() }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createShippingInformation(storeAddress) }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which ->
                     dialog.dismiss()
                     mProgressDialog?.dismiss()
@@ -247,10 +246,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun createShippingInformation() {
+    private fun createShippingInformation(storeAddress: AddressInformation?) {
         val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
-        if (cartId != null) {
-            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, shippingAddress, shippingAddress,
+        cartId?.let {
+            HttpManagerMagento.getInstance().createShippingInformation(it, storeAddress?: shippingAddress, shippingAddress,
                     deliveryOption, subscribeCheckOut, object : ApiResponseCallback<ShippingInformationResponse> {
                 override fun success(response: ShippingInformationResponse?) {
                     if (response != null) {
@@ -421,9 +420,33 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     }
 
-    override fun onSeletedStore(store: String) {
-        // TODO: on selected store
-        Toast.makeText(this@PaymentActivity, "Selected $store", Toast.LENGTH_SHORT).show()
+    override fun onSelectedStore(store: String) {
+        val userInformation = database.userInformation
+        userInformation?.let {
+            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
+                showProgressDialog()
+                val staff = userInformation.user
+                val storeStaff = userInformation.stores!![0]
+                //Check this if change to use PWB login
+                val province = database.getProvinceByNameEn(storeStaff?.province ?: "")
+                val district = database.getDistrictByNameEn(storeStaff?.district ?: "")
+                val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
+                val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
+                val storeAddress = AddressInformation.createAddress(
+                        firstName = staff?.name ?: "", lastName = staff?.name ?: "", email = staff?.email ?: "",
+                        contactNo = storeStaff?.number ?: "0000000000", homeNo = "",
+                        homeBuilding = storeStaff?.building ?: "", homeSoi = storeStaff?.soi ?: "",
+                        homeRoad = storeStaff?.road ?: "test", homePostalCode = storeStaff?.postalCode ?: "",
+                        homePhone = storeStaff?.number ?: "", provinceId = province?.provinceId?.toString() ?: "",
+                        provinceCode = province?.code ?: "", countryId = province?.countryId ?: "",
+                        districtId = district?.districtId?.toString() ?: "",
+                        subDistrictId = subDistrict?.subDistrictId?.toString() ?: "157",
+                        postcodeId =  postCode?.id?.toString()?: "159", homeCity = province?.nameTh ?: "",
+                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
+                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress)
+            }
+        }
+
     }
     // endregion
 

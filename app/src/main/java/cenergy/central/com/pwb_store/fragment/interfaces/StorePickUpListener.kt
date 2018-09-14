@@ -7,5 +7,5 @@ package cenergy.central.com.pwb_store.fragment.interfaces
 
 interface StorePickUpListener {
     fun onUpdateStoreDetail(store:String)
-    fun onSeletedStore(store:String)
+    fun onSelectedStore(store:String)
 }

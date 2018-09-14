@@ -206,4 +206,5 @@
     <string name="telephone_number">หมายเลขโทรศัพท์</string>
     <string name="store_open">เปิดทำการ</string>
     <string name="choose_store">เลือกสาขานี้</string>
+    <string name="please_select_store">กรุณาเลือกสาขาที่ต้องการ</string>
 </resources>

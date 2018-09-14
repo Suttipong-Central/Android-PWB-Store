@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/store_select"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/please_select_store"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:typeFaceAsset="RobotoLight.ttf" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/store_name_title"
@@ -11,15 +24,15 @@
         android:layout_height="wrap_content"
         android:background="@color/lightgray"
         android:gravity="center"
-        android:padding="16dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
         android:textColor="@color/colorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:typeFaceAsset="RobotoLight.ttf"
-        tools:text="@string/select_store" />
+        app:typeFaceAsset="RobotoLight.ttf" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/store_address_title"
