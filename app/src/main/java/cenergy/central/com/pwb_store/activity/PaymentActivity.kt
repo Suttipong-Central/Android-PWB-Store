@@ -64,7 +64,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         cartId = preferenceManager.cartId
         initView()
         getCartItems()
-        startCheckOut()
+//        startCheckOut()
+        startBilling()
     }
 
     // region {@link CheckOutClickListener}
@@ -412,7 +413,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun onSeletedStore(store: String) {
         // TODO: on selected store
-
         Toast.makeText(this@PaymentActivity, "Selected $store", Toast.LENGTH_SHORT).show()
     }
     // endregion
