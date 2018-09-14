@@ -98,8 +98,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         if (database.getUserToken() != null) {
             // start main page
-            Intent intent = new Intent(this, PaymentActivity.class);
-//            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             ActivityCompat.startActivity(this, intent,
                     ActivityOptionsCompat
                             .makeBasic()

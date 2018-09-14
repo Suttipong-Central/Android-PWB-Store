@@ -39,6 +39,7 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         inputText.setOnClickListener { inputText.showDropDown() }
         inputText.setOnFocusChangeListener { v, hasFocus ->
             if (v.id == R.id.inputText && hasFocus) {
+//                inputText.error = null
                 inputText.showDropDown()
             }
         }
@@ -106,4 +107,10 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         this.clearFocus()
 //        notifyAttributeChanged()
     }
+
+    fun setError(validText: String?) {
+        this.inputText.error = validText
+    }
+
+    fun getError(): CharSequence? = this.inputText.error
 }

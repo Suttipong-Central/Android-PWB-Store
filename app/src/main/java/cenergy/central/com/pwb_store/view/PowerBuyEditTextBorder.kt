@@ -35,6 +35,9 @@ class PowerBuyEditTextBorder : LinearLayout {
         header = view.findViewById(R.id.txt_header)
         requiredField = view.findViewById(R.id.required_field)
         editText = view.findViewById(R.id.edit_text)
+//        editText.setOnFocusChangeListener { v, hasFocus ->
+//            editText.error = null
+//        }
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
@@ -84,4 +87,10 @@ class PowerBuyEditTextBorder : LinearLayout {
         filterArray[0] = InputFilter.LengthFilter(maxLength)
         this.editText.filters = filterArray
     }
+
+    fun setError(validText: String?) {
+        this.editText.error = validText
+    }
+
+    fun getError(): CharSequence? = this.editText.error
 }

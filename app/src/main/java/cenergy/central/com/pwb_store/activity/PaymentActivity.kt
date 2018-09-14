@@ -64,8 +64,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         cartId = preferenceManager.cartId
         initView()
         getCartItems()
-//        startCheckOut()
-        startBilling()
+        startCheckOut()
     }
 
     // region {@link CheckOutClickListener}
