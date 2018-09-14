@@ -537,7 +537,7 @@ class HttpManagerMagento {
                                 callback: ApiResponseCallback<List<DeliveryOption>>) {
         val cartService = retrofit.create(CartService::class.java)
         val deliveryBody = DeliveryOptionsBody(shippingAddress)
-        cartService.getOrderDeliveryOptions(cartId, deliveryBody).enqueue(object : Callback<List<DeliveryOption>>{
+        cartService.getOrderDeliveryOptions(cartId, deliveryBody).enqueue(object : Callback<List<DeliveryOption>> {
             override fun onResponse(call: Call<List<DeliveryOption>>, response: Response<List<DeliveryOption>>?) {
                 if (response != null && response.isSuccessful) {
                     val shippingInformation = response.body()
@@ -576,10 +576,10 @@ class HttpManagerMagento {
         })
     }
 
-    fun updateOder(cartId: String, callback: ApiResponseCallback<String>) {
+    fun updateOder(cartId: String, email: String, staffId: String, storeId: String, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
         val method = MethodBody("payatstore")
-        val paymentMethodBody = PaymentMethodBody(method)
+        val paymentMethodBody = PaymentInformationBody(cartId, method, email, staffId, storeId)
         cartService.updateOrder(cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {

@@ -38,7 +38,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         database = RealmController.with(this);
-        preferenceManager= new PreferenceManager(this);
+        preferenceManager = new PreferenceManager(this);
         initView();
     }
 
@@ -68,7 +68,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void forward() {
         if (preferenceManager.isAddressLoaded()) {
             start();
-        }else  {
+        } else {
             storeAddressRawJson();
         }
     }

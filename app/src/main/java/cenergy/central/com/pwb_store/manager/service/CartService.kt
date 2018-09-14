@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.manager.service
 
-import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
@@ -41,7 +40,7 @@ internal interface CartService {
 
     @PUT("/rest/V1/guest-carts/{cartId}/order")
     fun updateOrder(@Path("cartId") cartId: String,
-                    @Body paymentMethod: PaymentMethodBody): Call<String>
+                    @Body paymentInformation: PaymentInformationBody): Call<String>
 
     @GET("/rest/V1/orders/{orderId}")
     fun getOrder(@Path("orderId") cartId: String): Call<OrderResponse>

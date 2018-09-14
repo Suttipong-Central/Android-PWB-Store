@@ -41,6 +41,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
 
     // data
+    private val database = RealmController.with(this)
     private var cartId: String? = null
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
@@ -49,6 +50,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
     private var stores: ArrayList<String> = arrayListOf()
+    private var userInformation: UserInformation? = null
 
     companion object {
         fun intent(context: Context): Intent {
@@ -62,6 +64,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 //        showProgressDialog()
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
+        userInformation = database.userInformation
         initView()
         getCartItems()
         startCheckOut()
@@ -331,7 +334,15 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun updateOrder() {
-        HttpManagerMagento.getInstance().updateOder(cartId!!, object : ApiResponseCallback<String> {
+        if (cartId == null) {
+            return
+        }
+
+        val email = userInformation?.user?.email ?: ""
+        val staffId = userInformation?.user?.staffId ?: ""
+        val storeId = userInformation?.user?.storeId?.toString() ?: ""
+
+        HttpManagerMagento.getInstance().updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 if (response != null) {
                     getOrder(response)
