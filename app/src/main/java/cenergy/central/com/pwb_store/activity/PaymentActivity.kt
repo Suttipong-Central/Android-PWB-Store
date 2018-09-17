@@ -24,6 +24,7 @@ import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -99,15 +100,15 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     // region {@link DeliveryOptionsListener}
     override fun onSelectedOptionListener(deliveryOption: DeliveryOption) {
         this.deliveryOption = deliveryOption
-        when (deliveryOption.methodCode) {
-            "express", "standard" -> {
+        when (valueOf(deliveryOption.methodCode)) {
+            EXPRESS, STANDARD -> {
                 showProgressDialog()
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null)
             }
-            "storepickup" -> {
+            STORE_PICK_UP -> {
                 startStorePickupFragment()
             }
-            "homedelivery" -> {
+            HOME -> {
                 startDeliveryHomeFragment()
             }
         }
@@ -116,6 +117,17 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun onBackPressed() {
         backPressed()
+    }
+
+    private fun startSuccessfullyFragment(orderId: String) {
+        // get cache item
+        val cacheCartItems = arrayListOf<CacheCartItem>()
+        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
+
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction
+                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
+                .commit()
     }
 
     private fun startStorePickupFragment() {
@@ -249,7 +261,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private fun createShippingInformation(storeAddress: AddressInformation?) {
         val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
         cartId?.let {
-            HttpManagerMagento.getInstance().createShippingInformation(it, storeAddress?: shippingAddress, shippingAddress,
+            HttpManagerMagento.getInstance().createShippingInformation(it, storeAddress
+                    ?: shippingAddress, shippingAddress,
                     deliveryOption, subscribeCheckOut, object : ApiResponseCallback<ShippingInformationResponse> {
                 override fun success(response: ShippingInformationResponse?) {
                     if (response != null) {
@@ -373,15 +386,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         mToolbar?.setNavigationOnClickListener(null)
 
-        val cacheCartItems = arrayListOf<CacheCartItem>()
-        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
 
-        clearCachedCart()
+        startSuccessfullyFragment(orderId)
+        clearCachedCart() // clear cache item
         mProgressDialog?.dismiss()
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
-                .commit()
     }
 
     // region {@link PaymentProtocol}
@@ -433,16 +441,21 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
                 val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
                 val storeAddress = AddressInformation.createAddress(
-                        firstName = staff?.name ?: "", lastName = staff?.name ?: "", email = staff?.email ?: "",
+                        firstName = staff?.name ?: "", lastName = staff?.name
+                        ?: "", email = staff?.email ?: "",
                         contactNo = storeStaff?.number ?: "0000000000", homeNo = "",
                         homeBuilding = storeStaff?.building ?: "", homeSoi = storeStaff?.soi ?: "",
-                        homeRoad = storeStaff?.road ?: "test", homePostalCode = storeStaff?.postalCode ?: "",
-                        homePhone = storeStaff?.number ?: "", provinceId = province?.provinceId?.toString() ?: "",
+                        homeRoad = storeStaff?.road
+                                ?: "test", homePostalCode = storeStaff?.postalCode ?: "",
+                        homePhone = storeStaff?.number
+                                ?: "", provinceId = province?.provinceId?.toString() ?: "",
                         provinceCode = province?.code ?: "", countryId = province?.countryId ?: "",
                         districtId = district?.districtId?.toString() ?: "",
                         subDistrictId = subDistrict?.subDistrictId?.toString() ?: "157",
-                        postcodeId =  postCode?.id?.toString()?: "159", homeCity = province?.nameTh ?: "",
-                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
+                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh
+                        ?: "",
+                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh
+                        ?: "บางรัก")
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress)
             }
         }
