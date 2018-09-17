@@ -62,6 +62,7 @@ class PaymentBillingFragment : Fragment() {
     // data
     private val database = RealmController.with(context)
     private var cartItemList: List<CartItem> = listOf()
+    private var shippingAddress: AddressInformation? = null
     private var paymentProtocol: PaymentProtocol? = null
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
@@ -129,6 +130,7 @@ class PaymentBillingFragment : Fragment() {
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
         cartItemList = paymentProtocol?.getItems() ?: arrayListOf()
+        shippingAddress = paymentProtocol?.getShippingAddress()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,54 +179,106 @@ class PaymentBillingFragment : Fragment() {
         setupInputAddress()
 
         //Setup Member
-        member?.let { member ->
-            firstNameEdt.setText(member.getFirstName())
-            lastNameEdt.setText(member.getLastName())
-            contactNumberEdt.setText(member.mobilePhone)
-            emailEdt.setText(member.email)
-            homeNoEdt.setText(member.homeNo)
-            homeBuildingEdit.setText(member.homeBuilding)
-            homeSoiEdt.setText(member.homeSoi)
-            homeRoadEdt.setText(member.homeRoad)
+        if (hasMember()) {
+            member?.let { member ->
+                firstNameEdt.setText(member.getFirstName())
+                lastNameEdt.setText(member.getLastName())
+                contactNumberEdt.setText(member.mobilePhone)
+                emailEdt.setText(member.email)
+                homeNoEdt.setText(member.homeNo)
+                homeBuildingEdit.setText(member.homeBuilding)
+                homeSoiEdt.setText(member.homeSoi)
+                homeRoadEdt.setText(member.homeRoad)
 
-            // validate province with local db
-            val province = database.getProvinceByNameTh(member.homeCity)
-            if (province != null) {
-                provinceInput.setText(member.homeCity)
-                this.province = province
-                this.districts = database.getDistrictsByProvinceId(province.provinceId)
-                this.districtNameList = getDistrictNameList()
-                this.subDistrictAdapter?.setItems(this.districtNameList)
+                // validate province with local db
+                val province = database.getProvinceByNameTh(member.homeCity)
+                if (province != null) {
+                    provinceInput.setText(member.homeCity)
+                    this.province = province
+                    this.districts = database.getDistrictsByProvinceId(province.provinceId)
+                    this.districtNameList = getDistrictNameList()
+                    this.subDistrictAdapter?.setItems(this.districtNameList)
+                }
+
+                // validate district with local db
+                val district = database.getDistrictByNameTh(member.homeDistrict)
+                if (district != null) {
+                    districtInput.setText(member.homeDistrict)
+                    this.district = district
+                    this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
+                    this.subDistrictNameList = getSubDistrictNameList()
+                    this.subDistrictAdapter?.setItems(this.subDistrictNameList)
+                }
+
+                // validate sub district with local db
+                val subDistrict = database.getSubDistrictByNameTh(member.homeSubDistrict)
+                if (subDistrict != null) {
+                    subDistrictInput.setText(member.homeSubDistrict)
+                    this.subDistrict = subDistrict
+                    this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+                    this.postcodeList = getPostcodeList()
+                    this.postcodeAdapter?.setItems(this.postcodeList)
+                }
+
+                // validate postcode with local db
+                val postcode = database.getPostcodeByCode(member.homePostalCode)
+                if (postcode != null) {
+                    postcodeInput.setText(member.homePostalCode)
+                    this.postcode = postcode
+                }
+
+                homePhoneEdt.setText(member.homePhone)
             }
+        } else {
+            shippingAddress?.let { shippingAddress ->
+                firstNameEdt.setText(shippingAddress.firstname)
+                lastNameEdt.setText(shippingAddress.lastname)
+                contactNumberEdt.setText(shippingAddress.telephone)
+                emailEdt.setText(shippingAddress.email)
+                homeNoEdt.setText(shippingAddress.subAddress!!.houseNumber)
+                homeBuildingEdit.setText(shippingAddress.subAddress!!.building)
+                homeSoiEdt.setText(shippingAddress.subAddress!!.soi)
+                homeRoadEdt.setText(shippingAddress.street!![0]!!)
 
-            // validate district with local db
-            val district = database.getDistrictByNameTh(member.homeDistrict)
-            if (district != null) {
-                districtInput.setText(member.homeDistrict)
-                this.district = district
-                this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
-                this.subDistrictNameList = getSubDistrictNameList()
-                this.subDistrictAdapter?.setItems(this.subDistrictNameList)
+                // validate province with local db
+                val province = database.getProvinceByNameTh(shippingAddress.region)
+                if (province != null) {
+                    provinceInput.setText(shippingAddress.region)
+                    this.province = province
+                    this.districts = database.getDistrictsByProvinceId(province.provinceId)
+                    this.districtNameList = getDistrictNameList()
+                    this.subDistrictAdapter?.setItems(this.districtNameList)
+                }
+
+                // validate district with local db
+                val district = database.getDistrictByNameTh(shippingAddress.subAddress!!.district)
+                if (district != null) {
+                    districtInput.setText(shippingAddress.subAddress!!.district)
+                    this.district = district
+                    this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
+                    this.subDistrictNameList = getSubDistrictNameList()
+                    this.subDistrictAdapter?.setItems(this.subDistrictNameList)
+                }
+
+                // validate sub district with local db
+                val subDistrict = database.getSubDistrictByNameTh(shippingAddress.subAddress!!.subDistrict)
+                if (subDistrict != null) {
+                    subDistrictInput.setText(shippingAddress.subAddress!!.subDistrict)
+                    this.subDistrict = subDistrict
+                    this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+                    this.postcodeList = getPostcodeList()
+                    this.postcodeAdapter?.setItems(this.postcodeList)
+                }
+
+                // validate postcode with local db
+                val postcode = database.getPostcodeByCode(shippingAddress.subAddress!!.postcode)
+                if (postcode != null) {
+                    postcodeInput.setText(shippingAddress.subAddress!!.postcode)
+                    this.postcode = postcode
+                }
+
+                homePhoneEdt.setText(shippingAddress.subAddress!!.mobile)
             }
-
-            // validate sub district with local db
-            val subDistrict = database.getSubDistrictByNameTh(member.homeSubDistrict)
-            if (subDistrict != null) {
-                subDistrictInput.setText(member.homeSubDistrict)
-                this.subDistrict = subDistrict
-                this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
-                this.postcodeList = getPostcodeList()
-                this.postcodeAdapter?.setItems(this.postcodeList)
-            }
-
-            // validate postcode with local db
-            val postcode = database.getPostcodeByCode(member.homePostalCode)
-            if (postcode != null) {
-                postcodeInput.setText(member.homePostalCode)
-                this.postcode = postcode
-            }
-
-            homePhoneEdt.setText(member.homePhone)
         }
 
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
@@ -244,6 +298,10 @@ class PaymentBillingFragment : Fragment() {
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
+    }
+
+    private fun hasMember(): Boolean {
+        return member != null
     }
 
     private fun setupInputAddress() {

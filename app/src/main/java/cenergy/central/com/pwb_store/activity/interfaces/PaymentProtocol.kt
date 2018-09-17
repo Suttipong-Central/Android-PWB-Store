@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity.interfaces
 
+import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.response.MemberResponse
@@ -13,6 +14,7 @@ interface PaymentProtocol {
     fun getItems(): List<CartItem>
     fun getMembers(): List<MemberResponse>
     fun getDeliveryOptions(): List<DeliveryOption>
+    fun getShippingAddress(): AddressInformation?
 
     fun retrieveStores()
 }

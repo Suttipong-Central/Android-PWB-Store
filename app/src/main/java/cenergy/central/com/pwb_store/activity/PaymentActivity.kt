@@ -37,7 +37,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     var mToolbar: Toolbar? = null
 
     private lateinit var preferenceManager: PreferenceManager
-    private lateinit var shippingAddress: AddressInformation
+    private var shippingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
 
     // data
@@ -56,6 +56,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         fun intent(context: Context): Intent {
             return Intent(context, PaymentActivity::class.java)
         }
+    }
+
+    override fun getShippingAddress(): AddressInformation? {
+        return shippingAddress
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -259,25 +263,27 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun createShippingInformation(storeAddress: AddressInformation?) {
-        val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
-        cartId?.let {
-            HttpManagerMagento.getInstance().createShippingInformation(it, storeAddress
-                    ?: shippingAddress, shippingAddress,
-                    deliveryOption, subscribeCheckOut, object : ApiResponseCallback<ShippingInformationResponse> {
-                override fun success(response: ShippingInformationResponse?) {
-                    if (response != null) {
-                        updateOrder()
-                    } else {
-                        mProgressDialog?.dismiss()
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+        shippingAddress?.let { shippingAddress ->
+            val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
+            cartId?.let {
+                HttpManagerMagento.getInstance().createShippingInformation(it, storeAddress
+                        ?: shippingAddress, shippingAddress,
+                        deliveryOption, subscribeCheckOut, object : ApiResponseCallback<ShippingInformationResponse> {
+                    override fun success(response: ShippingInformationResponse?) {
+                        if (response != null) {
+                            updateOrder()
+                        } else {
+                            mProgressDialog?.dismiss()
+                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        }
                     }
-                }
 
-                override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    showAlertDialog("", error.errorMessage)
-                }
-            })
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", error.errorMessage)
+                    }
+                })
+            }
         }
     }
 
@@ -325,24 +331,26 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
 
     private fun getDeliveryOptions(cartId: String) {
-        HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId, shippingAddress,
-                object : ApiResponseCallback<List<DeliveryOption>> {
-                    override fun success(response: List<DeliveryOption>?) {
-                        if (response != null) {
-                            deliveryOptionsList = response
-                            mProgressDialog?.dismiss()
-                            startDeliveryOptions()
-                        } else {
-                            mProgressDialog?.dismiss()
-                            showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+        shippingAddress?.let {
+            HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId, it,
+                    object : ApiResponseCallback<List<DeliveryOption>> {
+                        override fun success(response: List<DeliveryOption>?) {
+                            if (response != null) {
+                                deliveryOptionsList = response
+                                mProgressDialog?.dismiss()
+                                startDeliveryOptions()
+                            } else {
+                                mProgressDialog?.dismiss()
+                                showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                            }
                         }
-                    }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        showResponseAlertDialog("", error.errorMessage)
-                    }
-                })
+                        override fun failure(error: APIError) {
+                            mProgressDialog?.dismiss()
+                            showResponseAlertDialog("", error.errorMessage)
+                        }
+                    })
+        }
     }
 
     private fun updateOrder() {
@@ -386,7 +394,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         mToolbar?.setNavigationOnClickListener(null)
 
-
         startSuccessfullyFragment(orderId)
         clearCachedCart() // clear cache item
         mProgressDialog?.dismiss()
@@ -425,7 +432,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         if (currentFragment is DeliveryStorePickUpFragment) {
             (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(store)
         }
-
     }
 
     override fun onSelectedStore(store: String) {
@@ -441,25 +447,19 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
                 val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
                 val storeAddress = AddressInformation.createAddress(
-                        firstName = staff?.name ?: "", lastName = staff?.name
-                        ?: "", email = staff?.email ?: "",
+                        firstName = staff?.name ?: "", lastName = staff?.name ?: "", email = staff?.email ?: "",
                         contactNo = storeStaff?.number ?: "0000000000", homeNo = "",
                         homeBuilding = storeStaff?.building ?: "", homeSoi = storeStaff?.soi ?: "",
-                        homeRoad = storeStaff?.road
-                                ?: "test", homePostalCode = storeStaff?.postalCode ?: "",
-                        homePhone = storeStaff?.number
-                                ?: "", provinceId = province?.provinceId?.toString() ?: "",
+                        homeRoad = storeStaff?.road ?: "", homePostalCode = storeStaff?.postalCode ?: "",
+                        homePhone = storeStaff?.number ?: "", provinceId = province?.provinceId?.toString() ?: "",
                         provinceCode = province?.code ?: "", countryId = province?.countryId ?: "",
                         districtId = district?.districtId?.toString() ?: "",
                         subDistrictId = subDistrict?.subDistrictId?.toString() ?: "157",
-                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh
-                        ?: "",
-                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh
-                        ?: "บางรัก")
+                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh ?: "",
+                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress)
             }
         }
-
     }
     // endregion
 
@@ -481,6 +481,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentBillingFragment) {
+            this.shippingAddress = null
             if (this.membersList.isNotEmpty()) {
                 startMembersFragment()
             } else {
