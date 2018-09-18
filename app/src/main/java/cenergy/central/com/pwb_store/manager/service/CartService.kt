@@ -30,7 +30,7 @@ internal interface CartService {
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-    @POST("/en/rest/en/V1/guest-carts/{cartId}/estimate-shipping-methods")
+    @POST("/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
     fun getOrderDeliveryOptions(@Path("cartId") cartId: String,
                                   @Body deliveryBody: DeliveryOptionsBody): Call<List<DeliveryOption>>
 

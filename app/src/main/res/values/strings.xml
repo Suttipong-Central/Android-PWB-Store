@@ -142,6 +142,7 @@
     <string name="order_detail">รายละเอียดการสั่งซื้อสินค้า</string>
     <string name="personal_detail">ข้อมูลการสั่งซื้อ</string>
     <string name="store_collection_detail">สาขารับสินค้า</string>
+    <string name="delivery_detail">ที่อยู่จัดส่งสินค้า</string>
     <string name="order_date">วันที่สั่งซื้อ</string>
     <string name="customer_name">ชื่อลูกค้า</string>
     <string name="phone">เบอร์ติดต่อ</string>

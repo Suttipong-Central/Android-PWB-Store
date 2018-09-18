@@ -33,7 +33,6 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener,
         DeliveryOptionsListener, PaymentProtocol, StorePickUpListener {
-
     var mToolbar: Toolbar? = null
 
     private lateinit var preferenceManager: PreferenceManager
@@ -51,15 +50,12 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var memberContact: String? = null
     private var stores: ArrayList<String> = arrayListOf()
     private var userInformation: UserInformation? = null
+    private var deliveryType : DeliveryType? = null
 
     companion object {
         fun intent(context: Context): Intent {
             return Intent(context, PaymentActivity::class.java)
         }
-    }
-
-    override fun getShippingAddress(): AddressInformation? {
-        return shippingAddress
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,9 +84,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     // endregion
 
     // region {@link MemberClickListener}
-    override fun onClickedMember(customerId: String) {
-        getT1CMember(customerId)
-    }
+    override fun onClickedMember(customerId: String) = getT1CMember(customerId)
     // endregion
 
     // region {@link PaymentBillingListener}
@@ -104,7 +98,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     // region {@link DeliveryOptionsListener}
     override fun onSelectedOptionListener(deliveryOption: DeliveryOption) {
         this.deliveryOption = deliveryOption
-        when (valueOf(deliveryOption.methodCode)) {
+        deliveryType = DeliveryType.fromString(deliveryOption.methodCode)
+        when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null)
@@ -127,11 +122,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         // get cache item
         val cacheCartItems = arrayListOf<CacheCartItem>()
         cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction
-                .replace(R.id.container, PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
-                .commit()
+        clearCachedCart() // clear cache item
+        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
     }
 
     private fun startStorePickupFragment() {
@@ -395,22 +387,19 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         mToolbar?.setNavigationOnClickListener(null)
 
         startSuccessfullyFragment(orderId)
-        clearCachedCart() // clear cache item
         mProgressDialog?.dismiss()
     }
 
     // region {@link PaymentProtocol}
-    override fun getItems(): List<CartItem> {
-        return this.cartItemList
-    }
+    override fun getItems(): List<CartItem> =  this.cartItemList
 
-    override fun getMembers(): List<MemberResponse> {
-        return this.membersList
-    }
+    override fun getMembers(): List<MemberResponse> = this.membersList
 
-    override fun getDeliveryOptions(): List<DeliveryOption> {
-        return this.deliveryOptionsList
-    }
+    override fun getDeliveryOptions(): List<DeliveryOption> =this.deliveryOptionsList
+
+    override fun getSelectedDeliveryType(): DeliveryType? = this.deliveryType
+
+    override fun getShippingAddress(): AddressInformation? = this.shippingAddress
 
     override fun retrieveStores() {
         //TODO: get stores
@@ -501,7 +490,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             return
         }
     }
-
 
     private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
