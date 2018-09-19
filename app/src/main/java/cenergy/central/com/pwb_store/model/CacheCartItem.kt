@@ -19,7 +19,8 @@ open class CacheCartItem(
         var type: String? = "",
         var cartId: String? = "",
         var imageUrl: String = "",
-        var maxQTY: Int? = 0) : RealmObject(), Parcelable {
+        var maxQTY: Int? = 0,
+        var qtyInStock: Int? = 0) : RealmObject(), Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readValue(Long::class.java.classLoader) as? Long,
@@ -30,6 +31,7 @@ open class CacheCartItem(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
+            parcel.readValue(Int::class.java.classLoader) as? Int,
             parcel.readValue(Int::class.java.classLoader) as? Int)
 
     fun updateItem(cartItem: CartItem) {
@@ -52,6 +54,7 @@ open class CacheCartItem(
         parcel.writeString(cartId)
         parcel.writeString(imageUrl)
         parcel.writeValue(maxQTY)
+        parcel.writeValue(qtyInStock)
     }
 
     override fun describeContents(): Int {
@@ -66,7 +69,8 @@ open class CacheCartItem(
             return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
                     name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
                     maxQTY = product.extension?.stokeItem?.maxQTY
-                            ?: 1, imageUrl = product.getImageUrl())
+                            ?: 1, qtyInStock = product.extension?.stokeItem?.qty
+                    ?: 0, imageUrl = product.getImageUrl())
         }
 
         @JvmStatic

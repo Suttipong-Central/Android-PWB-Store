@@ -55,7 +55,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     .crossFade()
                     .fitCenter()
                     .into(productImage)
-            
+
             productQty.setOnClickQuantity(this, true)
             deleteImageView.visibility = View.VISIBLE
             deleteImageView.setOnClickListener {
@@ -67,7 +67,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             deleteImageView.visibility = View.GONE
         }
 
-        productQty.setMaximum(if (cacheCartItem == null) 1 else cacheCartItem.maxQTY ?: 1)
+        productQty.setMaximum(if (cacheCartItem == null) 1 else Math.min(cacheCartItem.qtyInStock
+                ?: 1, cacheCartItem.maxQTY ?: 1))
         productQty.setQty(cartItem.qty!!)
         totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), cartItem.price!!))
     }
@@ -84,6 +85,10 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             }
         }
         cartItem.id?.let { itemId -> cartItem.cartId?.let { listener?.onUpdateItem(it, itemId, resultQty) } }
+    }
+
+    override fun onOverQuantity(max: Int) {
+        //TODO: add on over qty
     }
     // endregion
 
