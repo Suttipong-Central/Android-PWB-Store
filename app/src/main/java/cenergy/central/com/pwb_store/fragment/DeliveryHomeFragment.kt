@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,7 +9,6 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.helpers.DateHelper
@@ -22,9 +20,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @SuppressLint("SetTextI18n")
-class DeliveryHomeFragment : Fragment(), OnPickDateListener, View.OnFocusChangeListener {
+class DeliveryHomeFragment : Fragment(), OnPickDateListener, View.OnClickListener {
 
     // region data
+    private var tempDateFormat = ""
     private var shippingSlotResponse: ShippingSlotResponse? = null
     private var pickedDateTime: DateTime? = null
     private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
@@ -72,12 +71,11 @@ class DeliveryHomeFragment : Fragment(), OnPickDateListener, View.OnFocusChangeL
         datePickerDialogFragment.setOnPickDateListener(this)
         dateText = rootView.findViewById(R.id.edit_text_time)
         timeText = rootView.findViewById(R.id.edit_text_time2)
-        dateText.onFocusChangeListener = this
-        timeText.onFocusChangeListener = this
+        dateText.setOnClickListener(this)
+        timeText.setOnClickListener(this)
     }
 
     private fun pickDate() {
-        hideKeyboard()
         if (pickedDateTime != null) {
             datePickerDialogFragment.newInstance(Date(pickedDateTime!!.millis), startDate!!, endDate!!).show(fragmentManager, "dialog")
         } else {
@@ -88,24 +86,23 @@ class DeliveryHomeFragment : Fragment(), OnPickDateListener, View.OnFocusChangeL
     override fun onDatePickerListener(dateTime: DateTime) {
         pickedDateTime = dateTime
         val year = if (DateHelper.isLocaleTH()) dateTime.year + 543 else dateTime.year
+        tempDateFormat = "${dateTime.year}-${dateTime.monthOfYear}-${dateTime.dayOfMonth}"
         dateText.setText("${dateTime.dayOfMonth}/${dateTime.monthOfYear}/$year")
-        timeText.requestFocus()
     }
 
-    override fun onFocusChange(v: View, hasFocus: Boolean) {
+    override fun onClick(v: View) {
         when (v.id) {
             R.id.edit_text_time -> {
-                if (hasFocus) pickDate()
+                pickDate()
             }
             R.id.edit_text_time2 -> {
-                if (hasFocus) checkPickDate()
+                checkPickDate()
             }
         }
     }
 
     private fun checkPickDate() {
-        hideKeyboard()
-        if (dateText.text.isEmpty()) {
+        if (tempDateFormat.isEmpty()) {
             context?.let { showAlertDialog(it, "", resources.getString(R.string.please_select_date)) }
         } else {
             // TODO when after selected date
@@ -117,19 +114,10 @@ class DeliveryHomeFragment : Fragment(), OnPickDateListener, View.OnFocusChangeL
                 .setMessage(message)
         builder.setPositiveButton(android.R.string.ok) { dialog, which ->
             dialog.dismiss()
-            dateText.requestFocus()
         }
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }
         builder.show()
-    }
-
-    private fun hideKeyboard() {
-        val imm = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (view != null) {
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
-            imm.hideSoftInputFromInputMethod(view?.windowToken, 0)
-        }
     }
 }
