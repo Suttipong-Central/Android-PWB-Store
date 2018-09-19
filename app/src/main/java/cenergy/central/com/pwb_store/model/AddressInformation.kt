@@ -17,9 +17,9 @@ open class AddressInformation(
         @SerializedName("region_code")
         var regionCode: String = "",
         @SerializedName("country_id")
-        var countryId: String = "",
+        var countryId: String? = "",
         var street: RealmList<String>? = null,
-        var postcode: String = "",
+        var postcode: String? = "",
         var firstname: String = "",
         var lastname: String = "",
         var email: String = "",

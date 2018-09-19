@@ -50,7 +50,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var memberContact: String? = null
     private var stores: ArrayList<String> = arrayListOf()
     private var userInformation: UserInformation? = null
-    private var deliveryType : DeliveryType? = null
+    private var deliveryType: DeliveryType? = null
 
     companion object {
         fun intent(context: Context): Intent {
@@ -255,27 +255,34 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun createShippingInformation(storeAddress: AddressInformation?) {
-        shippingAddress?.let { shippingAddress ->
-            val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
-            cartId?.let {
-                HttpManagerMagento.getInstance().createShippingInformation(it, storeAddress
-                        ?: shippingAddress, shippingAddress,
-                        deliveryOption, subscribeCheckOut, object : ApiResponseCallback<ShippingInformationResponse> {
-                    override fun success(response: ShippingInformationResponse?) {
-                        if (response != null) {
-                            updateOrder()
-                        } else {
-                            mProgressDialog?.dismiss()
-                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                        }
-                    }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        showAlertDialog("", error.errorMessage)
-                    }
-                })
+        if (cartId != null && shippingAddress != null) {
+            val billingAddress =  shippingAddress!!
+
+            // is shipping same as billing?
+            if (storeAddress != null) {
+                billingAddress.sameBilling = 0
+            } else {
+                billingAddress.sameBilling = 1
             }
+
+            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, storeAddress
+                    ?: shippingAddress!!, billingAddress,
+                    deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
+                override fun success(response: ShippingInformationResponse?) {
+                    if (response != null) {
+                        updateOrder()
+                    } else {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", error.errorMessage)
+                }
+            })
         }
     }
 
@@ -350,7 +357,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             return
         }
 
-        val email = userInformation?.user?.email ?: ""
+        val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
         val storeId = userInformation?.user?.storeId?.toString() ?: ""
 
@@ -391,11 +398,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     // region {@link PaymentProtocol}
-    override fun getItems(): List<CartItem> =  this.cartItemList
+    override fun getItems(): List<CartItem> = this.cartItemList
 
     override fun getMembers(): List<MemberResponse> = this.membersList
 
-    override fun getDeliveryOptions(): List<DeliveryOption> =this.deliveryOptionsList
+    override fun getDeliveryOptions(): List<DeliveryOption> = this.deliveryOptionsList
 
     override fun getSelectedDeliveryType(): DeliveryType? = this.deliveryType
 
@@ -436,16 +443,20 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
                 val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
                 val storeAddress = AddressInformation.createAddress(
-                        firstName = staff?.name ?: "", lastName = staff?.name ?: "", email = staff?.email ?: "",
-                        contactNo = storeStaff?.number ?: "0000000000", homeNo = "",
-                        homeBuilding = storeStaff?.building ?: "", homeSoi = storeStaff?.soi ?: "",
-                        homeRoad = storeStaff?.road ?: "", homePostalCode = storeStaff?.postalCode ?: "",
-                        homePhone = storeStaff?.number ?: "", provinceId = province?.provinceId?.toString() ?: "",
-                        provinceCode = province?.code ?: "", countryId = province?.countryId ?: "",
-                        districtId = district?.districtId?.toString() ?: "",
-                        subDistrictId = subDistrict?.subDistrictId?.toString() ?: "157",
-                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh ?: "",
-                        homeDistrict = district?.nameTh ?: "", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
+                        firstName = shippingAddress?.firstname
+                                ?: "Testing", lastName = shippingAddress?.lastname
+                        ?: "Testing", email = shippingAddress?.email ?: "storepickup@testing.com",
+                        contactNo = shippingAddress?.telephone ?: "0000000000", homeNo = "",
+                        homeBuilding = store, homeSoi = store,
+                        homeRoad = store, homePostalCode = storeStaff?.postalCode ?: "10501",
+                        homePhone = "", provinceId = "668",
+                        provinceCode = "BKK", countryId = "TH",
+                        districtId = "25",
+                        subDistrictId = "157",
+                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh
+                        ?: "กรุงเทพมหานคร",
+                        homeDistrict = district?.nameTh
+                                ?: "บางรัก", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress)
             }
         }
