@@ -131,7 +131,7 @@
     <string name="district">อำเภอ</string>
     <string name="sub_district">ตำบล</string>
     <string name="post_code">รหัสไปรษณีย์</string>
-    <string name="success">การสั่งซื้อของคุณเสร็จสมบูรณ์</string>
+    <string name="title_order_success">บันทึกการสั่งซื้อเรียบร้อยแล้ว</string>
     <string name="order_number">ใบสั่งซื้อเลขที่: </string>
     <string name="products">สินค้า</string>
     <string name="price">ราคา</string>
