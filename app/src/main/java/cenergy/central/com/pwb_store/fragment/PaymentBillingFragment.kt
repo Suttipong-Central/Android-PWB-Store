@@ -427,7 +427,7 @@ class PaymentBillingFragment : Fragment() {
         firstNameEdt.setError(validator.validText(firstNameEdt.getText()))
         lastNameEdt.setError(validator.validText(lastNameEdt.getText()))
         emailEdt.setError(validator.validEmail(emailEdt.getText()))
-        contactNumberEdt.setError(validator.validText(contactNumberEdt.getText()))
+        contactNumberEdt.setError(validator.validThaiPhoneNumber(contactNumberEdt.getText()))
         homeNoEdt.setError(validator.validText(homeNoEdt.getText()))
         homeRoadEdt.setError(validator.validText(homeRoadEdt.getText()))
         provinceInput.setError(validator.validText(provinceInput.getText()))
