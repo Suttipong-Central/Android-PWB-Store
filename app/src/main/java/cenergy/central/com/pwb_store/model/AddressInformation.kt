@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.model
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
-import me.a3cha.android.thaiaddress.models.Province
 
 /**
  * Created by Anuphap Suwannamas on 25/8/2018 AD.
