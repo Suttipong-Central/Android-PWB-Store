@@ -16,7 +16,7 @@ import retrofit2.http.Query;
  * Created by napabhat on 9/22/2017 AD.
  */
 
-public interface HDLService {
+public interface HDLServiceOld {
 
     @POST("/HDLAPI/HomeDelivery/CheckTimeSlot")
     Call<HDLResponse> checkTimeSlot(

@@ -19,15 +19,24 @@ import java.util.*
 class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
 
     private var date: Date? = null
+    private var startDate: Date? = null
+    private var lastDate: Date? = null
+    private val minCalendar = Calendar.getInstance()
+    private val maxCalendar = Calendar.getInstance()
+
 
     companion object {
         private var onPickDateListener: OnPickDateListener? = null
         private const val ARG_DATE = "date"
+        private const val ARG_START_DATE = "start_date"
+        private const val ARG_LAST_DATE = "last_date"
 
-        fun newInstance(date: Date): DatePickerDialogFragment {
+        fun newInstance(date: Date, startDate: Date, lastDate: Date): DatePickerDialogFragment {
             val dialogFragment = DatePickerDialogFragment()
             val args = Bundle()
             args.putLong(ARG_DATE, date.time)
+            args.putLong(ARG_START_DATE, startDate.time)
+            args.putLong(ARG_LAST_DATE, lastDate.time)
             dialogFragment.arguments = args
             return dialogFragment
         }
@@ -40,28 +49,31 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         if (arguments != null) {
-            date = Date(arguments!!.getLong(ARG_DATE, 0))
+            date = Date(arguments!!.getLong(ARG_DATE))
+            startDate = Date(arguments!!.getLong(ARG_START_DATE))
+            lastDate = Date(arguments!!.getLong(ARG_LAST_DATE))
         }
 
         val calendar = Calendar.getInstance()
-
         if (date != null) {
             calendar.time = date
         }
+        val year = if (DateHelper.isLocaleTH()) calendar.get(Calendar.YEAR) + 543 else calendar.get(Calendar.YEAR)
+        calendar.set(year, calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
 
-        val buddhistYear = if (DateHelper.isLocaleTH()) calendar.get(Calendar.YEAR) + 543 else calendar.get(Calendar.YEAR)
-        calendar.set(buddhistYear, calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-
-        val minCalendar = Calendar.getInstance()
+        if (startDate != null) {
+            minCalendar.time = startDate
+        }
         val yearMin = if (DateHelper.isLocaleTH()) minCalendar.get(Calendar.YEAR) + 543 else minCalendar.get(Calendar.YEAR)
-        minCalendar.set(yearMin, minCalendar.get(Calendar.MONTH), 1)
+        minCalendar.set(yearMin, minCalendar.get(Calendar.MONTH), minCalendar.get(Calendar.DAY_OF_MONTH))
 
-        val maxCalendar = Calendar.getInstance()
+        if (lastDate != null) {
+            maxCalendar.time = lastDate
+        }
         val yearMax = if (DateHelper.isLocaleTH()) maxCalendar.get(Calendar.YEAR) + 543 else maxCalendar.get(Calendar.YEAR)
         maxCalendar.set(yearMax, maxCalendar.get(Calendar.MONTH), maxCalendar.get(Calendar.DAY_OF_MONTH))
 
         val themeContext = ContextThemeWrapper(context, R.style.ThemeDatePicker)
-
         val dialog = DatePickerDialog(themeContext, this,
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
 
@@ -74,15 +86,11 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        var month = monthOfYear
-        // Solve calendar first month start at 0
-        month += 1
-        // Create date
-        val localeYear = if (DateHelper.isLocaleTH()) year - 543 else year
-
-        val pickedDateTime = DateTime(localeYear, month, dayOfMonth, 0, 0)
-        if (pickedDateTime.millis <= System.currentTimeMillis()) {
-            // Response
+        val month = monthOfYear + 1 // Solve calendar first month start at 0
+        val tempDateTimePicker = DateTime(year, month, dayOfMonth, 0, 0)
+        if (tempDateTimePicker.millis >= minCalendar.timeInMillis && tempDateTimePicker.millis <= maxCalendar.timeInMillis) {
+            val yearPicker = if (DateHelper.isLocaleTH()) year - 543 else year
+            val pickedDateTime = DateTime(yearPicker, month, dayOfMonth, 0, 0)
             onPickDateListener?.onDatePickerListener(pickedDateTime)
         } else {
             Toast.makeText(activity, getString(R.string.check_your_date), Toast.LENGTH_LONG).show()

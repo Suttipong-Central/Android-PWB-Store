@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
@@ -25,10 +26,16 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
+import cenergy.central.com.pwb_store.model.body.CustomDetail
+import cenergy.central.com.pwb_store.model.body.PeriodBody
+import cenergy.central.com.pwb_store.model.body.ProductHDLBody
+import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import org.joda.time.DateTime
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener,
@@ -51,6 +58,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var stores: ArrayList<String> = arrayListOf()
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
+    private var shippingSlotResponse: ShippingSlotResponse? = null
 
     companion object {
         fun intent(context: Context): Intent {
@@ -108,7 +116,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 startStorePickupFragment()
             }
             HOME -> {
-                startDeliveryHomeFragment()
+                showProgressDialog()
+                getShippingHomeDelivery()
             }
         }
     }
@@ -352,6 +361,36 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
     }
 
+    private fun getShippingHomeDelivery() {
+        val productHDLList: ArrayList<ProductHDLBody> = arrayListOf()
+        for (i in cartItemList.indices) {
+            val productHDL = ProductHDLBody.createProductHDL("", i + 1, cartItemList[i].sku!!,
+                    cartItemList[i].qty!!, "00139")
+            productHDLList.add(productHDL)
+        }
+        val dateTime = DateTime.now()
+        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1) // month Of year start from 0
+        val customDetail = CustomDetail.createCustomDetail("1", "", "00139")
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(
+                productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
+                shippingAddress!!.region, shippingAddress!!.postcode!!, period, customDetail)
+        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse>{
+            override fun success(response: ShippingSlotResponse?) {
+                if(response != null){
+                    shippingSlotResponse = response
+                    mProgressDialog?.dismiss()
+                    startDeliveryHomeFragment()
+                } else {
+                    mProgressDialog?.dismiss()
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+            }
+        })
+    }
+
     private fun updateOrder() {
         if (cartId == null) {
             return
@@ -407,6 +446,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun getSelectedDeliveryType(): DeliveryType? = this.deliveryType
 
     override fun getShippingAddress(): AddressInformation? = this.shippingAddress
+
+    override fun getShippingSlot(): ShippingSlotResponse? = this.shippingSlotResponse
 
     override fun retrieveStores() {
         //TODO: get stores

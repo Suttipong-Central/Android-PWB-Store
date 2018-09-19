@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/txt_header_home_delivery"
+        style="@style/textCompare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:text="@string/delivery"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:typeFaceAsset="RobotoLight.ttf" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/txt_title_home_delivery"
+        style="@style/textPaymentHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:ellipsize="end"
+        android:text="@string/select_date_delivery"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_header_home_delivery"
+        app:typeFaceAsset="RobotoLight.ttf" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/txt_title_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:text="@string/date"
+        app:layout_constraintEnd_toStartOf="@id/txt_title_hour"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_title_home_delivery"
+        app:typeFaceAsset="RobotoLight.ttf" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/txt_title_hour"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:text="@string/time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/txt_title_date"
+        app:layout_constraintTop_toBottomOf="@+id/txt_title_home_delivery"
+        app:typeFaceAsset="RobotoLight.ttf" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyEditText
+        android:id="@+id/edit_text_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/border_grey"
+        android:drawableEnd="@drawable/ic_keyboard_arrow_down"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingBottom="8dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:textColorHint="@color/grayTextColor"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@id/edit_text_time2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txt_title_date" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyEditText
+        android:id="@+id/edit_text_time2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/border_grey"
+        android:drawableEnd="@drawable/ic_keyboard_arrow_down"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingBottom="8dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:textColorHint="@color/grayTextColor"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/edit_text_time"
+        app:layout_constraintTop_toBottomOf="@id/txt_title_hour" />
+</android.support.constraint.ConstraintLayout>

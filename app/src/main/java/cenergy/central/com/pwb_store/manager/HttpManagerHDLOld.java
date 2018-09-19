@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import cenergy.central.com.pwb_store.BuildConfig;
-import cenergy.central.com.pwb_store.manager.service.HDLService;
+import cenergy.central.com.pwb_store.manager.service.HDLServiceOld;
 import cenergy.central.com.pwb_store.manager.service.TokenService;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -24,7 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by napabhat on 8/9/2017 AD.
  */
 
-public class HttpManagerHDL {
+public class HttpManagerHDLOld {
     //Specific Header
     private static final String HEADER_AUTHORIZATION = "Authorization";
     //Specific Client
@@ -36,13 +36,13 @@ public class HttpManagerHDL {
     private static final String BASE_URL_DEV = "http://10.5.0.31";
     private static final String BASE_URL = "https://sit-api.central.tech/";
 
-    private static HttpManagerHDL instance;
+    private static HttpManagerHDLOld instance;
     private Context mContext;
     private Retrofit retrofit;
     private TokenService mTokenService;
-    private HDLService mHDLService;
+    private HDLServiceOld mHDLServiceOld;
 
-    private HttpManagerHDL() {
+    private HttpManagerHDLOld() {
         mContext = Contextor.getInstance().getContext();
         Session session = auth();
         AWSCredentialsProvider awsCredentialsProvider = new MyAWSCredentialsProvider(session);
@@ -71,12 +71,12 @@ public class HttpManagerHDL {
                 .client(defaultHttpClient)
                 .build();
         mTokenService = retrofit.create(TokenService.class);
-        mHDLService = retrofit.create(HDLService.class);
+        mHDLServiceOld = retrofit.create(HDLServiceOld.class);
     }
 
-    public static HttpManagerHDL getInstance() {
+    public static HttpManagerHDLOld getInstance() {
         if (instance == null)
-            instance = new HttpManagerHDL();
+            instance = new HttpManagerHDLOld();
         return instance;
     }
 
@@ -88,8 +88,8 @@ public class HttpManagerHDL {
         return mTokenService;
     }
 
-    public HDLService getHDLService() {
-        return mHDLService;
+    public HDLServiceOld getHDLService() {
+        return mHDLServiceOld;
     }
 
     private static class MyAWSCredentialsProvider implements AWSCredentialsProvider {

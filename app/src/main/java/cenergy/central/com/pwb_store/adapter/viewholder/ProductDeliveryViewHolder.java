@@ -24,7 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
-import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
+import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.model.APIError;
@@ -235,7 +235,7 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
 //            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
 //                    "application/json",
 //                    mHDLRequest).enqueue(CALLBACK_HDL);
-            HttpManagerHDL.getInstance().getHDLService().checkShippingTime(
+            HttpManagerHDLOld.getInstance().getHDLService().checkShippingTime(
                     mShippingRequest).enqueue(CALLBACK_SHIPPING);
 
         } else {
@@ -248,7 +248,7 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
             mCustomDetailRequest = new CustomDetailRequest("1", "", "");
             mShippingRequest = new ShippingRequest(storeList.getPostCode(), mSkuDataRequests, mPeriodRequest, mCustomDetailRequest);
 
-            HttpManagerHDL.getInstance().getHDLService().checkShippingTime(
+            HttpManagerHDLOld.getInstance().getHDLService().checkShippingTime(
                     mShippingRequest).enqueue(CALLBACK_SHIPPING);
         }
 

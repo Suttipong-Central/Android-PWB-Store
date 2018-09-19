@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.AvaliableFragment;
-import cenergy.central.com.pwb_store.manager.HttpManagerHDL;
+import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
@@ -106,7 +106,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
             if (response.isSuccessful()){
                 mProgressDialog.dismiss();
                 mStoreDao = new StoreDao(response.body());
-                HttpManagerHDL.getInstance().getHDLService().getStore(sku).enqueue(CALLBACK_AVALIABLE);
+                HttpManagerHDLOld.getInstance().getHDLService().getStore(sku).enqueue(CALLBACK_AVALIABLE);
             }else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());

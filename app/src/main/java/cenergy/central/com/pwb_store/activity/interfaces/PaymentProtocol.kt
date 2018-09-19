@@ -5,6 +5,7 @@ import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.DeliveryType
 import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 
 /**
  * Created by Anuphap Suwannamas on 12/9/2018 AD.
@@ -17,6 +18,7 @@ interface PaymentProtocol {
     fun getDeliveryOptions(): List<DeliveryOption>
     fun getShippingAddress(): AddressInformation?
     fun getSelectedDeliveryType(): DeliveryType?
+    fun getShippingSlot(): ShippingSlotResponse?
 
     fun retrieveStores()
 }

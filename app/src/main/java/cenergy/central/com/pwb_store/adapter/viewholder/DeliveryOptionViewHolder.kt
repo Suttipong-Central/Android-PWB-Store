@@ -21,7 +21,6 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         methodTitle.text = deliveryOption.methodTitle
         if(deliveryOption.available){
             itemView.setOnClickListener {
-                Log.d("OptionClick", deliveryOption.methodCode)
                 listener?.onSelectedOptionListener(deliveryOption)
             }
         } else {
