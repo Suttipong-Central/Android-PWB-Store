@@ -23,6 +23,28 @@ class ShippingSlotBody(
     }
 }
 
+class BookingShippingSlotBody(
+        @SerializedName("skus")
+        var productHDLs: ArrayList<ProductHDLBody> = arrayListOf(),
+        var district: String = "",
+        var subDistrict: String = "",
+        var province: String = "",
+        var postalId: String = "",
+        @SerializedName("period")
+        var periodTimeSlot: PeriodTimeSlotBody,
+        var customDetail: CustomDetail
+) {
+    companion object {
+        fun bookingShippingSlotBody(productHDLs: ArrayList<ProductHDLBody>, district: String,
+                                   subDistrict: String, province: String, postalId: String,
+                                    periodTimeSlot: PeriodTimeSlotBody, customDetail: CustomDetail): BookingShippingSlotBody {
+            return BookingShippingSlotBody(productHDLs = productHDLs, district = district,
+                    subDistrict = subDistrict, province = province, postalId = postalId,
+                    periodTimeSlot = periodTimeSlot, customDetail = customDetail)
+        }
+    }
+}
+
 class ProductHDLBody(
         var id: String = "",
         var itemNo: Int = 0,
@@ -45,6 +67,19 @@ class PeriodBody(
     companion object {
         fun createPeriod(year: Int, month: Int): PeriodBody {
             return PeriodBody(year = year, month = month)
+        }
+    }
+}
+
+class PeriodTimeSlotBody(
+        var year: Int = 0,
+        var month: Int = 0,
+        var day: Int = 0,
+        var slotId: Int = 0
+) {
+    companion object {
+        fun createPeriod(year: Int, month: Int, day: Int, slotId: Int): PeriodTimeSlotBody {
+            return PeriodTimeSlotBody(year = year, month = month, day = day, slotId = slotId)
         }
     }
 }

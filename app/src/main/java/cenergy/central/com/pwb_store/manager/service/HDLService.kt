@@ -1,6 +1,8 @@
 package cenergy.central.com.pwb_store.manager.service
 
+import cenergy.central.com.pwb_store.model.body.BookingShippingSlotBody
 import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
+import cenergy.central.com.pwb_store.model.response.BookingNumberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import retrofit2.Call
 import retrofit2.http.Body
@@ -12,4 +14,9 @@ interface HDLService {
     fun getShippingSlot(
             @Header("Content-Type") type: String,
             @Body shippingSlotBody: ShippingSlotBody): Call<ShippingSlotResponse>
+
+    @POST("/v1/logistics/shipment/booking")
+    fun createBooking(
+            @Header("Content-Type") type: String,
+            @Body bookingShippingSlotBody: BookingShippingSlotBody): Call<BookingNumberResponse>
 }

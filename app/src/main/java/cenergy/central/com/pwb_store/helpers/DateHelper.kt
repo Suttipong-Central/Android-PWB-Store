@@ -9,5 +9,9 @@ class DateHelper {
             val locale = Locale.getDefault().country
             return locale == "th" || locale == "TH"
         }
+
+        fun parseDate(value: Int): String {
+            return if (value < 10) "0$value" else value.toString()
+        }
     }
 }

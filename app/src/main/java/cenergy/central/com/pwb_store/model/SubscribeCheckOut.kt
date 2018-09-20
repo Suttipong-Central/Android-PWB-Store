@@ -6,12 +6,14 @@ class SubscribeCheckOut(
         @SerializedName("subscribecheckout")
         var checkout: String = "",
         var shippingDate: String = "",
+        var shippingSlotInDay: String = "",
         var shippingSlotDescription: String = ""
 ) {
     companion object {
-        fun createSubscribe(checkout: String, shippingDate: String, shippingSlotDescription: String): SubscribeCheckOut {
+        fun createSubscribe(checkout: String, shippingDate: String, shippingSlotInDay: String, shippingSlotDescription: String): SubscribeCheckOut {
             return SubscribeCheckOut(checkout = checkout,
                     shippingDate = shippingDate,
+                    shippingSlotInDay = shippingSlotInDay,
                     shippingSlotDescription = shippingSlotDescription)
 
         }

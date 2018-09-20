@@ -616,11 +616,10 @@ class HttpManagerMagento(context: Context) {
     }
 
     fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation,
-                                  deliveryOption: DeliveryOption,
-                                  callback: ApiResponseCallback<ShippingInformationResponse>) {
+                                  subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption, callback: ApiResponseCallback<ShippingInformationResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress.email, "", "")
-        val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, deliveryOption.methodCode, deliveryOption.carrierCode, subscribeCheckOut)
+        val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, deliveryOption.methodCode,
+                deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
         cartService.createShippingInformation(cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
             override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {

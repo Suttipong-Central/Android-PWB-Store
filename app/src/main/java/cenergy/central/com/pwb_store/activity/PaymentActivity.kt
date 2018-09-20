@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
+import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL
@@ -26,20 +27,17 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
-import cenergy.central.com.pwb_store.model.body.CustomDetail
-import cenergy.central.com.pwb_store.model.body.PeriodBody
-import cenergy.central.com.pwb_store.model.body.ProductHDLBody
-import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
-import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
+import cenergy.central.com.pwb_store.model.body.*
+import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import org.joda.time.DateTime
+import java.util.*
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
-        MemberClickListener, PaymentBillingListener,
-        DeliveryOptionsListener, PaymentProtocol, StorePickUpListener {
+        MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener {
+
     var mToolbar: Toolbar? = null
 
     private lateinit var preferenceManager: PreferenceManager
@@ -49,6 +47,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     // data
     private val database = RealmController.with(this)
     private var cartId: String? = null
+    private var productHDLList: ArrayList<ProductHDLBody> = arrayListOf()
+    private val customDetail = CustomDetail.createCustomDetail("1", "", "00139")
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
@@ -110,7 +110,9 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
-                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null)
+                val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
+                        "", "", "")
+                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
                 startStorePickupFragment()
@@ -120,6 +122,39 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 getShippingHomeDelivery()
             }
         }
+    }
+    // endregion
+
+    // region {@link HomeDeliveryListener}
+    override fun onPaymentClickListener(slot: Slot, date: Int, month: Int, year: Int, shippingDate: String) {
+        showProgressDialog()
+        val periodTimeSlot = PeriodTimeSlotBody.createPeriod(year, month, date, slot.id)
+        createBookingHomeDelivery(periodTimeSlot, slot, shippingDate)
+    }
+
+    private fun createBookingHomeDelivery(periodTimeSlot: PeriodTimeSlotBody, slot: Slot, shippingDate: String) {
+        val bookingShippingSlot = BookingShippingSlotBody.bookingShippingSlotBody(
+                productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
+                shippingAddress!!.region, shippingAddress!!.postcode!!, periodTimeSlot, customDetail)
+        HttpManagerHDL.getInstance().createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
+            override fun success(response: BookingNumberResponse?) {
+                if (response != null) {
+                    Log.d("Booking number response", response.bookingNo)
+                    val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
+                            shippingDate, slot.id.toString(), slot.description)
+                    showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null, subscribeCheckOut)
+
+                } else {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                showAlertDialog("", error.errorMessage)
+            }
+        })
     }
     // endregion
 
@@ -248,10 +283,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 
-    private fun showAlertCheckPayment(title: String, message: String, storeAddress: AddressInformation?) {
+    private fun showAlertCheckPayment(title: String, message: String, storeAddress: AddressInformation?,
+                                      subscribeCheckOut: SubscribeCheckOut) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> createShippingInformation(storeAddress) }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which ->
+                    createShippingInformation(storeAddress, subscribeCheckOut)
+                }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which ->
                     dialog.dismiss()
                     mProgressDialog?.dismiss()
@@ -263,8 +301,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun createShippingInformation(storeAddress: AddressInformation?) {
-
+    private fun createShippingInformation(storeAddress: AddressInformation?, subscribeCheckOut: SubscribeCheckOut) {
         if (cartId != null && shippingAddress != null) {
             val billingAddress = shippingAddress!!
 
@@ -274,9 +311,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             } else {
                 billingAddress.sameBilling = 1
             }
-
             HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress
-                    ?: shippingAddress!!, billingAddress,
+                    ?: shippingAddress!!, billingAddress, subscribeCheckOut,
                     deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
                 override fun success(response: ShippingInformationResponse?) {
                     if (response != null) {
@@ -316,7 +352,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         })
     }
 
-
     private fun getT1CMember(customerId: String) {
         showProgressDialog()
         HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member> {
@@ -336,7 +371,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             }
         })
     }
-
 
     private fun getDeliveryOptions(cartId: String) {
         shippingAddress?.let {
@@ -362,7 +396,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun getShippingHomeDelivery() {
-        val productHDLList: ArrayList<ProductHDLBody> = arrayListOf()
         for (i in cartItemList.indices) {
             val productHDL = ProductHDLBody.createProductHDL("", i + 1, cartItemList[i].sku!!,
                     cartItemList[i].qty!!, "00139")
@@ -370,7 +403,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
         val dateTime = DateTime.now()
         val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
-        val customDetail = CustomDetail.createCustomDetail("1", "", "00139")
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(
                 productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
                 shippingAddress!!.region, shippingAddress!!.postcode!!, period, customDetail)
@@ -498,7 +530,9 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                         ?: "กรุงเทพมหานคร",
                         homeDistrict = district?.nameTh
                                 ?: "บางรัก", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
-                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress)
+                val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
+                        "", "", "")
+                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress, subscribeCheckOut)
             }
         }
     }

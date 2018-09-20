@@ -6,7 +6,9 @@ import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.service.HDLService
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.body.BookingShippingSlotBody
 import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
+import cenergy.central.com.pwb_store.model.response.BookingNumberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import com.amazonaws.auth.AWSCredentials
@@ -64,6 +66,24 @@ class HttpManagerHDL {
             }
 
             override fun onFailure(call: Call<ShippingSlotResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun createBooking(bookingShippingSlotBody: BookingShippingSlotBody, callback: ApiResponseCallback<BookingNumberResponse>) {
+        val mHDLService = retrofit.create(HDLService::class.java)
+        mHDLService.createBooking("application/json", bookingShippingSlotBody).enqueue(object : Callback<BookingNumberResponse> {
+            override fun onResponse(call: Call<BookingNumberResponse>?, response: Response<BookingNumberResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val orderResponse = response.body()
+                    callback.success(orderResponse)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<BookingNumberResponse>?, t: Throwable?) {
                 callback.failure(APIError(t))
             }
         })

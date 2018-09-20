@@ -13,6 +13,6 @@ class TimeSlotViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     fun bindView(slot: Slot, timeSlotClickListener: TimeSlotClickListener?) {
         tvTimeSlot.text = slot.description
-        itemView.setOnClickListener { timeSlotClickListener?.onTimeSlotClickListener(slot.id, slot.description) }
+        itemView.setOnClickListener { timeSlotClickListener?.onTimeSlotClickListener(slot) }
     }
 }
