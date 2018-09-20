@@ -31,6 +31,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
     private val productImage: ImageView = itemView.findViewById(R.id.product_image_list_shopping_cart)
     private val tvOverQty: TextView = itemView.findViewById(R.id.tvOverQty)
+    private val tvTitleFreebie: TextView = itemView.findViewById(R.id.tvTitleFreebie)
 
     // data
     private var listener: ShoppingCartAdapter.ShoppingCartListener? = null
@@ -39,6 +40,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     @SuppressLint("SetTextI18n")
     fun bindProductView(item: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
+        tvTitleFreebie.visibility = View.GONE // hide title free item
         val unit = itemView.context.getString(R.string.baht)
         this.listener = listener
         this.item = item
@@ -74,6 +76,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     // region freebie item
     @SuppressLint("SetTextI18n")
     fun bindFreebieView(item: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
+        tvTitleFreebie.visibility = View.VISIBLE // visible title free item
+
         val unit = itemView.context.getString(R.string.baht)
         this.listener = listener
         this.item = item

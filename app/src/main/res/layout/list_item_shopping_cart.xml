@@ -29,14 +29,32 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/deleteItemImageView"
         app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitleFreebie"
         tools:text="Product Name" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tvTitleFreebie"
+        style="@style/descriptionProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/powerBuyPurple"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:textColor="@color/powerBuyWhite"
+        android:visibility="gone"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
+        app:layout_constraintTop_toTopOf="@+id/product_image_list_shopping_cart"
+        android:text="@string/title_free_item" />
 
     <ImageView
         android:id="@+id/deleteItemImageView"
@@ -112,11 +130,11 @@
         style="@style/descriptionProduct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:layout_marginStart="16dp"
         android:layout_marginTop="14dp"
-        android:textColor="@color/dangerColor"
         android:text="@string/add_over_qty"
+        android:textColor="@color/dangerColor"
+        android:visibility="invisible"
         app:layout_constraintStart_toEndOf="@id/qty_list_shopping_cart"
         app:layout_constraintTop_toBottomOf="@id/price_list_shopping_cart" />
 
