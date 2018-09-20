@@ -11,7 +11,7 @@ import android.widget.DatePicker
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.helpers.DateHelper
-import cenergy.central.com.pwb_store.manager.listeners.OnPickDateListener
+import cenergy.central.com.pwb_store.fragment.interfaces.PickDateListener
 import org.joda.time.DateTime
 import java.util.*
 
@@ -26,7 +26,7 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
 
 
     companion object {
-        private var onPickDateListener: OnPickDateListener? = null
+        private var pickDateListener: PickDateListener? = null
         private const val ARG_DATE = "date"
         private const val ARG_START_DATE = "start_date"
         private const val ARG_LAST_DATE = "last_date"
@@ -41,8 +41,8 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
             return dialogFragment
         }
 
-        fun setOnPickDateListener(onPickDateListener: OnPickDateListener) {
-            this.onPickDateListener = onPickDateListener
+        fun setOnPickDateListener(pickDateListener: PickDateListener) {
+            this.pickDateListener = pickDateListener
         }
     }
 
@@ -91,7 +91,7 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
         if (tempDateTimePicker.millis >= minCalendar.timeInMillis && tempDateTimePicker.millis <= maxCalendar.timeInMillis) {
             val yearPicker = if (DateHelper.isLocaleTH()) year - 543 else year
             val pickedDateTime = DateTime(yearPicker, month, dayOfMonth, 0, 0)
-            onPickDateListener?.onDatePickerListener(pickedDateTime)
+            pickDateListener?.onDatePickerListener(pickedDateTime)
         } else {
             Toast.makeText(activity, getString(R.string.check_your_date), Toast.LENGTH_LONG).show()
         }

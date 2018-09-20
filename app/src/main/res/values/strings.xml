@@ -211,4 +211,6 @@
     <string name="select_date_delivery">กำหนดวันจัดส่งสินค้า</string>
     <string name="date">วันที่</string>
     <string name="time">เวลา</string>
+    <string name="please_select_date_and_time">กรุณาเลือกวันและเวลาในการจัดส่งสินค้า</string>
+    <string name="please_try_again">กรุณาลองใหม่อีกครั้ง</string>
 </resources>

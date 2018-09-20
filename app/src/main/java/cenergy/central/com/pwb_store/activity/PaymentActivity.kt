@@ -369,7 +369,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             productHDLList.add(productHDL)
         }
         val dateTime = DateTime.now()
-        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1) // month Of year start from 0
+        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
         val customDetail = CustomDetail.createCustomDetail("1", "", "00139")
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(
                 productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
