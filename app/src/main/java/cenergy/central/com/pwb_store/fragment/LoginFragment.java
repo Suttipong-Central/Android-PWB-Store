@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import butterknife.BindView;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
-import cenergy.central.com.pwb_store.manager.PwbApiManager;
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.response.UserResponse;
@@ -222,24 +222,31 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
         if (v.getId() == R.id.card_view_login) {
             hideSoftKeyboard(v);
             showProgressDialog();
-            PwbApiManager.Companion.getInstance(getContext()).userLogin(username, password, new ApiResponseCallback<UserResponse>() {
-                @Override
-                public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
-                    if (response != null) {
-                        EventBus.getDefault().post(new LoginSuccessBus(true));
-                        mProgressDialog.dismiss();
-                    } else {
-                        mProgressDialog.dismiss();
-                        showAlertDialog("", getContext().getResources().getString(R.string.some_thing_wrong));
-                    }
-                }
+            login();
+        }
+    }
 
-                @Override
-                public void failure(@NotNull APIError error) {
-                    showAlertDialog("", error.getError());
-                    mProgressDialog.dismiss();
-                }
-            });
+    private void login() {
+        if (getContext() != null) {
+            HttpManagerMagento.Companion.getInstance(getContext()).userLogin(username, password,
+                    new ApiResponseCallback<UserResponse>() {
+                        @Override
+                        public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
+                            if (response != null) {
+                                EventBus.getDefault().post(new LoginSuccessBus(true));
+                                mProgressDialog.dismiss();
+                            } else {
+                                mProgressDialog.dismiss();
+                                showAlertDialog("", getString(R.string.some_thing_wrong));
+                            }
+                        }
+
+                        @Override
+                        public void failure(@NotNull APIError error) {
+                            showAlertDialog("", error.getError() == null ? getString(R.string.some_thing_wrong) : error.getError());
+                            mProgressDialog.dismiss();
+                        }
+                    });
         }
     }
 }

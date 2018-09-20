@@ -55,7 +55,6 @@ import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
-import cenergy.central.com.pwb_store.model.response.BrandResponse;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -186,7 +185,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     };
 
     private void getProductList(String departmentId) {
-        HttpManagerMagento.Companion.getInstance().retrieveProductList(
+        HttpManagerMagento.Companion.getInstance(getContext()).retrieveProductList(
                 "category_id",
                 departmentId,
                 "in",
@@ -650,71 +649,77 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     private void retrieveProductList(final String departmentId) {
-        HttpManagerMagento.Companion.getInstance().retrieveProductList(
-                departmentId,
-                PER_PAGE,
-                getNextPage(),
-                sortName,
-                sortType,
-                new ApiResponseCallback<ProductResponse>() {
-                    @Override
-                    public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
-                        updateProductList(response);
-                    }
+        if (getContext() != null) {
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveProductList(
+                    departmentId,
+                    PER_PAGE,
+                    getNextPage(),
+                    sortName,
+                    sortType,
+                    new ApiResponseCallback<ProductResponse>() {
+                        @Override
+                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                            updateProductList(response);
+                        }
 
-                    @Override
-                    public void failure(@NotNull APIError error) {
-                        Log.d("productDaoResponse", error.toString());
-                        layoutProgress.setVisibility(View.GONE);
+                        @Override
+                        public void failure(@NotNull APIError error) {
+                            Log.d("productDaoResponse", error.toString());
+                            layoutProgress.setVisibility(View.GONE);
+                        }
                     }
-                }
-        );
+            );
+        }
     }
 
     private void retrieveProductList(final String departmentId, Long brandId) {
-        HttpManagerMagento.Companion.getInstance().retrieveProductsFilterByBrand(
-                departmentId,
-                brandId,
-                PER_PAGE,
-                getNextPage(),
-                sortName,
-                sortType,
-                new ApiResponseCallback<ProductResponse>() {
-                    @Override
-                    public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
-                        updateProductList(response);
-                    }
+        if (getContext() != null) {
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveProductsFilterByBrand(
+                    departmentId,
+                    brandId,
+                    PER_PAGE,
+                    getNextPage(),
+                    sortName,
+                    sortType,
+                    new ApiResponseCallback<ProductResponse>() {
+                        @Override
+                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                            updateProductList(response);
+                        }
 
-                    @Override
-                    public void failure(@NotNull APIError error) {
-                        Log.d("productDaoResponse", error.toString());
+                        @Override
+                        public void failure(@NotNull APIError error) {
+                            Log.d("productDaoResponse", error.toString());
 
-                        layoutProgress.setVisibility(View.GONE);
-                        mProgressDialog.dismiss();
+                            layoutProgress.setVisibility(View.GONE);
+                            mProgressDialog.dismiss();
+                        }
                     }
-                }
-        );
+            );
+        }
     }
 
     private void getBrands(String departmentId) {
-        Log.d("Start getBrands", "here we go!");
-        HttpManagerMagento.Companion.getInstance().getBrands(departmentId, new ApiResponseCallback<List<Brand>>() {
-            @Override
-            public void success(@org.jetbrains.annotations.Nullable List<Brand> response) {
-                if (response != null) {
-                    ProductListFragment.this.brands = response;
+        if (getContext() != null) {
+            Log.d("Start getBrands", "here we go!");
+            HttpManagerMagento.Companion.getInstance(getContext()).getBrands(departmentId, new ApiResponseCallback<List<Brand>>() {
+                @Override
+                public void success(@org.jetbrains.annotations.Nullable List<Brand> response) {
+                    if (response != null) {
+                        ProductListFragment.this.brands = response;
+                    }
+                    layoutProgress.setVisibility(View.GONE);
+                    mProgressDialog.dismiss();
                 }
-                layoutProgress.setVisibility(View.GONE);
-                mProgressDialog.dismiss();
-            }
 
-            @Override
-            public void failure(@NotNull APIError error) {
-                Log.d("getBrands", error.toString());
-                layoutProgress.setVisibility(View.GONE);
-                mProgressDialog.dismiss();
-            }
-        });
+                @Override
+                public void failure(@NotNull APIError error) {
+                    Log.d("getBrands", error.toString());
+                    layoutProgress.setVisibility(View.GONE);
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
     }
 
     private void updateProductList(ProductResponse response) {

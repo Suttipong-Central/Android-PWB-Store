@@ -9,14 +9,12 @@ import retrofit2.http.*
 
 interface UserService {
 
-    @POST("/api/login")
-    fun userLogin(@Body userBody: UserBody): Call<LoginResponse>
+    @POST("/rest/V1/integration/admin/token")
+    fun userLogin(@Body userBody: UserBody): Call<String>
 
-//    @Headers("Accept: Application/json", "Content-Type: application/x-www-form-urlencoded")
-    @POST("/api/details")
-    fun retrieveUser(@Header("Authorization") userToken: String): Call<UserResponse>
+    @GET("/rest/V1/headless/token/{token}/details")
+    fun retrieveUser(@Path("token") token: String): Call<UserResponse>
 
-//    @Headers("Accept: Application/json", "Content-Type: application/x-www-form-urlencoded")
     @GET("/api/logout")
     fun userLogout(@Header("Authorization") userToken: String): Call<LogoutResponse>
 }

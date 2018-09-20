@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -44,7 +45,6 @@ import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.PwbApiManager;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -65,7 +65,6 @@ import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
-import cenergy.central.com.pwb_store.model.response.LogoutResponse;
 import cenergy.central.com.pwb_store.model.response.TokenResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
     private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
+    private static final int TIME_TO_WAIT = 2000;
 
     //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private CategoryDao mCategoryDao;
     private String storeId;
     private ProgressDialog mProgressDialog;
+    public static Handler handler = new Handler();
 
     final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
         @Override
@@ -423,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     }
 
     private void retrieveCategories() {
-        HttpManagerMagento.Companion.getInstance().retrieveCategories(false, 2, 4, new ApiResponseCallback<Category>() {
+        HttpManagerMagento.Companion.getInstance(this).retrieveCategories(false, 2, 4, new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
                 mCategoryDao = new CategoryDao(category);
@@ -528,7 +529,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                         userLogout();
                     }
                 })
-                .setNegativeButton(getString(R.string.cancel_alert), new DialogInterface.OnClickListener(){
+                .setNegativeButton(getString(R.string.cancel_alert), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -564,19 +565,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     }
 
     private void userLogout() {
-        PwbApiManager.Companion.getInstance(this).userLogout(new ApiResponseCallback<LogoutResponse>() {
-            @Override
-            public void success(@Nullable LogoutResponse response) {
-                if(response != null){
-                    clearData();
-                }
-            }
-
-            @Override
-            public void failure(@NotNull APIError error) {
-
-            }
-        });
+        clearData();
     }
 
     private void clearData() {
@@ -584,6 +573,21 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         RealmController realmController = RealmController.with(this);
         preferenceManager.userLogout();
         realmController.userLogout();
+
+        // post delay start login
+        showProgressDialog();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startLogin();
+            }
+        }, TIME_TO_WAIT);
+    }
+
+    private void startLogin() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
 
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

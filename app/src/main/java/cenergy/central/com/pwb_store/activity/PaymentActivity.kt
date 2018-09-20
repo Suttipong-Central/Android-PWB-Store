@@ -202,7 +202,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun getCartItems() {
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+            HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
                 override fun success(response: List<CartItem>?) {
                     if (response != null) {
                         cartItemList = response
@@ -266,7 +266,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private fun createShippingInformation(storeAddress: AddressInformation?) {
 
         if (cartId != null && shippingAddress != null) {
-            val billingAddress =  shippingAddress!!
+            val billingAddress = shippingAddress!!
 
             // is shipping same as billing?
             if (storeAddress != null) {
@@ -275,7 +275,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 billingAddress.sameBilling = 1
             }
 
-            HttpManagerMagento.getInstance().createShippingInformation(cartId!!, storeAddress
+            HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress
                     ?: shippingAddress!!, billingAddress,
                     deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
                 override fun success(response: ShippingInformationResponse?) {
@@ -340,7 +340,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun getDeliveryOptions(cartId: String) {
         shippingAddress?.let {
-            HttpManagerMagento.getInstance().getOrderDeliveryOptions(cartId, it,
+            HttpManagerMagento.getInstance(this).getOrderDeliveryOptions(cartId, it,
                     object : ApiResponseCallback<List<DeliveryOption>> {
                         override fun success(response: List<DeliveryOption>?) {
                             if (response != null) {
@@ -374,9 +374,9 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(
                 productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
                 shippingAddress!!.region, shippingAddress!!.postcode!!, period, customDetail)
-        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse>{
+        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
-                if(response != null){
+                if (response != null) {
                     shippingSlotResponse = response
                     mProgressDialog?.dismiss()
                     startDeliveryHomeFragment()
@@ -400,7 +400,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         val staffId = userInformation?.user?.staffId ?: ""
         val storeId = userInformation?.user?.storeId?.toString() ?: ""
 
-        HttpManagerMagento.getInstance().updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
+        HttpManagerMagento.getInstance(this).updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 if (response != null) {
                     getOrder(response)
@@ -474,10 +474,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun onSelectedStore(store: String) {
         val userInformation = database.userInformation
         userInformation?.let {
-            if (userInformation.user != null && userInformation.stores != null && userInformation.stores!!.size > 0) {
+            if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
                 val staff = userInformation.user
-                val storeStaff = userInformation.stores!![0]
+                val storeStaff = userInformation.store
                 //Check this if change to use PWB login
                 val province = database.getProvinceByNameEn(storeStaff?.province ?: "")
                 val district = database.getDistrictByNameEn(storeStaff?.district ?: "")

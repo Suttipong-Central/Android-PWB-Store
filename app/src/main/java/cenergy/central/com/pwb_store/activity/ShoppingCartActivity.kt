@@ -142,7 +142,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     //end region
 
     private fun getCartItem() {
-        HttpManagerMagento.getInstance().viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+        HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
                 if (response != null) {
                    updateViewShoppingCart(response)
@@ -198,7 +198,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
     private fun deleteItem(cartId: String, itemId: Long) {
         showProgressDialog()
-        HttpManagerMagento.getInstance().deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
+        HttpManagerMagento.getInstance(this).deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
             override fun success(response: Boolean?) {
                 if (response == true) {
                     deleteItemInLocal(itemId)
@@ -219,7 +219,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
     private fun updateItem(cartId: String, itemId: Long, qty: Int) {
         showProgressDialog()
-        HttpManagerMagento.getInstance().updateItem(cartId, itemId, qty, object : ApiResponseCallback<CartItem> {
+        HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
                 saveCartItemInLocal(response)
                 getCartItem()

@@ -191,7 +191,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
 
     private void retrieveCart(final CompareProduct compareProduct) {
         showProgressDialog();
-        HttpManagerMagento.Companion.getInstance().getCart(new ApiResponseCallback<String>() {
+        HttpManagerMagento.Companion.getInstance(this).getCart(new ApiResponseCallback<String>() {
             @Override
             public void success(@Nullable String cartId) {
                 if (cartId != null) {
@@ -213,7 +213,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     private void addProductToCart(final String cartId, final CompareProduct compareProduct) {
         showProgressDialog();
         CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, compareProduct.getSku(), 1)); // default add qty 1
-        HttpManagerMagento.Companion.getInstance().addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
+        HttpManagerMagento.Companion.getInstance(this).addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
             @Override
             public void success(@Nullable CartItem cartItem) {
                 saveCartItem(cartItem, compareProduct);

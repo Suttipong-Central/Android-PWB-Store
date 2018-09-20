@@ -124,17 +124,19 @@ public class CategoryFragment extends Fragment {
     }
 
     private void retrieveCategories() {
-        HttpManagerMagento.Companion.getInstance().retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
-            @Override
-            public void success(@Nullable Category category) {
-                mAdapter.setCategory(category);
-            }
+        if (getContext() != null) {
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
+                @Override
+                public void success(@Nullable Category category) {
+                    mAdapter.setCategory(category);
+                }
 
-            @Override
-            public void failure(@NotNull APIError error) {
-                showAlertDialog(error.getErrorMessage(), false);
-            }
-        });
+                @Override
+                public void failure(@NotNull APIError error) {
+                    showAlertDialog(error.getErrorMessage(), false);
+                }
+            });
+        }
     }
 
 //    private void mockData(){

@@ -8,6 +8,7 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
+import cenergy.central.com.pwb_store.manager.service.UserService
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
@@ -27,10 +28,12 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
-class HttpManagerMagento {
-    private val mContext: Context = Contextor.getInstance().context
+class HttpManagerMagento(context: Context) {
     private var retrofit: Retrofit
     private var defaultHttpClient: OkHttpClient
+    private var database: RealmController = RealmController.with(context)
+
+    private lateinit var userToken: String
 
     init {
         val interceptor = HttpLoggingInterceptor()
@@ -61,17 +64,77 @@ class HttpManagerMagento {
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
 
-        fun getInstance(): HttpManagerMagento {
+        fun getInstance(context: Context): HttpManagerMagento {
             if (instance == null)
-                instance = HttpManagerMagento()
+                instance = HttpManagerMagento(context)
             return instance as HttpManagerMagento
         }
     }
 
+    // region user
+    fun setUserToken(token: String) {
+        this.userToken = token
+    }
+
+    fun getUserToken(): String = this.userToken
+
+    fun userLogin(username: String, password: String, callback: ApiResponseCallback<UserResponse?>) {
+        val userService = retrofit.create(UserService::class.java)
+        val userBody = UserBody(username = username, password = password)
+        userService.userLogin(userBody).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>?) {
+                if (response != null && response.isSuccessful) {
+                    val loginResponse = response.body()
+                    if (loginResponse != null) {
+                        setUserToken(loginResponse)
+                        // get user information
+                        getUserDetail(callback)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getUserDetail(callback: ApiResponseCallback<UserResponse?>) {
+        val userService = retrofit.create(UserService::class.java)
+        userService.retrieveUser(userToken).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>?, response: Response<UserResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val userResponse = response.body()
+                    if (userResponse != null) {
+                        // save user token
+                        database.saveUserToken(UserToken(token = userToken))
+                        // save user information
+                        val userInformation = UserInformation(userId = userResponse.user.userId,
+                                user = userResponse.user, store = userResponse.store)
+                        database.saveUserInformation(userInformation)
+                        callback.success(userResponse)
+                    } else {
+                        callback.success(null)
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<UserResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+    // endregion
+
     fun retrieveCategories(force: Boolean, callback: ApiResponseCallback<Category?>) {
         // If already cached then do
         val endpointName = "/rest/V1/categories"
-        val database = RealmController.with(mContext)
         if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
             Log.i("PBE", "retrieveCategories: using cached")
             callback.success(database.category)
@@ -118,7 +181,6 @@ class HttpManagerMagento {
     fun retrieveCategories(force: Boolean, categoryId: Int, categoryLevel: Int, callback: ApiResponseCallback<Category?>) {
         // If already cached then do
         val endpointName = "/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
-        val database = RealmController.with(mContext)
         if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
             Log.i("PBE", "retrieveCategories: using cached")
             callback.success(database.category)

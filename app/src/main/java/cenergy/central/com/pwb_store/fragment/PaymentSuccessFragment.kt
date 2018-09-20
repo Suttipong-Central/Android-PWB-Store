@@ -155,7 +155,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     private fun getOrder() {
-        HttpManagerMagento.getInstance().getOrder(orderId!!, this)
+        context?.let { HttpManagerMagento.getInstance(it).getOrder(orderId!!, this) }
     }
 
     private fun getOrderFromLocalDatabase(cacheOrderResponseId: String) {
@@ -200,7 +200,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             tvReceiverName.text = address?.getDisplayName()
             tvDeliveryAddress.text = "${subAddress?.houseNumber ?: ""}, ${subAddress?.soi
                     ?: ""}, ${subAddress?.building ?: ""}, ${subAddress?.subDistrict
-                    ?: ""}, ${subAddress?.district ?: ""}, ${address?.region ?: ""}, ${address?.postcode
+                    ?: ""}, ${subAddress?.district ?: ""}, ${address?.region
+                    ?: ""}, ${address?.postcode
                     ?: ""}".trim()
 
         } else {
@@ -208,7 +209,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             storeAddressLayout.visibility = View.VISIBLE
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 
-            val store = userInformation?.stores?.get(0)
+            val store = userInformation?.store
             branch.text = "${store?.storeName} <Test>"
             address.text = "${store?.number ?: ""} ${store?.moo ?: ""} ${store?.soi
                     ?: ""} ${store?.road ?: ""} ${store?.building ?: ""} ${store?.subDistrict

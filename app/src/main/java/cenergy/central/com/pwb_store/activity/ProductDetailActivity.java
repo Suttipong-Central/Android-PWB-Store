@@ -356,7 +356,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     // region retrieve product
     private void retrieveProductFromBarcode(String barcode) {
-        HttpManagerMagento.Companion.getInstance().getProductFromBarcode("barcode", barcode, "eq", "name", 10, 1, new ApiResponseCallback<Product>() {
+        HttpManagerMagento.Companion.getInstance(this).getProductFromBarcode("barcode", barcode, "eq", "name", 10, 1, new ApiResponseCallback<Product>() {
             @Override
             public void success(@Nullable Product response) {
                 if (response != null) {
@@ -381,7 +381,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void retrieveProduct(String sku) {
-        HttpManagerMagento.Companion.getInstance().getProductDetail(sku, new ApiResponseCallback<Product>() {
+        HttpManagerMagento.Companion.getInstance(this).getProductDetail(sku, new ApiResponseCallback<Product>() {
             @Override
             public void success(@Nullable Product response) {
                 if (response != null) {
@@ -726,7 +726,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void retrieveCart() {
-        HttpManagerMagento.Companion.getInstance().getCart(new ApiResponseCallback<String>() {
+        HttpManagerMagento.Companion.getInstance(this).getCart(new ApiResponseCallback<String>() {
             @Override
             public void success(@Nullable String cartId) {
                 if (cartId != null) {
@@ -745,7 +745,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     private void addProductToCart(final String cartId, final Product product) {
         CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, product.getSku(), 1)); // default add qty 1
-        HttpManagerMagento.Companion.getInstance().addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
+        HttpManagerMagento.Companion.getInstance(this).addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
             @Override
             public void success(@Nullable CartItem cartItem) {
                 saveCartItem(cartItem, product);
