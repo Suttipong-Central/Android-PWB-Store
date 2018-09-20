@@ -123,6 +123,5 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
 
     interface OnViewClickListener {
         fun onClickQuantity(action: QuantityAction, qty: Int)
-        fun onOverQuantity(max: Int)
     }
 }

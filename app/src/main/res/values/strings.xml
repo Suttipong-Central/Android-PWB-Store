@@ -213,4 +213,5 @@
     <string name="time">เวลา</string>
     <string name="please_select_date_and_time">กรุณาเลือกวันและเวลาในการจัดส่งสินค้า</string>
     <string name="please_try_again">กรุณาลองใหม่อีกครั้ง</string>
+    <string name="add_over_qty">สินค้าไม่เพียงพอ</string>
 </resources>

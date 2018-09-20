@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.realm.RealmController
 
 class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
+    private val database = RealmController.getInstance()
 
     var cartItemList = listOf<CartItem>()
         set(value) {
@@ -25,9 +27,16 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
     }
 
     override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
-        holder.bindView(cartItemList[position], listener)
+        val item = cartItemList[position]
+        val cacheCartItem = database.getCacheCartItem(item.id) // get cacheCartItem
+
+        if (cacheCartItem != null) {
+            holder.bindProductView(item, listener, cacheCartItem)
+        } else {
+            holder.bindFreebieView(item, listener)
+        }
         if (isDescription) {
-            holder.hideDeleteItem(cartItemList[position])
+            holder.hideDeleteItem(item)
         }
     }
 
