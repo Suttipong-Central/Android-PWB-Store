@@ -7,25 +7,22 @@
 
     <TextView
         android:id="@+id/option_title"
-        style="@style/textHead"
+        style="@style/textCompare"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="เลือกการจัดส่ง"
+        android:text="@string/select_option_delivery"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/delivery_options_recycler"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/delivery_options_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/option_title" />
-
 </android.support.constraint.ConstraintLayout>
