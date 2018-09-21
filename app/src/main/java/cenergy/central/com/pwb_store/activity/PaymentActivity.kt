@@ -516,12 +516,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
                 val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
                 val storeAddress = AddressInformation.createAddress(
-                        firstName = shippingAddress?.firstname
-                                ?: "Testing", lastName = shippingAddress?.lastname
+                        firstName = shippingAddress?.firstname ?: "Testing", lastName = shippingAddress?.lastname
                         ?: "Testing", email = shippingAddress?.email ?: "storepickup@testing.com",
                         contactNo = shippingAddress?.telephone ?: "0000000000", homeNo = "",
-                        homeBuilding = store, homeSoi = store,
-                        homeRoad = store, homePostalCode = storeStaff?.postalCode ?: "10501",
+                        homeBuilding = "ชื่ออาคาร", homeSoi = "ซอย",
+                        homeRoad = "ถนน", homePostalCode = storeStaff?.postalCode ?: "10501",
                         homePhone = "", provinceId = "668",
                         provinceCode = "BKK", countryId = "TH",
                         districtId = "25",
