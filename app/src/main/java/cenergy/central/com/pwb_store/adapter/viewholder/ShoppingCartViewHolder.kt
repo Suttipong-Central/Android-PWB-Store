@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 import android.annotation.SuppressLint
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -65,8 +66,9 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             confirmDelete(item, listener)
         }
 
-        productQty.setMaximum(Math.min(cacheCartItem.qtyInStock
-                ?: 1, cacheCartItem.maxQTY ?: 1))
+        val max = Math.min(cacheCartItem.qtyInStock ?: 1, cacheCartItem.maxQTY ?: 1)
+        productQty.setMaximum(max)
+        Log.d("Product", "max qty: $max")
         productQty.setQty(item.qty!!)
         checkOverAddQty(item.qty!!)
         totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), item.price!!))

@@ -110,10 +110,7 @@ class PaymentBillingFragment : Fragment() {
         private const val MEMBER = "MEMBER"
 
         fun newInstance(): PaymentBillingFragment {
-            val fragment = PaymentBillingFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
+            return PaymentBillingFragment()
         }
 
         fun newInstance(member: Member): PaymentBillingFragment {

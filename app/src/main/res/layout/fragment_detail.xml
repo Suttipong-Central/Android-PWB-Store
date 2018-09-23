@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/powerBuyWhite"
+    android:paddingTop="16dp">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <!-- region images-->
+    <ImageView
+        android:id="@+id/ivProductImage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/product_detail"
+        android:minHeight="300dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@id/guideline40"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_pwb_logo_detail" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pagerProductImage"
+        android:layout_width="0dp"
+        android:layout_height="108dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@id/guideline40"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivProductImage" />
+    <!-- endregion -->
+
+    <!-- region product detail-->
+    <TextView
+        android:id="@+id/tvProductName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/nameProductColor"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        tools:text="Fuji Instax รุ่น Mini 90 สีดำ" />
+
+    <LinearLayout
+        android:id="@+id/productIdLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/tvProductName">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_view_product_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/nameProductColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Product Code : " />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_stock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:maxLines="1"
+            android:textColor="@color/inStockColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="In Stock" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/productTypeLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productIdLayout">
+
+        <ImageView
+            android:id="@+id/img_pro_first"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/product_detail"
+            android:paddingTop="5dp" />
+
+        <ImageView
+            android:id="@+id/img_pro_second"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/product_detail"
+            android:paddingTop="5dp" />
+
+        <ImageView
+            android:id="@+id/img_pro_third"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/product_detail"
+            android:paddingTop="5dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/productSpacialPriceLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productTypeLayout">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_name_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textColor="@color/salePriceColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Price : " />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_sale_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textColor="@color/salePriceColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="Roboto-Medium.ttf"
+            tools:text="฿2,890" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/productPriceLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productSpacialPriceLayout">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/regular_price"
+            android:textColor="@color/nameProductColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textColor="@color/nameProductColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="฿4,200" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:textColor="@color/powerBuyPurple"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Save : ฿1,310 (30%)" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/lightgray"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productPriceLayout" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/pagerProductImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/line1">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view_add_to_cart"
+            style="@style/RaisedButtonCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/hintColor">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_cart"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/add_to_cart"
+                    android:src="@drawable/ic_shopping_cart" />
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    style="@style/RaisedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_to_cart"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    app:typeFaceAsset="RobotoLight.ttf" />
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_store"
+                style="@style/RaisedButtonCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/categoryColor">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/img_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="@string/store_avaliable"
+                        android:src="@drawable/ic_store_white" />
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        style="@style/RaisedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_available"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        app:typeFaceAsset="RobotoLight.ttf" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_add_compare"
+                style="@style/RaisedButtonCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/categoryColor">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/img_compare"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="@string/product_compare"
+                        android:src="@drawable/ic_compare_bar" />
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        style="@style/RaisedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_compare"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        app:typeFaceAsset="RobotoLight.ttf" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </LinearLayout>
+    <!-- endregion -->
+
+
+</android.support.constraint.ConstraintLayout>
