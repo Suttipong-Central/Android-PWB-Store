@@ -66,18 +66,32 @@ open class CacheCartItem(
 
         @JvmStatic
         fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
-            return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
-                    name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
-                    maxQTY = product.extension?.stokeItem?.maxQTY
-                            ?: 1, qtyInStock = product.extension?.stokeItem?.qty
-                    ?: 0, imageUrl = product.getImageUrl())
+            return CacheCartItem(
+                    itemId = cartItem.id,
+                    sku = cartItem.sku,
+                    qty = cartItem.qty,
+                    name = cartItem.name,
+                    price = cartItem.price,
+                    type = cartItem.type,
+                    cartId = cartItem.cartId,
+                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
+                    qtyInStock = product.extension?.stokeItem?.qty ?: 0,
+                    imageUrl = product.getImageUrl())
         }
 
         @JvmStatic
         fun asCartItem(cartItem: CartItem, compareProduct: CompareProduct): CacheCartItem {
-            return CacheCartItem(itemId = cartItem.id, sku = cartItem.sku, qty = cartItem.qty,
-                    name = cartItem.name, price = cartItem.price, type = cartItem.type, cartId = cartItem.cartId,
-                    maxQTY = compareProduct.maxQty ?: 1, imageUrl = compareProduct.imageUrl)
+            return CacheCartItem(
+                    itemId = cartItem.id,
+                    sku = cartItem.sku,
+                    qty = cartItem.qty,
+                    name = cartItem.name,
+                    price = cartItem.price,
+                    type = cartItem.type,
+                    cartId = cartItem.cartId,
+                    maxQTY = compareProduct.maxQty ?: 1,
+                    qtyInStock = compareProduct.qtyInStock ?: 1,
+                    imageUrl = compareProduct.imageUrl)
         }
 
         override fun createFromParcel(parcel: Parcel): CacheCartItem {
