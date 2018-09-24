@@ -89,7 +89,7 @@ class PaymentBillingFragment : Fragment() {
     private var paymentProtocol: PaymentProtocol? = null
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
-    private var dialogOption: String? = null
+    private var dialogOption: String? = ""
     private var member: Member? = null
     private var firstName: String = ""
     private var lastName: String = ""

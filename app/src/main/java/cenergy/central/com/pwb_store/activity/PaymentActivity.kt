@@ -61,6 +61,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var deliveryType: DeliveryType? = null
     private var shippingSlotResponse: ShippingSlotResponse? = null
     private lateinit var dialogOption: DialogOption
+    private var dialogDescription:String = ""
 
     companion object {
         private const val DIALOG_OPTION = "dialog_option"
@@ -79,6 +80,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         dialogOption = intent.getParcelableExtra(DIALOG_OPTION)
+        dialogDescription = getString(dialogOption.description)
         initView()
         getCartItems()
         startCheckOut()
@@ -191,7 +193,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun startDeliveryOptions() {
-        val fragment = DeliveryOptionsFragment.newInstance()
+        val fragment = DeliveryOptionsFragment.newInstance(dialogDescription)
         startFragment(fragment)
     }
 
@@ -201,13 +203,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun startBilling() {
-        val fragment = PaymentBillingFragment.newInstance(getString(dialogOption.description))
+        val fragment = PaymentBillingFragment.newInstance(dialogDescription)
         startFragment(fragment)
     }
 
     private fun startBilling(response: Member?) {
-        val fragment = if (response != null) PaymentBillingFragment.newInstance(getString(dialogOption.description), response) else
-            PaymentBillingFragment.newInstance(getString(dialogOption.description))
+        val fragment = if (response != null) PaymentBillingFragment.newInstance(dialogDescription, response) else
+            PaymentBillingFragment.newInstance(dialogDescription)
         startFragment(fragment)
     }
 
