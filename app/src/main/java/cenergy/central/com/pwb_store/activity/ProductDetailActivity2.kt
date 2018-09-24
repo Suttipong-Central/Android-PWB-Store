@@ -18,6 +18,8 @@ import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.fragment.DetailFragment
+import cenergy.central.com.pwb_store.fragment.OverviewFragment
+import cenergy.central.com.pwb_store.fragment.WebViewFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
@@ -128,6 +130,14 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     override fun onDisplayAvailableStore(product: Product?) {
         product?.let { startAvailableStore(it) }
     }
+
+    override fun onDisplayOverview(overview: String) {
+        startWebView(overview)
+    }
+
+    override fun onDisplaySpecification(spec: String) {
+        startWebView(spec)
+    }
     // endregion
 
     // region {@link PowerBuyCompareView.OnClickListener}
@@ -211,7 +221,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     fun startProductDetailFragment() {
         // setup
         supportFragmentManager.beginTransaction().replace(R.id.containerDetail, DetailFragment()).commit()
-//        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, DetailFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, OverviewFragment()).commit()
 //        supportFragmentManager.beginTransaction().replace(R.id.containerExtension, DetailFragment()).commit()
     }
 
@@ -375,6 +385,14 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         Log.d(TAG, "sku" + product.id)
         val intent = Intent(this, AvaliableStoreActivity::class.java)
         intent.putExtra(AvaliableStoreActivity.ARG_SKU, product.sku)
+        startActivity(intent)
+    }
+
+    private fun startWebView(content: String) {
+        val intent = Intent(this@ProductDetailActivity2, WebViewActivity::class.java)
+        intent.putExtra(WebViewActivity.ARG_WEB_URL, content)
+        intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML)
+        intent.putExtra(WebViewActivity.ARG_TITLE, "Web")
         startActivity(intent)
     }
 }

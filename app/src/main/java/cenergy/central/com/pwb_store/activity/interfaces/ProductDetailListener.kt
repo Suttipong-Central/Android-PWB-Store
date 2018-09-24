@@ -12,5 +12,8 @@ interface ProductDetailListener {
 
     fun addProductToCompare(product: Product?)
     fun addProductToCart(product: Product?)
+
     fun onDisplayAvailableStore(product: Product?)
+    fun onDisplayOverview(overview: String)
+    fun onDisplaySpecification(spec: String)
 }

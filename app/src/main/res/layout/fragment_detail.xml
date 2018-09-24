@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/powerBuyWhite"
     android:paddingTop="16dp">
 
@@ -35,10 +35,10 @@
         android:layout_width="0dp"
         android:layout_height="108dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         app:cardBackgroundColor="@android:color/white"
         app:layout_constraintEnd_toStartOf="@id/guideline40"
         app:layout_constraintStart_toStartOf="parent"
@@ -280,8 +280,8 @@
                 style="@style/RaisedButtonCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginEnd="4dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground"
@@ -319,8 +319,8 @@
                 style="@style/RaisedButtonCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground"
@@ -356,5 +356,15 @@
     </LinearLayout>
     <!-- endregion -->
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/lightgray"
+        app:layout_constraintTop_toBottomOf="@+id/pagerProductImage"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

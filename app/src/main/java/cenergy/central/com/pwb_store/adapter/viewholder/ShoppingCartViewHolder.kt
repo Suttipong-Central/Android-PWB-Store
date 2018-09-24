@@ -68,7 +68,6 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
         val max = Math.min(cacheCartItem.qtyInStock ?: 1, cacheCartItem.maxQTY ?: 1)
         productQty.setMaximum(max)
-        Log.d("Product", "max qty: $max")
         productQty.setQty(item.qty!!)
         checkOverAddQty(item.qty!!)
         totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), item.price!!))

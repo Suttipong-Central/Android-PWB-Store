@@ -67,7 +67,6 @@ class DetailFragment : Fragment(), View.OnClickListener {
 
             R.id.card_view_add_compare -> {
                 productDetailListener?.addProductToCompare(product)
-
             }
 
             R.id.card_view_add_to_cart -> {

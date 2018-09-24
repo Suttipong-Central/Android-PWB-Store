@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/powerBuyWhite"
+    android:focusableInTouchMode="true"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+        android:id="@+id/overviewLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+0        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvOverviewHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:text="@string/product_overview"
+            android:textColor="@color/nameProductColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="RobotoLight.ttf" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_keyboard_arrow_right" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/lightgray"
+        app:layout_constraintTop_toBottomOf="@+id/overviewLayout" />
+
+    <android.support.constraint.Group
+        android:id="@+id/overviewGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="overviewLayout,line1" />
+
+    <LinearLayout
+        android:id="@+id/specLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/line1">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvSpecHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:text="@string/product_spec"
+            android:textColor="@color/nameProductColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="RobotoLight.ttf" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_keyboard_arrow_right" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/lightgray"
+        app:layout_constraintTop_toBottomOf="@+id/specLayout" />
+
+    <android.support.constraint.Group
+        android:id="@+id/specGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="specLayout,line2" />
+</android.support.constraint.ConstraintLayout>
