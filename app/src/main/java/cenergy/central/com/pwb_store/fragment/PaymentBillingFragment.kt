@@ -66,7 +66,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: CardView
     private lateinit var radioGroup: RadioGroup
-    private lateinit var sameBillingLayout: LinearLayout
 
     private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
     private lateinit var districtInput: PowerBuyAutoCompleteTextStroke
@@ -89,7 +88,6 @@ class PaymentBillingFragment : Fragment() {
     private var paymentProtocol: PaymentProtocol? = null
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
-    private var dialogOption: String? = ""
     private var member: Member? = null
     private var firstName: String = ""
     private var lastName: String = ""
@@ -143,21 +141,18 @@ class PaymentBillingFragment : Fragment() {
     private var billingPostcodeAdapter: AddressAdapter? = null
 
     companion object {
-        private const val DIALOG_OPTION = "dialog_option"
         private const val MEMBER = "MEMBER"
 
-        fun newInstance(dialogOption: String): PaymentBillingFragment {
+        fun newInstance(): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
             val args = Bundle()
-            args.putString(DIALOG_OPTION, dialogOption)
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(dialogOption: String, member: Member): PaymentBillingFragment {
+        fun newInstance(member: Member): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
             val args = Bundle()
-            args.putString(DIALOG_OPTION, dialogOption)
             args.putParcelable(MEMBER, member)
             fragment.arguments = args
             return fragment
@@ -177,7 +172,6 @@ class PaymentBillingFragment : Fragment() {
         val preferenceManager = context?.let { PreferenceManager(it) }
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(MEMBER)
-        dialogOption = arguments?.getString(DIALOG_OPTION)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -225,8 +219,6 @@ class PaymentBillingFragment : Fragment() {
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
 
-        sameBillingLayout = rootView.findViewById(R.id.same_billing_layout)
-
         //Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         contactNumberEdt.setTextLength(10)
@@ -240,12 +232,7 @@ class PaymentBillingFragment : Fragment() {
         billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
 
         radioGroup = rootView.findViewById(R.id.radio_group)
-        if (dialogOption == getString(R.string.select_store_dialog)){
-            sameBillingLayout.visibility = View.GONE
-            isSameBilling = true
-        } else {
-            sameBillingLayout.visibility = View.VISIBLE
-        }
+
         checkSameBilling()
         radioGroup.setOnCheckedChangeListener { radioGroup, i ->
             when(radioGroup.checkedRadioButtonId){

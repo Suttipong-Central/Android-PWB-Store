@@ -60,15 +60,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
     private var shippingSlotResponse: ShippingSlotResponse? = null
-    private lateinit var dialogOption: DialogOption
-    private var dialogDescription:String = ""
 
     companion object {
-        private const val DIALOG_OPTION = "dialog_option"
-
-        fun intent(context: Context, option: DialogOption) {
+        fun intent(context: Context) {
             val intent = Intent(context, PaymentActivity::class.java)
-            intent.putExtra(DIALOG_OPTION, option)
             context.startActivity(intent)
         }
     }
@@ -79,8 +74,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
-        dialogOption = intent.getParcelableExtra(DIALOG_OPTION)
-        dialogDescription = getString(dialogOption.description)
         initView()
         getCartItems()
         startCheckOut()
@@ -193,7 +186,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun startDeliveryOptions() {
-        val fragment = DeliveryOptionsFragment.newInstance(dialogDescription)
+        val fragment = DeliveryOptionsFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -203,13 +196,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun startBilling() {
-        val fragment = PaymentBillingFragment.newInstance(dialogDescription)
+        val fragment = PaymentBillingFragment.newInstance()
         startFragment(fragment)
     }
 
     private fun startBilling(response: Member?) {
-        val fragment = if (response != null) PaymentBillingFragment.newInstance(dialogDescription, response) else
-            PaymentBillingFragment.newInstance(dialogDescription)
+        val fragment = if (response != null) PaymentBillingFragment.newInstance(response) else
+            PaymentBillingFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -314,11 +307,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun createShippingInformation(storeAddress: AddressInformation?, subscribeCheckOut: SubscribeCheckOut) {
         if (cartId != null && shippingAddress != null) {
-            // is shipping at store?
-            if (storeAddress != null) {
+            if (storeAddress != null) { // is shipping at store?
                 storeAddress.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress
+                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -337,42 +330,26 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             } else {
                 if (billingAddress != null) {
                     shippingAddress!!.sameBilling = 0
-                    HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!, billingAddress!!, subscribeCheckOut,
-                            deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
-                        override fun success(response: ShippingInformationResponse?) {
-                            if (response != null) {
-                                updateOrder()
-                            } else {
-                                mProgressDialog?.dismiss()
-                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                            }
-                        }
-
-                        override fun failure(error: APIError) {
-                            mProgressDialog?.dismiss()
-                            showAlertDialog("", error.errorMessage)
-                        }
-                    })
                 } else {
                     shippingAddress!!.sameBilling = 1
-                    HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!, shippingAddress!!, subscribeCheckOut,
-                            deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
-                        override fun success(response: ShippingInformationResponse?) {
-                            if (response != null) {
-                                updateOrder()
-                            } else {
-                                mProgressDialog?.dismiss()
-                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                            }
-                        }
-
-                        override fun failure(error: APIError) {
-                            mProgressDialog?.dismiss()
-                            showAlertDialog("", error.errorMessage)
-                        }
-                    })
                 }
+                HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
+                        billingAddress ?: shippingAddress!!, subscribeCheckOut,
+                        deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
+                    override fun success(response: ShippingInformationResponse?) {
+                        if (response != null) {
+                            updateOrder()
+                        } else {
+                            mProgressDialog?.dismiss()
+                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        }
+                    }
 
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", error.errorMessage)
+                    }
+                })
             }
         }
     }

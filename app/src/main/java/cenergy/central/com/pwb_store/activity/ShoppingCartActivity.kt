@@ -36,7 +36,7 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener, StoreOrShippingClickListener {
+class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
@@ -52,10 +52,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private var cartId: String = ""
     private var unit: String = ""
     private val database: RealmController = RealmController.with(this)
-    // dialog
-    private var dialog = DialogFragment()
-    private var storeOrShippingDialogFragment = StoreOrShippingDialogFragment
-    private var dialogOptionList: ArrayList<DialogOption>  = arrayListOf()
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -81,7 +77,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
-        storeOrShippingDialogFragment.setOnStoreOrShippingListener(this)
 
         cartId = intent.getStringExtra(CART_ID)
         initView()
@@ -91,11 +86,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         recycler.adapter = shoppingCartAdapter
 
         getCartItem()
-
-        val selectShipping = DialogOption.createDialogOption(0, R.string.select_shipping_dialog)
-        val selectStore = DialogOption.createDialogOption(0, R.string.select_store_dialog)
-        dialogOptionList.add(selectShipping)
-        dialogOptionList.add(selectStore)
     }
 
     private fun setUpToolbar() {
@@ -155,11 +145,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     }
     //end region
 
-    override fun onStoreOrShippingClick(option: DialogOption) {
-        dialog.dismiss()
-        PaymentActivity.intent(this, option)
-    }
-
     private fun getCartItem() {
         HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
@@ -204,9 +189,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         if (cartItemList.isNotEmpty()) {
             paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.powerBuyPurple))
             paymentButton.setOnClickListener {
-
-                dialog = storeOrShippingDialogFragment.newInstance(dialogOptionList)
-                dialog.show(supportFragmentManager, "dialog")
+                PaymentActivity.intent(this)
             }
         } else {
             paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.hintColor))
