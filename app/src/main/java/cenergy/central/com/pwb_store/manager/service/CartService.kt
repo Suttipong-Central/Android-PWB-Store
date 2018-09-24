@@ -38,8 +38,8 @@ internal interface CartService {
     fun createShippingInformation(@Path("cartId") cartId: String,
                                   @Body shippingBody: ShippingBody): Call<ShippingInformationResponse>
 
-    @PUT("/rest/V1/guest-carts/{cartId}/order")
-//    @POST("/rest/V1/headless/guest-carts/{cartId}/payment-information")
+//    @PUT("/rest/V1/guest-carts/{cartId}/order")
+    @POST("/rest/V1/headless/guest-carts/{cartId}/payment-information")
     fun updateOrder(@Path("cartId") cartId: String,
                     @Body paymentInformation: PaymentInformationBody): Call<String>
 
