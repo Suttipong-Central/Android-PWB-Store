@@ -39,7 +39,33 @@ class ProductExtensionFragment : Fragment() {
     private fun setupView(rootView: View) {
         extensionTabLayout = rootView.findViewById(R.id.extensionTabLayout)
 
-        extensionTabLayout.addTab(extensionTabLayout.newTab().setText("โปรโมชั่นและของแถม"))
-        extensionTabLayout.addTab(extensionTabLayout.newTab().setText("ตัวเลือกการจัดส่ง"))
+        extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_PROMOTION_FREEBIE).setText("โปรโมชั่นและของแถม"))
+        extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_DELIVERY).setText("ตัวเลือกการจัดส่ง"))
+        extensionTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.tag) {
+                    TAB_PROMOTION_FREEBIE -> startChildFragment(ProductFreeItemFragment())
+                    TAB_DELIVERY -> startChildFragment(ProductShippingOptionFragment())
+                }
+            }
+
+        })
+        extensionTabLayout.getTabAt(0)?.select()
+    }
+
+    fun startChildFragment(fragment: Fragment) {
+        fragmentManager?.beginTransaction()?.replace(R.id.extensionContainer, fragment)?.commit()
+    }
+
+    companion object {
+        private const val TAB_PROMOTION_FREEBIE = "promotion_and_freebie"
+        private const val TAB_DELIVERY = "delivery"
     }
 }

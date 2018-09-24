@@ -458,6 +458,10 @@ class HttpManagerMagento(context: Context) {
                                 "short_description" -> {
                                     productExtension.shortDescription = attrArray.getJSONObject(i).getString("value")
                                 }
+
+                                "barcode" -> {
+                                    productExtension.barcode = attrArray.getJSONObject(i).getString("value")
+                                }
                             }
                         }
                         product.extension = productExtension // add product extension to product
