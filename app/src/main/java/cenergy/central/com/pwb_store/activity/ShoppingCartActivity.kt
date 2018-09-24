@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -19,20 +20,23 @@ import android.view.View
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.dialogs.StoreOrShippingDialogFragment
+import cenergy.central.com.pwb_store.dialogs.interfaces.StoreOrShippingClickListener
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.DialogOption
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
-
+class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener, StoreOrShippingClickListener {
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
@@ -44,10 +48,14 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
     // data
-    var shoppingCartAdapter = ShoppingCartAdapter(this, false)
+    private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
     private var cartId: String = ""
     private var unit: String = ""
     private val database: RealmController = RealmController.with(this)
+    // dialog
+    private var dialog = DialogFragment()
+    private var storeOrShippingDialogFragment = StoreOrShippingDialogFragment
+    private var dialogOptionList: ArrayList<DialogOption>  = arrayListOf()
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -73,6 +81,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+        storeOrShippingDialogFragment.setOnStoreOrShippingListener(this)
 
         cartId = intent.getStringExtra(CART_ID)
         initView()
@@ -82,6 +91,11 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         recycler.adapter = shoppingCartAdapter
 
         getCartItem()
+
+        val selectShipping = DialogOption.createDialogOption(0, R.string.select_shipping_dialog)
+        val selectStore = DialogOption.createDialogOption(0, R.string.select_store_dialog)
+        dialogOptionList.add(selectShipping)
+        dialogOptionList.add(selectStore)
     }
 
     private fun setUpToolbar() {
@@ -141,6 +155,11 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     }
     //end region
 
+    override fun onStoreOrShippingClick(option: DialogOption) {
+        dialog.dismiss()
+        PaymentActivity.intent(this, option)
+    }
+
     private fun getCartItem() {
         HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
@@ -185,10 +204,9 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         if (cartItemList.isNotEmpty()) {
             paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.powerBuyPurple))
             paymentButton.setOnClickListener {
-                val intent = PaymentActivity.intent(this)
-                ActivityCompat.startActivity(this, intent, ActivityOptionsCompat
-                        .makeScaleUpAnimation(paymentButton, 0, 0, paymentButton.width, paymentButton.height)
-                        .toBundle())
+
+                dialog = storeOrShippingDialogFragment.newInstance(dialogOptionList)
+                dialog.show(supportFragmentManager, "dialog")
             }
         } else {
             paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.hintColor))

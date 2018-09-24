@@ -1,14 +1,14 @@
-package cenergy.central.com.pwb_store.adapter
+package cenergy.central.com.pwb_store.dialogs.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.viewholder.TimeSlotViewHolder
-import cenergy.central.com.pwb_store.fragment.interfaces.TimeSlotClickListener
+import cenergy.central.com.pwb_store.dialogs.adapter.viewholder.TimeSlotViewHolder
+import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
 import cenergy.central.com.pwb_store.model.response.Slot
 
-class TimeSlotAdapter(val slot: ArrayList<Slot>,val timeSlotClickListener: TimeSlotClickListener?): RecyclerView.Adapter<TimeSlotViewHolder>() {
+class TimeSlotAdapter(val slot: ArrayList<Slot>, private val timeSlotClickListener: TimeSlotClickListener?): RecyclerView.Adapter<TimeSlotViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeSlotViewHolder {
         return TimeSlotViewHolder(LayoutInflater.from(parent.context)

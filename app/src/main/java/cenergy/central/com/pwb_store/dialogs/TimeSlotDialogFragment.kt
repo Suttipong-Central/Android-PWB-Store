@@ -1,4 +1,4 @@
-package cenergy.central.com.pwb_store.fragment
+package cenergy.central.com.pwb_store.dialogs
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.TimeSlotAdapter
-import cenergy.central.com.pwb_store.fragment.interfaces.TimeSlotClickListener
+import cenergy.central.com.pwb_store.dialogs.adapter.TimeSlotAdapter
+import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
 import cenergy.central.com.pwb_store.model.response.Slot
 
 class TimeSlotDialogFragment : DialogFragment() {
@@ -67,7 +67,7 @@ class TimeSlotDialogFragment : DialogFragment() {
         }
 
         fun setOnPickDateListener(timeSlotClickListener: TimeSlotClickListener) {
-            this.timeSlotClickListener = timeSlotClickListener
+            Companion.timeSlotClickListener = timeSlotClickListener
         }
     }
 

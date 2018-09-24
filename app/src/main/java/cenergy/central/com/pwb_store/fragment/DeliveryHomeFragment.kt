@@ -13,10 +13,12 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.dialogs.DatePickerDialogFragment
+import cenergy.central.com.pwb_store.dialogs.TimeSlotDialogFragment
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.helpers.DateHelper
-import cenergy.central.com.pwb_store.fragment.interfaces.PickDateListener
-import cenergy.central.com.pwb_store.fragment.interfaces.TimeSlotClickListener
+import cenergy.central.com.pwb_store.dialogs.interfaces.PickDateListener
+import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.model.response.Slot
 import cenergy.central.com.pwb_store.view.PowerBuyEditText

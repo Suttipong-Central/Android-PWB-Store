@@ -1,4 +1,4 @@
-package cenergy.central.com.pwb_store.fragment.interfaces
+package cenergy.central.com.pwb_store.dialogs.interfaces
 
 import cenergy.central.com.pwb_store.model.response.Slot
 

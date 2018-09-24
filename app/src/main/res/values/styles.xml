@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -70,6 +70,12 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/powerBuyPurple</item>
+    </style>
+
+    <style name="RadioButtonStyle">
+        <item name="colorControlNormal">@color/graySelect</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/graySelect</item>
     </style>
 
     <style name="textSub">

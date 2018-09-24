@@ -1,4 +1,4 @@
-package cenergy.central.com.pwb_store.fragment
+package cenergy.central.com.pwb_store.dialogs
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
@@ -10,8 +10,7 @@ import android.view.Window
 import android.widget.DatePicker
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.helpers.DateHelper
-import cenergy.central.com.pwb_store.fragment.interfaces.PickDateListener
+import cenergy.central.com.pwb_store.dialogs.interfaces.PickDateListener
 import org.joda.time.DateTime
 import java.util.*
 
@@ -42,7 +41,7 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
         }
 
         fun setOnPickDateListener(pickDateListener: PickDateListener) {
-            this.pickDateListener = pickDateListener
+            Companion.pickDateListener = pickDateListener
         }
     }
 

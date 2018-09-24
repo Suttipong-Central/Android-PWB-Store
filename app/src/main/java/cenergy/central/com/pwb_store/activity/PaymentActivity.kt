@@ -42,6 +42,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private lateinit var preferenceManager: PreferenceManager
     private var shippingAddress: AddressInformation? = null
+    private var billingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
 
     // data
@@ -59,20 +60,25 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
     private var shippingSlotResponse: ShippingSlotResponse? = null
+    private lateinit var dialogOption: DialogOption
 
     companion object {
-        fun intent(context: Context): Intent {
-            return Intent(context, PaymentActivity::class.java)
+        private const val DIALOG_OPTION = "dialog_option"
+
+        fun intent(context: Context, option: DialogOption) {
+            val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(DIALOG_OPTION, option)
+            context.startActivity(intent)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
-//        showProgressDialog()
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
+        dialogOption = intent.getParcelableExtra(DIALOG_OPTION)
         initView()
         getCartItems()
         startCheckOut()
@@ -100,6 +106,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         showProgressDialog()
         this.shippingAddress = shippingAddress
         cartId?.let { getDeliveryOptions(it) } // request delivery options
+    }
+
+    override fun setBillingAddressInfo(billingAddress: AddressInformation) {
+        this.billingAddress = billingAddress
     }
     // endregion
 
@@ -191,14 +201,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun startBilling() {
-        val fragment = PaymentBillingFragment.newInstance()
+        val fragment = PaymentBillingFragment.newInstance(getString(dialogOption.description))
         startFragment(fragment)
     }
 
-
     private fun startBilling(response: Member?) {
-        val fragment = if (response != null) PaymentBillingFragment.newInstance(response) else
-            PaymentBillingFragment.newInstance()
+        val fragment = if (response != null) PaymentBillingFragment.newInstance(getString(dialogOption.description), response) else
+            PaymentBillingFragment.newInstance(getString(dialogOption.description))
         startFragment(fragment)
     }
 
@@ -303,31 +312,66 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun createShippingInformation(storeAddress: AddressInformation?, subscribeCheckOut: SubscribeCheckOut) {
         if (cartId != null && shippingAddress != null) {
-            val billingAddress = shippingAddress!!
-
-            // is shipping same as billing?
+            // is shipping at store?
             if (storeAddress != null) {
-                billingAddress.sameBilling = 0
+                storeAddress.sameBilling = 0
+                HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
+                        shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        object : ApiResponseCallback<ShippingInformationResponse> {
+                            override fun success(response: ShippingInformationResponse?) {
+                                if (response != null) {
+                                    updateOrder()
+                                } else {
+                                    mProgressDialog?.dismiss()
+                                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                }
+                            }
+
+                            override fun failure(error: APIError) {
+                                mProgressDialog?.dismiss()
+                                showAlertDialog("", error.errorMessage)
+                            }
+                        })
             } else {
-                billingAddress.sameBilling = 1
-            }
-            HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress
-                    ?: shippingAddress!!, billingAddress, subscribeCheckOut,
-                    deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
-                override fun success(response: ShippingInformationResponse?) {
-                    if (response != null) {
-                        updateOrder()
-                    } else {
-                        mProgressDialog?.dismiss()
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                    }
+                if (billingAddress != null) {
+                    shippingAddress!!.sameBilling = 0
+                    HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!, billingAddress!!, subscribeCheckOut,
+                            deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
+                        override fun success(response: ShippingInformationResponse?) {
+                            if (response != null) {
+                                updateOrder()
+                            } else {
+                                mProgressDialog?.dismiss()
+                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            mProgressDialog?.dismiss()
+                            showAlertDialog("", error.errorMessage)
+                        }
+                    })
+                } else {
+                    shippingAddress!!.sameBilling = 1
+                    HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!, shippingAddress!!, subscribeCheckOut,
+                            deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
+                        override fun success(response: ShippingInformationResponse?) {
+                            if (response != null) {
+                                updateOrder()
+                            } else {
+                                mProgressDialog?.dismiss()
+                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            mProgressDialog?.dismiss()
+                            showAlertDialog("", error.errorMessage)
+                        }
+                    })
                 }
 
-                override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    showAlertDialog("", error.errorMessage)
-                }
-            })
+            }
         }
     }
 
@@ -516,7 +560,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
                 val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
                 val storeAddress = AddressInformation.createAddress(
-                        firstName = shippingAddress?.firstname ?: "Testing", lastName = shippingAddress?.lastname
+                        firstName = shippingAddress?.firstname
+                                ?: "Testing", lastName = shippingAddress?.lastname
                         ?: "Testing", email = shippingAddress?.email ?: "storepickup@testing.com",
                         contactNo = shippingAddress?.telephone ?: "0000000000", homeNo = "",
                         homeBuilding = "ชื่ออาคาร", homeSoi = "ซอย",
