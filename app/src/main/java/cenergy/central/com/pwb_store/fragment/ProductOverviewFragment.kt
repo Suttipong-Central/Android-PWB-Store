@@ -17,7 +17,7 @@ import cenergy.central.com.pwb_store.model.Product
  * Email: Anupharpae@gmail.com
  */
 
-class OverviewFragment : Fragment() {
+class ProductOverviewFragment : Fragment() {
     private var productDetailListener: ProductDetailListener? = null
     private var product: Product? = null
 
@@ -34,7 +34,7 @@ class OverviewFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_overview, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_product_overview, container, false)
         setupView(rootView)
         return rootView
     }

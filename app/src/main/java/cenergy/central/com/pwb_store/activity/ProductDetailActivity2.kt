@@ -18,7 +18,8 @@ import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.fragment.DetailFragment
-import cenergy.central.com.pwb_store.fragment.OverviewFragment
+import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
+import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
 import cenergy.central.com.pwb_store.fragment.WebViewFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -221,8 +222,8 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     fun startProductDetailFragment() {
         // setup
         supportFragmentManager.beginTransaction().replace(R.id.containerDetail, DetailFragment()).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, OverviewFragment()).commit()
-//        supportFragmentManager.beginTransaction().replace(R.id.containerExtension, DetailFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, ProductOverviewFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerExtension, ProductExtensionFragment()).commit()
     }
 
     private fun updateShoppingCartBadge() {
