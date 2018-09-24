@@ -13,9 +13,11 @@ data class ProductExtension(@SerializedName("description")
                             var description: String? = "",
                             @SerializedName("short_description")
                             var shortDescription: String? = "",
+                            var barcode:String? = "",
                             @SerializedName("stock_item")
                             var stokeItem: StockItem? = null) : Parcelable {
     constructor(parcel: Parcel) : this(
+            parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readParcelable(StockItem::class.java.classLoader))
@@ -23,6 +25,7 @@ data class ProductExtension(@SerializedName("description")
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(description)
         parcel.writeString(shortDescription)
+        parcel.writeString(barcode)
         parcel.writeParcelable(stokeItem, flags)
     }
 
