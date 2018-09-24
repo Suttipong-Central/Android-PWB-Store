@@ -8,7 +8,7 @@ open class User(
         var userId: Long = 0,
         var name: String = "",
         @SerializedName("staff_id")
-        var staffId: String = "",
+        var staffId: String? = "",
         @SerializedName("store_id")
         var storeId: Long = 0,
         var email: String? = "",
