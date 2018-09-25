@@ -198,6 +198,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             tvShippingHeader.text = getString(R.string.delivery_detail)
             tvDeliveryType.text = order.shippingType
             tvReceiverName.text = address?.getDisplayName()
+//            getAddress(order.billingAddress) //TODO: create get address
             tvDeliveryAddress.text = "${subAddress?.houseNumber ?: ""}, ${subAddress?.soi
                     ?: ""}, ${subAddress?.building ?: ""}, ${subAddress?.subDistrict
                     ?: ""}, ${subAddress?.district ?: ""}, ${address?.region
@@ -290,5 +291,25 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         showAlertDialog("", error.errorMessage)
     }
     //endregion
+
+    private fun getAddress(address: AddressInformation?): String {
+
+        if (address == null) {
+            return ""
+        }
+
+        var text: String = ""
+        val subAddress = address.subAddress
+        "${subAddress?.houseNumber ?: ""}, ${subAddress?.soi
+                ?: ""}, ${subAddress?.building ?: ""}, ${subAddress?.subDistrict
+                ?: ""}, ${subAddress?.district ?: ""}, ${address?.region
+                ?: ""}, ${address?.postcode
+                ?: ""}"
+
+        if (subAddress?.houseNumber == null) {
+            text += subAddress?.houseNumber + ", "
+        }
+
+    }
 
 }
