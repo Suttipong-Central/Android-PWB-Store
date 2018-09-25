@@ -194,17 +194,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             storeAddressLayout.visibility = View.GONE
 
             val address = order.billingAddress
-            val subAddress = address?.subAddress
             tvShippingHeader.text = getString(R.string.delivery_detail)
             tvDeliveryType.text = order.shippingType
             tvReceiverName.text = address?.getDisplayName()
-//            getAddress(order.billingAddress) //TODO: create get address
-            tvDeliveryAddress.text = "${subAddress?.houseNumber ?: ""}, ${subAddress?.soi
-                    ?: ""}, ${subAddress?.building ?: ""}, ${subAddress?.subDistrict
-                    ?: ""}, ${subAddress?.district ?: ""}, ${address?.region
-                    ?: ""}, ${address?.postcode
-                    ?: ""}".trim()
-
+            tvDeliveryAddress.text = getAddress(order.billingAddress)
         } else {
             deliveryLayout.visibility = View.GONE
             storeAddressLayout.visibility = View.VISIBLE
@@ -293,23 +286,30 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     //endregion
 
     private fun getAddress(address: AddressInformation?): String {
-
         if (address == null) {
             return ""
         }
-
-        var text: String = ""
+        var text = ""
         val subAddress = address.subAddress
-        "${subAddress?.houseNumber ?: ""}, ${subAddress?.soi
-                ?: ""}, ${subAddress?.building ?: ""}, ${subAddress?.subDistrict
-                ?: ""}, ${subAddress?.district ?: ""}, ${address?.region
-                ?: ""}, ${address?.postcode
-                ?: ""}"
-
-        if (subAddress?.houseNumber == null) {
-            text += subAddress?.houseNumber + ", "
+        if(subAddress != null){
+            if (subAddress.houseNumber.isNotBlank()) {
+                text += subAddress.houseNumber + ", "
+            }
+            if (subAddress.soi.isNotBlank()) {
+                text += subAddress.soi+ ", "
+            }
+            if (subAddress.building.isNotBlank()) {
+                text += subAddress.building + ", "
+            }
+            if (subAddress.subDistrict.isNotBlank()) {
+                text += subAddress.subDistrict + ", "
+            }
+            if (subAddress.district.isNotBlank()) {
+                text += subAddress.district + ", "
+            }
         }
-
+        text += address.region + ", "
+        text += address.postcode
+        return text
     }
-
 }
