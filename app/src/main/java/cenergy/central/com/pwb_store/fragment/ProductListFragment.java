@@ -32,6 +32,7 @@ import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
+import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
@@ -309,8 +310,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     @Subscribe
     public void onEvent(ProductDetailBus productDetailBus) {
-        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, productDetailBus.getProductId());
+        Intent intent = new Intent(getContext(), ProductDetailActivity2.class);
+        intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, productDetailBus.getProductId());
         ActivityCompat.startActivity(getContext(), intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())

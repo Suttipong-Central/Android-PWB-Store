@@ -54,14 +54,6 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     private var isBarcode: Boolean = false
     private var product: Product? = null
 
-    companion object {
-        private val TAG = ProductDetailActivity2::class.java.simpleName
-
-        const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID"
-        const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
-        const val ARG_IS_BARCODE = "ARG_IS_BARCODE"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_detail2)
@@ -395,5 +387,13 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML)
         intent.putExtra(WebViewActivity.ARG_TITLE, "Web")
         startActivity(intent)
+    }
+
+    companion object {
+        private val TAG = ProductDetailActivity2::class.java.simpleName
+
+        const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID"
+        const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
+        const val ARG_IS_BARCODE = "ARG_IS_BARCODE"
     }
 }

@@ -101,9 +101,9 @@ public class SearchActivity extends AppCompatActivity {
                 //TODO แก้Barcode
                 Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "barcode : " + result.getContents());
-                Intent intent = new Intent(SearchActivity.this, ProductDetailActivity.class);
-                intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());
-                intent.putExtra(ProductDetailActivity.ARG_IS_BARCODE, true);
+                Intent intent = new Intent(SearchActivity.this, ProductDetailActivity2.class);
+                intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_ID, result.getContents());
+                intent.putExtra(ProductDetailActivity2.ARG_IS_BARCODE, true);
                 ActivityCompat.startActivity(SearchActivity.this, intent,
                         ActivityOptionsCompat
                                 .makeScaleUpAnimation(mToolbar, 0, 0, mToolbar.getWidth(), mToolbar.getHeight())

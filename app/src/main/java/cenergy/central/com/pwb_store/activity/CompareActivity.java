@@ -60,8 +60,8 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
 //                        .makeScaleUpAnimation(compareDetailBus.getView(), 0, 0, compareDetailBus.getView().getWidth(), compareDetailBus.getView().getHeight())
 //                        .toBundle());
 
-        Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, compareDetailBus.getCompareProduct().getSku());
+        Intent intent = new Intent(this, ProductDetailActivity2.class);
+        intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, compareDetailBus.getCompareProduct().getSku());
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat
                         .makeScaleUpAnimation(compareDetailBus.getView(), 0, 0, compareDetailBus.getView().getWidth(), compareDetailBus.getView().getHeight())
