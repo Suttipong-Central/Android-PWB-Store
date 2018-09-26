@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.adapter.viewholder.StoresViewHolder
+import cenergy.central.com.pwb_store.model.Branch
 
 class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Adapter<StoresViewHolder>() {
 
     var selectedIndex: Int? = null
-    var stores = arrayListOf<String>()
+    var branches = listOf<Branch>()
     set(value) {
         field = value
         notifyDataSetChanged()
@@ -23,16 +24,16 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
     }
 
     override fun getItemCount(): Int {
-        return stores.size
+        return branches.size
     }
 
     override fun onBindViewHolder(holder: StoresViewHolder, position: Int) {
-        val store = stores[position]
-        holder.bindView(store)
+        val branch = branches[position]
+        holder.bindView(branch)
         holder.itemView.setOnClickListener {
             selectedIndex = position
             notifyDataSetChanged()
-            listener.onItemClicked(store)
+            listener.onItemClicked(branch)
         }
         if (selectedIndex == position){
             holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.powerBuyPurple))

@@ -1,9 +1,6 @@
 package cenergy.central.com.pwb_store.activity.interfaces
 
-import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.DeliveryOption
-import cenergy.central.com.pwb_store.model.DeliveryType
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 
@@ -19,6 +16,5 @@ interface PaymentProtocol {
     fun getShippingAddress(): AddressInformation?
     fun getSelectedDeliveryType(): DeliveryType?
     fun getShippingSlot(): ShippingSlotResponse?
-
-    fun retrieveStores()
+    fun getBranches(): List<Branch>
 }

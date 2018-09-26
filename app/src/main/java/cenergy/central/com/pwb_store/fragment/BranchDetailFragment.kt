@@ -10,8 +10,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
+import cenergy.central.com.pwb_store.model.Branch
 
-class StoreDetailFragment : Fragment() {
+class BranchDetailFragment : Fragment() {
     private lateinit var tvStoreSelect: TextView
     private lateinit var tvTitle: TextView
     private lateinit var tvTitleAddress: TextView
@@ -25,8 +26,8 @@ class StoreDetailFragment : Fragment() {
     private var listener: StorePickUpListener? = null
 
     companion object {
-        fun newInstance(): StoreDetailFragment {
-            val fragment = StoreDetailFragment()
+        fun newInstance(): BranchDetailFragment {
+            val fragment = BranchDetailFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -53,13 +54,13 @@ class StoreDetailFragment : Fragment() {
         return rootView
     }
 
-    fun updateStoreDetail(store: String) {
-        tvTitle.text = store
-        tvAddress.text = store
-        tvContract.text = store
-        tvOpenStore.text = store
+    fun updateBranchDetail(branch: Branch) {
+        tvTitle.text = branch.storeName
+        tvAddress.text = branch.address
+        tvContract.text = branch.phone
+        tvOpenStore.text = branch.description
         selectedButton.setOnClickListener {
-            listener?.onSelectedStore(store)
+            listener?.onSelectedStore(branch)
         }
         showContentView()
     }

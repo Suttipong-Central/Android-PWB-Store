@@ -4,6 +4,7 @@ import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import retrofit2.Call
@@ -49,5 +50,5 @@ internal interface CartService {
 
     @GET("/rest/all/V1/headless/storepickup")
     fun getBranches(@Query("searchCriteria[sortOrders][0][field]") orderBy: String,
-                   @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<List<Branch>>
+                   @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
 }

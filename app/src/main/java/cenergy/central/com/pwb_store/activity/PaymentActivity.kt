@@ -56,7 +56,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-    private var stores: ArrayList<String> = arrayListOf()
+    private var branches: List<Branch> = arrayListOf()
+    private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
     private var shippingSlotResponse: ShippingSlotResponse? = null
@@ -120,7 +121,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
-                startStorePickupFragment()
+                showProgressDialog()
+                getStoresDelivery()
             }
             HOME -> {
                 showProgressDialog()
@@ -128,6 +130,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             }
         }
     }
+
     // endregion
 
     // region {@link HomeDeliveryListener}
@@ -400,12 +403,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             HttpManagerMagento.getInstance(this).getOrderDeliveryOptions(cartId, it,
                     object : ApiResponseCallback<List<DeliveryOption>> {
                         override fun success(response: List<DeliveryOption>?) {
+                            mProgressDialog?.dismiss()
                             if (response != null) {
                                 deliveryOptionsList = response
-                                mProgressDialog?.dismiss()
                                 startDeliveryOptions()
                             } else {
-                                mProgressDialog?.dismiss()
                                 showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
                             }
                         }
@@ -416,6 +418,25 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                         }
                     })
         }
+    }
+
+    private fun getStoresDelivery() {
+        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>>{
+            override fun success(response: List<Branch>?) {
+                mProgressDialog?.dismiss()
+                if(response != null){
+                    branches = response
+                    startStorePickupFragment()
+                }else{
+                    showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                showResponseAlertDialog("", error.errorMessage)
+            }
+        })
     }
 
     private fun getShippingHomeDelivery() {
@@ -431,12 +452,12 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 shippingAddress!!.region, shippingAddress!!.postcode!!, period, customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
+                mProgressDialog?.dismiss()
                 if (response != null) {
                     shippingSlotResponse = response
-                    mProgressDialog?.dismiss()
                     startDeliveryHomeFragment()
                 } else {
-                    mProgressDialog?.dismiss()
+                    showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
             }
 
@@ -504,29 +525,18 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun getShippingSlot(): ShippingSlotResponse? = this.shippingSlotResponse
 
-    override fun retrieveStores() {
-        //TODO: get stores
-        if (currentFragment is DeliveryStorePickUpFragment) {
-            stores.add("store 1")
-            stores.add("store 2")
-            stores.add("store 3")
-            stores.add("store 4")
-            stores.add("store 5")
-
-            (currentFragment as DeliveryStorePickUpFragment).updateStores(stores)
-        }
-    }
+    override fun getBranches(): List<Branch> = this.branches
     // endregion
 
     // region {@link StorePickUpListener}
-    override fun onUpdateStoreDetail(store: String) {
-        //TODO: update storeDetail
+    override fun onUpdateStoreDetail(branch: Branch) {
+        this.branch = branch
         if (currentFragment is DeliveryStorePickUpFragment) {
-            (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(store)
+            (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(branch)
         }
     }
 
-    override fun onSelectedStore(store: String) {
+    override fun onSelectedStore(branch: Branch) {
         val userInformation = database.userInformation
         userInformation?.let {
             if (userInformation.user != null && userInformation.store != null) {
@@ -563,7 +573,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {
-            stores.clear() // clear stores
             startDeliveryOptions()
             return
         }

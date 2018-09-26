@@ -20,7 +20,7 @@
         app:typeFaceAsset="RobotoLight.ttf" />
 
     <FrameLayout
-        android:id="@+id/content_stores"
+        android:id="@+id/content_branches"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -47,7 +47,7 @@
         app:layout_constraintGuide_percent="0.4" />
 
     <FrameLayout
-        android:id="@+id/content_store_detail"
+        android:id="@+id/content_branch_detail"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
