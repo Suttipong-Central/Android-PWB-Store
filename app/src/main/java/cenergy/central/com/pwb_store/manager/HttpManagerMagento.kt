@@ -682,7 +682,7 @@ class HttpManagerMagento(context: Context) {
     // region store
     fun getBranches(callback: ApiResponseCallback<List<Branch>>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches("central_store_code", "ASC").enqueue(object : Callback<BranchResponse> {
+        cartService.getBranches("storepickup_id", "ASC").enqueue(object : Callback<BranchResponse> {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()

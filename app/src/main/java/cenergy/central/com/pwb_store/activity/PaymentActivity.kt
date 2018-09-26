@@ -421,13 +421,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun getStoresDelivery() {
-        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>>{
+        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
             override fun success(response: List<Branch>?) {
                 mProgressDialog?.dismiss()
-                if(response != null){
+                if (response != null) {
                     branches = response
                     startStorePickupFragment()
-                }else{
+                } else {
                     showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
             }
@@ -474,7 +474,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
-        val storeId = userInformation?.user?.storeId?.toString() ?: ""
+        val storeId = branch?.storeId ?: ""
 
         HttpManagerMagento.getInstance(this).updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
@@ -526,6 +526,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun getShippingSlot(): ShippingSlotResponse? = this.shippingSlotResponse
 
     override fun getBranches(): List<Branch> = this.branches
+
+    override fun getSelectedBranch(): Branch? = this.branch
     // endregion
 
     // region {@link StorePickUpListener}
@@ -541,31 +543,31 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         userInformation?.let {
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-                val staff = userInformation.user
-                val storeStaff = userInformation.store
-                //Check this if change to use PWB login
-                val province = database.getProvinceByNameEn(storeStaff?.province ?: "")
-                val district = database.getDistrictByNameEn(storeStaff?.district ?: "")
-                val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
-                val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
-                val storeAddress = AddressInformation.createAddress(
-                        firstName = shippingAddress?.firstname
-                                ?: "Testing", lastName = shippingAddress?.lastname
-                        ?: "Testing", email = shippingAddress?.email ?: "storepickup@testing.com",
-                        contactNo = shippingAddress?.telephone ?: "0000000000", homeNo = "",
-                        homeBuilding = "ชื่ออาคาร", homeSoi = "ซอย",
-                        homeRoad = "ถนน", homePostalCode = storeStaff?.postalCode ?: "10501",
-                        homePhone = "", provinceId = "668",
-                        provinceCode = "BKK", countryId = "TH",
-                        districtId = "25",
-                        subDistrictId = "157",
-                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh
-                        ?: "กรุงเทพมหานคร",
-                        homeDistrict = district?.nameTh
-                                ?: "บางรัก", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
-                val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
-                        "", "", "")
-                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), storeAddress, subscribeCheckOut)
+//                val staff = userInformation.user
+//                val storeStaff = userInformation.store
+//                //Check this if change to use PWB login
+//                val province = database.getProvinceByNameEn(storeStaff?.province ?: "")
+//                val district = database.getDistrictByNameEn(storeStaff?.district ?: "")
+//                val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
+//                val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
+//                val storeAddress = AddressInformation.createAddress(
+//                        firstName = shippingAddress?.firstname
+//                                ?: "Testing", lastName = shippingAddress?.lastname
+//                        ?: "Testing", email = shippingAddress?.email ?: "storepickup@testing.com",
+//                        contactNo = shippingAddress?.telephone ?: "0000000000", homeNo = "",
+//                        homeBuilding = "ชื่ออาคาร", homeSoi = "ซอย",
+//                        homeRoad = "ถนน", homePostalCode = storeStaff?.postalCode ?: "10501",
+//                        homePhone = "", provinceId = "668",
+//                        provinceCode = "BKK", countryId = "TH",
+//                        districtId = "25",
+//                        subDistrictId = "157",
+//                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh
+//                        ?: "กรุงเทพมหานคร",
+//                        homeDistrict = district?.nameTh
+//                                ?: "บางรัก", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
+                val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email, "", "", "")
+                // store shipping this case can be anything
+                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), shippingAddress, subscribeCheckOut)
             }
         }
     }

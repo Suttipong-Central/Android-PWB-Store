@@ -17,4 +17,5 @@ interface PaymentProtocol {
     fun getSelectedDeliveryType(): DeliveryType?
     fun getShippingSlot(): ShippingSlotResponse?
     fun getBranches(): List<Branch>
+    fun getSelectedBranch(): Branch?
 }

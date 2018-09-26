@@ -13,8 +13,9 @@ open class Order(
         @PrimaryKey
         var orderId: String = "",
         var orderResponse: OrderResponse? = null,
-        var userInformation: UserInformation? = null):RealmObject() {
-        companion object {
-                const val FIELD_ORDER_ID = "orderId"
-        }
+        var branchShipping: Branch? = null,
+        var userInformation: UserInformation? = null) : RealmObject() {
+    companion object {
+        const val FIELD_ORDER_ID = "orderId"
+    }
 }

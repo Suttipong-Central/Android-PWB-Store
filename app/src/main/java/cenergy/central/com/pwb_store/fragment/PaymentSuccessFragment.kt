@@ -66,6 +66,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var deliveryType: DeliveryType? = null
     //TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
     private var shippingInfo: AddressInformation? = null
+    private var branchAddress: Branch? = null
+    private var cacheOrder: Order? = null
 
 
     companion object {
@@ -104,6 +106,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             val paymentListener = context as PaymentProtocol
             this.deliveryType = paymentListener.getSelectedDeliveryType()
             this.shippingInfo = paymentListener.getShippingAddress()
+            this.branchAddress = paymentListener.getSelectedBranch()
         } catch (e: Exception) {
         }
 
@@ -158,16 +161,15 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         context?.let { HttpManagerMagento.getInstance(it).getOrder(orderId!!, this) }
     }
 
-    private fun getOrderFromLocalDatabase(cacheOrderResponseId: String) {
-        val cacheOrderResponse = database.getOrder(cacheOrderResponseId)
-        val orderResponse = cacheOrderResponse.orderResponse
-        val userInformation = cacheOrderResponse.userInformation
-        orderResponse?.let { updateViewOrder(it, userInformation) }
+    private fun getOrderFromLocalDatabase(orderId: String) {
+        cacheOrder = database.getOrder(orderId)
+        cacheOrder?.let { updateViewOrder(it) }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateViewOrder(order: OrderResponse, userInformation: UserInformation?) {
-        listItems = order.items
+    private fun updateViewOrder(order: Order) {
+        val orderResponse = order.orderResponse
+        listItems = orderResponse!!.items
 
         val unit = context!!.getString(R.string.baht)
 
@@ -176,41 +178,40 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
         //Setup total price
-        totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
+        totalPrice.text = getDisplayPrice(unit, orderResponse.baseTotal.toString())
 
         //Setup customer
-        orderDate.text = order.updatedAt
-        name.text = "${order.billingAddress!!.firstname} ${order.billingAddress!!.lastname}"
-        email.text = order.billingAddress!!.email
-        contactNo.text = order.billingAddress!!.telephone
+        orderDate.text = orderResponse.updatedAt
+        name.text = "${orderResponse.billingAddress!!.firstname} ${orderResponse.billingAddress!!.lastname}"
+        email.text = orderResponse.billingAddress!!.email
+        contactNo.text = orderResponse.billingAddress!!.telephone
         mProgressDialog?.dismiss()
         finishButton.setOnClickListener {
             finishThisPage()
         }
 
         // setup shipping address or pickup at store
-        if (order.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
+        if (orderResponse.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
             deliveryLayout.visibility = View.VISIBLE
             storeAddressLayout.visibility = View.GONE
 
-            val address = order.billingAddress
+            val address = orderResponse.billingAddress
             tvShippingHeader.text = getString(R.string.delivery_detail)
-            tvDeliveryType.text = order.shippingType
+            tvDeliveryType.text = orderResponse.shippingType
             tvReceiverName.text = address?.getDisplayName()
-            tvDeliveryAddress.text = getAddress(order.billingAddress)
+            tvDeliveryAddress.text = getAddress(orderResponse.billingAddress)
         } else {
             deliveryLayout.visibility = View.GONE
             storeAddressLayout.visibility = View.VISIBLE
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 
-            val store = userInformation?.store
-            branch.text = "${store?.storeName} <Test>"
-            address.text = "${store?.number ?: ""} ${store?.moo ?: ""} ${store?.soi
-                    ?: ""} ${store?.road ?: ""} ${store?.building ?: ""} ${store?.subDistrict
-                    ?: ""} ${store?.district ?: ""} ${store?.province ?: ""} ${store?.postalCode
-                    ?: ""}".trim()
-            tel.text = "-"
-            openToday.text = "-"
+            val branchShipping = order.branchShipping
+            if (branchShipping != null) {
+                branch.text = branchShipping.storeName
+                address.text = branchShipping.address
+                tel.text = branchShipping.phone
+                openToday.text = branchShipping.description
+            }
         }
     }
 
@@ -261,7 +262,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 }
             }
 
-            //TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
+            // TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
             orderResponse.billingAddress = shippingInfo
 
             // add shipping type
@@ -269,10 +270,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
             // save order to local database
             val userInformation = database.userInformation
-            database.saveOrder(Order(orderId = orderResponse.orderId
-                    ?: "", userInformation = userInformation, orderResponse = orderResponse))
+            val order = Order(orderId = orderResponse.orderId
+                    ?: "", userInformation = userInformation, orderResponse = orderResponse, branchShipping = branchAddress)
+            database.saveOrder(order)
 
-            updateViewOrder(orderResponse, userInformation)
+            updateViewOrder(order)
         } else {
             mProgressDialog?.dismiss()
             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -291,17 +293,17 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
         var text = ""
         val subAddress = address.subAddress
-        if(subAddress != null){
+        if (subAddress != null) {
             if (subAddress.houseNumber.isNotBlank()) {
                 text += subAddress.houseNumber + ", "
             }
             if (subAddress.soi.isNotBlank()) {
-                text += subAddress.soi+ ", "
+                text += subAddress.soi + ", "
             }
             if (subAddress.building.isNotBlank()) {
                 text += subAddress.building + ", "
             }
-            if(address.street != null && address.street!![0] != null && address.street!![0]!!.isNotBlank()){
+            if (address.street != null && address.street!![0] != null && address.street!![0]!!.isNotBlank()) {
                 text += address.street!![0] + ", "
             }
             if (subAddress.subDistrict.isNotBlank()) {
