@@ -301,6 +301,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                     dialog.dismiss()
                     mProgressDialog?.dismiss()
                 }
+                .setCancelable(false)
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -463,6 +464,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
+                showResponseAlertDialog("", error.errorMessage)
             }
         })
     }
