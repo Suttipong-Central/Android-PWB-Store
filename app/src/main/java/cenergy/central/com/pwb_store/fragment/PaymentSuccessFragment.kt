@@ -301,6 +301,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             if (subAddress.building.isNotBlank()) {
                 text += subAddress.building + ", "
             }
+            if(address.street != null && address.street!![0] != null && address.street!![0]!!.isNotBlank()){
+                text += address.street!![0] + ", "
+            }
             if (subAddress.subDistrict.isNotBlank()) {
                 text += subAddress.subDistrict + ", "
             }
