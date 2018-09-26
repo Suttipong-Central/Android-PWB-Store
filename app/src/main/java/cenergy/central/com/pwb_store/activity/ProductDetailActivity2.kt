@@ -358,7 +358,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
                     showClearCartDialog()
                 } else {
-                    showAlertDialog("", error.errorMessage)
+                    showAlertDialog("Error code: ${error.errorCode}", error.errorMessage)
                 }
             }
         })
@@ -396,10 +396,12 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
 
     private fun showClearCartDialog() {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setCancelable(false)
                 .setMessage(getString(R.string.title_clear_cart))
                 .setPositiveButton(getString(R.string.ok_alert)) { dialog, which ->
                     clearCart() // clear item cart
                     updateShoppingCartBadge() // update ui
+                    dialog.dismiss()
                 }
         builder.show()
     }
