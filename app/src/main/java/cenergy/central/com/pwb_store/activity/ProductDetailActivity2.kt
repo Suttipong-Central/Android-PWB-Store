@@ -354,7 +354,12 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
 
             override fun failure(error: APIError) {
                 progressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
+
+                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
+                    showClearCartDialog()
+                } else {
+                    showAlertDialog("", error.errorMessage)
+                }
             }
         })
     }
@@ -387,6 +392,21 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML)
         intent.putExtra(WebViewActivity.ARG_TITLE, "Web")
         startActivity(intent)
+    }
+
+    private fun showClearCartDialog() {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(getString(R.string.title_clear_cart))
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which ->
+                    clearCart() // clear item cart
+                    updateShoppingCartBadge() // update ui
+                }
+        builder.show()
+    }
+
+    private fun clearCart() {
+        database.deleteAllCacheCartItem()
+        preferenceManager.clearCartId()
     }
 
     companion object {

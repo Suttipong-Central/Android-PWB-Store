@@ -13,6 +13,12 @@ import com.google.gson.annotations.SerializedName;
 
 public class APIError implements Parcelable {
 
+    public static final int BAD_REQUEST = 400;
+    public static final int UNAUTHORIZED = 401;
+    public static final int REQUEST_TIMEOUT = 408;
+    public static final int INTERNAL_SERVER_ERROR = 500;
+    public static final int NOT_FOUND = 404;
+
     public static final Creator<APIError> CREATOR = new Creator<APIError>() {
         @Override
         public APIError createFromParcel(Parcel in) {

@@ -147,7 +147,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
                 .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(mProgressDialog != null && mProgressDialog.isShowing()){
+                        if (mProgressDialog != null && mProgressDialog.isShowing()) {
                             mProgressDialog.dismiss();
                         }
                     }
@@ -227,7 +227,12 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
                 if (mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                 }
-                showAlertDialog("", error.getErrorMessage());
+
+                if (error.getErrorCode().equals(String.valueOf(APIError.INTERNAL_SERVER_ERROR))) {
+                    showClearCartDialog();
+                } else {
+                    showAlertDialog("", error.getErrorMessage());
+                }
             }
         });
     }
@@ -261,4 +266,24 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
         mBuyShoppingCartView.setBadgeCart(count);
         Log.d("ProductDetail", "count shopping badge" + count);
     }
+
+
+    private void showClearCartDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(getString(R.string.title_clear_cart))
+                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        clearCart(); // clear item cart
+                        updateShoppingCartBadge(); // update ui
+                    }
+                });
+        builder.show();
+    }
+
+    private void clearCart() {
+        RealmController.with(this).deleteAllCacheCartItem();
+        preferenceManager.clearCartId();
+    }
+
 }
