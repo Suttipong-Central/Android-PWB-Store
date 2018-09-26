@@ -183,17 +183,18 @@ public class CategoryFragment extends Fragment {
     }
 
     private void showAlertDialog(String message, final boolean shouldCloseActivity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        if (shouldCloseActivity)
-                            getActivity().finish();
-                    }
-                });
+        if (getContext() != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (shouldCloseActivity)
+                                getActivity().finish();
+                        }
+                    });
 
-        builder.show();
+            builder.show();
+        }
     }
-
 }
