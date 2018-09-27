@@ -33,6 +33,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import org.joda.time.DateTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -56,7 +57,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-    private var branches: List<Branch> = arrayListOf()
+    private var branches: ArrayList<Branch> = arrayListOf()
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
@@ -425,8 +426,14 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
             override fun success(response: List<Branch>?) {
                 mProgressDialog?.dismiss()
-                if (response != null) {
-                    branches = response
+                if (response != null && userInformation != null) {
+                    val branch = response.firstOrNull{it.storeId == userInformation!!.store?.storeId.toString()}
+                    if (branch != null){
+                        branches.add(branch)
+                        response.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString())branches.add(it) }
+                    } else {
+                        response.sortedBy { it.storeId }.forEach { branches.add(it) }
+                    }
                     startStorePickupFragment()
                 } else {
                     showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -541,8 +548,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     override fun onSelectedStore(branch: Branch) {
-        val userInformation = database.userInformation
-        userInformation?.let {
+        userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
 //                val staff = userInformation.user
