@@ -72,8 +72,10 @@ class DeliveryHomeFragment : Fragment(), PickDateListener, TimeSlotClickListener
         deliveryHomeListener = context as DeliveryHomeListener
         shippingSlotResponse = listener?.getShippingSlot()
         shippingSlotResponse?.let { shippingSlotResponse ->
-            startDate = formatter.parse(shippingSlotResponse.shippingSlot[0].shippingDate)
-            endDate = formatter.parse(shippingSlotResponse.shippingSlot[shippingSlotResponse.shippingSlot.size - 1].shippingDate)
+            if (shippingSlotResponse.shippingSlot.isNotEmpty()) {
+                startDate = formatter.parse(shippingSlotResponse.shippingSlot[0].shippingDate)
+                endDate = formatter.parse(shippingSlotResponse.shippingSlot[shippingSlotResponse.shippingSlot.size - 1].shippingDate)
+            }
         }
     }
 
