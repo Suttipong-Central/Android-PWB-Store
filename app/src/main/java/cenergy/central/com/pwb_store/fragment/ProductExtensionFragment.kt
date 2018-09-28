@@ -36,6 +36,14 @@ class ProductExtensionFragment : Fragment() {
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        extensionTabLayout.getTabAt(0)?.select()
+
+        // setup default fragment
+        startChildFragment(ProductFreeItemFragment())
+    }
+
     private fun setupView(rootView: View) {
         extensionTabLayout = rootView.findViewById(R.id.extensionTabLayout)
 
@@ -57,7 +65,6 @@ class ProductExtensionFragment : Fragment() {
             }
 
         })
-        extensionTabLayout.getTabAt(0)?.select()
     }
 
     fun startChildFragment(fragment: Fragment) {

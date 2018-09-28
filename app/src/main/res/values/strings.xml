@@ -22,12 +22,12 @@
     <string name="search_hint" translatable="false">ค้นหา</string>
     <!-- ProductList -->
     <string name="baht" translatable="false">฿</string>
-    <string name="product_overview" translatable="false">ภาพรวม</string>
-    <string name="product_available" translatable="false">สาขาที่มีอยู่</string>
-    <string name="product_compare" translatable="false">เปรียบเทียบ</string>
+    <string name="product_overview" translatable="false">ข้อมูลสินค้า</string>
+    <string name="product_available" translatable="false">ดูสาขาที่มีสินค้า</string>
+    <string name="product_compare" translatable="false">เปรียบเทียบสินค้า</string>
     <string name="product_read" translatable="false">Read More >></string>
     <string name="product_promotion" translatable="false">โปรโมชั่น</string>
-    <string name="product_spec" translatable="false">ลักษณะของสินค้า</string>
+    <string name="product_spec" translatable="false">คุณลักษณะ</string>
     <string name="product_delivery" translatable="false">Delivery / Warranty / Refund</string>
     <string name="product_stock" translatable="false">มีสินค้า</string>
     <string name="product_out_stock" translatable="false">ไม่มีสินค้า</string>
@@ -43,11 +43,13 @@
     <string name="ok" translatable="false">ตกลง</string>
     <string name="cancel" translatable="false">ยกเลิก</string>
     <string name="product_code" translatable="false">รหัสสินค้า: </string>
-    <string name="the_1_card" translatable="false">Redeem your point %1$,d points</string>ฟ
+    <string name="the_1_card" translatable="false">Redeem your point %1$,d points</string>
     <string name="alert_compare" translatable="false">มีการเพิ่มสินค้า</string>
     <string name="alert_compare_yes" translatable="false">\nเรียบร้อยแล้ว</string>
     <string name="alert_count" translatable="false">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
     <string name="alert_stock" translatable="false">สินค้าไม่มีในคลังสินค้า</string>
+    <string name="add_to_cart">ใส่รถเข็น</string>
+
     <!-- Compare -->
     <string name="compare_header" translatable="false">เปรียบเทียบสินค้า</string>
 
@@ -110,7 +112,6 @@
     <string name="passwordDetail">Pwb1199</string>
     <string name="error">พบข้อผิดพลาด</string>
     <string name="error_login">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
-    <string name="add_to_cart">เพิ่มลงตะกร้า</string>
     <string name="brand">แบรนด์</string>
     <string name="loading">กำลังโหลด...</string>
 
@@ -223,5 +224,6 @@
     <string name="select_store_dialog">เลือกรับที่สาขา</string>
     <string name="title_clear_cart">เราเจอปัญหากับตะกร้าสินค้านี้ (จำเป็นต้องลบตะกร้า)</string>
     <string name="developing_system_compare">กำลังพัฒนาระบบ ไม่สามารถเปรียบเทียบสินค้าในขณะนี้</string>
+    <string name="freebie_promotion_not_found">โปรดเช็คโปรโมชั่นและของแถมเมื่อใส่สินค้าลงรถเข็น</string>
 
 </resources>

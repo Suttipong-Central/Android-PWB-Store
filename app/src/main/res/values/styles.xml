@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -172,6 +172,7 @@
 
     <!-- Form -->
     <style name="Form" />
+
     <style name="Form.EditTextLayoutTheme" parent="AppTheme">
         <item name="colorAccent">@color/powerBuyOrange</item>
         <item name="colorControlNormal">@color/powerBuyOrange</item>
