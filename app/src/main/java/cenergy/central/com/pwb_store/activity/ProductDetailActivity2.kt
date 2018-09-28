@@ -105,7 +105,8 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         }
 
         // setup badge
-        mBuyCompareView.setListener(this)
+//        mBuyCompareView.setListener(this)
+        mBuyCompareView.visibility = View.GONE
         mBuyShoppingCartView.setListener(this)
     }
 
@@ -113,7 +114,8 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     override fun getProduct(): Product? = product
 
     override fun addProductToCompare(product: Product?) {
-        product?.let { addToCompare(it) }
+//        product?.let { addToCompare(it) }
+        showAlertDialog(getString(R.string.developing_system_compare))
     }
 
     override fun addProductToCart(product: Product?) {

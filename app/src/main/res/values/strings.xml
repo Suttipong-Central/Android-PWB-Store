@@ -221,5 +221,6 @@
     <string name="select_shipping_dialog">เลือกจัดส่งตามที่อยู่</string>
     <string name="select_store_dialog">เลือกรับที่สาขา</string>
     <string name="title_clear_cart">เราเจอปัญหากับตะกร้าสินค้านี้ (จำเป็นต้องลบตะกร้า)</string>
+    <string name="developing_system_compare">กำลังพัฒนาระบบ ไม่สามารถเปรียบเทียบสินค้าในขณะนี้</string>
 
 </resources>
