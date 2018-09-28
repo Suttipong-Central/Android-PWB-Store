@@ -32,7 +32,6 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import org.joda.time.DateTime
-import java.util.*
 import kotlin.collections.ArrayList
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
@@ -274,11 +273,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
         builder.show()
     }
-
-    private fun showResponseAlertDialog(title: String, message: String) {
+    private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-        builder.setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }
@@ -410,13 +409,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                                 deliveryOptionsList = response
                                 startDeliveryOptions()
                             } else {
-                                showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                             }
                         }
 
                         override fun failure(error: APIError) {
                             mProgressDialog?.dismiss()
-                            showResponseAlertDialog("", error.errorMessage)
+                            showAlertDialog("", error.errorMessage)
                         }
                     })
         }
@@ -436,13 +435,13 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                     }
                     startStorePickupFragment()
                 } else {
-                    showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showResponseAlertDialog("", error.errorMessage)
+                showAlertDialog("", error.errorMessage)
             }
         })
     }
@@ -462,16 +461,20 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             override fun success(response: ShippingSlotResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
-                    shippingSlotResponse = response
-                    startDeliveryHomeFragment()
+                    if(response.shippingSlot.isNotEmpty()){
+                        shippingSlotResponse = response
+                        startDeliveryHomeFragment()
+                    } else {
+                        showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                    }
                 } else {
-                    showResponseAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showResponseAlertDialog("", error.errorMessage)
+                showAlertDialog("", error.errorMessage)
             }
         })
     }
@@ -500,17 +503,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 showAlertDialog("", error.errorMessage)
             }
         })
-    }
-
-    private fun showAlertDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
     }
 
     fun getOrder(orderId: String) {
