@@ -13,13 +13,13 @@ import java.util.List;
  * Created by napabhat on 8/16/2017 AD.
  */
 
-public class AvaliableStoreDao implements IViewType, Parcelable {
+public class AvailableStoreDao implements IViewType, Parcelable {
     private int viewTypeId;
     @SerializedName("products")
     @Expose
     private List<AvaliableProduct> mAvaliableProducts = new ArrayList<>();
 
-    protected AvaliableStoreDao(Parcel in) {
+    protected AvailableStoreDao(Parcel in) {
         viewTypeId = in.readInt();
         mAvaliableProducts = in.createTypedArrayList(AvaliableProduct.CREATOR);
     }
@@ -35,15 +35,15 @@ public class AvaliableStoreDao implements IViewType, Parcelable {
         return 0;
     }
 
-    public static final Creator<AvaliableStoreDao> CREATOR = new Creator<AvaliableStoreDao>() {
+    public static final Creator<AvailableStoreDao> CREATOR = new Creator<AvailableStoreDao>() {
         @Override
-        public AvaliableStoreDao createFromParcel(Parcel in) {
-            return new AvaliableStoreDao(in);
+        public AvailableStoreDao createFromParcel(Parcel in) {
+            return new AvailableStoreDao(in);
         }
 
         @Override
-        public AvaliableStoreDao[] newArray(int size) {
-            return new AvaliableStoreDao[size];
+        public AvailableStoreDao[] newArray(int size) {
+            return new AvailableStoreDao[size];
         }
     };
 

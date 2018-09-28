@@ -24,15 +24,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.AvaliableStoreAdapter;
+import cenergy.central.com.pwb_store.adapter.AvailableStoreAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreFilterHeaderBus;
-import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
+import cenergy.central.com.pwb_store.model.AvailableStoreDao;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreFilterItem;
 import cenergy.central.com.pwb_store.model.StoreFilterList;
+import cenergy.central.com.pwb_store.model.UserInformation;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 
@@ -50,9 +52,11 @@ public class AvaliableFragment extends Fragment {
     @BindView(R.id.layout_store)
     LinearLayout mLinearLayoutStore;
 
+    private UserInformation userInformation = RealmController.getInstance().getUserInformation();
+
     //Data Member
-    private AvaliableStoreAdapter mAdapter;
-    private AvaliableStoreDao mAvaliableStoreDao;
+    private AvailableStoreAdapter mAdapter;
+    private AvailableStoreDao mAvailableStoreDao;
     private StoreFilterList mStoreFilterList;
     private StoreFilterList mTempStoreFilterList;
     private GridLayoutManager mLayoutManager;
@@ -87,10 +91,10 @@ public class AvaliableFragment extends Fragment {
 
 
     @SuppressWarnings("unused")
-    public static AvaliableFragment newInstance(AvaliableStoreDao avaliableStoreDao, StoreDao storeDao) {
+    public static AvaliableFragment newInstance(AvailableStoreDao availableStoreDao, StoreDao storeDao) {
         AvaliableFragment fragment = new AvaliableFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_AVALIABLE_DAO, avaliableStoreDao);
+        args.putParcelable(ARG_AVALIABLE_DAO, availableStoreDao);
         args.putParcelable(ARG_STORE_DAO, storeDao);
         fragment.setArguments(args);
         return fragment;
@@ -117,7 +121,7 @@ public class AvaliableFragment extends Fragment {
         // Init Fragment level's variable(s) here
 
         if (getArguments() != null) {
-            mAvaliableStoreDao = getArguments().getParcelable(ARG_AVALIABLE_DAO);
+            mAvailableStoreDao = getArguments().getParcelable(ARG_AVALIABLE_DAO);
             mStoreDao = getArguments().getParcelable(ARG_STORE_DAO);
         }
 //        List<AvaliableStoreItem> avaliableStoreItems = new ArrayList<>();
@@ -214,10 +218,14 @@ public class AvaliableFragment extends Fragment {
         // Init 'View' instance(s) with rootView.findViewById here
         ButterKnife.bind(this, rootView);
         popUpShow();
-        mAdapter = new AvaliableStoreAdapter(getContext(), mStoreDao);
+        mAdapter = new AvailableStoreAdapter(getContext(), mStoreDao);
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
-        mAdapter.setCompareAvaliable(mAvaliableStoreDao);
+        if(userInformation.getStore() != null){
+            mAdapter.setCompareAvailable(mAvailableStoreDao, String.valueOf(userInformation.getStore().getStoreId()));
+        } else {
+            mAdapter.setCompareAvailable(mAvailableStoreDao, "");
+        }
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mAdapter);

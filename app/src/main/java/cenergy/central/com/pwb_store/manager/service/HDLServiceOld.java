@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.manager.service;
 
-import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
+import cenergy.central.com.pwb_store.model.AvailableStoreDao;
 import cenergy.central.com.pwb_store.model.ShippingDao;
 import cenergy.central.com.pwb_store.model.request.HDLRequest;
 import cenergy.central.com.pwb_store.model.request.ShippingRequest;
@@ -31,7 +31,7 @@ public interface HDLServiceOld {
             );
 
     @GET("v1/products/list-stock")
-    Call<AvaliableStoreDao> getStore(
+    Call<AvailableStoreDao> getStore(
             @Query("skus") String sku
     );
 }

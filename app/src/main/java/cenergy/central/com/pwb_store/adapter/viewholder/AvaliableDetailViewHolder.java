@@ -43,7 +43,7 @@ public class AvaliableDetailViewHolder extends RecyclerView.ViewHolder {
 
         nameStore.setText(avaliableStoreItem.getStoreName());
 //        storeAddress.setText(avaliableStoreItem.getAddress());
-        stock.setText(String.valueOf(String.valueOf(avaliableStoreItem.getStock())));
+        stock.setText(String.valueOf(avaliableStoreItem.getStock()));
         tel.setText(avaliableStoreItem.getTelephone());
         name.setText(avaliableStoreItem.getName());
     }

@@ -2,6 +2,9 @@ package cenergy.central.com.pwb_store.adapter.viewholder;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
+
+import cenergy.central.com.pwb_store.R;
 
 /**
  * Created by napabhat on 8/10/2017 AD.
@@ -10,5 +13,10 @@ import android.view.View;
 public class EmptyViewHolder extends RecyclerView.ViewHolder {
     public EmptyViewHolder(View itemView) {
         super(itemView);
+    }
+
+    public void setViewHolder() {
+        TextView textView = itemView.findViewById(R.id.txt_result);
+        textView.setText(itemView.getContext().getString(R.string.not_found_data));
     }
 }

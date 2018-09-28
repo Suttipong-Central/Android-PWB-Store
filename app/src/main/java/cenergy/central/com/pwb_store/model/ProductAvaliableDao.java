@@ -15,16 +15,16 @@ import java.util.List;
 public class ProductAvaliableDao implements IViewType, Parcelable {
     private int viewTypeId;
     @SerializedName("products")
-    private List<AvaliableStoreDao> mAvaliableStoreDaos = new ArrayList<>();
+    private List<AvailableStoreDao> mAvailableStoreDaos = new ArrayList<>();
     protected ProductAvaliableDao(Parcel in) {
         viewTypeId = in.readInt();
-        mAvaliableStoreDaos = in.createTypedArrayList(AvaliableStoreDao.CREATOR);
+        mAvailableStoreDaos = in.createTypedArrayList(AvailableStoreDao.CREATOR);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
-        dest.writeTypedList(mAvaliableStoreDaos);
+        dest.writeTypedList(mAvailableStoreDaos);
     }
 
     public static final Creator<ProductAvaliableDao> CREATOR = new Creator<ProductAvaliableDao>() {
@@ -54,11 +54,11 @@ public class ProductAvaliableDao implements IViewType, Parcelable {
         this.viewTypeId = id;
     }
 
-    public List<AvaliableStoreDao> getAvaliableStoreDaos() {
-        return mAvaliableStoreDaos;
+    public List<AvailableStoreDao> getAvaliableStoreDaos() {
+        return mAvailableStoreDaos;
     }
 
-    public void setAvaliableStoreDaos(List<AvaliableStoreDao> avaliableStoreDaos) {
-        mAvaliableStoreDaos = avaliableStoreDaos;
+    public void setAvaliableStoreDaos(List<AvailableStoreDao> availableStoreDaos) {
+        mAvailableStoreDaos = availableStoreDaos;
     }
 }

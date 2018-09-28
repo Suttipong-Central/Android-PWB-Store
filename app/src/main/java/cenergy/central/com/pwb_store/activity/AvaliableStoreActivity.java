@@ -20,7 +20,7 @@ import cenergy.central.com.pwb_store.fragment.AvaliableFragment;
 import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.model.APIError;
-import cenergy.central.com.pwb_store.model.AvaliableStoreDao;
+import cenergy.central.com.pwb_store.model.AvailableStoreDao;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
@@ -43,7 +43,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
     Toolbar mToolbar;
 
     private String sku;
-    private AvaliableStoreDao mAvaliableStoreDao;
+    private AvailableStoreDao mAvailableStoreDao;
     private StoreDao mStoreDao;
     private ProgressDialog mProgressDialog;
 
@@ -73,16 +73,16 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 //        }
 //    };
 
-    final Callback<AvaliableStoreDao> CALLBACK_AVALIABLE = new Callback<AvaliableStoreDao>() {
+    final Callback<AvailableStoreDao> CALLBACK_AVALIABLE = new Callback<AvailableStoreDao>() {
         @Override
-        public void onResponse(Call<AvaliableStoreDao> call, Response<AvaliableStoreDao> response) {
+        public void onResponse(Call<AvailableStoreDao> call, Response<AvailableStoreDao> response) {
             if (response.isSuccessful()){
-                mAvaliableStoreDao = response.body();
+                mAvailableStoreDao = response.body();
                 mProgressDialog.dismiss();
 
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
-                        .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao, mStoreDao))
+                        .replace(R.id.container, AvaliableFragment.newInstance(mAvailableStoreDao, mStoreDao))
                         .commit();
             }else {
                 APIError error = APIErrorUtils.parseError(response);
@@ -94,7 +94,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         }
 
         @Override
-        public void onFailure(Call<AvaliableStoreDao> call, Throwable t) {
+        public void onFailure(Call<AvailableStoreDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
             mProgressDialog.dismiss();
         }
@@ -142,7 +142,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
-                    .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao, mStoreDao))
+                    .replace(R.id.container, AvaliableFragment.newInstance(mAvailableStoreDao, mStoreDao))
                     .commit();
         }
 

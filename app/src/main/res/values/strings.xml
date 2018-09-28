@@ -175,6 +175,7 @@
     <string name="not_have_user">ไม่มีผู้ใช้ในระบบ ต้องการที่จะข้ามขั้นตอนนี้หรือไม่</string>
     <string name="choose">เลือก</string>
     <string name="history">ประวัติ</string>
+    <string name="not_found_data">ไม่พบข้อมูล</string>
     <string name="not_have_data">ไม่มีข้อมูล</string>
     <string name="name_user_order">ชื่อผู้ใช้: </string>
     <string name="order_date_history">วันที่สั่งซื้อ: </string>
