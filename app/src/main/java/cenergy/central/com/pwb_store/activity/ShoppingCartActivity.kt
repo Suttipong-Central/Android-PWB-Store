@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.activity
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -159,7 +160,9 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                showAlertDialog(resources.getString(R.string.cannot_get_cart_item), DialogInterface.OnClickListener { dialog, which ->
+                    finish()
+                })
             }
         })
     }
@@ -256,11 +259,19 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(R.string.ok) { dialog, which -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }
+        builder.show()
+    }
+
+    private fun showAlertDialog(message: String, onClick: DialogInterface.OnClickListener) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, onClick)
+
         builder.show()
     }
 }

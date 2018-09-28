@@ -25,6 +25,7 @@ public class APIErrorUtils {
 
         try {
             error = converter.convert(response.errorBody());
+            error.setErrorCode(String.valueOf(response.code()));
         } catch (Exception e) {
             return new APIError();
         }
@@ -42,6 +43,7 @@ public class APIErrorUtils {
 
         try {
             error = converter.convert(response.body());
+            error.setErrorCode(String.valueOf(response.code()));
         } catch (Exception e) {
             return new APIError();
         }
