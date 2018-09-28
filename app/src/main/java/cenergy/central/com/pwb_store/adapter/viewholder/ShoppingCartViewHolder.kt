@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -29,7 +30,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val qtyText: PowerBuyTextView = itemView.findViewById(R.id.txt_qty_title_list_shopping_cart)
     private val qtyTextTitle: PowerBuyTextView = itemView.findViewById(R.id.qty_title_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
-    private val deleteImageView: ImageView = itemView.findViewById(R.id.deleteItemImageView)
+    private val deleteImageView: TextView = itemView.findViewById(R.id.deleteItemImageView)
     private val productImage: ImageView = itemView.findViewById(R.id.product_image_list_shopping_cart)
     private val tvOverQty: TextView = itemView.findViewById(R.id.tvOverQty)
     private val tvTitleFreebie: TextView = itemView.findViewById(R.id.tvTitleFreebie)
@@ -88,11 +89,11 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 R.string.product_price)} ${getDisplayPrice(unit, item.price.toString())}"
 
         // hide for freebie
-        totalPrice.setEnableStrikeThrough(true)
         productQty.setOnClickQuantity(this, false)
         deleteImageView.visibility = View.GONE
         productQty.setQty(item.qty!!)
-        totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), item.price!!))
+        totalPrice.text = "FREE"
+        totalPrice.setTextColor(ContextCompat.getColor(itemView.context, R.color.freeColor))
 
     }
     // endregion

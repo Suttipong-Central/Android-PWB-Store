@@ -19,6 +19,7 @@
     <color name="grayTextColor">#9B9B9B</color>
     <color name="nameProductColor">#282828</color>
     <color name="inStockColor">#5DA807</color>
+    <color name="freeColor">#62a910</color>
     <color name="salePriceColor">#D0021B</color>
     <color name="dangerColor">#D0021B</color>
     <color name="viewColor">#E0E0E0</color>
