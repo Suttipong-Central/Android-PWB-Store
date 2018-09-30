@@ -26,6 +26,8 @@ open class OrderResponse(
         var cartId: String? = "",
         @SerializedName("shipping_description")
         var shippingDescription: String = "",
+        @SerializedName("shipping_incl_tax")
+        var shippingAmount: Double = 0.0,
         var state: String = "",
         var status: String = "",
         var storeId: Int? = null,
@@ -40,8 +42,7 @@ open class OrderResponse(
         var billingAddress: AddressInformation? = null,
         @SerializedName("extension_attributes")
         var orderExtension: OderExtension? = null,
-        var shippingType: String? = ""
-) : RealmObject()
+        var shippingType: String? = "") : RealmObject()
 
 open class OderExtension(@SerializedName("shipping_assignments")
                          var shippingAssignments: RealmList<ShippingAssignment>? = RealmList()): RealmObject()
@@ -49,7 +50,7 @@ open class OderExtension(@SerializedName("shipping_assignments")
 open class ShippingAssignment(var shipping: Shipping? = null, var items: RealmList<Item>? = RealmList()): RealmObject()
 
 open class Shipping(@SerializedName("address")
-                    var billingAddress: AddressInformation? = null, var method: String? = ""): RealmObject()
+                    var shippingAddress: AddressInformation? = null, var method: String? = ""): RealmObject()
 
 open class Item(
         @PrimaryKey

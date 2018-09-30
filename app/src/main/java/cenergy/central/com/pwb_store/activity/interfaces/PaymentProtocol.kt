@@ -14,6 +14,7 @@ interface PaymentProtocol {
     fun getMembers(): List<MemberResponse>
     fun getDeliveryOptions(): List<DeliveryOption>
     fun getShippingAddress(): AddressInformation?
+    fun getBillingAddress(): AddressInformation?
     fun getSelectedDeliveryType(): DeliveryType?
     fun getShippingSlot(): ShippingSlotResponse?
     fun getBranches(): List<Branch>

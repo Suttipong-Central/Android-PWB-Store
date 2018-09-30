@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -36,24 +37,33 @@ import java.util.*
 class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     // widget view
-    lateinit var recycler: RecyclerView
-    lateinit var orderNumber: PowerBuyTextView
-    lateinit var totalPrice: PowerBuyTextView
-    lateinit var orderDate: PowerBuyTextView
-    lateinit var name: PowerBuyTextView
-    lateinit var email: PowerBuyTextView
-    lateinit var contactNo: PowerBuyTextView
-    lateinit var branch: PowerBuyTextView
-    lateinit var address: PowerBuyTextView
-    lateinit var tel: PowerBuyTextView
-    lateinit var openToday: PowerBuyTextView
-    lateinit var tvShippingHeader: PowerBuyTextView
-    lateinit var tvDeliveryType: PowerBuyTextView
-    lateinit var tvDeliveryAddress: PowerBuyTextView
-    lateinit var tvReceiverName: PowerBuyTextView
-    lateinit var finishButton: CardView
-    lateinit var storeAddressLayout: LinearLayout
-    lateinit var deliveryLayout: LinearLayout
+    private lateinit var recycler: RecyclerView
+    private lateinit var orderNumber: PowerBuyTextView
+    private lateinit var totalPrice: PowerBuyTextView
+    private lateinit var orderDate: PowerBuyTextView
+    private lateinit var name: PowerBuyTextView
+    private lateinit var email: PowerBuyTextView
+    private lateinit var contactNo: PowerBuyTextView
+    private lateinit var branch: PowerBuyTextView
+    private lateinit var address: PowerBuyTextView
+    private lateinit var tel: PowerBuyTextView
+    private lateinit var openToday: PowerBuyTextView
+    private lateinit var tvShippingHeader: PowerBuyTextView
+    private lateinit var tvDeliveryType: PowerBuyTextView
+    private lateinit var tvDeliveryAddress: PowerBuyTextView
+    private lateinit var tvReceiverName: PowerBuyTextView
+    private lateinit var tvBillingName: PowerBuyTextView
+    private lateinit var tvBillingAddress: PowerBuyTextView
+    private lateinit var tvDeliveryInfo: PowerBuyTextView
+    private lateinit var tvAmount: TextView
+    private lateinit var tvShippingAmount: TextView
+    private lateinit var finishButton: CardView
+    private lateinit var storeAddressLayout: LinearLayout
+    private lateinit var billingAddressLayout: LinearLayout
+    private lateinit var deliveryLayout: LinearLayout
+    private lateinit var customerNameLayout: LinearLayout
+    private lateinit var deliveryInfoLayout: LinearLayout
+    private lateinit var amountLayout: LinearLayout
     private var mProgressDialog: ProgressDialog? = null
 
     // data
@@ -64,8 +74,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
     private var database = RealmController.with(context)
     private var deliveryType: DeliveryType? = null
-    //TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
+    //TODO: Delete shippingInfo && billingInfo this is for testing the api still not sent about sub address in custom_attribute
     private var shippingInfo: AddressInformation? = null
+    private var billingInfo: AddressInformation? = null
     private var branchAddress: Branch? = null
     private var cacheOrder: Order? = null
 
@@ -106,6 +117,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             val paymentListener = context as PaymentProtocol
             this.deliveryType = paymentListener.getSelectedDeliveryType()
             this.shippingInfo = paymentListener.getShippingAddress()
+            this.billingInfo = paymentListener.getBillingAddress()
             this.branchAddress = paymentListener.getSelectedBranch()
         } catch (e: Exception) {
         }
@@ -129,8 +141,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvDeliveryType = rootView.findViewById(R.id.tvDeliveryType)
         tvDeliveryAddress = rootView.findViewById(R.id.tvDeliveryAddress)
         tvReceiverName = rootView.findViewById(R.id.tvReceiverName)
+        tvBillingName = rootView.findViewById(R.id.tvBillingName)
+        tvBillingAddress = rootView.findViewById(R.id.tvBillingAddress)
+        tvDeliveryInfo = rootView.findViewById(R.id.tvDeliveryInfo)
+        tvShippingAmount = rootView.findViewById(R.id.tvShippingAmount)
+        tvAmount = rootView.findViewById(R.id.tvAmount)
+
         storeAddressLayout = rootView.findViewById(R.id.storeAddressLayout)
+        billingAddressLayout = rootView.findViewById(R.id.billingAddressLayout)
+        customerNameLayout = rootView.findViewById(R.id.customerNameLayout)
+        deliveryInfoLayout = rootView.findViewById(R.id.deliveryInfoLayout)
         deliveryLayout = rootView.findViewById(R.id.deliveryLayout)
+        amountLayout = rootView.findViewById(R.id.amountLayout)
 
         // customer
         name = rootView.findViewById(R.id.txt_name_order_success)
@@ -177,12 +199,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
-        //Setup total price
-        totalPrice.text = getDisplayPrice(unit, orderResponse.baseTotal.toString())
-
         //Setup customer
         orderDate.text = orderResponse.updatedAt
-        name.text = "${orderResponse.billingAddress!!.firstname} ${orderResponse.billingAddress!!.lastname}"
         email.text = orderResponse.billingAddress!!.email
         contactNo.text = orderResponse.billingAddress!!.telephone
         mProgressDialog?.dismiss()
@@ -193,16 +211,30 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         // setup shipping address or pickup at store
         if (orderResponse.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
             deliveryLayout.visibility = View.VISIBLE
+            billingAddressLayout.visibility = View.VISIBLE
+            deliveryInfoLayout.visibility = View.VISIBLE
+            amountLayout.visibility = View.VISIBLE
             storeAddressLayout.visibility = View.GONE
+            customerNameLayout.visibility = View.GONE
 
             val address = orderResponse.billingAddress
             tvShippingHeader.text = getString(R.string.delivery_detail)
             tvDeliveryType.text = orderResponse.shippingType
             tvReceiverName.text = address?.getDisplayName()
-            tvDeliveryAddress.text = getAddress(orderResponse.billingAddress)
+            tvBillingName.text = address?.getDisplayName()
+            tvBillingAddress.text = getAddress(orderResponse.billingAddress)
+            tvDeliveryAddress.text = getAddress(orderResponse.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress)
+            tvDeliveryInfo.text = order.orderResponse?.shippingDescription
         } else {
             deliveryLayout.visibility = View.GONE
+            billingAddressLayout.visibility = View.GONE
+            deliveryInfoLayout.visibility = View.GONE
+            amountLayout.visibility = View.GONE
             storeAddressLayout.visibility = View.VISIBLE
+            customerNameLayout.visibility = View.VISIBLE
+
+            name.text = "${orderResponse.billingAddress!!.firstname} ${orderResponse.billingAddress!!.lastname}"
+
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 
             val branchShipping = order.branchShipping
@@ -213,6 +245,12 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 openToday.text = branchShipping.description
             }
         }
+
+        // setup total or summary
+        totalPrice.text = getDisplayPrice(unit, orderResponse.baseTotal.toString())
+        val amount = (orderResponse.baseTotal - orderResponse.shippingAmount)
+        tvAmount.text = getDisplayPrice(unit, amount.toString())
+        tvShippingAmount.text = getDisplayPrice(unit, orderResponse.shippingAmount.toString())
     }
 
     private fun finishThisPage() {
@@ -254,8 +292,12 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     override fun success(orderResponse: OrderResponse?) {
         if (orderResponse != null) {
 
-            // TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
-            orderResponse.billingAddress = shippingInfo
+            // TODO: Delete shippingInfo && billingInfo... this is for testing the api still not sent about sub address in custom_attribute
+            orderResponse.billingAddress = billingInfo ?: shippingInfo
+
+            if (orderResponse.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
+                orderResponse.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress = shippingInfo
+            }
 
             // add shipping type
             orderResponse.shippingType = deliveryType?.toString() ?: ""

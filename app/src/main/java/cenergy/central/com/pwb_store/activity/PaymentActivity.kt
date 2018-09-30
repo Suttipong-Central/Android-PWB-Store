@@ -32,7 +32,6 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import org.joda.time.DateTime
-import kotlin.collections.ArrayList
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -273,6 +272,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
         builder.show()
     }
+
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
@@ -314,8 +314,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             if (storeAddress != null) { // is shipping at store?
                 storeAddress.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress
-                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -426,10 +425,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             override fun success(response: List<Branch>?) {
                 mProgressDialog?.dismiss()
                 if (response != null && userInformation != null) {
-                    val branch = response.firstOrNull{it.storeId == userInformation!!.store?.storeId.toString()}
-                    if (branch != null){
+                    val branch = response.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
+                    if (branch != null) {
                         branches.add(branch)
-                        response.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString())branches.add(it) }
+                        response.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
                     } else {
                         response.sortedBy { it.storeId }.forEach { branches.add(it) }
                     }
@@ -461,7 +460,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             override fun success(response: ShippingSlotResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
-                    if(response.shippingSlot.isNotEmpty()){
+                    if (response.shippingSlot.isNotEmpty()) {
                         shippingSlotResponse = response
                         startDeliveryHomeFragment()
                     } else {
@@ -523,6 +522,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun getSelectedDeliveryType(): DeliveryType? = this.deliveryType
 
     override fun getShippingAddress(): AddressInformation? = this.shippingAddress
+
+    override fun getBillingAddress(): AddressInformation? = this.billingAddress
 
     override fun getShippingSlot(): ShippingSlotResponse? = this.shippingSlotResponse
 
