@@ -226,5 +226,6 @@
     <string name="title_clear_cart">เราเจอปัญหากับตะกร้าสินค้านี้ (จำเป็นต้องลบตะกร้า)</string>
     <string name="developing_system_compare">กำลังพัฒนาระบบ ไม่สามารถเปรียบเทียบสินค้าในขณะนี้</string>
     <string name="freebie_promotion_not_found">โปรดเช็คโปรโมชั่นและของแถมเมื่อใส่สินค้าลงรถเข็น</string>
+    <string name="not_have_day_to_delivery">ไม่มีวันจัดส่ง</string>
 
 </resources>
