@@ -253,6 +253,13 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     // {@like implement ApiResponseCallback<OrderResponse>}
     override fun success(orderResponse: OrderResponse?) {
         if (orderResponse != null) {
+
+            // TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
+            orderResponse.billingAddress = shippingInfo
+
+            // add shipping type
+            orderResponse.shippingType = deliveryType?.toString() ?: ""
+
             // TBD- keep imageUrl .... remove later waiting API have imageURL
             for (cacheItem in cacheCartItems!!) {
                 val items = orderResponse.items?.filter { it.sku == cacheItem.sku }
@@ -261,12 +268,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                     items[0].imageUrl = cacheItem.imageUrl
                 }
             }
-
-            // TODO: Delete shippingInfo... this is for testing the api still not sent about sub address in custom_attribute
-            orderResponse.billingAddress = shippingInfo
-
-            // add shipping type
-            orderResponse.shippingType = deliveryType?.toString() ?: ""
 
             // save order to local database
             val userInformation = database.userInformation
