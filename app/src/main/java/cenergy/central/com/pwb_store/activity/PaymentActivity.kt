@@ -71,12 +71,12 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
+        showProgressDialog()
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         initView()
         getCartItems()
-        startCheckOut()
     }
 
     // region {@link CheckOutClickListener}
@@ -245,9 +245,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         preferenceManager.cartId?.let { cartId ->
             HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
                 override fun success(response: List<CartItem>?) {
+                    mProgressDialog?.dismiss()
                     if (response != null) {
                         cartItemList = response
-                        mProgressDialog?.dismiss()
+                        startCheckOut()
                     }
                 }
 
