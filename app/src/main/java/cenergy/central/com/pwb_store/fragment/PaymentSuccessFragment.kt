@@ -23,6 +23,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
+import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.*
@@ -181,7 +182,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         staffIconLayout.setOnClickListener {
-            //TODO show dialog how to do next for staff
+            StaffHowToDialogFragment.newInstance().show(fragmentManager, "dialog")
         }
     }
 

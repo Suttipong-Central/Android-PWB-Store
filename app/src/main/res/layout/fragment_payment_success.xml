@@ -58,52 +58,52 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1"
             android:background="@color/lightGray"
-            android:paddingStart="16dp"
+            android:orientation="horizontal"
+            android:paddingBottom="32dp"
             android:paddingEnd="16dp"
+            android:paddingStart="16dp"
             android:paddingTop="32dp"
-            android:paddingBottom="32dp">
+            android:weightSum="1">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="@string/next_step"/>
+                android:text="@string/next_step"
+                android:textStyle="bold" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/how_to_do_for_staff"/>
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:text="@string/how_to_do_for_staff" />
 
             <LinearLayout
                 android:id="@+id/staffIconLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/ic_staff"
-                    android:contentDescription="@string/app_name" />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_staff" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="3dp"
                     android:text="@string/for_staff"
-                    android:textColor="@color/colorPrimary"/>
+                    android:textColor="@color/colorPrimary" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="@color/colorPrimary"/>
+                    android:background="@color/colorPrimary" />
             </LinearLayout>
         </LinearLayout>
 
@@ -111,16 +111,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/personal_detail" />
 
             <LinearLayout
@@ -256,8 +256,8 @@
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/store_collection_detail" />
 
             <LinearLayout
@@ -525,18 +525,18 @@
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/order_detail" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="8dp"
                 android:weightSum="10">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -552,8 +552,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="2"
                     android:text="@string/price"
                     android:textSize="16sp" />
@@ -562,8 +562,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:text="@string/qty"
                     android:textSize="16sp" />
@@ -572,8 +572,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="2"
                     android:text="@string/total"
                     android:textSize="16sp" />
@@ -590,16 +590,16 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp" />
 
             <LinearLayout
                 android:id="@+id/amountLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="16dp"
                 android:paddingBottom="16dp"
+                android:paddingTop="16dp"
                 android:visibility="visible">
 
                 <View
@@ -673,8 +673,8 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 android:background="@color/lightGray"
                 android:padding="8dp">
 
