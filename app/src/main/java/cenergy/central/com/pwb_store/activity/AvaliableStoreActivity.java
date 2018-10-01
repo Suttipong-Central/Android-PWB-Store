@@ -16,7 +16,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.fragment.AvaliableFragment;
+import cenergy.central.com.pwb_store.fragment.AvailableFragment;
 import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
 import cenergy.central.com.pwb_store.model.APIError;
@@ -56,7 +56,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 //
 //                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 //                fragmentTransaction
-//                        .replace(R.id.container, AvaliableFragment.newInstance(mAvaliableStoreDao))
+//                        .replace(R.id.container, AvailableFragment.newInstance(mAvaliableStoreDao))
 //                        .commit();
 //            }else {
 //                    APIError error = APIErrorUtils.parseError(response);
@@ -82,7 +82,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
-                        .replace(R.id.container, AvaliableFragment.newInstance(mAvailableStoreDao, mStoreDao))
+                        .replace(R.id.container, AvailableFragment.newInstance(mAvailableStoreDao, mStoreDao))
                         .commit();
             }else {
                 APIError error = APIErrorUtils.parseError(response);
@@ -142,7 +142,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
-                    .replace(R.id.container, AvaliableFragment.newInstance(mAvailableStoreDao, mStoreDao))
+                    .replace(R.id.container, AvailableFragment.newInstance(mAvailableStoreDao, mStoreDao))
                     .commit();
         }
 

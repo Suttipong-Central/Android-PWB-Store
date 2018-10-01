@@ -3,16 +3,16 @@ package cenergy.central.com.pwb_store.adapter
 import android.content.Context
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
-import java.util.ArrayList
 
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableDetailViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableTopicViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.EmptyViewHolder
 import cenergy.central.com.pwb_store.model.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by napabhat on 8/16/2017 AD.
@@ -81,7 +81,7 @@ class AvailableStoreAdapter(val mContext: Context, private val mStoreDao: StoreD
         return mListViewType[position].viewTypeId
     }
 
-    fun setCompareAvailable(availableStoreDao: AvailableStoreDao, storeId: String) {
+    fun setCompareAvailable(availableStoreDao: AvailableStoreDao, storeCode: String?) {
 
         val makeAvailableStoreItems = arrayListOf<AvaliableStoreItem>()
 
@@ -102,18 +102,27 @@ class AvailableStoreAdapter(val mContext: Context, private val mStoreDao: StoreD
             availableStoreDao.viewTypeId = VIEW_TYPE_ID_STORE_TOPIC
             mListViewType.add(availableStoreDao)
 
-            val storeStaff = makeAvailableStoreItems.firstOrNull{it.storeName == storeId}
+            makeAvailableStoreItems.forEach {
+                Log.d("StoreID", "$storeCode -> ${it.storeName}")
+            }
+            val storeStaff = makeAvailableStoreItems.firstOrNull{it.storeName == storeCode}
             if(storeStaff != null){
                 storeStaff.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
                 mListViewType.add(storeStaff)
-                makeAvailableStoreItems.sortedBy { it.storeName }.forEach { if (it.storeName != storeId){
-                    it.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
-                    mListViewType.add(it)
-                }}
-            } else {
+                checkOnlineStore(makeAvailableStoreItems)
                 makeAvailableStoreItems.sortedBy { it.storeName }.forEach {
-                    it.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
-                    mListViewType.add(it)
+                    if (it.storeName != storeCode && it.storeName != STORE_ONLINE_ID && it.storeName != OTHER_STORE_ID){
+                        it.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
+                        mListViewType.add(it)
+                    }
+                }
+            } else {
+                checkOnlineStore(makeAvailableStoreItems)
+                makeAvailableStoreItems.sortedBy { it.storeName }.forEach {
+                    if (it.storeName != STORE_ONLINE_ID && it.storeName != OTHER_STORE_ID){
+                        it.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
+                        mListViewType.add(it)
+                    }
                 }
             }
         } else {
@@ -122,9 +131,24 @@ class AvailableStoreAdapter(val mContext: Context, private val mStoreDao: StoreD
         notifyDataSetChanged()
     }
 
+    private fun checkOnlineStore(makeAvailableStoreItems: ArrayList<AvaliableStoreItem>) {
+        val onlineStore = makeAvailableStoreItems.firstOrNull { it.storeName == STORE_ONLINE_ID }
+        onlineStore?.let {
+            it.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
+            mListViewType.add(it)
+        }
+        val otherStore = makeAvailableStoreItems.firstOrNull { it.storeName == OTHER_STORE_ID }
+        otherStore?.let {
+            it.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
+            mListViewType.add(it)
+        }
+    }
+
     companion object {
         private const val VIEW_TYPE_ID_EMPTY_RESULT = 0
         private const val VIEW_TYPE_ID_STORE_TOPIC = 1
         private const val VIEW_TYPE_ID_STORE_DETAIL = 2
+        private const val STORE_ONLINE_ID = "00099"
+        private const val OTHER_STORE_ID = "00991"
     }
 }

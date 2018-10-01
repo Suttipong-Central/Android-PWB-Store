@@ -26,7 +26,6 @@ import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.AvailableStoreAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
-import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreFilterHeaderBus;
 import cenergy.central.com.pwb_store.model.AvailableStoreDao;
 import cenergy.central.com.pwb_store.model.StoreDao;
@@ -35,14 +34,13 @@ import cenergy.central.com.pwb_store.model.StoreFilterItem;
 import cenergy.central.com.pwb_store.model.StoreFilterList;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.realm.RealmController;
-import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
  */
 
-public class AvaliableFragment extends Fragment {
+public class AvailableFragment extends Fragment {
     public static final String ARG_AVALIABLE_DAO = "ARG_AVALIABLEDAO";
     public static final String ARG_STORE_DAO = "ARG_STORE_DAO";
 
@@ -65,7 +63,7 @@ public class AvaliableFragment extends Fragment {
     private StoreDao mStoreDao;
     private ProgressDialog mProgressDialog;
 
-    public AvaliableFragment() {
+    public AvailableFragment() {
         super();
     }
 
@@ -91,8 +89,8 @@ public class AvaliableFragment extends Fragment {
 
 
     @SuppressWarnings("unused")
-    public static AvaliableFragment newInstance(AvailableStoreDao availableStoreDao, StoreDao storeDao) {
-        AvaliableFragment fragment = new AvaliableFragment();
+    public static AvailableFragment newInstance(AvailableStoreDao availableStoreDao, StoreDao storeDao) {
+        AvailableFragment fragment = new AvailableFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_AVALIABLE_DAO, availableStoreDao);
         args.putParcelable(ARG_STORE_DAO, storeDao);
@@ -104,7 +102,6 @@ public class AvaliableFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init(savedInstanceState);
-
         if (savedInstanceState != null)
             onRestoreInstanceState(savedInstanceState);
     }
@@ -222,7 +219,7 @@ public class AvaliableFragment extends Fragment {
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
         if(userInformation.getStore() != null){
-            mAdapter.setCompareAvailable(mAvailableStoreDao, String.valueOf(userInformation.getStore().getStoreId()));
+            mAdapter.setCompareAvailable(mAvailableStoreDao, userInformation.getStore().getStoreCode());
         } else {
             mAdapter.setCompareAvailable(mAvailableStoreDao, "");
         }
@@ -286,14 +283,5 @@ public class AvaliableFragment extends Fragment {
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mPowerBuyPopupWindow = new PowerBuyPopupWindow(getActivity(), layoutInflater);
         mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
-    }
-
-    private void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = DialogUtils.createProgressDialog(Contextor.getInstance().getContext());
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.show();
-        }
     }
 }
