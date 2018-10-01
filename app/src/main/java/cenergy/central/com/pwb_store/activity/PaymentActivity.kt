@@ -87,7 +87,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             startBilling()
         } else {
             memberContact = contactNo
-            getMembersT1C(contactNo)
+            getCustomerPWB(contactNo)
         }
     }
     // endregion
@@ -314,7 +314,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             if (storeAddress != null) { // is shipping at store?
                 storeAddress.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress
+                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -357,9 +358,33 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
     }
 
-    private fun getMembersT1C(mobile: String) {
+    private fun getCustomerPWB(mobile: String) {
         showProgressDialog()
-        HttpMangerSiebel.getInstance().verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
+        HttpManagerMagento.getInstance(this).getPWBCustomer(mobile, object : ApiResponseCallback<List<PwbMember>> {
+            override fun success(response: List<PwbMember>?) {
+                runOnUiThread {
+                    mProgressDialog?.dismiss()
+                    if (response?.isNotEmpty() == true) { // it can be null
+                        showAlertDialog("", response[0].firstname!!)
+                        // TODO: sent data to Check OUT page
+                    } else {
+                        getMembersT1C(mobile)
+                    }
+                }
+            }
+
+            override fun failure(error: APIError) {
+                runOnUiThread {
+                    getMembersT1C(mobile)
+                }
+                Log.d("Payment", error.errorCode ?: "")
+            }
+
+        })
+    }
+
+    private fun getMembersT1C(mobile: String) {
+        HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
             override fun success(response: List<MemberResponse>?) {
                 if (response != null && response.isNotEmpty()) {
                     this@PaymentActivity.membersList = response
@@ -380,7 +405,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun getT1CMember(customerId: String) {
         showProgressDialog()
-        HttpMangerSiebel.getInstance().getT1CMember(customerId, object : ApiResponseCallback<Member> {
+        HttpMangerSiebel.getInstance(this).getT1CMember(customerId, object : ApiResponseCallback<Member> {
             override fun success(response: Member?) {
                 if (response != null) {
                     startBilling(response)

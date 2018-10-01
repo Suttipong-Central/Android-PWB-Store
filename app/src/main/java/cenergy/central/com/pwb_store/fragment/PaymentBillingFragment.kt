@@ -141,7 +141,7 @@ class PaymentBillingFragment : Fragment() {
     private var billingPostcodeAdapter: AddressAdapter? = null
 
     companion object {
-        private const val MEMBER = "MEMBER"
+        private const val ARG_MEMBER = "arg_member"
 
         fun newInstance(): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
@@ -153,7 +153,7 @@ class PaymentBillingFragment : Fragment() {
         fun newInstance(member: Member): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
             val args = Bundle()
-            args.putParcelable(MEMBER, member)
+            args.putParcelable(ARG_MEMBER, member)
             fragment.arguments = args
             return fragment
         }
@@ -171,7 +171,7 @@ class PaymentBillingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val preferenceManager = context?.let { PreferenceManager(it) }
         cartId = preferenceManager?.cartId
-        member = arguments?.getParcelable(MEMBER)
+        member = arguments?.getParcelable(ARG_MEMBER)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -314,7 +314,7 @@ class PaymentBillingFragment : Fragment() {
                 // validate province with local db
                 val province = database.getProvinceByNameTh(shippingAddress.region)
                 if (province != null) {
-                    provinceInput.setText(shippingAddress.region)
+                    provinceInput.setText(province.nameTh)
                     this.province = province
                     this.districts = database.getDistrictsByProvinceId(province.provinceId)
                     this.districtNameList = getDistrictNameList()
@@ -324,7 +324,7 @@ class PaymentBillingFragment : Fragment() {
                 // validate district with local db
                 val district = database.getDistrictByNameTh(shippingAddress.subAddress!!.district)
                 if (district != null) {
-                    districtInput.setText(shippingAddress.subAddress!!.district)
+                    districtInput.setText(district.nameTh)
                     this.district = district
                     this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
                     this.subDistrictNameList = getSubDistrictNameList()
@@ -334,7 +334,7 @@ class PaymentBillingFragment : Fragment() {
                 // validate sub district with local db
                 val subDistrict = database.getSubDistrictByNameTh(shippingAddress.subAddress!!.subDistrict)
                 if (subDistrict != null) {
-                    subDistrictInput.setText(shippingAddress.subAddress!!.subDistrict)
+                    subDistrictInput.setText(subDistrict.nameTh)
                     this.subDistrict = subDistrict
                     this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
                     this.postcodeList = getPostcodeList()
@@ -344,7 +344,7 @@ class PaymentBillingFragment : Fragment() {
                 // validate postcode with local db
                 val postcode = database.getPostcodeByCode(shippingAddress.subAddress!!.postcode)
                 if (postcode != null) {
-                    postcodeInput.setText(shippingAddress.subAddress!!.postcode)
+                    postcodeInput.setText(postcode.postcode.toString())
                     this.postcode = postcode
                 }
 

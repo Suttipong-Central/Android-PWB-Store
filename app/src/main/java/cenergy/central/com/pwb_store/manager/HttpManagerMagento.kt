@@ -686,7 +686,7 @@ class HttpManagerMagento(context: Context) {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()
-                    callback.success(branchResponse?.items?: arrayListOf())
+                    callback.success(branchResponse?.items ?: arrayListOf())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
@@ -697,6 +697,137 @@ class HttpManagerMagento(context: Context) {
             }
         })
     }
+    // endregion
 
+    // region get PWB Customer
+    fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<PwbMember>>) {
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.HOST_NAME)
+                .addPathSegment("rest")
+                .addPathSegment("V1")
+                .addPathSegment("headless")
+                .addPathSegment("customers")
+                .addPathSegment(telephone)
+                .build()
+
+        val request = Request.Builder()
+                .url(httpUrl)
+                .build()
+
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
+                if (response != null) {
+                    val data = response.body()
+
+                    try {
+                        val dataObject = JSONObject(data?.string())
+                        val items = dataObject.getJSONArray("items")
+                        val memberList: ArrayList<PwbMember> = arrayListOf()
+
+                        if (items.length() <= 0) {
+                            callback.success(arrayListOf())
+                            return
+                        }
+
+                        for (i in 0 until items.length()) {
+                            val id = items.getJSONObject(i).getLong("id")
+                            val firstname = items.getJSONObject(i).getString("firstname")
+                            val lastname = items.getJSONObject(i).getString("lastname")
+                            val email = items.getJSONObject(i).getString("email")
+                            val t1cNo = items.getJSONObject(i).getString("the_one_card_no")
+                                    ?: ""
+
+                            val memberAddressList: ArrayList<MemberAddress> = arrayListOf()
+                            val addresses = items.getJSONObject(i).getJSONArray("addresses")
+                            for (k in 0 until addresses.length()) {
+                                val memberAddress = MemberAddress()
+                                memberAddress.id = addresses.getJSONObject(k).getLong("id")
+                                memberAddress.customerId = addresses.getJSONObject(k).getLong("customer_id")
+                                memberAddress.regionId = addresses.getJSONObject(k).getInt("region_id")
+                                memberAddress.countryId = addresses.getJSONObject(k).getString("country_id") ?: ""
+
+                                val streetArrayObject = addresses.getJSONObject(k).getJSONArray("street")
+                                val streets = arrayListOf<String>()
+
+                                for (j in 0 until streetArrayObject.length()) {
+                                    streets.add(streetArrayObject.getString(j))
+                                }
+
+                                memberAddress.street = streets
+                                memberAddress.telephone = addresses.getJSONObject(k).getString("telephone")
+                                memberAddress.postcode = addresses.getJSONObject(k).getString("postcode")
+                                memberAddress.city = addresses.getJSONObject(k).getString("city")
+                                memberAddress.firstname = addresses.getJSONObject(k).getString("firstname")
+                                memberAddress.lastname = addresses.getJSONObject(k).getString("lastname")
+                                memberAddress.defaultShipping = addresses.getJSONObject(k).getBoolean("default_shipping")
+                                memberAddress.defaultBilling = addresses.getJSONObject(k).getBoolean("default_billing")
+
+                                val customAttributes = addresses.getJSONObject(k).getJSONArray("custom_attributes")
+                                val memberSubAddress = MemberSubAddress()
+                                for (m in 0 until customAttributes.length()) {
+                                    val attrName = customAttributes.getJSONObject(m).getString("name")
+
+                                    when (attrName) {
+                                        "house_no" -> {
+                                            val houseNo = customAttributes.getJSONObject(m).getString("value")
+                                                    ?: ""
+                                            memberSubAddress.houseNo = houseNo
+                                        }
+
+                                        "district" -> {
+                                            val district = customAttributes.getJSONObject(m).getString("value")
+                                                    ?: ""
+                                            memberSubAddress.district = district
+                                        }
+
+                                        "district_id" -> {
+                                            val districtId = customAttributes.getJSONObject(m).getString("value")
+                                                    ?: ""
+                                            memberSubAddress.districtId = districtId
+                                        }
+
+                                        "subdistrict" -> {
+                                            val subdistrict = customAttributes.getJSONObject(m).getString("value")
+                                                    ?: ""
+                                            memberSubAddress.subDistrict = subdistrict
+                                        }
+
+                                        "subdistrict_id" -> {
+                                            val subDistrictId = customAttributes.getJSONObject(m).getString("value")
+                                                    ?: ""
+                                            memberSubAddress.subDistrictId = subDistrictId
+                                        }
+
+                                        "postcode_id" -> {
+                                            val postcodeId = customAttributes.getJSONObject(m).getString("value")
+                                                    ?: ""
+                                            memberSubAddress.postcodeId = postcodeId
+                                        }
+                                    }
+                                }
+                                memberAddress.subAddress = memberSubAddress
+
+                                memberAddressList.add(memberAddress)
+                            }
+
+                            memberList.add(PwbMember(id, firstname, lastname, email, t1cNo, memberAddressList))
+                        }
+
+                        callback.success(memberList)
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
+                        Log.e("JSON Parser", "Error parsing data " + e.toString())
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: okhttp3.Call?, e: IOException?) {
+                callback.failure(APIError(e))
+            }
+        })
+    }
     // endregion
 }

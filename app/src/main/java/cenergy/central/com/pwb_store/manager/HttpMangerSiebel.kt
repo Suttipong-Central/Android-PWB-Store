@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit
  * Created by Anuphap Suwannamas on 27/8/2018 AD.
  * Email: Anupharpae@gmail.com
  */
-class HttpMangerSiebel {
-    private val mContext: Context = Contextor.getInstance().context
+class HttpMangerSiebel(context: Context) {
     private var retrofit: Retrofit
 
     init {
@@ -128,9 +127,9 @@ class HttpMangerSiebel {
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpMangerSiebel? = null
 
-        fun getInstance(): HttpMangerSiebel {
+        fun getInstance(context: Context): HttpMangerSiebel {
             if (instance == null)
-                instance = HttpMangerSiebel()
+                instance = HttpMangerSiebel(context)
             return instance as HttpMangerSiebel
         }
     }
