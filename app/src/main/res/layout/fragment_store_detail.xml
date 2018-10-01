@@ -22,7 +22,7 @@
         android:id="@+id/store_name_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/lightgray"
+        android:background="@color/lightGray"
         android:gravity="center"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"

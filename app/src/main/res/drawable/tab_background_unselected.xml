@@ -9,7 +9,7 @@
             <solid android:color="#f7f7f7" />
             <stroke
                 android:width="2dp"
-                android:color="@color/lightgray" />
+                android:color="@color/lightGray" />
         </shape>
     </item>
 </layer-list>

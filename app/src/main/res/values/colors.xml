@@ -33,7 +33,7 @@
     <color name="divider">#FFECECEC</color>
     <color name="disableButton">#f2f2f2</color>
 
-    <color name="lightgray">#e7e7e7</color>
+    <color name="lightGray">#e7e7e7</color>
     <color name="lightgray02">#bfbfbf</color>
     <color name="passwordIconColor">#FF9A9A9A</color>
 </resources>

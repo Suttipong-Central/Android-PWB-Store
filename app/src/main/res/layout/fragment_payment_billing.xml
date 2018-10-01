@@ -101,7 +101,7 @@
             android:layout_height="1dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:background="@color/lightgray" />
+            android:background="@color/lightGray" />
 
         <LinearLayout
             android:id="@+id/shipping_address_layout_payment"
@@ -252,7 +252,7 @@
             android:layout_height="1dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:background="@color/lightgray" />
+            android:background="@color/lightGray" />
 
         <LinearLayout
             android:id="@+id/same_billing_layout"

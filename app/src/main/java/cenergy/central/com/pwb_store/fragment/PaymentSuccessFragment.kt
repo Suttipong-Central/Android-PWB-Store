@@ -61,6 +61,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var storeAddressLayout: LinearLayout
     private lateinit var billingAddressLayout: LinearLayout
     private lateinit var deliveryLayout: LinearLayout
+    private lateinit var staffIconLayout: LinearLayout
     private lateinit var customerNameLayout: LinearLayout
     private lateinit var deliveryInfoLayout: LinearLayout
     private lateinit var amountLayout: LinearLayout
@@ -152,6 +153,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         customerNameLayout = rootView.findViewById(R.id.customerNameLayout)
         deliveryInfoLayout = rootView.findViewById(R.id.deliveryInfoLayout)
         deliveryLayout = rootView.findViewById(R.id.deliveryLayout)
+        staffIconLayout = rootView.findViewById(R.id.staffIconLayout)
         amountLayout = rootView.findViewById(R.id.amountLayout)
 
         // customer
@@ -176,6 +178,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         if (cacheOrderId != null) {
             getOrderFromLocalDatabase(cacheOrderId!!)
             finishButton.visibility = View.GONE
+        }
+
+        staffIconLayout.setOnClickListener {
+            //TODO show dialog how to do next for staff
         }
     }
 

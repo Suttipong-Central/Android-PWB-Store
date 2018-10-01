@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -259,7 +258,7 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
 
         if (day_color[1].equals("GREY")) {
             gridcell.setTextColor(_context.getResources()
-                    .getColor(R.color.lightgray));
+                    .getColor(R.color.lightGray));
         }
         if (day_color[1].equals("WHITE")) {
             gridcell.setTextColor(_context.getResources().getColor(
