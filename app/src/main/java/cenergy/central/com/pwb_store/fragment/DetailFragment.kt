@@ -5,33 +5,40 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.CardView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.LinearSnapHelper
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
-import cenergy.central.com.pwb_store.adapter.pager.ProductDetailPagerAdapter
+import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
+import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
+import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.ProductDetailImageItem
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
+
 
 /**
  * Created by Anuphap Suwannamas on 21/9/2018 AD.
  * Email: Anupharpae@gmail.com
  */
 
-class DetailFragment : Fragment(), View.OnClickListener {
+class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private var productDetailListener: ProductDetailListener? = null
     private var product: Product? = null
 
     // widget view
     private lateinit var ivProductImage: ImageView
-    private lateinit var productImagePager: ViewPager
+    private lateinit var rvProductImage: RecyclerView
     private lateinit var tvProductName: TextView
     private lateinit var tvStock: TextView
     private lateinit var tvProductCode: TextView
@@ -75,9 +82,15 @@ class DetailFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    // region {@link ProductImageListener.onProductImageClickListener}
+    override fun onProductImageClickListener(productImage: ProductDetailImageItem) {
+        ivProductImage.setImageUrl(productImage.imgUrl)
+    }
+    // endregion
+
     private fun setupView(rootView: View) {
         ivProductImage = rootView.findViewById(R.id.ivProductImage)
-        productImagePager = rootView.findViewById(R.id.pagerProductImage)
+        rvProductImage = rootView.findViewById(R.id.rvProductImage)
         tvProductName = rootView.findViewById(R.id.tvProductName)
         tvStock = rootView.findViewById(R.id.txt_stock)
         tvProductCode = rootView.findViewById(R.id.txt_view_product_code)
@@ -104,8 +117,10 @@ class DetailFragment : Fragment(), View.OnClickListener {
             ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_pwb_logo_detail) })
         }
 
-        productImagePager.adapter = ProductDetailPagerAdapter(fragmentManager, productImageList)
-
+        rvProductImage.layoutManager = LinearLayoutManager(context, LinearLayout.HORIZONTAL, false)
+        rvProductImage.adapter = ProductImageAdapter(this, productImageList.productDetailImageItems)
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(rvProductImage)
 
         // setup product detail
         val unit = getString(R.string.baht)

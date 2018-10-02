@@ -21,8 +21,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:contentDescription="@string/product_detail"
         android:minHeight="300dp"
         android:scaleType="fitCenter"
@@ -31,15 +31,18 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_pwb_logo_detail" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pagerProductImage"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvProductImage"
         android:layout_width="0dp"
-        android:layout_height="108dp"
+        android:layout_height="100dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:overScrollMode="never"
         app:cardBackgroundColor="@android:color/white"
         app:layout_constraintEnd_toStartOf="@id/guideline40"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,8 +54,8 @@
         android:id="@+id/tvProductName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
         android:textColor="@color/nameProductColor"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -64,9 +67,9 @@
         android:id="@+id/productIdLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
@@ -87,8 +90,8 @@
             android:id="@+id/txt_stock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
             android:layout_marginStart="40dp"
+            android:layout_marginLeft="40dp"
             android:maxLines="1"
             android:textColor="@color/inStockColor"
             android:textSize="18sp"
@@ -101,9 +104,9 @@
         android:id="@+id/productTypeLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
@@ -136,9 +139,9 @@
         android:id="@+id/productSpacialPriceLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
@@ -170,8 +173,8 @@
         android:id="@+id/productPriceLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
@@ -212,9 +215,9 @@
         android:id="@+id/line1"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:background="@color/lightGray"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -224,12 +227,12 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:gravity="bottom"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/pagerProductImage"
+        app:layout_constraintBottom_toBottomOf="@+id/rvProductImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/line1">
@@ -262,7 +265,7 @@
                     android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:text="@string/add_to_cart"
-                    android:textColor="@android:color/white"/>
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
 
@@ -280,9 +283,9 @@
                 style="@style/RaisedButtonCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="4dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardBackgroundColor="@color/categoryColor">
@@ -318,9 +321,9 @@
                 style="@style/RaisedButtonCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardBackgroundColor="@color/categoryColor">
@@ -343,8 +346,8 @@
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/product_compare"
                         android:padding="8dp"
+                        android:text="@string/product_compare"
                         android:textColor="@android:color/white" />
 
                 </LinearLayout>
@@ -357,10 +360,10 @@
     <View
         android:layout_width="0dp"
         android:layout_height="2dp"
-        android:background="@color/lightGray"
-        app:layout_constraintTop_toBottomOf="@+id/pagerProductImage"
         android:layout_marginTop="24dp"
+        android:background="@color/lightGray"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvProductImage" />
 
 </android.support.constraint.ConstraintLayout>
