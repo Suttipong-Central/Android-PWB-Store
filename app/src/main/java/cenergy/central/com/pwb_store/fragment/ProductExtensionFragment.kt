@@ -48,7 +48,7 @@ class ProductExtensionFragment : Fragment() {
         extensionTabLayout = rootView.findViewById(R.id.extensionTabLayout)
 
         extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_PROMOTION_FREEBIE).setText("โปรโมชั่นและของแถม"))
-        extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_DELIVERY).setText("ตัวเลือกการจัดส่ง"))
+        extensionTabLayout.addTab(extensionTabLayout.newTab().setIcon(R.drawable.ic_fast_delivery).setTag(TAB_DELIVERY).setText("ตัวเลือกการจัดส่ง"))
         extensionTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
 
