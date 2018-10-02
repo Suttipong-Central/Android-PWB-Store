@@ -49,6 +49,8 @@
     <string name="alert_count" translatable="false">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
     <string name="alert_stock" translatable="false">สินค้าไม่มีในคลังสินค้า</string>
     <string name="add_to_cart">ใส่รถเข็น</string>
+    <string name="tab_promotion">โปรโมชั่นและของแถม</string>
+    <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
 
     <!-- Compare -->
     <string name="compare_header" translatable="false">เปรียบเทียบสินค้า</string>
@@ -235,5 +237,6 @@
     <string name="how_to_do_for_staff">1. คุณจะได้รับอีเมลยืนยันการสั่งซื้อ\n2. แสดงอีเมลที่ได้รับ /หรือแสดงหน้าจอนี้ /หรือเลขที่ใบสั่งซื้อ ต่อเจ้าหน้าที่แคชเชียร์\n3. ทำการจ่ายเงินที่แคชเชียร์ จากนั้นรับใบเสร็จจากเจ้าหน้าที่</string>
     <string name="for_staff">สำหรับเจ้าหน้าที่</string>
     <string name="how_to_staff_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
+
 
 </resources>
