@@ -138,19 +138,33 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 tvTitleSpecialPrice.text = ""
             }
         }
-
+        var txtStock = ""
         if (product.extension?.stokeItem?.isInStock == true) {
-            tvStock.text = getString(R.string.product_stock)
-            context?.let {
-                tvStock.setTextColor(ContextCompat.getColor(it, R.color.inStockColor))
-                addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple))
+            when {
+                product.extension?.stokeItem?.qty!! > 5 -> {
+                    txtStock = getString(R.string.product_stock_more)
+                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.inStockColor)) }
+                }
+                product.extension?.stokeItem?.qty!! > 1 -> {
+                    txtStock = getString(R.string.product_stock_medium)
+                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.powerBuyOrange)) }
+                }
+                product.extension?.stokeItem?.qty!! > 0 -> {
+                    txtStock = getString(R.string.product_stock_less)
+                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
+                }
+                else -> {
+                    txtStock = getString(R.string.product_out_stock)
+                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
+                }
             }
+            context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
             addItemButton.setOnClickListener(this)
-
         } else {
-            tvStock.text = getString(R.string.product_out_stock)
+            txtStock = getString(R.string.product_out_stock)
             context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
         }
+        tvStock.text = txtStock
 
         // setup onclick
         storeButton.setOnClickListener(this)

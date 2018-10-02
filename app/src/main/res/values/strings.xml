@@ -30,7 +30,10 @@
     <string name="product_spec" translatable="false">คุณลักษณะ</string>
     <string name="product_delivery" translatable="false">Delivery / Warranty / Refund</string>
     <string name="product_stock" translatable="false">มีสินค้า</string>
-    <string name="product_out_stock" translatable="false">ไม่มีสินค้า</string>
+    <string name="product_stock_more" translatable="false">จำนวนสินค้าในคลัง: มาก</string>
+    <string name="product_stock_medium" translatable="false">จำนวนสินค้าในคลัง: ปานกลาง</string>
+    <string name="product_stock_less" translatable="false">จำนวนสินค้าในคลัง: น้อย</string>
+    <string name="product_out_stock" translatable="false">สินค้าหมด</string>
     <string name="filter_count" translatable="false">(%1$s)</string>
 
     <!-- Product Detail -->
