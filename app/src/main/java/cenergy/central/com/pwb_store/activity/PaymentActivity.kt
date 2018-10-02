@@ -51,6 +51,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private val customDetail = CustomDetail.createCustomDetail("1", "", "00139")
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
+    private var pwbMembersList: List<PwbMember> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
@@ -92,8 +93,12 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
     // endregion
 
-    // region {@link MemberClickListener}
-    override fun onClickedMember(customerId: String) = getT1CMember(customerId)
+    //region MemberClickListener
+    override fun onClickedPwbMember(pwbMemberIndex: Int) {
+        startBilling(pwbMemberIndex)
+    }
+
+    override fun onClickedT1CMember(customerId: String) = getT1CMember(customerId)
     // endregion
 
     // region {@link PaymentBillingListener}
@@ -199,6 +204,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     private fun startBilling() {
         val fragment = PaymentBillingFragment.newInstance()
+        startFragment(fragment)
+    }
+
+    private fun startBilling(pwbMemberIndex: Int) {
+        val fragment = PaymentBillingFragment.newInstance(pwbMemberIndex)
         startFragment(fragment)
     }
 
@@ -366,8 +376,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 runOnUiThread {
                     mProgressDialog?.dismiss()
                     if (response?.isNotEmpty() == true) { // it can be null
-                        showAlertDialog("", response[0].firstname!!)
-                        // TODO: sent data to Check OUT page
+                        this@PaymentActivity.pwbMembersList = response
+                        startMembersFragment()
                     } else {
                         getMembersT1C(mobile)
                     }
@@ -541,6 +551,16 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     // region {@link PaymentProtocol}
     override fun getItems(): List<CartItem> = this.cartItemList
 
+    override fun getPWBMembers(): List<PwbMember> = this.pwbMembersList
+
+    override fun getPWBMemberByIndex(index: Int): PwbMember?{
+        return if(pwbMembersList.isNotEmpty()){
+            this.pwbMembersList[index]
+        } else {
+            null
+        }
+    }
+
     override fun getMembers(): List<MemberResponse> = this.membersList
 
     override fun getDeliveryOptions(): List<DeliveryOption> = this.deliveryOptionsList
@@ -618,7 +638,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
         if (currentFragment is PaymentBillingFragment) {
             this.shippingAddress = null
-            if (this.membersList.isNotEmpty()) {
+            if (this.membersList.isNotEmpty() || this.pwbMembersList.isNotEmpty()) {
                 startMembersFragment()
             } else {
                 startCheckOut()
@@ -627,6 +647,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentMembersFragment) {
+            this.membersList = listOf()
+            this.pwbMembersList = listOf()
             startCheckOut()
             return
         }

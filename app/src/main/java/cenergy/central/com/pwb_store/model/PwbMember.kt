@@ -1,8 +1,6 @@
 package cenergy.central.com.pwb_store.model
 
-import com.google.gson.*
 import com.google.gson.annotations.SerializedName
-import java.lang.reflect.Type
 
 
 /**
@@ -18,7 +16,35 @@ class PwbMember(
         @SerializedName("the_one_card_no")
         var t1cCardNo: String? = "",
         var addresses: List<MemberAddress>? = arrayListOf()
-)
+) {
+    fun getDisplayName(): String {
+        return "$firstname $lastname"
+    }
+
+    fun getShipping(): MemberAddress {
+        var pwbMemberAddress: MemberAddress? = null
+        if (addresses != null && addresses!!.isNotEmpty()){
+            addresses?.forEach {
+                if(it.defaultShipping!!){
+                    pwbMemberAddress = it
+                }
+            }
+        }
+        return pwbMemberAddress?:addresses!![0]
+    }
+
+    fun getDefualtBillingAddress(): Int {
+        var index = 0
+        if(addresses != null && addresses!!.isNotEmpty()){
+            for (i in addresses!!.indices){
+                if (addresses!![i].defaultShipping!!){
+                    index = i
+                }
+            }
+        }
+        return index
+    }
+}
 
 class MemberAddress(
         var id: Long? = 0,

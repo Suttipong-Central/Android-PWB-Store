@@ -11,12 +11,15 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.MembersAdapter
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
+import cenergy.central.com.pwb_store.model.PwbMember
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class PaymentMembersFragment : Fragment() {
 
     var listener: PaymentProtocol? = null
     var membersList: List<MemberResponse> = listOf()
+    var pwbMembersList: List<PwbMember> = listOf()
     private lateinit var recycler: RecyclerView
 
     companion object {
@@ -31,7 +34,10 @@ class PaymentMembersFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         listener = context as PaymentProtocol
-        membersList = listener!!.getMembers()
+        listener?.let {
+            pwbMembersList = it.getPWBMembers()
+            membersList = it.getMembers()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,9 +48,14 @@ class PaymentMembersFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         recycler = rootView.findViewById(R.id.recycler_view_members)
-        val membersAdapter = context?.let { MembersAdapter(it) }
+        val membersAdapter = MembersAdapter()
+        membersAdapter.setOnMemberClickListener(context as MemberClickListener)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = membersAdapter
-        membersAdapter?.memberList = membersList
+        if (pwbMembersList.isNotEmpty()) {
+            membersAdapter.memberList = pwbMembersList
+        } else {
+            membersAdapter.memberList = membersList
+        }
     }
 }

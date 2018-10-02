@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputType
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +39,7 @@ import me.a3cha.android.thaiaddress.models.SubDistrict
 import java.text.NumberFormat
 import java.util.*
 import android.widget.RadioGroup
-
+import cenergy.central.com.pwb_store.model.PwbMember
 
 
 class PaymentBillingFragment : Fragment() {
@@ -89,6 +90,8 @@ class PaymentBillingFragment : Fragment() {
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
     private var member: Member? = null
+    private var pwbMemberIndex: Int? = null
+    private var pwbMember: PwbMember? = null
     private var firstName: String = ""
     private var lastName: String = ""
     private var email: String = ""
@@ -142,6 +145,7 @@ class PaymentBillingFragment : Fragment() {
 
     companion object {
         private const val ARG_MEMBER = "arg_member"
+        private const val ARG_MEMBER_INDEX = "arg_member_index"
 
         fun newInstance(): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
@@ -154,6 +158,14 @@ class PaymentBillingFragment : Fragment() {
             val fragment = PaymentBillingFragment()
             val args = Bundle()
             args.putParcelable(ARG_MEMBER, member)
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(pwbMemberIndex: Int): PaymentBillingFragment {
+            val fragment = PaymentBillingFragment()
+            val args = Bundle()
+            args.putInt(ARG_MEMBER_INDEX, pwbMemberIndex)
             fragment.arguments = args
             return fragment
         }
@@ -172,6 +184,8 @@ class PaymentBillingFragment : Fragment() {
         val preferenceManager = context?.let { PreferenceManager(it) }
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(ARG_MEMBER)
+        pwbMemberIndex = arguments?.getInt(ARG_MEMBER_INDEX)
+        pwbMemberIndex?.let { pwbMember = paymentProtocol?.getPWBMemberByIndex(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -250,8 +264,57 @@ class PaymentBillingFragment : Fragment() {
         setupInputAddress()
 
         //Setup Member
-        if (hasMember()) {
-            member?.let { member ->
+        when {
+            hasPwbMember() -> pwbMember?.let { pwbMember ->
+                firstNameEdt.setText(pwbMember.firstname?:"")
+                lastNameEdt.setText(pwbMember.lastname?:"")
+                contactNumberEdt.setText(pwbMember.getShipping().telephone!!)
+                emailEdt.setText(pwbMember.email!!)
+                homeNoEdt.setText(pwbMember.getShipping().subAddress!!.houseNo!!)
+                homeBuildingEdit.setText("")
+                homeSoiEdt.setText("")
+                homeRoadEdt.setText(pwbMember.getShipping().street!![0])
+
+                // validate province with local db
+                val province = database.getProvince(pwbMember.getShipping().regionId!!.toLong())
+                if (province != null) {
+                    provinceInput.setText(province.nameTh)
+                    this.province = province
+                    this.districts = database.getDistrictsByProvinceId(province.provinceId)
+                    this.districtNameList = getDistrictNameList()
+                    this.subDistrictAdapter?.setItems(this.districtNameList)
+                }
+
+                // validate district with local db
+                val district = database.getDistrict(pwbMember.getShipping().subAddress!!.districtId!!.toLong())
+                if (district != null) {
+                    districtInput.setText(district.nameTh)
+                    this.district = district
+                    this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
+                    this.subDistrictNameList = getSubDistrictNameList()
+                    this.subDistrictAdapter?.setItems(this.subDistrictNameList)
+                }
+
+                // validate sub district with local db
+                val subDistrict = database.getSubDistrict(pwbMember.getShipping().subAddress!!.subDistrictId!!.toLong())
+                if (subDistrict != null) {
+                    subDistrictInput.setText(subDistrict.nameTh)
+                    this.subDistrict = subDistrict
+                    this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+                    this.postcodeList = getPostcodeList()
+                    this.postcodeAdapter?.setItems(this.postcodeList)
+                }
+
+                // validate postcode with local db
+                val postcode = database.getPostcode(pwbMember.getShipping().subAddress!!.postcodeId!!.toLong())
+                if (postcode != null) {
+                    postcodeInput.setText(postcode.postcode.toString())
+                    this.postcode = postcode
+                }
+
+                homePhoneEdt.setText(pwbMember.getShipping().telephone!!)
+            }
+            hasMember() -> member?.let { member ->
                 firstNameEdt.setText(member.getFirstName())
                 lastNameEdt.setText(member.getLastName())
                 contactNumberEdt.setText(member.mobilePhone)
@@ -300,8 +363,7 @@ class PaymentBillingFragment : Fragment() {
 
                 homePhoneEdt.setText(member.homePhone)
             }
-        } else {
-            shippingAddress?.let { shippingAddress ->
+            else -> shippingAddress?.let { shippingAddress ->
                 firstNameEdt.setText(shippingAddress.firstname)
                 lastNameEdt.setText(shippingAddress.lastname)
                 contactNumberEdt.setText(shippingAddress.telephone)
@@ -381,6 +443,10 @@ class PaymentBillingFragment : Fragment() {
 
     private fun hasMember(): Boolean {
         return member != null
+    }
+
+    private fun hasPwbMember(): Boolean {
+        return pwbMember != null
     }
 
     private fun setupInputAddress() {

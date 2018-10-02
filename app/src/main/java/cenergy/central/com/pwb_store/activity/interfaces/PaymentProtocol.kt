@@ -11,6 +11,7 @@ import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 
 interface PaymentProtocol {
     fun getItems(): List<CartItem>
+    fun getPWBMembers(): List<PwbMember>
     fun getMembers(): List<MemberResponse>
     fun getDeliveryOptions(): List<DeliveryOption>
     fun getShippingAddress(): AddressInformation?
@@ -19,4 +20,5 @@ interface PaymentProtocol {
     fun getShippingSlot(): ShippingSlotResponse?
     fun getBranches(): List<Branch>
     fun getSelectedBranch(): Branch?
+    fun getPWBMemberByIndex(index: Int): PwbMember?
 }
