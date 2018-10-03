@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingEnd="16dp"
     android:paddingStart="16dp"
-    android:paddingTop="16dp">
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp">
 
     <android.support.constraint.Guideline
         android:id="@+id/guild_line_50"
@@ -15,40 +15,54 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
+    <ImageView
+        android:id="@+id/ivDeliveryIcon"
+        android:layout_width="36dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_carrier_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_carrier_title"
+        tools:src="@drawable/ic_store" />
+
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/tv_carrier_title"
-        style="@style/textSize22Sp"
+        style="@style/TextAppearance.AppCompat.Large"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/choose_delivery_option"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivDeliveryIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="carrier_title" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+    <Button
         android:id="@+id/choose_delivery_option"
+        style="@style/Button.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:background="@color/colorPrimary"
+        android:padding="16dp"
         android:text="@string/choose"
-        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_carrier_title"
         app:layout_constraintTop_toTopOf="parent" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/tv_amount"
-        style="@style/textSize22Sp"
+        style="@style/TextAppearance.AppCompat.Large"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:gravity="end"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/guild_line_50"
         app:layout_constraintTop_toBottomOf="@+id/choose_delivery_option"
-        tools:text="carrier_title" />
+        tools:text="amount" />
 
     <TextView
         android:id="@+id/tv_method_title"
@@ -57,7 +71,7 @@
         android:layout_marginTop="8dp"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@id/guild_line_50"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_carrier_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_carrier_title"
         tools:text="method_title" />
 
@@ -68,5 +82,5 @@
         android:layout_marginTop="16dp"
         android:background="@color/graySelect"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_method_title" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_amount" />
 </android.support.constraint.ConstraintLayout>

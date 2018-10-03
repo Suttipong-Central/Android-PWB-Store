@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.manager.service
 
-import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
@@ -32,7 +31,8 @@ internal interface CartService {
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-    @POST("/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
+//    @POST("/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
+    @POST("/rest/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
     fun getOrderDeliveryOptions(@Path("cartId") cartId: String,
                                 @Body deliveryBody: DeliveryOptionsBody): Call<List<DeliveryOption>>
 
@@ -50,5 +50,5 @@ internal interface CartService {
 
     @GET("/rest/all/V1/headless/storepickup")
     fun getBranches(@Query("searchCriteria[sortOrders][0][field]") orderBy: String,
-                   @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
+                    @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
 }
