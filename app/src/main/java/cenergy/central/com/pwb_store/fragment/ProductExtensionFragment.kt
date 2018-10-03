@@ -56,8 +56,7 @@ class ProductExtensionFragment : Fragment() {
         val tvPromotionTabTitle = promotionTab.findViewById<TextView>(R.id.tvTitle)
         val ivPromotionIcon = promotionTab.findViewById<ImageView>(R.id.ivIcon)
         tvPromotionTabTitle.text = getString(R.string.tab_promotion)
-        ivPromotionIcon.setImage(R.drawable.ic_freebies_purple)
-        ivPromotionIcon.setPadding(4, 4, 4, 4)
+        ivPromotionIcon.setImage(R.drawable.ic_freebies_selected)
 
         val deliveryTab = LayoutInflater.from(context).inflate(R.layout.custom_tab_layout, null)
         val tvDeliveryTabTitle = deliveryTab.findViewById<TextView>(R.id.tvTitle)
@@ -78,7 +77,7 @@ class ProductExtensionFragment : Fragment() {
                     TAB_PROMOTION_FREEBIE -> {
                         tvPromotionTabTitle.text = getString(R.string.tab_promotion)
                         tvPromotionTabTitle.setTextColor(ContextCompat.getColor(context!!, R.color.graySelect))
-                        ivPromotionIcon.setImage(R.drawable.ic_freebies_gray)
+                        ivPromotionIcon.setImage(R.drawable.ic_freebie)
                     }
                     TAB_DELIVERY -> {
                         tvDeliveryTabTitle.text = getString(R.string.tab_delivery)
@@ -93,7 +92,7 @@ class ProductExtensionFragment : Fragment() {
                     TAB_PROMOTION_FREEBIE -> {
                         tvPromotionTabTitle.text = getString(R.string.tab_promotion)
                         tvPromotionTabTitle.setTextColor(ContextCompat.getColor(context!!, R.color.blackText))
-                        ivPromotionIcon.setImage(R.drawable.ic_freebies_purple)
+                        ivPromotionIcon.setImage(R.drawable.ic_freebies_selected)
                         startChildFragment(ProductFreeItemFragment())
                     }
                     TAB_DELIVERY -> {
