@@ -24,6 +24,7 @@ class Product() : IViewType, Parcelable {
     var specialToDate: String? = null
     var brand: String = ""
     var image: String = ""
+    var deliveryMethod: String = ""
     @SerializedName("media_gallery_entries")
     var gallery: List<ProductGallery> = arrayListOf()
     var viewTypeID: Int = 0
@@ -43,6 +44,7 @@ class Product() : IViewType, Parcelable {
         specialToDate = parcel.readString()
         brand = parcel.readString()
         image = parcel.readString()
+        deliveryMethod = parcel.readString()
         gallery = parcel.createTypedArrayList(ProductGallery)
         viewTypeID = parcel.readInt()
         attributeID = parcel.readInt()
@@ -97,6 +99,10 @@ class Product() : IViewType, Parcelable {
         }
     }
 
+    fun getDeliveryMethod(): List<String>{
+        return deliveryMethod.split(",")
+    }
+
     fun isSpecialPrice(): Boolean {
         return if (specialFromDate != null && specialToDate != null) {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
@@ -122,6 +128,7 @@ class Product() : IViewType, Parcelable {
         parcel.writeString(specialToDate)
         parcel.writeString(brand)
         parcel.writeString(image)
+        parcel.writeString(deliveryMethod)
         parcel.writeTypedList(gallery)
         parcel.writeInt(viewTypeID)
         parcel.writeInt(attributeID)

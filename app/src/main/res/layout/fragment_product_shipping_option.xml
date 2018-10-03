@@ -23,4 +23,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"/>
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tvNotHaveHomeDelivery"
+        android:layout_width="match_parent"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_height="200dp"
+        android:gravity="center"
+        android:text="@string/product_not_have_delivery"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld
+import cenergy.central.com.pwb_store.model.DeliveryType
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ShippingDao
 import cenergy.central.com.pwb_store.model.ShippingItem
@@ -22,6 +23,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorHDLUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.CalendarViewCustom
+import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,6 +42,8 @@ class ProductShippingOptionFragment : Fragment() {
     private val database by lazy { RealmController.with(context) }
 
     // older code
+    private lateinit var header: PowerBuyTextView
+    private lateinit var tvNoHaveHomeDelivery: PowerBuyTextView
     private lateinit var mCalendarView: CalendarViewCustom
     private var mShippingRequest: ShippingRequest? = null
     private var mShippingDao: ShippingDao? = null
@@ -86,7 +90,23 @@ class ProductShippingOptionFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
+        header = rootView.findViewById(R.id.txt_header)
         mCalendarView = rootView.findViewById(R.id.custom_calendar)
+        tvNoHaveHomeDelivery = rootView.findViewById(R.id.tvNotHaveHomeDelivery)
+        product?.let { product ->
+            product.getDeliveryMethod().forEach{
+                if(it == HOME_DELIVERY){
+                    header.visibility = View.VISIBLE
+                    mCalendarView.visibility = View.VISIBLE
+                    tvNoHaveHomeDelivery.visibility = View.GONE
+                } else {
+                    header.visibility = View.GONE
+                    mCalendarView.visibility = View.GONE
+                    tvNoHaveHomeDelivery.visibility = View.VISIBLE
+                }
+            }
+        }
+
     }
 
     // older code
@@ -332,5 +352,9 @@ class ProductShippingOptionFragment : Fragment() {
         } else {
             progressDialog?.show()
         }
+    }
+
+    companion object {
+        private const val HOME_DELIVERY = "pwb_homedelivery"
     }
 }

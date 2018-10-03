@@ -447,6 +447,10 @@ class HttpManagerMagento(context: Context) {
                                     product.image = attrArray.getJSONObject(i).getString("value")
                                 }
 
+                                "delivery_method" -> {
+                                    product.deliveryMethod = attrArray.getJSONObject(i).getString("value")
+                                }
+
                                 "brand" -> {
                                     product.brand = attrArray.getJSONObject(i).getString("value")
                                 }

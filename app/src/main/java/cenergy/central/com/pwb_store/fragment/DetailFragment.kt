@@ -138,7 +138,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 tvTitleSpecialPrice.text = ""
             }
         }
-        var txtStock = ""
+        val txtStock: String
         if (product.extension?.stokeItem?.isInStock == true) {
             when {
                 product.extension?.stokeItem?.qty!! > 5 -> {
