@@ -55,6 +55,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var tvReceiverName: PowerBuyTextView
     private lateinit var tvBillingName: PowerBuyTextView
     private lateinit var tvBillingAddress: PowerBuyTextView
+    private lateinit var tvBillingTelephone: PowerBuyTextView
+    private lateinit var tvBillingEmail: PowerBuyTextView
     private lateinit var tvDeliveryInfo: PowerBuyTextView
     private lateinit var tvAmount: TextView
     private lateinit var tvShippingAmount: TextView
@@ -65,6 +67,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var staffIconLayout: LinearLayout
     private lateinit var customerNameLayout: LinearLayout
     private lateinit var deliveryInfoLayout: LinearLayout
+    private lateinit var billingEmailLayout: LinearLayout
+    private lateinit var billingTelephoneLayout: LinearLayout
     private lateinit var amountLayout: LinearLayout
     private var mProgressDialog: ProgressDialog? = null
 
@@ -87,6 +91,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         private const val ARG_ORDER_ID = "ARG_ORDER_ID"
         private const val ARG_CART_ITEMS = "ARG_CART_ITEMS"
         private const val ARG_CACHE_ORDER_ID = "ARG_CACHE_ORDER_ID"
+        private const val SAME_BILLING = 1
 
         fun newInstance(orderId: String, cacheCartItems: ArrayList<CacheCartItem>): PaymentSuccessFragment {
             val fragment = PaymentSuccessFragment()
@@ -145,6 +150,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvReceiverName = rootView.findViewById(R.id.tvReceiverName)
         tvBillingName = rootView.findViewById(R.id.tvBillingName)
         tvBillingAddress = rootView.findViewById(R.id.tvBillingAddress)
+        tvBillingTelephone = rootView.findViewById(R.id.tvBillingTelephone)
+        tvBillingEmail = rootView.findViewById(R.id.tvBillingEmail)
         tvDeliveryInfo = rootView.findViewById(R.id.tvDeliveryInfo)
         tvShippingAmount = rootView.findViewById(R.id.tvShippingAmount)
         tvAmount = rootView.findViewById(R.id.tvAmount)
@@ -153,6 +160,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         billingAddressLayout = rootView.findViewById(R.id.billingAddressLayout)
         customerNameLayout = rootView.findViewById(R.id.customerNameLayout)
         deliveryInfoLayout = rootView.findViewById(R.id.deliveryInfoLayout)
+        billingEmailLayout = rootView.findViewById(R.id.billingEmailLayout)
+        billingTelephoneLayout = rootView.findViewById(R.id.billingTelephoneLayout)
         deliveryLayout = rootView.findViewById(R.id.deliveryLayout)
         staffIconLayout = rootView.findViewById(R.id.staffIconLayout)
         amountLayout = rootView.findViewById(R.id.amountLayout)
@@ -202,14 +211,17 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
         val unit = context!!.getString(R.string.baht)
 
+        val shippingAddress = orderResponse.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress
+        val billingAddress = orderResponse.billingAddress
+
         orderProductListAdapter.listItems = listItems ?: arrayListOf()
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
         //Setup customer
         orderDate.text = orderResponse.updatedAt
-        email.text = orderResponse.billingAddress!!.email
-        contactNo.text = orderResponse.billingAddress!!.telephone
+        email.text = shippingAddress?.email
+        contactNo.text = shippingAddress?.telephone
         mProgressDialog?.dismiss()
         finishButton.setOnClickListener {
             finishThisPage()
@@ -224,14 +236,22 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             storeAddressLayout.visibility = View.GONE
             customerNameLayout.visibility = View.GONE
 
-            val address = orderResponse.billingAddress
             tvShippingHeader.text = getString(R.string.delivery_detail)
             tvDeliveryType.text = orderResponse.shippingType
-            tvReceiverName.text = address?.getDisplayName()
-            tvBillingName.text = address?.getDisplayName()
-            tvBillingAddress.text = getAddress(orderResponse.billingAddress)
-            tvDeliveryAddress.text = getAddress(orderResponse.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress)
+            tvReceiverName.text = shippingAddress?.getDisplayName()
+            tvDeliveryAddress.text = getAddress(shippingAddress)
             tvDeliveryInfo.text = order.orderResponse?.shippingDescription
+            tvBillingName.text = billingAddress?.getDisplayName()
+            tvBillingAddress.text = getAddress(billingAddress)
+            if(orderResponse.billingAddress!!.sameBilling == SAME_BILLING){
+                billingEmailLayout.visibility = View.GONE
+                billingTelephoneLayout.visibility = View.GONE
+            } else {
+                billingEmailLayout.visibility = View.VISIBLE
+                billingTelephoneLayout.visibility = View.VISIBLE
+                tvBillingEmail.text = billingAddress?.email
+                tvBillingTelephone.text = billingAddress?.telephone
+            }
         } else {
             deliveryLayout.visibility = View.GONE
             billingAddressLayout.visibility = View.GONE
@@ -240,7 +260,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             storeAddressLayout.visibility = View.VISIBLE
             customerNameLayout.visibility = View.VISIBLE
 
-            name.text = "${orderResponse.billingAddress!!.firstname} ${orderResponse.billingAddress!!.lastname}"
+            name.text = billingAddress!!.getDisplayName()
 
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 

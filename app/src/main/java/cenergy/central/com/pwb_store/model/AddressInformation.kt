@@ -37,7 +37,7 @@ open class AddressInformation(
                           homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
                           homeSubDistrict: String, homeCity: String, homeRoad: String, homePostalCode: String,
                           homePhone: String, provinceId: String, provinceCode: String, countryId: String,
-                          districtId: String, subDistrictId: String, postcodeId: String): AddressInformation {
+                          districtId: String, subDistrictId: String, postcodeId: String, sameBilling: Int): AddressInformation {
 
             val subAddress = SubAddress(
                     mobile = homePhone,
@@ -63,7 +63,7 @@ open class AddressInformation(
                     email = email,
                     telephone = contactNo,
                     subAddress = subAddress,
-                    sameBilling = 1)
+                    sameBilling = sameBilling)
         }
     }
 

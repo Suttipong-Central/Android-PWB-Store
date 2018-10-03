@@ -602,7 +602,7 @@ class PaymentBillingFragment : Fragment() {
         if(isSameBilling){
             if (!hasEmptyInput()) {
                 // setup value
-                val shippingAddress = setupShipping()
+                val shippingAddress = setupShipping(1)
                 mProgressDialog?.dismiss()
                 paymentBillingListener?.setShippingAddressInfo(shippingAddress)
             } else {
@@ -612,8 +612,8 @@ class PaymentBillingFragment : Fragment() {
         } else {
             if(!hasEmptyInput() && !hasBillingEmptyInput()){
                 // setup value shipping
-                val billingAddress = setupBilling()
-                val shippingAddress = setupShipping()
+                val billingAddress = setupBilling(0)
+                val shippingAddress = setupShipping(0)
                 mProgressDialog?.dismiss()
                 paymentBillingListener?.setBillingAddressInfo(billingAddress)
                 paymentBillingListener?.setShippingAddressInfo(shippingAddress)
@@ -624,7 +624,7 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun setupShipping() : AddressInformation {
+    private fun setupShipping(sameBilling: Int) : AddressInformation {
         firstName = firstNameEdt.getText()
         lastName = lastNameEdt.getText()
         email = emailEdt.getText()
@@ -651,10 +651,10 @@ class PaymentBillingFragment : Fragment() {
                 homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
-                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict)
+                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)
     }
 
-    private fun setupBilling() : AddressInformation {
+    private fun setupBilling(sameBilling: Int) : AddressInformation {
         firstName = billingFirstNameEdt.getText()
         lastName = billingLastNameEdt.getText()
         email = billingEmailEdt.getText()
@@ -681,7 +681,7 @@ class PaymentBillingFragment : Fragment() {
                 homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
-                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict)
+                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)
     }
 
     private fun hasEmptyInput(): Boolean {
