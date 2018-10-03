@@ -10,13 +10,13 @@ enum class DeliveryType(val methodCode: String) {
         override fun toString(): String = "ส่งด่วน"
     },
     STANDARD("standard") {
-        override fun toString(): String = "ส่งธรรมดา(โดย KERRY)"
+        override fun toString(): String = "ส่งธรรมดา (โดย KERRY)"
     },
     STORE_PICK_UP("storepickup") {
         override fun toString(): String = "รับที่สาขา"
     },
     HOME("homedelivery") {
-        override fun toString(): String = "กำหนดวันจัดส่ง"
+        override fun toString(): String = "กำหนดวันจัดส่ง (โดยรถพาวเวอร์บาย)"
     };
     companion object {
         private val map = DeliveryType.values().associateBy(DeliveryType::methodCode)
