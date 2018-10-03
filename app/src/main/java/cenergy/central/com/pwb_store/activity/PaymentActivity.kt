@@ -151,7 +151,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         HttpManagerHDL.getInstance().createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
             override fun success(response: BookingNumberResponse?) {
                 if (response != null) {
-                    Log.d("Booking number response", response.bookingNo)
                     val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
                             shippingDate, slot.id.toString(), slot.description)
                     showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null, subscribeCheckOut)
@@ -323,10 +322,10 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private fun createShippingInformation(storeAddress: AddressInformation?, subscribeCheckOut: SubscribeCheckOut) {
         if (cartId != null && shippingAddress != null) {
             if (storeAddress != null) { // is shipping at store?
-                storeAddress.sameBilling = 0
+                billingAddress?.sameBilling = 0
+                shippingAddress?.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress
-                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -343,11 +342,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                             }
                         })
             } else {
-                if (billingAddress != null) {
-                    shippingAddress!!.sameBilling = 0
-                } else {
-                    shippingAddress!!.sameBilling = 1
-                }
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
                         billingAddress ?: shippingAddress!!, subscribeCheckOut,
                         deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
@@ -590,28 +584,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-//                val staff = userInformation.user
-//                val storeStaff = userInformation.store
-//                //Check this if change to use PWB login
-//                val province = database.getProvinceByNameEn(storeStaff?.province ?: "")
-//                val district = database.getDistrictByNameEn(storeStaff?.district ?: "")
-//                val subDistrict = database.getSubDistrictByNameEn(storeStaff?.subDistrict ?: "")
-//                val postCode = database.getPostcodeByCode(storeStaff?.postalCode)
-//                val storeAddress = AddressInformation.createAddress(
-//                        firstName = shippingAddress?.firstname
-//                                ?: "Testing", lastName = shippingAddress?.lastname
-//                        ?: "Testing", email = shippingAddress?.email ?: "storepickup@testing.com",
-//                        contactNo = shippingAddress?.telephone ?: "0000000000", homeNo = "",
-//                        homeBuilding = "ชื่ออาคาร", homeSoi = "ซอย",
-//                        homeRoad = "ถนน", homePostalCode = storeStaff?.postalCode ?: "10501",
-//                        homePhone = "", provinceId = "668",
-//                        provinceCode = "BKK", countryId = "TH",
-//                        districtId = "25",
-//                        subDistrictId = "157",
-//                        postcodeId = postCode?.id?.toString() ?: "159", homeCity = province?.nameTh
-//                        ?: "กรุงเทพมหานคร",
-//                        homeDistrict = district?.nameTh
-//                                ?: "บางรัก", homeSubDistrict = subDistrict?.nameTh ?: "บางรัก")
                 val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email, "", "", "")
                 // store shipping this case can be anything
                 showAlertCheckPayment("", resources.getString(R.string.confrim_oder), shippingAddress, subscribeCheckOut)

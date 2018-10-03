@@ -48,7 +48,7 @@ class BranchesFragment : Fragment(), StoreClickListener {
         storesAdapter.branches = branches
     }
 
-    fun updateBraches(branches: List<Branch>) {
+    fun updateBranches(branches: List<Branch>) {
         this.branches = branches
         storesAdapter.branches = branches
     }

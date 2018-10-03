@@ -146,6 +146,8 @@ class PaymentBillingFragment : Fragment() {
     companion object {
         private const val ARG_MEMBER = "arg_member"
         private const val ARG_MEMBER_INDEX = "arg_member_index"
+        private const val IS_SAME_BILLING = 1
+        private const val IS_NOT_SAME_BILLING = 0
 
         fun newInstance(): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
@@ -602,7 +604,7 @@ class PaymentBillingFragment : Fragment() {
         if(isSameBilling){
             if (!hasEmptyInput()) {
                 // setup value
-                val shippingAddress = setupShipping(1)
+                val shippingAddress = setupShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
                 paymentBillingListener?.setShippingAddressInfo(shippingAddress)
             } else {
@@ -612,8 +614,8 @@ class PaymentBillingFragment : Fragment() {
         } else {
             if(!hasEmptyInput() && !hasBillingEmptyInput()){
                 // setup value shipping
-                val billingAddress = setupBilling(0)
-                val shippingAddress = setupShipping(0)
+                val billingAddress = setupBilling(IS_NOT_SAME_BILLING)
+                val shippingAddress = setupShipping(IS_NOT_SAME_BILLING)
                 mProgressDialog?.dismiss()
                 paymentBillingListener?.setBillingAddressInfo(billingAddress)
                 paymentBillingListener?.setShippingAddressInfo(shippingAddress)

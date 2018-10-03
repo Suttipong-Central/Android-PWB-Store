@@ -48,7 +48,7 @@ class DeliveryStorePickUpFragment : Fragment() {
 
     private fun updateBranches(branches: List<Branch>) {
         this.branches = branches
-        branchesFragment.updateBraches(branches)
+        branchesFragment.updateBranches(branches)
     }
 
     fun updateStoreDetail(branch: Branch) {
