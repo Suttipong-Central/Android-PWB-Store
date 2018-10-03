@@ -764,8 +764,14 @@ class HttpManagerMagento(context: Context) {
                                 memberAddress.city = addresses.getJSONObject(k).getString("city")
                                 memberAddress.firstname = addresses.getJSONObject(k).getString("firstname")
                                 memberAddress.lastname = addresses.getJSONObject(k).getString("lastname")
-                                memberAddress.defaultShipping = addresses.getJSONObject(k).getBoolean("default_shipping")
-                                memberAddress.defaultBilling = addresses.getJSONObject(k).getBoolean("default_billing")
+
+                                if (addresses.getJSONObject(k).has("default_shipping")) {
+                                    memberAddress.defaultShipping = addresses.getJSONObject(k).getBoolean("default_shipping")
+                                }
+
+                                if (addresses.getJSONObject(k).has("default_billing")) {
+                                    memberAddress.defaultShipping = addresses.getJSONObject(k).getBoolean("default_billing")
+                                }
 
                                 val customAttributes = addresses.getJSONObject(k).getJSONArray("custom_attributes")
                                 val memberSubAddress = MemberSubAddress()
