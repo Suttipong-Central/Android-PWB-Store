@@ -13,17 +13,20 @@ import cenergy.central.com.pwb_store.model.Branch
 class DeliveryStorePickUpFragment : Fragment() {
 
     private var listener: PaymentProtocol? = null
-    private var branches: List<Branch> = arrayListOf()
+    private var branches: ArrayList<Branch?> = arrayListOf()
     private val branchesFragment = BranchesFragment.newInstance()
     private val branchDetailFragment = BranchDetailFragment.newInstance()
+    private var totalBranch: Int = 0
 
     companion object {
         const val TAG_FRAGMENT_STORES = "fragment_stores"
         const val TAG_FRAGMENT_STORE_DETAIL = "fragment_store_detail"
+        private const val ARG_TOTAL_BRANCH = "total_branch"
 
-        fun newInstance(): DeliveryStorePickUpFragment {
+        fun newInstance(totalBranch: Int): DeliveryStorePickUpFragment {
             val fragment = DeliveryStorePickUpFragment()
             val args = Bundle()
+            args.putInt(ARG_TOTAL_BRANCH, totalBranch)
             fragment.arguments = args
             return fragment
         }
@@ -33,6 +36,11 @@ class DeliveryStorePickUpFragment : Fragment() {
         super.onAttach(context)
         listener = context as PaymentProtocol
         branches = listener?.getBranches() ?: arrayListOf()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        totalBranch = arguments?.getInt(ARG_TOTAL_BRANCH, 0) ?: 0
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,9 +54,9 @@ class DeliveryStorePickUpFragment : Fragment() {
         updateBranches(branches)
     }
 
-    private fun updateBranches(branches: List<Branch>) {
+    private fun updateBranches(branches: ArrayList<Branch?>) {
         this.branches = branches
-        branchesFragment.updateBranches(branches)
+        branchesFragment.updateBranches(branches, totalBranch)
     }
 
     fun updateStoreDetail(branch: Branch) {

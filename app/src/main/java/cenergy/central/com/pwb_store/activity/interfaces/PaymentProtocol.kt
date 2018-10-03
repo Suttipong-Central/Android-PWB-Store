@@ -18,7 +18,7 @@ interface PaymentProtocol {
     fun getBillingAddress(): AddressInformation?
     fun getSelectedDeliveryType(): DeliveryType?
     fun getShippingSlot(): ShippingSlotResponse?
-    fun getBranches(): List<Branch>
+    fun getBranches(): ArrayList<Branch?>
     fun getSelectedBranch(): Branch?
     fun getPWBMemberByIndex(index: Int): PwbMember?
 }

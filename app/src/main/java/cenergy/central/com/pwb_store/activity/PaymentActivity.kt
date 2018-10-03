@@ -56,7 +56,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-    private var branches: ArrayList<Branch> = arrayListOf()
+    private var branches: ArrayList<Branch?> = arrayListOf()
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
@@ -126,7 +126,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
-                getStoresDelivery()
+                getStoresDelivery() // default page
             }
             HOME -> {
                 showProgressDialog()
@@ -181,8 +181,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
     }
 
-    private fun startStorePickupFragment() {
-        val fragment = DeliveryStorePickUpFragment.newInstance()
+    private fun startStorePickupFragment(totalBranch: Int) {
+        val fragment = DeliveryStorePickUpFragment.newInstance(totalBranch)
         startFragment(fragment)
     }
 
@@ -325,7 +325,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 billingAddress?.sameBilling = 0
                 shippingAddress?.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress
+                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -451,18 +452,19 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun getStoresDelivery() {
-        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
-            override fun success(response: List<Branch>?) {
+        this.branches = arrayListOf()
+        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<BranchResponse> {
+            override fun success(response: BranchResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null && userInformation != null) {
-                    val branch = response.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
+                    val branch = response.items.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
                     if (branch != null) {
                         branches.add(branch)
-                        response.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
+                        response.items.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
                     } else {
-                        response.sortedBy { it.storeId }.forEach { branches.add(it) }
+                        response.items.sortedBy { it.storeId }.forEach { branches.add(it) }
                     }
-                    startStorePickupFragment()
+                    startStorePickupFragment(response.totalBranch)
                 } else {
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
@@ -547,8 +549,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun getPWBMembers(): List<PwbMember> = this.pwbMembersList
 
-    override fun getPWBMemberByIndex(index: Int): PwbMember?{
-        return if(pwbMembersList.isNotEmpty()){
+    override fun getPWBMemberByIndex(index: Int): PwbMember? {
+        return if (pwbMembersList.isNotEmpty()) {
             this.pwbMembersList[index]
         } else {
             null
@@ -567,7 +569,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun getShippingSlot(): ShippingSlotResponse? = this.shippingSlotResponse
 
-    override fun getBranches(): List<Branch> = this.branches
+    override fun getBranches(): ArrayList<Branch?> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
     // endregion
