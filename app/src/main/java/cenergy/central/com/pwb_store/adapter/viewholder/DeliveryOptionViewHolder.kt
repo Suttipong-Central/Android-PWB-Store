@@ -10,7 +10,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.DeliveryType
-import cenergy.central.com.pwb_store.model.SubscribeCheckOut
+import java.util.*
 
 class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -28,7 +28,7 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
             DeliveryType.EXPRESS -> {
                 setImage(R.drawable.ic_fast_delivery_selected)
             }
-            DeliveryType.STANDARD-> {
+            DeliveryType.STANDARD -> {
                 setImage(R.drawable.ic_delivery_standard)
             }
             DeliveryType.STORE_PICK_UP -> {
@@ -39,7 +39,17 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
             }
         }
         carrierTitle.text = deliveryType.toString()
-        methodTitle.text = deliveryOption.methodTitle
+        if (deliveryType == DeliveryType.EXPRESS) {
+            val calendar = Calendar.getInstance()
+
+            if (calendar.get(Calendar.HOUR_OF_DAY) == 12) {
+                methodTitle.text = "ส่งถึงมือภายใน 15:00-20:00 น."
+            } else {
+                methodTitle.text = deliveryOption.methodTitle
+            }
+        } else {
+            methodTitle.text = deliveryOption.methodTitle
+        }
         amount.text = "$unit${deliveryOption.amount}"
         amount.visibility = if (deliveryOption.amount > 0) View.VISIBLE else View.INVISIBLE
         if (deliveryOption.available) {
