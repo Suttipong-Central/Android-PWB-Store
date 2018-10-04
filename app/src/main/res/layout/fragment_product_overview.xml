@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/powerBuyWhite"
     android:focusableInTouchMode="true"
+    android:orientation="vertical"
     android:paddingBottom="16dp">
 
     <LinearLayout
@@ -35,10 +37,11 @@
             app:typeFaceAsset="RobotoLight.ttf" />
 
         <ImageView
+            android:id="@+id/overviewArrowIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_keyboard_arrow_right" />
+            android:src="@drawable/ic_keyboard_arrow_down" />
     </LinearLayout>
 
     <View
@@ -46,14 +49,26 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/lightGray"
-        app:layout_constraintTop_toBottomOf="@+id/overviewLayout" />
+        android:background="@color/lightGray" />
 
-    <android.support.constraint.Group
-        android:id="@+id/overviewGroup"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/overviewWebLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="overviewLayout,line1" />
+        android:orientation="vertical"
+        android:background="@color/powerBuyWhite"
+        android:paddingBottom="16dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="16dp"
+        android:visibility="gone">
+
+        <WebView
+            android:id="@+id/overviewWeb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="WebViewLayout" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/specLayout"
@@ -64,8 +79,7 @@
         android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/line1">
+        android:padding="8dp">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/tvSpecHeader"
@@ -84,22 +98,35 @@
             app:typeFaceAsset="RobotoLight.ttf" />
 
         <ImageView
+            android:id="@+id/specArrowIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_keyboard_arrow_right" />
+            android:src="@drawable/ic_keyboard_arrow_down" />
     </LinearLayout>
 
     <View
         android:id="@+id/line2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/lightGray"
-        app:layout_constraintTop_toBottomOf="@+id/specLayout" />
+        android:background="@color/lightGray" />
 
-    <android.support.constraint.Group
-        android:id="@+id/specGroup"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/specWebLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="specLayout,line2" />
-</android.support.constraint.ConstraintLayout>
+        android:orientation="vertical"
+        android:background="@color/powerBuyWhite"
+        android:paddingBottom="16dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="16dp"
+        android:visibility="gone">
+
+        <WebView
+            android:id="@+id/specWeb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="WebViewLayout" />
+    </LinearLayout>
+</LinearLayout>

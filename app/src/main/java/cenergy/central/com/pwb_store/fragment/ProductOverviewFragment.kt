@@ -2,15 +2,18 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.constraint.Group
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.ImageView
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.utils.WebViewGetScaleManager
 
 /**
  * Created by Anuphap Suwannamas on 24/9/2018 AD.
@@ -23,9 +26,17 @@ class ProductOverviewFragment : Fragment() {
 
     // widget view
     private lateinit var overviewLayout: LinearLayout
-    private lateinit var overviewGroup: Group
+    private lateinit var overviewWebLayout: LinearLayout
+    private lateinit var specWebLayout: LinearLayout
+    private lateinit var spec: WebView
+    private lateinit var overview: WebView
     private lateinit var specLayout: LinearLayout
-    private lateinit var specGroup: Group
+    private lateinit var overviewArrowIcon: ImageView
+    private lateinit var specArrowIcon: ImageView
+    private lateinit var line1: View
+    private lateinit var line2: View
+    private var overviewVisible = false
+    private var specVisible = false
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -41,22 +52,61 @@ class ProductOverviewFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         overviewLayout = rootView.findViewById(R.id.overviewLayout)
+        overviewWebLayout = rootView.findViewById(R.id.overviewWebLayout)
+        overview = rootView.findViewById(R.id.overviewWeb)
+        overviewArrowIcon = rootView.findViewById(R.id.overviewArrowIcon)
+        line1 = rootView.findViewById(R.id.line1)
         specLayout = rootView.findViewById(R.id.specLayout)
-        overviewGroup = rootView.findViewById(R.id.overviewGroup)
-        specGroup = rootView.findViewById(R.id.specGroup)
+        specWebLayout = rootView.findViewById(R.id.specWebLayout)
+        spec = rootView.findViewById(R.id.specWeb)
+        specArrowIcon = rootView.findViewById(R.id.specArrowIcon)
+        line2 = rootView.findViewById(R.id.line2)
 
-        if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.isNotEmpty()) {
-            overviewGroup.visibility = View.VISIBLE
-            overviewLayout.setOnClickListener { productDetailListener?.onDisplayOverview(product?.extension?.shortDescription!!) }
+        val getScaleManager = WebViewGetScaleManager(rootView.context)
+        val style = "<meta charset='UTF-8'><style> body, div, p { font-size: 15 !important; } </style>"
+
+        if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.trim().isNotBlank()) {
+            overviewLayout.visibility = View.VISIBLE
+            line1.visibility = View.VISIBLE
+            val html = style + product?.extension?.shortDescription!!
+            overview.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+            overview.setInitialScale(getScaleManager.getScale())
+            overviewLayout.setOnClickListener {
+                if (overviewVisible) {
+                    overviewWebLayout.visibility = View.GONE
+                    overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_down))
+                    overviewVisible = false
+                } else {
+                    overviewWebLayout.visibility = View.VISIBLE
+                    overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_up))
+                    overviewVisible = true
+                }
+            }
         } else {
-            overviewGroup.visibility = View.GONE
+            overviewLayout.visibility = View.GONE
+            line1.visibility = View.GONE
         }
 
-        if (product?.extension?.description != null && product?.extension?.description!!.isNotEmpty()) {
-            specGroup.visibility = View.VISIBLE
-            specLayout.setOnClickListener { productDetailListener?.onDisplaySpecification(product?.extension?.description!!) }
+        if (product?.extension?.description != null && product?.extension?.description!!.trim().isNotBlank()) {
+            specLayout.visibility = View.VISIBLE
+            line2.visibility = View.VISIBLE
+            val html = style + product?.extension?.description!!
+            spec.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+            spec.setInitialScale(getScaleManager.getScale())
+            specLayout.setOnClickListener {
+                if (specVisible) {
+                    specWebLayout.visibility = View.GONE
+                    specArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_down))
+                    specVisible = false
+                } else {
+                    specWebLayout.visibility = View.VISIBLE
+                    specArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_up))
+                    specVisible = true
+                }
+            }
         } else {
-            specGroup.visibility = View.GONE
+            specLayout.visibility = View.GONE
+            line2.visibility = View.GONE
         }
     }
 }
