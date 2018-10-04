@@ -94,16 +94,15 @@ class ProductShippingOptionFragment : Fragment() {
         mCalendarView = rootView.findViewById(R.id.custom_calendar)
         tvNoHaveHomeDelivery = rootView.findViewById(R.id.tvNotHaveHomeDelivery)
         product?.let { product ->
-            product.getDeliveryMethod().forEach{
-                if(it == HOME_DELIVERY){
-                    header.visibility = View.VISIBLE
-                    mCalendarView.visibility = View.VISIBLE
-                    tvNoHaveHomeDelivery.visibility = View.GONE
-                } else {
-                    header.visibility = View.GONE
-                    mCalendarView.visibility = View.GONE
-                    tvNoHaveHomeDelivery.visibility = View.VISIBLE
-                }
+
+            if(product.deliveryMethod.contains(HOME_DELIVERY)){
+                header.visibility = View.VISIBLE
+                mCalendarView.visibility = View.VISIBLE
+                tvNoHaveHomeDelivery.visibility = View.GONE
+            } else {
+                header.visibility = View.GONE
+                mCalendarView.visibility = View.GONE
+                tvNoHaveHomeDelivery.visibility = View.VISIBLE
             }
         }
 

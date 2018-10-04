@@ -99,10 +99,6 @@ class Product() : IViewType, Parcelable {
         }
     }
 
-    fun getDeliveryMethod(): List<String>{
-        return deliveryMethod.split(",")
-    }
-
     fun isSpecialPrice(): Boolean {
         return if (specialFromDate != null && specialToDate != null) {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
