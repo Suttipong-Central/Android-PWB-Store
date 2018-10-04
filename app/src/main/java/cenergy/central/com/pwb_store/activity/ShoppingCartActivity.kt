@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -21,21 +20,17 @@ import android.view.View
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
-import cenergy.central.com.pwb_store.dialogs.StoreOrShippingDialogFragment
-import cenergy.central.com.pwb_store.dialogs.interfaces.StoreOrShippingClickListener
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.DialogOption
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
     private lateinit var preferenceManager: PreferenceManager
@@ -58,7 +53,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         private const val CART_ID = "CART_ID"
 
         @JvmStatic
-        fun startActivity(context: Context, view: View, cartId: String?){
+        fun startActivity(context: Context, view: View, cartId: String?) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
             intent.putExtra(CART_ID, cartId)
             ActivityCompat.startActivity(context, intent,
@@ -68,7 +63,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         }
 
         @JvmStatic
-        fun startActivity(context: Context, cartId: String?){
+        fun startActivity(context: Context, cartId: String?) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
             intent.putExtra(CART_ID, cartId)
             context.startActivity(intent)
@@ -150,7 +145,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
                 if (response != null) {
-                   updateViewShoppingCart(response)
+                    updateViewShoppingCart(response)
                     mProgressDialog?.dismiss()
                 } else {
                     mProgressDialog?.dismiss()
@@ -160,9 +155,20 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog(resources.getString(R.string.cannot_get_cart_item), DialogInterface.OnClickListener { dialog, which ->
-                    finish()
-                })
+                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
+                    showAlertDialog(resources.getString(R.string.cannot_get_cart_item),
+                            DialogInterface.OnClickListener { dialog, which ->
+                                clearCart()
+                                dialog.dismiss()
+                                finish()
+                            })
+                } else {
+                    showAlertDialog(resources.getString(R.string.cannot_get_cart_item),
+                            DialogInterface.OnClickListener { dialog, which ->
+                                dialog.dismiss()
+                                finish()
+                            })
+                }
             }
         })
     }
@@ -273,5 +279,11 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
                 .setPositiveButton(R.string.ok, onClick)
 
         builder.show()
+    }
+
+
+    private fun clearCart() {
+        database.deleteAllCacheCartItem()
+        preferenceManager.clearCartId()
     }
 }
