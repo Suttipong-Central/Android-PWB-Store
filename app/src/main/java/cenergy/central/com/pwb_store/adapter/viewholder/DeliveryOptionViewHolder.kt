@@ -42,7 +42,7 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         if (deliveryType == DeliveryType.EXPRESS) {
             val calendar = Calendar.getInstance()
 
-            if (calendar.get(Calendar.HOUR_OF_DAY) == 12) {
+            if (calendar.get(Calendar.HOUR_OF_DAY) < 12) {
                 methodTitle.text = "ส่งถึงมือภายใน 15:00-20:00 น."
             } else {
                 methodTitle.text = deliveryOption.methodTitle
