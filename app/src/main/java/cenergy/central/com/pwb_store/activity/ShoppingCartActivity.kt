@@ -156,12 +156,8 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
-                    showAlertDialog(resources.getString(R.string.cannot_get_cart_item),
-                            DialogInterface.OnClickListener { dialog, which ->
-                                clearCart()
-                                dialog.dismiss()
-                                finish()
-                            })
+                    clearCart()
+                    finish()
                 } else {
                     showAlertDialog(resources.getString(R.string.cannot_get_cart_item),
                             DialogInterface.OnClickListener { dialog, which ->
