@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,12 +34,19 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setViewHolder(ProductFilterHeader categoryHeader) {
-        Glide.with(Contextor.getInstance().getContext())
-                .load(categoryHeader.getImageURL())
-                .placeholder(R.drawable.ic_question_mark)
-                .crossFade()
-                .fitCenter()
-                .into(mImageView);
+        if (!categoryHeader.getImageURL().isEmpty()) {
+            Glide.with(Contextor.getInstance().getContext())
+                    .load(categoryHeader.getImageURL())
+                    .error(R.drawable.category_circle)
+                    .placeholder(R.drawable.ic_question_mark)
+                    .crossFade()
+                    .fitCenter()
+                    .into(mImageView);
+        } else {
+            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_question_mark));
+            mImageView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.category_circle));
+            mImageView.setPadding(24, 24, 24, 24);
+        }
 
         mTextView.setText(categoryHeader.getName());
         itemView.setTag(categoryHeader);
@@ -51,12 +60,20 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setViewHolder(ProductFilterSubHeader categorySubHeader) {
-        Glide.with(Contextor.getInstance().getContext())
-                .load(categorySubHeader.getUrlName())
-                .placeholder(R.drawable.ic_question_mark)
-                .crossFade()
-                .fitCenter()
-                .into(mImageView);
+        if (!categorySubHeader.getUrlName().isEmpty()) {
+            Glide.with(Contextor.getInstance().getContext())
+                    .load(categorySubHeader.getUrlName())
+                    .error(R.drawable.category_circle)
+                    .placeholder(R.drawable.ic_question_mark)
+                    .crossFade()
+                    .fitCenter()
+                    .into(mImageView);
+        } else {
+            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_question_mark));
+            mImageView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.category_circle));
+            mImageView.setPadding(24, 24, 24, 24);
+        }
+
 
         mTextView.setText(categorySubHeader.getName());
         itemView.setTag(categorySubHeader);
