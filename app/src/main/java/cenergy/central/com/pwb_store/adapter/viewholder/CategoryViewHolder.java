@@ -37,15 +37,12 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
         if (!categoryHeader.getImageURL().isEmpty()) {
             Glide.with(Contextor.getInstance().getContext())
                     .load(categoryHeader.getImageURL())
-                    .error(R.drawable.category_circle)
-                    .placeholder(R.drawable.ic_question_mark)
+                    .placeholder(R.drawable.ic_category_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);
         } else {
-            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_question_mark));
-            mImageView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.category_circle));
-            mImageView.setPadding(24, 24, 24, 24);
+            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));
         }
 
         mTextView.setText(categoryHeader.getName());
@@ -63,15 +60,12 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
         if (!categorySubHeader.getUrlName().isEmpty()) {
             Glide.with(Contextor.getInstance().getContext())
                     .load(categorySubHeader.getUrlName())
-                    .error(R.drawable.category_circle)
-                    .placeholder(R.drawable.ic_question_mark)
+                    .placeholder(R.drawable.ic_category_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);
         } else {
-            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_question_mark));
-            mImageView.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.category_circle));
-            mImageView.setPadding(24, 24, 24, 24);
+            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));
         }
 
 
