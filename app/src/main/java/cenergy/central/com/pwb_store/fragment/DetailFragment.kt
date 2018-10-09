@@ -128,16 +128,13 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
 
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
-        if (product.specialPrice > 0) {
-            if (product.price != product.specialPrice) {
-                tvSpecialPrice.text = product.getDisplaySpecialPrice(unit)
-                tvTitleSpecialPrice.text = getString(R.string.name_price)
-                tvNormalPrice.setEnableStrikeThrough(true)
-            } else {
-                tvSpecialPrice.text = ""
-                tvTitleSpecialPrice.text = ""
-            }
+
+        if (product.isSpecialPrice()) {
+                showSpecialPrice()
+        } else {
+            hideSpecialPrice()
         }
+
         val txtStock: String
         if (product.extension?.stokeItem?.isInStock == true) {
             when {
@@ -169,5 +166,16 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // setup onclick
         storeButton.setOnClickListener(this)
         compareButton.setOnClickListener(this)
+    }
+
+
+    private fun showSpecialPrice() {
+        tvSpecialPrice.visibility = View.VISIBLE
+        tvNormalPrice.setEnableStrikeThrough(true)
+    }
+
+    private fun hideSpecialPrice() {
+        tvSpecialPrice.visibility = View.GONE
+        tvNormalPrice.setEnableStrikeThrough(false)
     }
 }

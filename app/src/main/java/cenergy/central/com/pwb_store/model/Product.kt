@@ -2,9 +2,9 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -102,9 +102,10 @@ class Product() : IViewType, Parcelable {
     fun isSpecialPrice(): Boolean {
         return if (specialFromDate != null && specialToDate != null) {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-            val specialFormDateTime = DateTime(formatter.parse(specialFromDate))
-            val specialToDateTime = DateTime(formatter.parse(specialToDate))
-            specialFormDateTime.isAfterNow && specialToDateTime.isBeforeNow
+            val specialFormDateTime = formatter.parse(specialFromDate)
+            val specialToDateTime = formatter.parse(specialToDate)
+            val current = Date()
+            (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
         } else {
             false
         }

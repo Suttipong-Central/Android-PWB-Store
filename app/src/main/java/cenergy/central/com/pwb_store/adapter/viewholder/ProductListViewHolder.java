@@ -133,18 +133,8 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
         oldPrice.setText(product.getDisplayOldPrice(unit));
         newPrice.setText(product.getDisplaySpecialPrice(unit));
-        if (product.isSpecialPrice() && product.getSpecialPrice() != 0) {
-            if (product.getPrice() == product.getSpecialPrice()) {
-                hideSpecialPrice();
-            } else {
-                showSpecialPrice();
-            }
-        } else if (product.getSpecialPrice() != 0) {
-            if(product.getPrice() == product.getSpecialPrice()){
-                hideSpecialPrice();
-            } else {
-                showSpecialPrice();
-            }
+        if (product.isSpecialPrice()) {
+            showSpecialPrice();
         } else {
             hideSpecialPrice();
         }
