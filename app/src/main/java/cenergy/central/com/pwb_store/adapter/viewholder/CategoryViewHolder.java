@@ -37,7 +37,7 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
         if (!categoryHeader.getImageURL().isEmpty()) {
             Glide.with(Contextor.getInstance().getContext())
                     .load(categoryHeader.getImageURL())
-                    .placeholder(R.drawable.ic_category_placeholder)
+                    .error(R.drawable.ic_category_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);
@@ -60,7 +60,7 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
         if (!categorySubHeader.getUrlName().isEmpty()) {
             Glide.with(Contextor.getInstance().getContext())
                     .load(categorySubHeader.getUrlName())
-                    .placeholder(R.drawable.ic_category_placeholder)
+                    .error(R.drawable.ic_category_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(mImageView);
