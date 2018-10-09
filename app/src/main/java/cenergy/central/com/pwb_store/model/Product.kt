@@ -2,7 +2,6 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat

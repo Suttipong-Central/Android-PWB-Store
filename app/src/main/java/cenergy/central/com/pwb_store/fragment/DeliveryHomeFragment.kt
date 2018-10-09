@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.text.TextUtils
@@ -13,12 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
-import cenergy.central.com.pwb_store.dialogs.DatePickerDialogFragment
 import cenergy.central.com.pwb_store.dialogs.TimeSlotDialogFragment
+import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.helpers.DateHelper
-import cenergy.central.com.pwb_store.dialogs.interfaces.PickDateListener
-import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
 import cenergy.central.com.pwb_store.model.response.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.Slot
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
@@ -26,7 +25,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 @SuppressLint("SetTextI18n")
 class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
@@ -54,7 +52,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     private var deliveryHomeListener: DeliveryHomeListener? = null
     // end region listener
 
-//    private var datePickerDialogFragment = DatePickerDialogFragment
+    //    private var datePickerDialogFragment = DatePickerDialogFragment
     private var timeSlotDialogFragment = TimeSlotDialogFragment
     private var timeSlotDialog = DialogFragment()
 
@@ -72,9 +70,9 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         listener = context as PaymentProtocol
         deliveryHomeListener = context as DeliveryHomeListener
         listener?.let { shippingSlot = it.getShippingSlot() }
-        if (shippingSlot.size > 14){
-            for (i in shippingSlot.indices){
-                if (enableDateList.size == 14){
+        if (shippingSlot.size > 14) {
+            for (i in shippingSlot.indices) {
+                if (enableDateList.size == 14) {
                     break
                 } else {
                     enableDate = formatter.parse(shippingSlot[i].shippingDate)
@@ -84,16 +82,16 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
                 }
             }
         } else {
-            for (i in shippingSlot.indices){
+            for (i in shippingSlot.indices) {
                 enableDate = formatter.parse(shippingSlot[i].shippingDate)
                 val calendar = Calendar.getInstance()
                 calendar.time = enableDate
                 enableDateList.add(calendar)
             }
             val nextMonthShippingSlot = listener?.getNextMonthShippingSlot()
-            if(nextMonthShippingSlot != null && nextMonthShippingSlot.isNotEmpty()){
-                for (i in nextMonthShippingSlot.indices){
-                    if(enableDateList.size == 14){
+            if (nextMonthShippingSlot != null && nextMonthShippingSlot.isNotEmpty()) {
+                for (i in nextMonthShippingSlot.indices) {
+                    if (enableDateList.size == 14) {
                         break
                     }
                     enableDate = formatter.parse(nextMonthShippingSlot[i].shippingDate)
@@ -129,7 +127,8 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
                 calendar.get(Calendar.MONTH), // Initial month selection
                 calendar.get(Calendar.DAY_OF_MONTH) // Inital day selection
         )
-        dpd.isThemeDark = true
+        context?.let { dpd.accentColor = ContextCompat.getColor(it, R.color.powerBuyPurple) }
+        dpd.isThemeDark = false
         dpd.selectableDays = enableDateList.toArray(arrayOf())
         dpd.show(activity?.fragmentManager, "Datepickerdialog")
     }
@@ -171,7 +170,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
             context?.let { showAlertDialog(it, "", resources.getString(R.string.please_select_date)) }
         } else {
             val shippingSlot = shippingSlot.firstOrNull { it.shippingDate == tempDate }
-            if(shippingSlot != null){
+            if (shippingSlot != null) {
                 timeSlotDialog = timeSlotDialogFragment.newInstance(shippingSlot.slot)
                 timeSlotDialog.show(fragmentManager, "dialog")
             }
@@ -179,10 +178,10 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     }
 
     private fun checkPayment() {
-        if (slot != null && date != 0 && month != 0 && year != 0 && tempDate.isNotEmpty()){
+        if (slot != null && date != 0 && month != 0 && year != 0 && tempDate.isNotEmpty()) {
             deliveryHomeListener?.onPaymentClickListener(slot!!, date, month, year, tempDate)
         } else {
-            if(tempDate.isEmpty() && shippingSlot.isEmpty()){
+            if (tempDate.isEmpty() && shippingSlot.isEmpty()) {
                 context?.let { showAlertDialog(it, "", resources.getString(R.string.please_select_date_and_time)) }
             } else {
                 context?.let { showAlertDialog(it, "", resources.getString(R.string.please_try_again)) }

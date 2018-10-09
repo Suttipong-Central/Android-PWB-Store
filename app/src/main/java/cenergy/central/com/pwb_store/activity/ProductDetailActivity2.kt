@@ -360,7 +360,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
                     showClearCartDialog()
                 } else {
-                    showAlertDialog("Error code: ${error.errorCode}", error.errorMessage)
+                    showAlertDialog("", error.errorMessage)
                 }
             }
         })
