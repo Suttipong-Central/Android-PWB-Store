@@ -69,6 +69,7 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
         minCalendar.set(minCalendar.get(Calendar.YEAR), minCalendar.get(Calendar.MONTH), minCalendar.get(Calendar.DAY_OF_MONTH))
 
         if (lastDate != null) {
+            checkLastDate()
             maxCalendar.time = lastDate
         }
 //        val yearMax = if (DateHelper.isLocaleTH()) maxCalendar.get(Calendar.YEAR) + 543 else maxCalendar.get(Calendar.YEAR)
@@ -85,6 +86,14 @@ class DatePickerDialogFragment : DialogFragment(), OnDateSetListener {
         datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         return dialog
+    }
+
+    private fun checkLastDate() {
+        if(minCalendar.get(Calendar.MONTH) == maxCalendar.get(Calendar.MONTH)){
+            if(maxCalendar.get(Calendar.DAY_OF_MONTH) - minCalendar.get(Calendar.DAY_OF_MONTH) <= 14){
+
+            }
+        }
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, monthOfYear: Int, dayOfMonth: Int) {

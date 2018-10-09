@@ -60,7 +60,8 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
-    private var shippingSlotResponse: ShippingSlotResponse? = null
+    private var shippingSlot: ArrayList<ShippingSlot> = arrayListOf()
+    private var nextMonthShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
 
     companion object {
         fun intent(context: Context) {
@@ -485,15 +486,16 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
         val dateTime = DateTime.now()
         val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
-        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(
-                productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
-                shippingAddress!!.region, shippingAddress!!.postcode!!, period, customDetail)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody( productHDLs = productHDLList,
+                district =  shippingAddress!!.subAddress!!.district, subDistrict =  shippingAddress!!.subAddress!!.subDistrict,
+                province =  shippingAddress!!.region, postalId =  shippingAddress!!.postcode!!,
+                period =  period, customDetail =  customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
                     if (response.shippingSlot.isNotEmpty()) {
-                        shippingSlotResponse = response
+                        shippingSlot = response.shippingSlot
                         startDeliveryHomeFragment()
                     } else {
                         showAlertDialog("", getString(R.string.not_have_day_to_delivery))
@@ -567,11 +569,31 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun getBillingAddress(): AddressInformation? = this.billingAddress
 
-    override fun getShippingSlot(): ShippingSlotResponse? = this.shippingSlotResponse
+    override fun getShippingSlot(): ArrayList<ShippingSlot> = this.shippingSlot
 
     override fun getBranches(): ArrayList<Branch?> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
+
+    override fun getNextMonthShippingSlot(): ArrayList<ShippingSlot> {
+        val dateTime = DateTime.now()
+        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody( productHDLs = productHDLList,
+                district =  shippingAddress!!.subAddress!!.district, subDistrict =  shippingAddress!!.subAddress!!.subDistrict,
+                province =  shippingAddress!!.region, postalId =  shippingAddress!!.postcode!!,
+                period =  period, customDetail =  customDetail)
+        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            override fun success(response: ShippingSlotResponse?) {
+                if (response != null && response.shippingSlot.isNotEmpty()) {
+                    nextMonthShippingSlot = response.shippingSlot
+                }
+            }
+
+            override fun failure(error: APIError) {
+            }
+        })
+        return nextMonthShippingSlot
+    }
     // endregion
 
     // region {@link StorePickUpListener}
