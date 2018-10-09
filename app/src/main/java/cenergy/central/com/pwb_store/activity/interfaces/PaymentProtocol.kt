@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.activity.interfaces
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlot
+import java.util.*
 
 /**
  * Created by Anuphap Suwannamas on 12/9/2018 AD.
@@ -17,9 +18,8 @@ interface PaymentProtocol {
     fun getShippingAddress(): AddressInformation?
     fun getBillingAddress(): AddressInformation?
     fun getSelectedDeliveryType(): DeliveryType?
-    fun getShippingSlot(): ArrayList<ShippingSlot>
+    fun getEnableDateShipping(): ArrayList<ShippingSlot>
     fun getBranches(): ArrayList<Branch?>
     fun getSelectedBranch(): Branch?
     fun getPWBMemberByIndex(index: Int): PwbMember?
-    fun getNextMonthShippingSlot(): ArrayList<ShippingSlot>
 }

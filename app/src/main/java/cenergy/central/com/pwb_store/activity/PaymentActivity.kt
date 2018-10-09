@@ -32,6 +32,8 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import org.joda.time.DateTime
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -43,6 +45,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
+    private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
     // data
     private val database = RealmController.with(this)
@@ -60,8 +63,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
-    private var shippingSlot: ArrayList<ShippingSlot> = arrayListOf()
-    private var nextMonthShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
+    private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
 
     companion object {
         fun intent(context: Context) {
@@ -495,8 +497,24 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 mProgressDialog?.dismiss()
                 if (response != null) {
                     if (response.shippingSlot.isNotEmpty()) {
-                        shippingSlot = response.shippingSlot
-                        startDeliveryHomeFragment()
+                        if(response.shippingSlot.size > 14) {
+                            for (i in response.shippingSlot.indices){
+                                if (enableShippingSlot.size == 14) {
+                                    break
+                                }
+                                enableShippingSlot.add(response.shippingSlot[i])
+                            }
+                            startDeliveryHomeFragment()
+                        } else {
+                            response.shippingSlot.forEach {
+                                enableShippingSlot.add(it)
+                            }
+                            if(enableShippingSlot.size == 14){
+                                startDeliveryHomeFragment()
+                            } else {
+                                getNextMonthShippingSlot()
+                            }
+                        }
                     } else {
                         showAlertDialog("", getString(R.string.not_have_day_to_delivery))
                     }
@@ -508,6 +526,31 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
                 showAlertDialog("", error.errorMessage)
+            }
+        })
+    }
+
+    fun getNextMonthShippingSlot(){
+        val dateTime = DateTime.now()
+        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody( productHDLs = productHDLList,
+                district =  shippingAddress!!.subAddress!!.district, subDistrict =  shippingAddress!!.subAddress!!.subDistrict,
+                province =  shippingAddress!!.region, postalId =  shippingAddress!!.postcode!!,
+                period =  period, customDetail =  customDetail)
+        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            override fun success(response: ShippingSlotResponse?) {
+                if (response != null && response.shippingSlot.isNotEmpty()) {
+                    for (i in response.shippingSlot.indices){
+                        if (enableShippingSlot.size == 14) {
+                            break
+                        }
+                        enableShippingSlot.add(response.shippingSlot[i])
+                    }
+                    startDeliveryHomeFragment()
+                }
+            }
+
+            override fun failure(error: APIError) {
             }
         })
     }
@@ -569,31 +612,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
     override fun getBillingAddress(): AddressInformation? = this.billingAddress
 
-    override fun getShippingSlot(): ArrayList<ShippingSlot> = this.shippingSlot
+    override fun getEnableDateShipping(): ArrayList<ShippingSlot> = this.enableShippingSlot
 
     override fun getBranches(): ArrayList<Branch?> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
-
-    override fun getNextMonthShippingSlot(): ArrayList<ShippingSlot> {
-        val dateTime = DateTime.now()
-        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
-        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody( productHDLs = productHDLList,
-                district =  shippingAddress!!.subAddress!!.district, subDistrict =  shippingAddress!!.subAddress!!.subDistrict,
-                province =  shippingAddress!!.region, postalId =  shippingAddress!!.postcode!!,
-                period =  period, customDetail =  customDetail)
-        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
-            override fun success(response: ShippingSlotResponse?) {
-                if (response != null && response.shippingSlot.isNotEmpty()) {
-                    nextMonthShippingSlot = response.shippingSlot
-                }
-            }
-
-            override fun failure(error: APIError) {
-            }
-        })
-        return nextMonthShippingSlot
-    }
     // endregion
 
     // region {@link StorePickUpListener}

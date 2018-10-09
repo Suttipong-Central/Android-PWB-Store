@@ -69,37 +69,11 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         super.onAttach(context)
         listener = context as PaymentProtocol
         deliveryHomeListener = context as DeliveryHomeListener
-        listener?.let { shippingSlot = it.getShippingSlot() }
-        if (shippingSlot.size > 14) {
-            for (i in shippingSlot.indices) {
-                if (enableDateList.size == 14) {
-                    break
-                } else {
-                    enableDate = formatter.parse(shippingSlot[i].shippingDate)
-                    val calendar = Calendar.getInstance()
-                    calendar.time = enableDate
-                    enableDateList.add(calendar)
-                }
-            }
-        } else {
-            for (i in shippingSlot.indices) {
-                enableDate = formatter.parse(shippingSlot[i].shippingDate)
-                val calendar = Calendar.getInstance()
-                calendar.time = enableDate
-                enableDateList.add(calendar)
-            }
-            val nextMonthShippingSlot = listener?.getNextMonthShippingSlot()
-            if (nextMonthShippingSlot != null && nextMonthShippingSlot.isNotEmpty()) {
-                for (i in nextMonthShippingSlot.indices) {
-                    if (enableDateList.size == 14) {
-                        break
-                    }
-                    enableDate = formatter.parse(nextMonthShippingSlot[i].shippingDate)
-                    val calendar = Calendar.getInstance()
-                    calendar.time = enableDate
-                    enableDateList.add(calendar)
-                }
-            }
+        shippingSlot.forEach {
+            val enableDate = formatter.parse(it.shippingDate)
+            val calendar = Calendar.getInstance()
+            calendar.time = enableDate
+            enableDateList.add(calendar)
         }
     }
 
