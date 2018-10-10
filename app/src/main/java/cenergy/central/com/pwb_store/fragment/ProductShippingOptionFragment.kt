@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld
-import cenergy.central.com.pwb_store.model.DeliveryType
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ShippingDao
 import cenergy.central.com.pwb_store.model.ShippingItem
@@ -47,7 +46,7 @@ class ProductShippingOptionFragment : Fragment() {
     private lateinit var mCalendarView: CalendarViewCustom
     private var mShippingRequest: ShippingRequest? = null
     private var mShippingDao: ShippingDao? = null
-    private val mSkuDataRequests = ArrayList<SkuDataRequest>()
+    private val mSkuDataRequests = arrayListOf<SkuDataRequest>()
     private var mPeriodRequest: PeriodRequest? = null
     private var mCustomDetailRequest: CustomDetailRequest? = null
     private val shippingItems = arrayListOf<ShippingItem>()
@@ -85,8 +84,11 @@ class ProductShippingOptionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getDataSlot(getMonth())
-
+        product?.let { it ->
+            if (it.deliveryMethod.contains(HOME_DELIVERY)) {
+                getDataSlot(getMonth())
+            }
+        }
     }
 
     private fun setupView(rootView: View) {
@@ -95,7 +97,7 @@ class ProductShippingOptionFragment : Fragment() {
         tvNoHaveHomeDelivery = rootView.findViewById(R.id.tvNotHaveHomeDelivery)
         product?.let { product ->
 
-            if(product.deliveryMethod.contains(HOME_DELIVERY)){
+            if (product.deliveryMethod.contains(HOME_DELIVERY)) {
                 header.visibility = View.VISIBLE
                 mCalendarView.visibility = View.VISIBLE
                 tvNoHaveHomeDelivery.visibility = View.GONE
@@ -119,12 +121,13 @@ class ProductShippingOptionFragment : Fragment() {
         return month
 
     }
+
     private fun getDataSlot(mount: String) {
         showProgressDialog()
-        if (product != null) {
+        product?.let {
             val userInformation = database.userInformation
             val store = userInformation.store
-            mSkuDataRequests.add(SkuDataRequest(product!!.extension?.barcode, 1, product!!.sku, 1, store!!.storeId.toString(), ""))
+            mSkuDataRequests.add(SkuDataRequest(it.extension?.barcode, 1, it.sku, 1, store!!.storeId.toString(), ""))
             val separated = mount.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             val year = separated[0]
             val month = separated[1]
