@@ -30,7 +30,8 @@ import java.util.*
 class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     // region data
-    private var tempDate = ""
+    private var tempDate = Date()
+    private var tempDateStringFormat = ""
     private var shippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
     private val enableDateList: ArrayList<Calendar> = arrayListOf()
@@ -97,6 +98,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
 
     private fun pickDate() {
         val calendar = Calendar.getInstance()
+        calendar.time = tempDate
         val dpd = DatePickerDialog.newInstance(
                 this@DeliveryHomeFragment,
                 calendar.get(Calendar.YEAR), // Initial year selection
@@ -113,12 +115,14 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         val month = monthOfYear + 1 // Solve calendar first month start at 0
         val dateTime = DateTime(year, month, dayOfMonth, 0, 0)
         val dateOfYear = if (DateHelper.isLocaleTH()) dateTime.year + 543 else dateTime.year
-        tempDate = formatter.format(Date(dateTime.millis))
+        tempDate = Date(dateTime.millis)
+        tempDateStringFormat = formatter.format(Date(dateTime.millis))
         dateText.setText("${dateTime.dayOfMonth}/${dateTime.monthOfYear}/$dateOfYear")
         this.date = dateTime.dayOfMonth
         this.month = dateTime.monthOfYear
         this.year = dateTime.year
-
+        timeText.text.clear()
+        this.slot = null
     }
 
     override fun onTimeSlotClickListener(slot: Slot) {
@@ -142,10 +146,10 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     }
 
     private fun checkPickDate() {
-        if (tempDate.isEmpty()) {
+        if (tempDateStringFormat.isEmpty()) {
             context?.let { showAlertDialog(it, "", resources.getString(R.string.please_select_date)) }
         } else {
-            val shippingSlot = shippingSlot.firstOrNull { it.shippingDate == tempDate }
+            val shippingSlot = shippingSlot.firstOrNull { it.shippingDate == tempDateStringFormat }
             if (shippingSlot != null) {
                 timeSlotDialog = timeSlotDialogFragment.newInstance(shippingSlot.slot)
                 timeSlotDialog.show(fragmentManager, "dialog")
@@ -154,10 +158,10 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     }
 
     private fun checkPayment() {
-        if (slot != null && date != 0 && month != 0 && year != 0 && tempDate.isNotEmpty()) {
-            deliveryHomeListener?.onPaymentClickListener(slot!!, date, month, year, tempDate)
+        if (slot != null && date != 0 && month != 0 && year != 0 && tempDateStringFormat.isNotEmpty()) {
+            deliveryHomeListener?.onPaymentClickListener(slot!!, date, month, year, tempDateStringFormat)
         } else {
-            if (tempDate.isEmpty() && shippingSlot.isEmpty()) {
+            if (tempDateStringFormat.isEmpty() && shippingSlot.isEmpty()) {
                 context?.let { showAlertDialog(it, "", resources.getString(R.string.please_select_date_and_time)) }
             } else {
                 context?.let { showAlertDialog(it, "", resources.getString(R.string.please_try_again)) }

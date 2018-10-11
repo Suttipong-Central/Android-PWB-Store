@@ -114,12 +114,19 @@ class HttpManagerHDL {
 
     companion object {
         //Specific Client
+//        private const val CLIENT_SERVICE_NAME = "execute-api"
+//        private const val CLIENT_REGION = "ap-southeast-1"
+//        private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
+//        private const val HOST_NAME = "https://api.central.tech"
+//        private const val CLIENT_ACCESS_KEY = "AKIAJK27ORQKY42QRFWQ"
+//        private const val CLIENT_SECRET_KEY = "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"
+
         private const val CLIENT_SERVICE_NAME = "execute-api"
         private const val CLIENT_REGION = "ap-southeast-1"
         private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        private const val HOST_NAME = "https://api.central.tech"
-        private const val CLIENT_ACCESS_KEY = "AKIAJK27ORQKY42QRFWQ"
-        private const val CLIENT_SECRET_KEY = "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"
+        private const val HOST_NAME = "https://sit-api.central.tech"
+        private const val CLIENT_ACCESS_KEY = "AKIAIZBEAJOWKANSLLYA"
+        private const val CLIENT_SECRET_KEY = "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"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerHDL? = null
