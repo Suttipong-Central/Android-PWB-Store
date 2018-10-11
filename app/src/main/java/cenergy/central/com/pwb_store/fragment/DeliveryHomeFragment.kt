@@ -33,7 +33,6 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     private var tempDate = ""
     private var shippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-    private var enableDate: Date? = null
     private val enableDateList: ArrayList<Calendar> = arrayListOf()
     private var slot: Slot? = null
     private var date: Int = 0

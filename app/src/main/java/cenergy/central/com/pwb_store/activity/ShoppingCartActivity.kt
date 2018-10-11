@@ -31,6 +31,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
     private lateinit var preferenceManager: PreferenceManager
@@ -186,7 +187,8 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
                 total += it.qty!! * it.price!!
             }
         }
-        totalPrice.text = getDisplayPrice(unit, total.toString())
+        val vat = total * 0.07
+        totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
         checkCanClickPayment()
     }
 

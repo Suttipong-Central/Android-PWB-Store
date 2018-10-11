@@ -19,6 +19,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), PowerBuyIncreaseOrDecreaseView.OnViewClickListener {
 
@@ -51,7 +52,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         productCode.text = "${itemView.context.resources.getString(
                 R.string.product_code)} ${item.sku}"
         productPrice.text = "${itemView.context.resources.getString(
-                R.string.product_price)} ${getDisplayPrice(unit, item.price.toString())}"
+                R.string.product_price)} ${getDisplayPrice(unit, item.price!!)}"
 
         // get image from cache
         Glide.with(itemView.context)
@@ -86,7 +87,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         productName.text = item.name
         productCode.text = "${itemView.context.resources.getString(R.string.product_code)} ${item.sku}"
         productPrice.text = "${itemView.context.resources.getString(
-                R.string.product_price)} ${getDisplayPrice(unit, item.price.toString())}"
+                R.string.product_price)} ${getDisplayPrice(unit, item.price!!)}"
 
         // hide for freebie
         productQty.setOnClickQuantity(this, false)
@@ -100,13 +101,12 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     // region {@link implement PowerBuyIncreaseOrDecreaseView.OnViewClickListener}
     override fun onClickQuantity(action: PowerBuyIncreaseOrDecreaseView.QuantityAction, qty: Int) {
-        var resultQty = 0
-        when (action) {
+        val resultQty = when (action) {
             ACTION_INCREASE -> {
-                resultQty = qty + 1
+                qty + 1
             }
             ACTION_DECREASE -> {
-                resultQty = qty - 1
+                qty - 1
             }
         }
 
@@ -128,13 +128,15 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
     // endregion
 
-    private fun getToTalPrice(qty: Int, price: Double): String {
-        return (qty * price).toString()
+    private fun getToTalPrice(qty: Int, price: Double): Double {
+        return qty * price
     }
 
-    private fun getDisplayPrice(unit: String, price: String): String {
+    private fun getDisplayPrice(unit: String, price: Double): String {
+        val vat = price * 0.07
+        val total = (price + vat).roundToInt()
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
-                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+                Locale.getDefault()).format(java.lang.Double.parseDouble(total.toString())))
     }
 
     private fun confirmDelete(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {

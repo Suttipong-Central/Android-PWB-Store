@@ -40,6 +40,7 @@ import java.text.NumberFormat
 import java.util.*
 import android.widget.RadioGroup
 import cenergy.central.com.pwb_store.model.PwbMember
+import kotlin.math.roundToInt
 
 
 class PaymentBillingFragment : Fragment() {
@@ -429,7 +430,8 @@ class PaymentBillingFragment : Fragment() {
                 total += it.qty!! * it.price!!
             }
         }
-        totalPrice.text = getDisplayPrice(unit, total.toString())
+        val vat = total * 0.07
+        totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
