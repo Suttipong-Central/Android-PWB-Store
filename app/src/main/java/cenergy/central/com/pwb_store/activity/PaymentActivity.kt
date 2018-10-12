@@ -562,7 +562,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
 
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
-        val storeId = branch?.storeId ?: ""
+        val storeId = if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
 
         HttpManagerMagento.getInstance(this).updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
