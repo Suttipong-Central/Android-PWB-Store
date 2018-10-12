@@ -121,12 +121,21 @@ class HttpManagerHDL {
 //        private const val CLIENT_ACCESS_KEY = "AKIAJK27ORQKY42QRFWQ"
 //        private const val CLIENT_SECRET_KEY = "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"
 
+        //SIT
+//        private const val CLIENT_SERVICE_NAME = "execute-api"
+//        private const val CLIENT_REGION = "ap-southeast-1"
+//        private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
+//        private const val HOST_NAME = "https://sit-api.central.tech"
+//        private const val CLIENT_ACCESS_KEY = "AKIAIZBEAJOWKANSLLYA"
+//        private const val CLIENT_SECRET_KEY = "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"
+
+        //UAT
         private const val CLIENT_SERVICE_NAME = "execute-api"
         private const val CLIENT_REGION = "ap-southeast-1"
         private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        private const val HOST_NAME = "https://sit-api.central.tech"
-        private const val CLIENT_ACCESS_KEY = "AKIAIZBEAJOWKANSLLYA"
-        private const val CLIENT_SECRET_KEY = "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"
+        private const val HOST_NAME = "https://uat-api.central.tech"
+        private const val CLIENT_ACCESS_KEY = "AKIAIIIW7RXNLIKRTSNQ"
+        private const val CLIENT_SECRET_KEY = "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"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerHDL? = null
