@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
+import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -31,6 +32,8 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import com.google.gson.reflect.TypeToken
+import me.a3cha.android.thaiaddress.models.Postcode
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.*
@@ -51,7 +54,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private val database = RealmController.with(this)
     private var cartId: String? = null
     private var productHDLList: ArrayList<ProductHDLBody> = arrayListOf()
-    private val customDetail = CustomDetail.createCustomDetail("1", "", "00139")
+    private var customDetail = CustomDetail.createCustomDetail("1", "", "00139")
     private var cartItemList: List<CartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
     private var pwbMembersList: List<PwbMember> = listOf()
@@ -64,6 +67,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
     private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
+    private var specialSKUList: List<Long>? = null
 
     companion object {
         fun intent(context: Context) {
@@ -79,6 +83,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         val preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
+        specialSKUList = getSpecialSKUList()
         initView()
         getCartItems()
     }
@@ -486,19 +491,27 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                     cartItemList[i].qty!!, "00139")
             productHDLList.add(productHDL)
         }
+
+        // check is hdl delivery type 2?
+        for (item in cartItemList) {
+            if ((getSpecialSKUList() ?: arrayListOf()).contains(item.sku!!.toLong())) {
+                customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
+            }
+        }
+
         val dateTime = DateTime.now()
         val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
-        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody( productHDLs = productHDLList,
-                district =  shippingAddress!!.subAddress!!.district, subDistrict =  shippingAddress!!.subAddress!!.subDistrict,
-                province =  shippingAddress!!.region, postalId =  shippingAddress!!.postcode!!,
-                period =  period, customDetail =  customDetail)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
+                district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
+                province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
+                period = period, customDetail = customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
                     if (response.shippingSlot.isNotEmpty()) {
-                        if(response.shippingSlot.size > 14) {
-                            for (i in response.shippingSlot.indices){
+                        if (response.shippingSlot.size > 14) {
+                            for (i in response.shippingSlot.indices) {
                                 if (enableShippingSlot.size == 14) {
                                     break
                                 }
@@ -509,7 +522,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                             response.shippingSlot.forEach {
                                 enableShippingSlot.add(it)
                             }
-                            if(enableShippingSlot.size == 14){
+                            if (enableShippingSlot.size == 14) {
                                 startDeliveryHomeFragment()
                             } else {
                                 getNextMonthShippingSlot()
@@ -530,17 +543,17 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         })
     }
 
-    fun getNextMonthShippingSlot(){
+    fun getNextMonthShippingSlot() {
         val dateTime = DateTime.now()
         val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
-        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody( productHDLs = productHDLList,
-                district =  shippingAddress!!.subAddress!!.district, subDistrict =  shippingAddress!!.subAddress!!.subDistrict,
-                province =  shippingAddress!!.region, postalId =  shippingAddress!!.postcode!!,
-                period =  period, customDetail =  customDetail)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
+                district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
+                province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
+                period = period, customDetail = customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
                 if (response != null && response.shippingSlot.isNotEmpty()) {
-                    for (i in response.shippingSlot.indices){
+                    for (i in response.shippingSlot.indices) {
                         if (enableShippingSlot.size == 14) {
                             break
                         }
@@ -638,6 +651,12 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         }
     }
     // endregion
+
+    private fun getSpecialSKUList(): List<Long>? {
+        return this.specialSKUList
+                ?: ReadFileHelper<List<Long>>().parseRawJson(this@PaymentActivity, R.raw.special_sku,
+                        object : TypeToken<List<Long>>() {}.type, null)
+    }
 
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {

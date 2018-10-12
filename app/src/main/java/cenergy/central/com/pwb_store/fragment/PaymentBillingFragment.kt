@@ -285,7 +285,7 @@ class PaymentBillingFragment : Fragment() {
                     this.province = province
                     this.districts = database.getDistrictsByProvinceId(province.provinceId)
                     this.districtNameList = getDistrictNameList()
-                    this.subDistrictAdapter?.setItems(this.districtNameList)
+                    this.districtAdapter?.setItems(this.districtNameList)
                 }
 
                 // validate district with local db
@@ -334,7 +334,7 @@ class PaymentBillingFragment : Fragment() {
                     this.province = province
                     this.districts = database.getDistrictsByProvinceId(province.provinceId)
                     this.districtNameList = getDistrictNameList()
-                    this.subDistrictAdapter?.setItems(this.districtNameList)
+                    this.districtAdapter?.setItems(this.districtNameList)
                 }
 
                 // validate district with local db
@@ -383,7 +383,7 @@ class PaymentBillingFragment : Fragment() {
                     this.province = province
                     this.districts = database.getDistrictsByProvinceId(province.provinceId)
                     this.districtNameList = getDistrictNameList()
-                    this.subDistrictAdapter?.setItems(this.districtNameList)
+                    this.districtAdapter?.setItems(this.districtNameList)
                 }
 
                 // validate district with local db
