@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.fragment
 
-import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
@@ -16,33 +15,21 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL
-import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Product
-import cenergy.central.com.pwb_store.model.ShippingDao
 import cenergy.central.com.pwb_store.model.ShippingItem
 import cenergy.central.com.pwb_store.model.body.CustomDetail
 import cenergy.central.com.pwb_store.model.body.PeriodBody
 import cenergy.central.com.pwb_store.model.body.ProductHDLBody
 import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
-import cenergy.central.com.pwb_store.model.request.CustomDetailRequest
-import cenergy.central.com.pwb_store.model.request.PeriodRequest
-import cenergy.central.com.pwb_store.model.request.ShippingRequest
-import cenergy.central.com.pwb_store.model.request.SkuDataRequest
 import cenergy.central.com.pwb_store.model.response.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.APIErrorHDLUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.CalendarViewCustom
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.google.common.reflect.TypeToken
 import org.joda.time.DateTime
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Created by Anuphap Suwannamas on 24/9/2018 AD.
@@ -59,11 +46,6 @@ class ProductShippingOptionFragment : Fragment() {
     private lateinit var header: PowerBuyTextView
     private lateinit var tvNoHaveHomeDelivery: PowerBuyTextView
     private lateinit var mCalendarView: CalendarViewCustom
-    private var mShippingRequest: ShippingRequest? = null
-    private var mShippingDao: ShippingDao? = null
-    private val mSkuDataRequests = arrayListOf<SkuDataRequest>()
-    private var mPeriodRequest: PeriodRequest? = null
-    private var mCustomDetailRequest: CustomDetailRequest? = null
 
     private val productHDLList = arrayListOf<ProductHDLBody>()
     private var customDetail = CustomDetail.createCustomDetail("1", "", "00139")
@@ -76,15 +58,8 @@ class ProductShippingOptionFragment : Fragment() {
     private val shippingItemsE = arrayListOf<ShippingItem>()
     private val shippingItemsF = arrayListOf<ShippingItem>()
 
-    private var nextPreWeekday: Array<String>? = null
+    private var nextPreWeekday: Array<String> = arrayOf()
     private var monthPreday: Array<String>? = null
-    private var sunday: String? = null
-    private var monday: String? = null
-    private var tuesday: String? = null
-    private var wednesday: String? = null
-    private var thursday: String? = null
-    private var friday: String? = null
-    private var saturday: String? = null
     // end
     private var progressDialog: ProgressDialog? = null
     private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
@@ -105,7 +80,7 @@ class ProductShippingOptionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (isAdded){
+        if (isAdded) {
             getShippingHomeDelivery()
         }
     }
@@ -127,19 +102,6 @@ class ProductShippingOptionFragment : Fragment() {
         }
     }
 
-    // older code
-//    @SuppressLint("SimpleDateFormat")
-//    private fun getMonth(): String {
-//
-//        val now = Calendar.getInstance()
-//        val format = SimpleDateFormat("yyyy-MM")
-//        val month: String
-//        month = format.format(now.time)
-//
-//        return month
-//
-//    }
-
     private fun getShippingHomeDelivery() {
         product?.let { product ->
             showProgressDialog()
@@ -154,8 +116,8 @@ class ProductShippingOptionFragment : Fragment() {
             val dateTime = DateTime.now()
             val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
             val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                    district = store.district?:"", subDistrict = store.subDistrict?:"",
-                    province = store.province?:"", postalId = store.postalCode?:"",
+                    district = store.district ?: "", subDistrict = store.subDistrict ?: "",
+                    province = store.province ?: "", postalId = store.postalCode ?: "",
                     period = period, customDetail = customDetail)
             HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                 override fun success(response: ShippingSlotResponse?) {
@@ -202,8 +164,8 @@ class ProductShippingOptionFragment : Fragment() {
         val dateTime = DateTime.now()
         val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                district = store.district?:"", subDistrict = store.subDistrict?:"",
-                province = store.province?:"", postalId = store.postalCode?:"",
+                district = store.district ?: "", subDistrict = store.subDistrict ?: "",
+                province = store.province ?: "", postalId = store.postalCode ?: "",
                 period = period, customDetail = customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
@@ -223,234 +185,101 @@ class ProductShippingOptionFragment : Fragment() {
         })
     }
 
-//    private fun getDataSlot(mount: String) {
-//        showProgressDialog()
-//        product?.let { product ->
-//            val userInformation = database.userInformation
-//            val store = userInformation.store
-//            mSkuDataRequests.add(SkuDataRequest(product.extension?.barcode, 1, product.sku, 1, store!!.storeId.toString(), ""))
-//            val separated = mount.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-//            val year = separated[0]
-//            val month = separated[1]
-//            mPeriodRequest = PeriodRequest(Integer.parseInt(year), Integer.parseInt(month))
-//            mCustomDetailRequest = if ((specialSKUList ?: arrayListOf()).contains(product.sku.toLong())) {
-//                CustomDetailRequest("2", "", "00139")
-//            } else {
-//                CustomDetailRequest("1", "", "00139")
-//            }
-//            mShippingRequest = ShippingRequest(store.postalCode, mSkuDataRequests, mPeriodRequest, mCustomDetailRequest)
-//
-//            HttpManagerHDLOld.getInstance().hdlService.checkShippingTime(mShippingRequest).enqueue(object : Callback<ShippingDao> {
-//                override fun onResponse(call: Call<ShippingDao>, response: Response<ShippingDao>) {
-//                    if (response.isSuccessful) {
-//                        mShippingDao = response.body()
-//                        createShippingData(mShippingDao)
-//                        progressDialog?.dismiss()
-//                    } else {
-//                        val error = APIErrorHDLUtils.parseError(response)
-//                        Log.e("ShippingOption", "onResponse: " + error.errorUserMessage)
-//                        progressDialog?.dismiss()
-//
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<ShippingDao>, t: Throwable) {
-//                    progressDialog?.dismiss()
-//                }
-//            })
-//        }
-//    }
-
     private fun createShippingData() {
-        if (nextPreWeekday == null) {
+        if (nextPreWeekday.isEmpty()) {
             nextPreWeekday = mCalendarView.weekDay
             monthPreday = mCalendarView.monthDay
         }
-        sunday = nextPreWeekday?.get(0)
-        monday = nextPreWeekday?.get(1)
-        tuesday = nextPreWeekday?.get(2)
-        wednesday = nextPreWeekday?.get(3)
-        thursday = nextPreWeekday?.get(4)
-        friday = nextPreWeekday?.get(5)
-        saturday = nextPreWeekday?.get(6)
 
         mCalendarView.setFirstDayAndLastDay(enableShippingSlot[0], enableShippingSlot[enableShippingSlot.size - 1])
+        Log.d("WeekD", " WeekD ${nextPreWeekday.size} - ")
+        Log.d("WeekD", " enableShippingSlot ${enableShippingSlot.size} - ")
 
-        for (shipping in enableShippingSlot) {
-            val shippingDate = shipping.shippingDate
-            if (sunday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
+        val currentWeekday: ArrayList<ShippingSlot> = arrayListOf()
 
-            } else if (monday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
-
-            }
-            when {
-                tuesday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
-                wednesday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
-                thursday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
-                friday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
-                saturday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
-                        "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "11:00-11:30" -> shippingItemsB.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "13:00-13:30" -> shippingItemsC.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "15:00-15:30" -> shippingItemsD.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "17:00-17:30" -> shippingItemsE.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        "19:00-19:30" -> shippingItemsF.add(ShippingItem(shippingItem.id, shippingItem.description))
-                        else -> {
-                            shippingItemsA.add(ShippingItem(1, "FULL"))
-                            shippingItemsB.add(ShippingItem(2, "FULL"))
-                            shippingItemsC.add(ShippingItem(3, "FULL"))
-                            shippingItemsD.add(ShippingItem(6, "FULL"))
-                            shippingItemsE.add(ShippingItem(7, "FULL"))
-                            shippingItemsF.add(ShippingItem(8, "FULL"))
-                        }
-                    }
-                }
+        for (item in enableShippingSlot) {
+            if (nextPreWeekday.contains(item.shippingDate)) {
+                currentWeekday.add(item)
             }
         }
 
-        for (shippingItemA in shippingItemsA) {
-            shippingItems.add(ShippingItem(shippingItemA.id, shippingItemA.description))
+        for (day in nextPreWeekday) {
+
+            val currentDay = currentWeekday.firstOrNull { it.shippingDate == day }
+
+            if (currentDay != null) {
+                Log.d("WeekD", "${currentDay.shippingDate} ")
+                var itemA = ShippingItem(1, "FULL")
+                var itemB = ShippingItem(2, "FULL")
+                var itemC = ShippingItem(3, "FULL")
+                var itemD = ShippingItem(6, "FULL")
+                var itemE = ShippingItem(7, "FULL")
+                var itemF = ShippingItem(8, "FULL")
+
+                for (shippingItem in currentDay.slot) {
+                    val slotTime = shippingItem.description
+
+                    if (slotTime == "09:00-09:30") {
+                        itemA = ShippingItem(shippingItem.id, shippingItem.description)
+                    }
+
+                    if (slotTime == "11:00-11:30") {
+                        itemB = ShippingItem(shippingItem.id, shippingItem.description)
+                    }
+
+
+                    if (slotTime == "13:00-13:30") {
+                        itemC = ShippingItem(shippingItem.id, shippingItem.description)
+                    }
+
+                    if (slotTime == "15:00-15:30") {
+                        itemD = ShippingItem(shippingItem.id, shippingItem.description)
+                    }
+
+                    if (slotTime == "17:00-17:30") {
+                        itemE = ShippingItem(shippingItem.id, shippingItem.description)
+                    }
+
+                    if (slotTime == "19:00-19:30") {
+                        itemF = ShippingItem(shippingItem.id, shippingItem.description)
+                    }
+
+                }
+
+                itemA?.let { shippingItemsA.add(it) }
+                itemB?.let { shippingItemsB.add(it) }
+                itemC?.let { shippingItemsC.add(it) }
+                itemD?.let { shippingItemsD.add(it) }
+                itemE?.let { shippingItemsE.add(it) }
+                itemF?.let { shippingItemsF.add(it) }
+
+            } else {
+                shippingItemsA.add(ShippingItem(1, "-"))
+                shippingItemsB.add(ShippingItem(2, "-"))
+                shippingItemsC.add(ShippingItem(3, "-"))
+                shippingItemsD.add(ShippingItem(6, "-"))
+                shippingItemsE.add(ShippingItem(7, "-"))
+                shippingItemsF.add(ShippingItem(8, "-"))
+            }
         }
 
-        for (shippingItemB in shippingItemsB) {
-            shippingItems.add(ShippingItem(shippingItemB.id, shippingItemB.description))
-        }
-
-        for (shippingItemC in shippingItemsC) {
-            shippingItems.add(ShippingItem(shippingItemC.id, shippingItemC.description))
-        }
-
-        for (shippingItemD in shippingItemsD) {
-            shippingItems.add(ShippingItem(shippingItemD.id, shippingItemD.description))
-        }
-
-        for (shippingItemE in shippingItemsE) {
-            shippingItems.add(ShippingItem(shippingItemE.id, shippingItemE.description))
-        }
-
-        for (shippingItemF in shippingItemsF) {
-            shippingItems.add(ShippingItem(shippingItemF.id, shippingItemF.description))
-        }
+        shippingItems.addAll(shippingItemsA)
+        shippingItems.addAll(shippingItemsB)
+        shippingItems.addAll(shippingItemsC)
+        shippingItems.addAll(shippingItemsD)
+        shippingItems.addAll(shippingItemsE)
+        shippingItems.addAll(shippingItemsF)
+        Log.d("WeekD", "shippingItems: ${shippingItems.size}")
 
         mCalendarView.setTimeSlotItem(shippingItems)
     }
     // endregion
 
     private fun getSpecialSKUList(): List<Long>? {
-        return this.specialSKUList ?: context?.let { ReadFileHelper<List<Long>>().parseRawJson(it, R.raw.special_sku,
-                object : TypeToken<List<Long>>() {}.type, null) }
+        return this.specialSKUList ?: context?.let {
+            ReadFileHelper<List<Long>>().parseRawJson(it, R.raw.special_sku,
+                    object : TypeToken<List<Long>>() {}.type, null)
+        }
     }
 
 
@@ -464,9 +293,10 @@ class ProductShippingOptionFragment : Fragment() {
     }
 
     private fun showAlertDialog(title: String, message: String) {
-        val builder = context?.let { AlertDialog.Builder(it, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+        val builder = context?.let {
+            AlertDialog.Builder(it, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
         }
         if (!TextUtils.isEmpty(title)) {
             builder?.setTitle(title)

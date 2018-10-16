@@ -57,8 +57,8 @@ public class ShippingCalendarAdapter extends BaseAdapter {
         if (shippingItem.getDescription().equalsIgnoreCase("FULL")){
             viewHolder.nameTextView.setText(shippingItem.getDescription());
         }else {
-            //viewHolder.nameTextView.setText(timeSlotItem.getSlotLabel());
-            viewHolder.nameTextView.setText("FREE");
+            viewHolder.nameTextView.setText(shippingItem.getDescription());
+//            viewHolder.nameTextView.setText("FREE");
             viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.inStockColor));
         }
 
