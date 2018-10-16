@@ -169,7 +169,7 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
         getDataSlot(getMonth());
         mCalendarView.setListener(this);
         //getMonth();
-//        NextPreWeekday = mCalendarView.getWeekDay();
+//        nextPreWeekday = mCalendarView.getWeekDay();
 
     }
 
@@ -255,16 +255,16 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
     }
 
 //    private void createData(HDLResponse hdlResponse) {
-//        if (NextPreWeekday == null) {
-//            NextPreWeekday = mCalendarView.getWeekDay();
+//        if (nextPreWeekday == null) {
+//            nextPreWeekday = mCalendarView.getWeekDay();
 //        }
-//        sunday = NextPreWeekday[0];
-//        monday = NextPreWeekday[1];
-//        tuesday = NextPreWeekday[2];
-//        wednesday = NextPreWeekday[3];
-//        thursday = NextPreWeekday[4];
-//        friday = NextPreWeekday[5];
-//        saturday = NextPreWeekday[6];
+//        sunday = nextPreWeekday[0];
+//        monday = nextPreWeekday[1];
+//        tuesday = nextPreWeekday[2];
+//        wednesday = nextPreWeekday[3];
+//        thursday = nextPreWeekday[4];
+//        friday = nextPreWeekday[5];
+//        saturday = nextPreWeekday[6];
 //        for (Delivery delivery : hdlResponse.getDeliveryList()) {
 //            String deliveryDate = delivery.getDeliveryDate();
 //

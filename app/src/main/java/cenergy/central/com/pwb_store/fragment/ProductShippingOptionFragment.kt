@@ -1,28 +1,43 @@
 package cenergy.central.com.pwb_store.fragment
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.helpers.ReadFileHelper
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL
 import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld
+import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ShippingDao
 import cenergy.central.com.pwb_store.model.ShippingItem
+import cenergy.central.com.pwb_store.model.body.CustomDetail
+import cenergy.central.com.pwb_store.model.body.PeriodBody
+import cenergy.central.com.pwb_store.model.body.ProductHDLBody
+import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
 import cenergy.central.com.pwb_store.model.request.CustomDetailRequest
 import cenergy.central.com.pwb_store.model.request.PeriodRequest
 import cenergy.central.com.pwb_store.model.request.ShippingRequest
 import cenergy.central.com.pwb_store.model.request.SkuDataRequest
+import cenergy.central.com.pwb_store.model.response.ShippingSlot
+import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorHDLUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.CalendarViewCustom
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import com.google.common.reflect.TypeToken
+import org.joda.time.DateTime
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,6 +64,10 @@ class ProductShippingOptionFragment : Fragment() {
     private val mSkuDataRequests = arrayListOf<SkuDataRequest>()
     private var mPeriodRequest: PeriodRequest? = null
     private var mCustomDetailRequest: CustomDetailRequest? = null
+
+    private val productHDLList = arrayListOf<ProductHDLBody>()
+    private var customDetail = CustomDetail.createCustomDetail("1", "", "00139")
+
     private val shippingItems = arrayListOf<ShippingItem>()
     private val shippingItemsA = arrayListOf<ShippingItem>()
     private val shippingItemsB = arrayListOf<ShippingItem>()
@@ -57,7 +76,7 @@ class ProductShippingOptionFragment : Fragment() {
     private val shippingItemsE = arrayListOf<ShippingItem>()
     private val shippingItemsF = arrayListOf<ShippingItem>()
 
-    private var NextPreWeekday: Array<String>? = null
+    private var nextPreWeekday: Array<String>? = null
     private var monthPreday: Array<String>? = null
     private var sunday: String? = null
     private var monday: String? = null
@@ -68,6 +87,8 @@ class ProductShippingOptionFragment : Fragment() {
     private var saturday: String? = null
     // end
     private var progressDialog: ProgressDialog? = null
+    private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
+    private var specialSKUList: List<Long>? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -84,10 +105,8 @@ class ProductShippingOptionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        product?.let { it ->
-            if (it.deliveryMethod.contains(HOME_DELIVERY)) {
-                getDataSlot(getMonth())
-            }
+        if (isAdded){
+            getShippingHomeDelivery()
         }
     }
 
@@ -96,7 +115,6 @@ class ProductShippingOptionFragment : Fragment() {
         mCalendarView = rootView.findViewById(R.id.custom_calendar)
         tvNoHaveHomeDelivery = rootView.findViewById(R.id.tvNotHaveHomeDelivery)
         product?.let { product ->
-
             if (product.deliveryMethod.contains(HOME_DELIVERY)) {
                 header.visibility = View.VISIBLE
                 mCalendarView.visibility = View.VISIBLE
@@ -107,72 +125,161 @@ class ProductShippingOptionFragment : Fragment() {
                 tvNoHaveHomeDelivery.visibility = View.VISIBLE
             }
         }
-
     }
 
     // older code
-    private fun getMonth(): String {
+//    @SuppressLint("SimpleDateFormat")
+//    private fun getMonth(): String {
+//
+//        val now = Calendar.getInstance()
+//        val format = SimpleDateFormat("yyyy-MM")
+//        val month: String
+//        month = format.format(now.time)
+//
+//        return month
+//
+//    }
 
-        val now = Calendar.getInstance()
-        val format = SimpleDateFormat("yyyy-MM")
-        val month: String
-        month = format.format(now.time)
-
-        return month
-
-    }
-
-    private fun getDataSlot(mount: String) {
-        showProgressDialog()
-        product?.let {
+    private fun getShippingHomeDelivery() {
+        product?.let { product ->
+            showProgressDialog()
+            val productHDL = ProductHDLBody.createProductHDL("", 1, product.sku,
+                    1, "00139")
+            productHDLList.add(productHDL)
+            if ((getSpecialSKUList() ?: arrayListOf()).contains(product.sku.toLong())) {
+                customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
+            }
             val userInformation = database.userInformation
-            val store = userInformation.store
-            mSkuDataRequests.add(SkuDataRequest(it.extension?.barcode, 1, it.sku, 1, store!!.storeId.toString(), ""))
-            val separated = mount.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            val year = separated[0]
-            val month = separated[1]
-            mPeriodRequest = PeriodRequest(Integer.parseInt(year), Integer.parseInt(month))
-            mCustomDetailRequest = CustomDetailRequest("1", "", "")
-            mShippingRequest = ShippingRequest(store.postalCode, mSkuDataRequests, mPeriodRequest, mCustomDetailRequest)
-
-            HttpManagerHDLOld.getInstance().hdlService.checkShippingTime(
-                    mShippingRequest).enqueue(object : Callback<ShippingDao> {
-                override fun onResponse(call: Call<ShippingDao>, response: Response<ShippingDao>) {
-                    if (response.isSuccessful) {
-                        mShippingDao = response.body()
-                        createShippingData(mShippingDao)
-                        progressDialog?.dismiss()
+            val store = userInformation.store!!
+            val dateTime = DateTime.now()
+            val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
+            val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
+                    district = store.district?:"", subDistrict = store.subDistrict?:"",
+                    province = store.province?:"", postalId = store.postalCode?:"",
+                    period = period, customDetail = customDetail)
+            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+                override fun success(response: ShippingSlotResponse?) {
+                    progressDialog?.dismiss()
+                    if (response != null) {
+                        if (response.shippingSlot.isNotEmpty()) {
+                            if (response.shippingSlot.size > 14) {
+                                for (i in response.shippingSlot.indices) {
+                                    if (enableShippingSlot.size == 14) {
+                                        break
+                                    }
+                                    enableShippingSlot.add(response.shippingSlot[i])
+                                }
+                                createShippingData()
+                            } else {
+                                response.shippingSlot.forEach {
+                                    enableShippingSlot.add(it)
+                                }
+                                if (enableShippingSlot.size == 14) {
+                                    createShippingData()
+                                } else {
+                                    getNextMonthShippingSlot()
+                                }
+                            }
+                        } else {
+                            showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                        }
                     } else {
-                        val error = APIErrorHDLUtils.parseError(response)
-                        Log.e("ShippingOption", "onResponse: " + error.errorUserMessage)
-                        progressDialog?.dismiss()
-
+                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                     }
                 }
 
-                override fun onFailure(call: Call<ShippingDao>, t: Throwable) {
+                override fun failure(error: APIError) {
                     progressDialog?.dismiss()
+                    showAlertDialog("", error.errorMessage)
                 }
             })
         }
     }
 
-    private fun createShippingData(shippingDao: ShippingDao?) {
-        if (NextPreWeekday == null) {
-            NextPreWeekday = mCalendarView.weekDay
+    fun getNextMonthShippingSlot() {
+        val userInformation = database.userInformation
+        val store = userInformation.store!!
+        val dateTime = DateTime.now()
+        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
+                district = store.district?:"", subDistrict = store.subDistrict?:"",
+                province = store.province?:"", postalId = store.postalCode?:"",
+                period = period, customDetail = customDetail)
+        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            override fun success(response: ShippingSlotResponse?) {
+                if (response != null && response.shippingSlot.isNotEmpty()) {
+                    for (i in response.shippingSlot.indices) {
+                        if (enableShippingSlot.size == 14) {
+                            break
+                        }
+                        enableShippingSlot.add(response.shippingSlot[i])
+                    }
+                    createShippingData()
+                }
+            }
+
+            override fun failure(error: APIError) {
+            }
+        })
+    }
+
+//    private fun getDataSlot(mount: String) {
+//        showProgressDialog()
+//        product?.let { product ->
+//            val userInformation = database.userInformation
+//            val store = userInformation.store
+//            mSkuDataRequests.add(SkuDataRequest(product.extension?.barcode, 1, product.sku, 1, store!!.storeId.toString(), ""))
+//            val separated = mount.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+//            val year = separated[0]
+//            val month = separated[1]
+//            mPeriodRequest = PeriodRequest(Integer.parseInt(year), Integer.parseInt(month))
+//            mCustomDetailRequest = if ((specialSKUList ?: arrayListOf()).contains(product.sku.toLong())) {
+//                CustomDetailRequest("2", "", "00139")
+//            } else {
+//                CustomDetailRequest("1", "", "00139")
+//            }
+//            mShippingRequest = ShippingRequest(store.postalCode, mSkuDataRequests, mPeriodRequest, mCustomDetailRequest)
+//
+//            HttpManagerHDLOld.getInstance().hdlService.checkShippingTime(mShippingRequest).enqueue(object : Callback<ShippingDao> {
+//                override fun onResponse(call: Call<ShippingDao>, response: Response<ShippingDao>) {
+//                    if (response.isSuccessful) {
+//                        mShippingDao = response.body()
+//                        createShippingData(mShippingDao)
+//                        progressDialog?.dismiss()
+//                    } else {
+//                        val error = APIErrorHDLUtils.parseError(response)
+//                        Log.e("ShippingOption", "onResponse: " + error.errorUserMessage)
+//                        progressDialog?.dismiss()
+//
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<ShippingDao>, t: Throwable) {
+//                    progressDialog?.dismiss()
+//                }
+//            })
+//        }
+//    }
+
+    private fun createShippingData() {
+        if (nextPreWeekday == null) {
+            nextPreWeekday = mCalendarView.weekDay
             monthPreday = mCalendarView.monthDay
         }
-        sunday = NextPreWeekday?.get(0)
-        monday = NextPreWeekday?.get(1)
-        tuesday = NextPreWeekday?.get(2)
-        wednesday = NextPreWeekday?.get(3)
-        thursday = NextPreWeekday?.get(4)
-        friday = NextPreWeekday?.get(5)
-        saturday = NextPreWeekday?.get(6)
-        for (shipping in shippingDao!!.shippings) {
+        sunday = nextPreWeekday?.get(0)
+        monday = nextPreWeekday?.get(1)
+        tuesday = nextPreWeekday?.get(2)
+        wednesday = nextPreWeekday?.get(3)
+        thursday = nextPreWeekday?.get(4)
+        friday = nextPreWeekday?.get(5)
+        saturday = nextPreWeekday?.get(6)
+
+        mCalendarView.setFirstDayAndLastDay(enableShippingSlot[0], enableShippingSlot[enableShippingSlot.size - 1])
+
+        for (shipping in enableShippingSlot) {
             val shippingDate = shipping.shippingDate
             if (sunday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+                for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -193,7 +300,7 @@ class ProductShippingOptionFragment : Fragment() {
                 }
 
             } else if (monday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+                for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -214,8 +321,8 @@ class ProductShippingOptionFragment : Fragment() {
                 }
 
             }
-            if (tuesday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+            when {
+                tuesday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -234,8 +341,7 @@ class ProductShippingOptionFragment : Fragment() {
                         }
                     }
                 }
-            } else if (wednesday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+                wednesday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -254,8 +360,7 @@ class ProductShippingOptionFragment : Fragment() {
                         }
                     }
                 }
-            } else if (thursday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+                thursday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -274,8 +379,7 @@ class ProductShippingOptionFragment : Fragment() {
                         }
                     }
                 }
-            } else if (friday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+                friday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -294,8 +398,7 @@ class ProductShippingOptionFragment : Fragment() {
                         }
                     }
                 }
-            } else if (saturday.equals(shippingDate, ignoreCase = true)) {
-                for (shippingItem in shipping.shippingItems) {
+                saturday.equals(shippingDate, ignoreCase = true) -> for (shippingItem in shipping.slot) {
                     val slotTime = shippingItem.description
                     when (slotTime) {
                         "09:00-09:30" -> shippingItemsA.add(ShippingItem(shippingItem.id, shippingItem.description))
@@ -318,33 +421,37 @@ class ProductShippingOptionFragment : Fragment() {
         }
 
         for (shippingItemA in shippingItemsA) {
-            shippingItems.add(ShippingItem(shippingItemA.getId(), shippingItemA.getDescription()))
+            shippingItems.add(ShippingItem(shippingItemA.id, shippingItemA.description))
         }
 
         for (shippingItemB in shippingItemsB) {
-            shippingItems.add(ShippingItem(shippingItemB.getId(), shippingItemB.getDescription()))
+            shippingItems.add(ShippingItem(shippingItemB.id, shippingItemB.description))
         }
 
         for (shippingItemC in shippingItemsC) {
-            shippingItems.add(ShippingItem(shippingItemC.getId(), shippingItemC.getDescription()))
+            shippingItems.add(ShippingItem(shippingItemC.id, shippingItemC.description))
         }
 
         for (shippingItemD in shippingItemsD) {
-            shippingItems.add(ShippingItem(shippingItemD.getId(), shippingItemD.getDescription()))
+            shippingItems.add(ShippingItem(shippingItemD.id, shippingItemD.description))
         }
 
         for (shippingItemE in shippingItemsE) {
-            shippingItems.add(ShippingItem(shippingItemE.getId(), shippingItemE.getDescription()))
+            shippingItems.add(ShippingItem(shippingItemE.id, shippingItemE.description))
         }
 
         for (shippingItemF in shippingItemsF) {
-            shippingItems.add(ShippingItem(shippingItemF.getId(), shippingItemF.getDescription()))
+            shippingItems.add(ShippingItem(shippingItemF.id, shippingItemF.description))
         }
 
         mCalendarView.setTimeSlotItem(shippingItems)
     }
-
     // endregion
+
+    private fun getSpecialSKUList(): List<Long>? {
+        return this.specialSKUList ?: context?.let { ReadFileHelper<List<Long>>().parseRawJson(it, R.raw.special_sku,
+                object : TypeToken<List<Long>>() {}.type, null) }
+    }
 
 
     private fun showProgressDialog() {
@@ -354,6 +461,17 @@ class ProductShippingOptionFragment : Fragment() {
         } else {
             progressDialog?.show()
         }
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = context?.let { AlertDialog.Builder(it, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+        }
+        if (!TextUtils.isEmpty(title)) {
+            builder?.setTitle(title)
+        }
+        builder?.show()
     }
 
     companion object {

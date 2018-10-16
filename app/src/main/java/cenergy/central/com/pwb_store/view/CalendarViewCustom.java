@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,6 +29,7 @@ import cenergy.central.com.pwb_store.adapter.ShippingCalendarAdapter;
 import cenergy.central.com.pwb_store.adapter.base.GridCellAdapter;
 import cenergy.central.com.pwb_store.model.ShippingItem;
 import cenergy.central.com.pwb_store.model.WeekSets;
+import cenergy.central.com.pwb_store.model.response.ShippingSlot;
 import cenergy.central.com.pwb_store.utils.CommonMethod;
 
 /**
@@ -119,7 +122,7 @@ public class CalendarViewCustom extends LinearLayout {
     private static final String dateTemplate = "MMMM yyyy";
 
     public String[] weekDays;
-    public String[] NextPreWeekday;
+    public String[] nextPreWeekday;
     public String dateFormate;
     public String firstDayOfWeek;
     public String lastDayOfWeek;
@@ -129,7 +132,8 @@ public class CalendarViewCustom extends LinearLayout {
     //private List<TimeSlotItem> mTimeSlotItems;
     private List<ShippingItem> mShippingItems;
     private OnItemClickListener mListener;
-
+    private ShippingSlot firstDay;
+    private ShippingSlot lastDay;
 
     public CalendarViewCustom(Context context) {
         super(context);
@@ -166,9 +170,9 @@ public class CalendarViewCustom extends LinearLayout {
 //        Log.d(TAG, "Calendar Instance:= " + "Month: " + month + " " + "Year: "
 //                + year);
 
-        NextPreWeekday = getWeekDay();
-        firstDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[0]);
-        lastDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[6]);
+        nextPreWeekday = getWeekDay();
+        firstDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[0]);
+        lastDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[6]);
 //        try
 //        {
 //            new LoadViewsInToWeekView().execute("");
@@ -204,15 +208,15 @@ public class CalendarViewCustom extends LinearLayout {
 //        calendarGridView.setAdapter(adapter);
 
         currentDate.setText(firstDayOfWeek + "-" + lastDayOfWeek + " "
-                + CommonMethod.convertWeekDaysMouth(NextPreWeekday[6]));
+                + CommonMethod.convertWeekDaysMouth(nextPreWeekday[6]));
 
-        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(NextPreWeekday[0]));
-        monday.setText("MON\n" + CommonMethod.convertWeekDays(NextPreWeekday[1]));
-        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(NextPreWeekday[2]));
-        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(NextPreWeekday[3]));
-        thursday.setText("THU\n" + CommonMethod.convertWeekDays(NextPreWeekday[4]));
-        friday.setText("FRI\n" + CommonMethod.convertWeekDays(NextPreWeekday[5]));
-        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(NextPreWeekday[6]));
+        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(nextPreWeekday[0]));
+        monday.setText("MON\n" + CommonMethod.convertWeekDays(nextPreWeekday[1]));
+        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(nextPreWeekday[2]));
+        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(nextPreWeekday[3]));
+        thursday.setText("THU\n" + CommonMethod.convertWeekDays(nextPreWeekday[4]));
+        friday.setText("FRI\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
+        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
 
         // time
         text10am.setText(getContext().getResources().getString(R.string.time_10am));
@@ -270,7 +274,6 @@ public class CalendarViewCustom extends LinearLayout {
     }
 
     public String[] getWeekDay() {
-
         Calendar now = Calendar.getInstance();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String[] days = new String[7];
@@ -280,7 +283,6 @@ public class CalendarViewCustom extends LinearLayout {
             days[i] = format.format(now.getTime());
             now.add(Calendar.DAY_OF_MONTH, 1);
         }
-
         return days;
     }
 
@@ -326,29 +328,26 @@ public class CalendarViewCustom extends LinearLayout {
 
     }
 
-
-
     public void showDate(String[] weekDays){
-        NextPreWeekday = weekDays;
-        firstDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[0]);
-        lastDayOfWeek = CommonMethod.convertWeekDays(NextPreWeekday[6]);
+        nextPreWeekday = weekDays;
+        firstDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[0]);
+        lastDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[6]);
 
         currentDate.setText(firstDayOfWeek + "-" + lastDayOfWeek + " "
-                + CommonMethod.convertWeekDaysMouth(NextPreWeekday[6]));
+                + CommonMethod.convertWeekDaysMouth(nextPreWeekday[6]));
 
-        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(NextPreWeekday[0]));
-        monday.setText("MON\n" + CommonMethod.convertWeekDays(NextPreWeekday[1]));
-        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(NextPreWeekday[2]));
-        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(NextPreWeekday[3]));
-        thursday.setText("THU\n" + CommonMethod.convertWeekDays(NextPreWeekday[4]));
-        friday.setText("FRI\n" + CommonMethod.convertWeekDays(NextPreWeekday[5]));
-        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(NextPreWeekday[6]));
-
+        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(nextPreWeekday[0]));
+        monday.setText("MON\n" + CommonMethod.convertWeekDays(nextPreWeekday[1]));
+        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(nextPreWeekday[2]));
+        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(nextPreWeekday[3]));
+        thursday.setText("THU\n" + CommonMethod.convertWeekDays(nextPreWeekday[4]));
+        friday.setText("FRI\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
+        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
+        checkWeekDays();
     }
 
     public void setTimeSlotItem(List<ShippingItem> shippingItems) {
         this.mShippingItems = shippingItems;
-
         setInfo();
     }
 
@@ -361,6 +360,28 @@ public class CalendarViewCustom extends LinearLayout {
         calendarGridView.setAdapter(mShippingCalendarAdapter);
     }
 
+    private void checkWeekDays() {
+        Boolean equalFirstDay = false;
+        Boolean equalLastDay = false;
+        for (String day : nextPreWeekday){
+            if (day.equals(firstDay.getShippingDate())){
+                equalFirstDay = true;
+            }
+            if (day.equals(lastDay.getShippingDate())){
+                equalLastDay = true;
+            }
+        }
+        if(equalFirstDay){
+            previousButton.setVisibility(GONE);
+        } else {
+            previousButton.setVisibility(VISIBLE);
+        }
+        if(equalLastDay){
+            nextButton.setVisibility(GONE);
+        } else {
+            nextButton.setVisibility(VISIBLE);
+        }
+    }
 //    private void setUpCalendarAdapter(){
 //        List<Date> dayValueInCells = new ArrayList<Date>();
 //        //mQuery = new DatabaseQuery(context);
@@ -591,8 +612,14 @@ public class CalendarViewCustom extends LinearLayout {
         weekDays = getWeekDayNext();
         showDate(weekDays);
         if (mListener != null) {
-            mListener.onNextClick(weekDays);;
+            mListener.onNextClick(weekDays);
         }
+    }
+
+    public void setFirstDayAndLastDay(@NotNull ShippingSlot firstDay, @NotNull ShippingSlot lastDay) {
+        this.firstDay = firstDay;
+        this.lastDay = lastDay;
+        checkWeekDays();
     }
 
     public interface OnItemClickListener {
