@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -130,7 +132,6 @@ public class CalendarViewCustom extends LinearLayout {
     public int weekDaysCount = 0;
     public ArrayList<WeekSets> weekDatas;
     //private List<TimeSlotItem> mTimeSlotItems;
-    private List<ShippingItem> mShippingItems;
     private OnItemClickListener mListener;
     private ShippingSlot firstDay;
     private ShippingSlot lastDay;
@@ -347,16 +348,11 @@ public class CalendarViewCustom extends LinearLayout {
     }
 
     public void setTimeSlotItem(List<ShippingItem> shippingItems) {
-        this.mShippingItems = shippingItems;
-        setInfo();
-    }
-
-    private void setInfo() {
-//        mHDLCalendarAdapter = new HDLCalendarAdapter(getContext(), mTimeSlotItems);
-//        mHDLCalendarAdapter.notifyDataSetChanged();
-//        calendarGridView.setAdapter(mHDLCalendarAdapter);
-        mShippingCalendarAdapter = new ShippingCalendarAdapter(getContext(), mShippingItems);
-        mShippingCalendarAdapter.notifyDataSetChanged();
+        if(mShippingCalendarAdapter == null){
+            mShippingCalendarAdapter = new ShippingCalendarAdapter(getContext(), shippingItems);
+        } else {
+            mShippingCalendarAdapter.setShippingItems(shippingItems);
+        }
         calendarGridView.setAdapter(mShippingCalendarAdapter);
     }
 

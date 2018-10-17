@@ -20,10 +20,11 @@ public class ShippingCalendarAdapter extends BaseAdapter {
     private Context mContext;
     private List<ShippingItem> mShippingItems;
 
-    public ShippingCalendarAdapter(Context context, List<ShippingItem> shippingItems){
+    public ShippingCalendarAdapter(Context context, List<ShippingItem> shippingItems) {
         this.mContext = context;
         this.mShippingItems = shippingItems;
     }
+
     @Override
     public int getCount() {
         return mShippingItems.size();
@@ -47,23 +48,29 @@ public class ShippingCalendarAdapter extends BaseAdapter {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             convertView = layoutInflater.inflate(R.layout.list_item_calendar_text, null);
 
-            final PowerBuyTextView nameTextView = (PowerBuyTextView) convertView.findViewById(R.id.txt_calendar);
+            final PowerBuyTextView nameTextView = convertView.findViewById(R.id.txt_calendar);
 
             final ViewHolder viewHolder = new ViewHolder(nameTextView);
             convertView.setTag(viewHolder);
         }
 
-        final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
-        if (shippingItem.getDescription().equalsIgnoreCase("FULL")){
+        final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+        if (shippingItem.getDescription().equalsIgnoreCase("FULL")) {
             viewHolder.nameTextView.setText(shippingItem.getDescription());
-        }else {
+            viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.dangerColor));
+        } else if (shippingItem.getDescription().equalsIgnoreCase("-")){
             viewHolder.nameTextView.setText(shippingItem.getDescription());
-//            viewHolder.nameTextView.setText("FREE");
+            viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.grayTextColor));
+        } else {
+            viewHolder.nameTextView.setText("FREE");
             viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.inStockColor));
         }
-
-
         return convertView;
+    }
+
+    public void setShippingItems(List<ShippingItem> shippingItems) {
+        this.mShippingItems = shippingItems;
+        notifyDataSetChanged();
     }
 
     private class ViewHolder {

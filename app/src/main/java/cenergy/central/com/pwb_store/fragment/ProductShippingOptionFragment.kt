@@ -36,7 +36,7 @@ import org.joda.time.DateTime
  * Email: Anupharpae@gmail.com
  */
 
-class ProductShippingOptionFragment : Fragment() {
+class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClickListener {
 
     private var productDetailListener: ProductDetailListener? = null
     private var product: Product? = null
@@ -46,20 +46,9 @@ class ProductShippingOptionFragment : Fragment() {
     private lateinit var header: PowerBuyTextView
     private lateinit var tvNoHaveHomeDelivery: PowerBuyTextView
     private lateinit var mCalendarView: CalendarViewCustom
-
     private val productHDLList = arrayListOf<ProductHDLBody>()
     private var customDetail = CustomDetail.createCustomDetail("1", "", "00139")
-
-    private val shippingItems = arrayListOf<ShippingItem>()
-    private val shippingItemsA = arrayListOf<ShippingItem>()
-    private val shippingItemsB = arrayListOf<ShippingItem>()
-    private val shippingItemsC = arrayListOf<ShippingItem>()
-    private val shippingItemsD = arrayListOf<ShippingItem>()
-    private val shippingItemsE = arrayListOf<ShippingItem>()
-    private val shippingItemsF = arrayListOf<ShippingItem>()
-
     private var nextPreWeekday: Array<String> = arrayOf()
-    private var monthPreday: Array<String>? = null
     // end
     private var progressDialog: ProgressDialog? = null
     private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
@@ -85,9 +74,22 @@ class ProductShippingOptionFragment : Fragment() {
         }
     }
 
+    //region calendar click
+    override fun onPreviousClick(weekDays: Array<String>) {
+        this.nextPreWeekday = weekDays
+        createShippingData(false)
+    }
+
+    override fun onNextClick(weekDays: Array<String>) {
+        this.nextPreWeekday = weekDays
+        createShippingData(false)
+    }
+    // end region calendar
+
     private fun setupView(rootView: View) {
         header = rootView.findViewById(R.id.txt_header)
         mCalendarView = rootView.findViewById(R.id.custom_calendar)
+        mCalendarView.setListener(this)
         tvNoHaveHomeDelivery = rootView.findViewById(R.id.tvNotHaveHomeDelivery)
         product?.let { product ->
             if (product.deliveryMethod.contains(HOME_DELIVERY)) {
@@ -131,13 +133,13 @@ class ProductShippingOptionFragment : Fragment() {
                                     }
                                     enableShippingSlot.add(response.shippingSlot[i])
                                 }
-                                createShippingData()
+                                createShippingData(true)
                             } else {
                                 response.shippingSlot.forEach {
                                     enableShippingSlot.add(it)
                                 }
                                 if (enableShippingSlot.size == 14) {
-                                    createShippingData()
+                                    createShippingData(true)
                                 } else {
                                     getNextMonthShippingSlot()
                                 }
@@ -176,7 +178,7 @@ class ProductShippingOptionFragment : Fragment() {
                         }
                         enableShippingSlot.add(response.shippingSlot[i])
                     }
-                    createShippingData()
+                    createShippingData(true)
                 }
             }
 
@@ -185,30 +187,29 @@ class ProductShippingOptionFragment : Fragment() {
         })
     }
 
-    private fun createShippingData() {
+    private fun createShippingData(setFirstDayAndLastDay: Boolean) {
+        if (setFirstDayAndLastDay) {
+            mCalendarView.setFirstDayAndLastDay(enableShippingSlot[0], enableShippingSlot[enableShippingSlot.size - 1])
+        }
+        val currentWeekday: ArrayList<ShippingSlot> = arrayListOf()
+        val shippingItems = arrayListOf<ShippingItem>()
+        val shippingItemsA = arrayListOf<ShippingItem>()
+        val shippingItemsB = arrayListOf<ShippingItem>()
+        val shippingItemsC = arrayListOf<ShippingItem>()
+        val shippingItemsD = arrayListOf<ShippingItem>()
+        val shippingItemsE = arrayListOf<ShippingItem>()
+        val shippingItemsF = arrayListOf<ShippingItem>()
         if (nextPreWeekday.isEmpty()) {
             nextPreWeekday = mCalendarView.weekDay
-            monthPreday = mCalendarView.monthDay
         }
-
-        mCalendarView.setFirstDayAndLastDay(enableShippingSlot[0], enableShippingSlot[enableShippingSlot.size - 1])
-        Log.d("WeekD", " WeekD ${nextPreWeekday.size} - ")
-        Log.d("WeekD", " enableShippingSlot ${enableShippingSlot.size} - ")
-
-        val currentWeekday: ArrayList<ShippingSlot> = arrayListOf()
-
         for (item in enableShippingSlot) {
             if (nextPreWeekday.contains(item.shippingDate)) {
                 currentWeekday.add(item)
             }
         }
-
         for (day in nextPreWeekday) {
-
             val currentDay = currentWeekday.firstOrNull { it.shippingDate == day }
-
             if (currentDay != null) {
-                Log.d("WeekD", "${currentDay.shippingDate} ")
                 var itemA = ShippingItem(1, "FULL")
                 var itemB = ShippingItem(2, "FULL")
                 var itemC = ShippingItem(3, "FULL")
@@ -218,41 +219,33 @@ class ProductShippingOptionFragment : Fragment() {
 
                 for (shippingItem in currentDay.slot) {
                     val slotTime = shippingItem.description
-
-                    if (slotTime == "09:00-09:30") {
-                        itemA = ShippingItem(shippingItem.id, shippingItem.description)
+                    when(slotTime){
+                        "09:00-09:30" -> {
+                            itemA = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "11:00-11:30" -> {
+                            itemB = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "13:00-13:30" -> {
+                            itemC = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "15:00-15:30" -> {
+                            itemD = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "17:00-17:30" -> {
+                            itemE = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "19:00-19:30" -> {
+                            itemF = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
                     }
-
-                    if (slotTime == "11:00-11:30") {
-                        itemB = ShippingItem(shippingItem.id, shippingItem.description)
-                    }
-
-
-                    if (slotTime == "13:00-13:30") {
-                        itemC = ShippingItem(shippingItem.id, shippingItem.description)
-                    }
-
-                    if (slotTime == "15:00-15:30") {
-                        itemD = ShippingItem(shippingItem.id, shippingItem.description)
-                    }
-
-                    if (slotTime == "17:00-17:30") {
-                        itemE = ShippingItem(shippingItem.id, shippingItem.description)
-                    }
-
-                    if (slotTime == "19:00-19:30") {
-                        itemF = ShippingItem(shippingItem.id, shippingItem.description)
-                    }
-
                 }
-
-                itemA?.let { shippingItemsA.add(it) }
-                itemB?.let { shippingItemsB.add(it) }
-                itemC?.let { shippingItemsC.add(it) }
-                itemD?.let { shippingItemsD.add(it) }
-                itemE?.let { shippingItemsE.add(it) }
-                itemF?.let { shippingItemsF.add(it) }
-
+                shippingItemsA.add(itemA)
+                shippingItemsB.add(itemB)
+                shippingItemsC.add(itemC)
+                shippingItemsD.add(itemD)
+                shippingItemsE.add(itemE)
+                shippingItemsF.add(itemF)
             } else {
                 shippingItemsA.add(ShippingItem(1, "-"))
                 shippingItemsB.add(ShippingItem(2, "-"))
@@ -262,15 +255,12 @@ class ProductShippingOptionFragment : Fragment() {
                 shippingItemsF.add(ShippingItem(8, "-"))
             }
         }
-
         shippingItems.addAll(shippingItemsA)
         shippingItems.addAll(shippingItemsB)
         shippingItems.addAll(shippingItemsC)
         shippingItems.addAll(shippingItemsD)
         shippingItems.addAll(shippingItemsE)
         shippingItems.addAll(shippingItemsF)
-        Log.d("WeekD", "shippingItems: ${shippingItems.size}")
-
         mCalendarView.setTimeSlotItem(shippingItems)
     }
     // endregion
