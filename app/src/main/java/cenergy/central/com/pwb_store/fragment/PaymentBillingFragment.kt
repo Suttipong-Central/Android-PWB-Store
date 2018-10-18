@@ -328,9 +328,9 @@ class PaymentBillingFragment : Fragment() {
                 homeRoadEdt.setText(member.homeRoad)
 
                 // validate province with local db
-                val province = database.getProvinceByNameTh(member.homeCity)
+                val province = database.getProvinceByName(member.homeCity)
                 if (province != null) {
-                    provinceInput.setText(member.homeCity)
+                    provinceInput.setText(province.nameTh)
                     this.province = province
                     this.districts = database.getDistrictsByProvinceId(province.provinceId)
                     this.districtNameList = getDistrictNameList()
@@ -338,9 +338,9 @@ class PaymentBillingFragment : Fragment() {
                 }
 
                 // validate district with local db
-                val district = database.getDistrictByNameTh(member.homeDistrict)
+                val district = database.getDistrictByName(member.homeDistrict)
                 if (district != null) {
-                    districtInput.setText(member.homeDistrict)
+                    districtInput.setText(district.nameTh)
                     this.district = district
                     this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
                     this.subDistrictNameList = getSubDistrictNameList()
@@ -348,9 +348,9 @@ class PaymentBillingFragment : Fragment() {
                 }
 
                 // validate sub district with local db
-                val subDistrict = database.getSubDistrictByNameTh(member.homeSubDistrict)
+                val subDistrict = database.getSubDistrictByName(member.homeSubDistrict)
                 if (subDistrict != null) {
-                    subDistrictInput.setText(member.homeSubDistrict)
+                    subDistrictInput.setText(subDistrict.nameTh)
                     this.subDistrict = subDistrict
                     this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
                     this.postcodeList = getPostcodeList()
