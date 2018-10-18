@@ -51,7 +51,7 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
             methodTitle.text = deliveryOption.methodTitle
         }
         amount.text = "$unit${deliveryOption.amount}"
-        amount.visibility = if (deliveryOption.amount > 0) View.VISIBLE else View.INVISIBLE
+        amount.visibility = if (deliveryOption.amount > 0) View.VISIBLE else View.GONE
         if (deliveryOption.available) {
             itemView.setOnClickListener {
                 listener?.onSelectedOptionListener(deliveryOption)
