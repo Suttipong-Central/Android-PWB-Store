@@ -10,12 +10,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputType
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import android.widget.RadioGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
@@ -26,6 +26,7 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.Member
+import cenergy.central.com.pwb_store.model.PwbMember
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
@@ -38,8 +39,6 @@ import me.a3cha.android.thaiaddress.models.Province
 import me.a3cha.android.thaiaddress.models.SubDistrict
 import java.text.NumberFormat
 import java.util.*
-import android.widget.RadioGroup
-import cenergy.central.com.pwb_store.model.PwbMember
 import kotlin.math.roundToInt
 
 
@@ -252,7 +251,7 @@ class PaymentBillingFragment : Fragment() {
 
         checkSameBilling()
         radioGroup.setOnCheckedChangeListener { radioGroup, i ->
-            when(radioGroup.checkedRadioButtonId){
+            when (radioGroup.checkedRadioButtonId) {
                 R.id.radio_no -> {
                     isSameBilling = false
                     checkSameBilling()
@@ -269,8 +268,8 @@ class PaymentBillingFragment : Fragment() {
         //Setup Member
         when {
             hasPwbMember() -> pwbMember?.let { pwbMember ->
-                firstNameEdt.setText(pwbMember.firstname?:"")
-                lastNameEdt.setText(pwbMember.lastname?:"")
+                firstNameEdt.setText(pwbMember.firstname ?: "")
+                lastNameEdt.setText(pwbMember.lastname ?: "")
                 contactNumberEdt.setText(pwbMember.getShipping().telephone!!)
                 emailEdt.setText(pwbMember.email!!)
                 homeNoEdt.setText(pwbMember.getShipping().subAddress!!.houseNo!!)
@@ -317,18 +316,26 @@ class PaymentBillingFragment : Fragment() {
 
                 homePhoneEdt.setText(pwbMember.getShipping().telephone!!)
             }
+            // t1c member
             hasMember() -> member?.let { member ->
+
+                if (member.addresses == null || member.addresses!!.isEmpty()) {
+                    return
+                }
+
+                val memberAddress = member.addresses!![0]
+
                 firstNameEdt.setText(member.getFirstName())
                 lastNameEdt.setText(member.getLastName())
                 contactNumberEdt.setText(member.mobilePhone)
                 emailEdt.setText(member.email)
-                homeNoEdt.setText(member.homeNo)
-                homeBuildingEdit.setText(member.homeBuilding)
-                homeSoiEdt.setText(member.homeSoi)
-                homeRoadEdt.setText(member.homeRoad)
+                homeNoEdt.setText(memberAddress.homeNo ?: "")
+                homeBuildingEdit.setText(memberAddress.building ?: "")
+                homeSoiEdt.setText(memberAddress.soi ?: "")
+                homeRoadEdt.setText(memberAddress.road ?: "")
 
                 // validate province with local db
-                val province = database.getProvinceByName(member.homeCity)
+                val province = database.getProvinceByName(memberAddress.province)
                 if (province != null) {
                     provinceInput.setText(province.nameTh)
                     this.province = province
@@ -338,7 +345,7 @@ class PaymentBillingFragment : Fragment() {
                 }
 
                 // validate district with local db
-                val district = database.getDistrictByName(member.homeDistrict)
+                val district = database.getDistrictByName(memberAddress.district)
                 if (district != null) {
                     districtInput.setText(district.nameTh)
                     this.district = district
@@ -348,7 +355,7 @@ class PaymentBillingFragment : Fragment() {
                 }
 
                 // validate sub district with local db
-                val subDistrict = database.getSubDistrictByName(member.homeSubDistrict)
+                val subDistrict = database.getSubDistrictByName(memberAddress.subDistrict)
                 if (subDistrict != null) {
                     subDistrictInput.setText(subDistrict.nameTh)
                     this.subDistrict = subDistrict
@@ -358,7 +365,7 @@ class PaymentBillingFragment : Fragment() {
                 }
 
                 // validate postcode with local db
-                val postcode = database.getPostcodeByCode(member.homePostalCode)
+                val postcode = database.getPostcodeByCode(memberAddress.postcode)
                 if (postcode != null) {
                     postcodeInput.setText(member.homePostalCode)
                     this.postcode = postcode
@@ -438,7 +445,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun checkSameBilling() {
-        if(isSameBilling){
+        if (isSameBilling) {
             billingLayout.visibility = View.GONE
         } else {
             billingLayout.visibility = View.VISIBLE
@@ -603,7 +610,7 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
-        if(isSameBilling){
+        if (isSameBilling) {
             if (!hasEmptyInput()) {
                 // setup value
                 val shippingAddress = setupShipping(IS_SAME_BILLING)
@@ -614,7 +621,7 @@ class PaymentBillingFragment : Fragment() {
                 showAlertDialog("", resources.getString(R.string.fill_in_important_information))
             }
         } else {
-            if(!hasEmptyInput() && !hasBillingEmptyInput()){
+            if (!hasEmptyInput() && !hasBillingEmptyInput()) {
                 // setup value shipping
                 val billingAddress = setupBilling(IS_NOT_SAME_BILLING)
                 val shippingAddress = setupShipping(IS_NOT_SAME_BILLING)
@@ -628,7 +635,7 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun setupShipping(sameBilling: Int) : AddressInformation {
+    private fun setupShipping(sameBilling: Int): AddressInformation {
         firstName = firstNameEdt.getText()
         lastName = lastNameEdt.getText()
         email = emailEdt.getText()
@@ -658,7 +665,7 @@ class PaymentBillingFragment : Fragment() {
                 homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)
     }
 
-    private fun setupBilling(sameBilling: Int) : AddressInformation {
+    private fun setupBilling(sameBilling: Int): AddressInformation {
         firstName = billingFirstNameEdt.getText()
         lastName = billingLastNameEdt.getText()
         email = billingEmailEdt.getText()
@@ -694,7 +701,7 @@ class PaymentBillingFragment : Fragment() {
         firstNameEdt.setError(validator.validText(firstNameEdt.getText()))
         lastNameEdt.setError(validator.validText(lastNameEdt.getText()))
         emailEdt.setError(validator.validEmail(emailEdt.getText()))
-        if(contactNumberEdt.getText().isNotEmpty()){
+        if (contactNumberEdt.getText().isNotEmpty()) {
             contactNumberEdt.setError(validator.validThaiPhoneNumber(contactNumberEdt.getText()))
         } else {
             contactNumberEdt.setError(validator.validThaiPhoneNumber("9999999999"))
@@ -717,7 +724,7 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt.setError(validator.validText(billingFirstNameEdt.getText()))
         billingLastNameEdt.setError(validator.validText(billingLastNameEdt.getText()))
         billingEmailEdt.setError(validator.validEmail(billingEmailEdt.getText()))
-        if(billingContactNumberEdt.getText().isNotEmpty()){
+        if (billingContactNumberEdt.getText().isNotEmpty()) {
             billingContactNumberEdt.setError(validator.validThaiPhoneNumber(billingContactNumberEdt.getText()))
         } else {
             billingContactNumberEdt.setError(validator.validThaiPhoneNumber("9999999999"))

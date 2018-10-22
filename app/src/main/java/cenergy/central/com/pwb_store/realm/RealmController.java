@@ -465,7 +465,7 @@ public class RealmController {
     }
 
     public Province getProvinceByName(String name) {
-        return (getProvinceByNameTh(name) == null) ? getProvinceByNameTh(name) : getProvinceByNameEn(name);
+        return (getProvinceByNameTh(name) == null) ? getProvinceByNameEn(name) : getProvinceByNameTh(name);
     }
 
 
@@ -518,7 +518,7 @@ public class RealmController {
     }
 
     public District getDistrictByName(String name) {
-        return (getDistrictByNameTh(name) == null) ? getDistrictByNameTh(name) : getDistrictByNameEn(name);
+        return (getDistrictByNameTh(name) == null) ? getDistrictByNameEn(name) : getDistrictByNameTh(name);
     }
 
     public List<District> getDistricts() {
@@ -577,7 +577,7 @@ public class RealmController {
     }
 
     public SubDistrict getSubDistrictByName(String name) {
-        return (getSubDistrictByNameTh(name) == null) ? getSubDistrictByNameTh(name) : getSubDistrictByNameEn(name);
+        return (getSubDistrictByNameTh(name) == null) ? getSubDistrictByNameEn(name) : getSubDistrictByNameTh(name);
     }
 
     public List<SubDistrict> getSubDistricts() {

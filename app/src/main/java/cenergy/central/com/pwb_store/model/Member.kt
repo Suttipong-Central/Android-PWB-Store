@@ -42,8 +42,9 @@ data class Member(var nationalId: String = "",
                   var lastname: NamePattern? = null,
                   var memberTier: String = "",
                   var isStaff: String = "",
-                  var status: String = ""
-): Parcelable {
+                  var status: String = "",
+                  var addresses: List<MemberT1CAddress>? = arrayListOf()
+) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
@@ -74,7 +75,8 @@ data class Member(var nationalId: String = "",
             parcel.readParcelable(NamePattern::class.java.classLoader),
             parcel.readString(),
             parcel.readString(),
-            parcel.readString())
+            parcel.readString(),
+            parcel.createTypedArrayList(MemberT1CAddress))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(nationalId)
@@ -107,6 +109,7 @@ data class Member(var nationalId: String = "",
         parcel.writeString(memberTier)
         parcel.writeString(isStaff)
         parcel.writeString(status)
+        parcel.writeTypedList(addresses)
     }
 
     override fun describeContents(): Int {
