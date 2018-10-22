@@ -367,7 +367,7 @@ class PaymentBillingFragment : Fragment() {
                 // validate postcode with local db
                 val postcode = database.getPostcodeByCode(memberAddress.postcode)
                 if (postcode != null) {
-                    postcodeInput.setText(member.homePostalCode)
+                    postcodeInput.setText(postcode.postcode.toString())
                     this.postcode = postcode
                 }
 
