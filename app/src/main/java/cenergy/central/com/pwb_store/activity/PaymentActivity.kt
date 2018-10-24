@@ -156,7 +156,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         val bookingShippingSlot = BookingShippingSlotBody.bookingShippingSlotBody(
                 productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
                 shippingAddress!!.region, shippingAddress!!.postcode!!, periodTimeSlot, customDetail)
-        HttpManagerHDL.getInstance().createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
+        HttpManagerHDL.getInstance(this@PaymentActivity).createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
             override fun success(response: BookingNumberResponse?) {
                 if (response != null) {
                     val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
@@ -505,7 +505,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
                 province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
                 period = period, customDetail = customDetail)
-        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+        HttpManagerHDL.getInstance(this@PaymentActivity).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
@@ -550,7 +550,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
                 province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
                 period = period, customDetail = customDetail)
-        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+        HttpManagerHDL.getInstance(this@PaymentActivity).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
                 if (response != null && response.shippingSlot.isNotEmpty()) {
                     for (i in response.shippingSlot.indices) {

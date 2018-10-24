@@ -30,7 +30,8 @@ class HttpMangerSiebel(context: Context) {
     init {
         val session = auth()
         val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, CLIENT_SERVICE_NAME, CLIENT_REGION, CLIENT_X_API_KEY)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, CLIENT_SERVICE_NAME,
+                CLIENT_REGION, CLIENT_X_API_KEY)
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         val defaultHttpClient = OkHttpClient.Builder()
@@ -116,7 +117,7 @@ class HttpMangerSiebel(context: Context) {
     }
 
     companion object {
-        //Specific Client
+        //        //Specific Client
         private const val CLIENT_SERVICE_NAME = "execute-api"
         private const val CLIENT_REGION = "ap-southeast-1"
         private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"

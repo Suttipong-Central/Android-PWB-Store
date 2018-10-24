@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -121,42 +120,44 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                     district = store.district ?: "", subDistrict = store.subDistrict ?: "",
                     province = store.province ?: "", postalId = store.postalCode ?: "",
                     period = period, customDetail = customDetail)
-            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
-                override fun success(response: ShippingSlotResponse?) {
-                    progressDialog?.dismiss()
-                    if (response != null) {
-                        if (response.shippingSlot.isNotEmpty()) {
-                            if (response.shippingSlot.size > 14) {
-                                for (i in response.shippingSlot.indices) {
-                                    if (enableShippingSlot.size == 14) {
-                                        break
+            context?.let {
+                HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+                    override fun success(response: ShippingSlotResponse?) {
+                        progressDialog?.dismiss()
+                        if (response != null) {
+                            if (response.shippingSlot.isNotEmpty()) {
+                                if (response.shippingSlot.size > 14) {
+                                    for (i in response.shippingSlot.indices) {
+                                        if (enableShippingSlot.size == 14) {
+                                            break
+                                        }
+                                        enableShippingSlot.add(response.shippingSlot[i])
                                     }
-                                    enableShippingSlot.add(response.shippingSlot[i])
-                                }
-                                createShippingData(true)
-                            } else {
-                                response.shippingSlot.forEach {
-                                    enableShippingSlot.add(it)
-                                }
-                                if (enableShippingSlot.size == 14) {
                                     createShippingData(true)
                                 } else {
-                                    getNextMonthShippingSlot()
+                                    response.shippingSlot.forEach {
+                                        enableShippingSlot.add(it)
+                                    }
+                                    if (enableShippingSlot.size == 14) {
+                                        createShippingData(true)
+                                    } else {
+                                        getNextMonthShippingSlot()
+                                    }
                                 }
+                            } else {
+                                showAlertDialog("", getString(R.string.not_have_day_to_delivery))
                             }
                         } else {
-                            showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                         }
-                    } else {
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                     }
-                }
 
-                override fun failure(error: APIError) {
-                    progressDialog?.dismiss()
-                    showAlertDialog("", error.errorMessage)
-                }
-            })
+                    override fun failure(error: APIError) {
+                        progressDialog?.dismiss()
+                        showAlertDialog("", error.errorMessage)
+                    }
+                })
+            }
         }
     }
 
@@ -169,22 +170,24 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 district = store.district ?: "", subDistrict = store.subDistrict ?: "",
                 province = store.province ?: "", postalId = store.postalCode ?: "",
                 period = period, customDetail = customDetail)
-        HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
-            override fun success(response: ShippingSlotResponse?) {
-                if (response != null && response.shippingSlot.isNotEmpty()) {
-                    for (i in response.shippingSlot.indices) {
-                        if (enableShippingSlot.size == 14) {
-                            break
+        context?.let {
+            HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+                override fun success(response: ShippingSlotResponse?) {
+                    if (response != null && response.shippingSlot.isNotEmpty()) {
+                        for (i in response.shippingSlot.indices) {
+                            if (enableShippingSlot.size == 14) {
+                                break
+                            }
+                            enableShippingSlot.add(response.shippingSlot[i])
                         }
-                        enableShippingSlot.add(response.shippingSlot[i])
+                        createShippingData(true)
                     }
-                    createShippingData(true)
                 }
-            }
 
-            override fun failure(error: APIError) {
-            }
-        })
+                override fun failure(error: APIError) {
+                }
+            })
+        }
     }
 
     private fun createShippingData(setFirstDayAndLastDay: Boolean) {
@@ -219,7 +222,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
 
                 for (shippingItem in currentDay.slot) {
                     val slotTime = shippingItem.description
-                    when(slotTime){
+                    when (slotTime) {
                         "09:00-09:30" -> {
                             itemA = ShippingItem(shippingItem.id, shippingItem.description)
                         }

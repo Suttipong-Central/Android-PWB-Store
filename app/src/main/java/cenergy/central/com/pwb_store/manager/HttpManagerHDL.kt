@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.manager
 import android.annotation.SuppressLint
 import android.content.Context
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.service.HDLService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.body.BookingShippingSlotBody
@@ -22,14 +23,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class HttpManagerHDL {
-    private val mContext: Context = Contextor.getInstance().context
+class HttpManagerHDL(context: Context) {
     private var retrofit: Retrofit
 
     init {
         val session = auth()
         val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, CLIENT_SERVICE_NAME, CLIENT_REGION, CLIENT_X_API_KEY)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, Constants.CLIENT_SERVICE_NAME,
+                Constants.CLIENT_REGION, Constants.CLIENT_X_API_KEY)
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         val defaultHttpClient = OkHttpClient.Builder()
@@ -46,7 +47,7 @@ class HttpManagerHDL {
                 .build()
 
         retrofit = Retrofit.Builder()
-                .baseUrl(HOST_NAME)
+                .baseUrl(Constants.CENTRAL_HOST_NAME)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build()
@@ -100,8 +101,8 @@ class HttpManagerHDL {
 
     private fun auth(): Session {
         val auth = Session()
-        auth.accessKey = CLIENT_ACCESS_KEY
-        auth.secretKey = CLIENT_SECRET_KEY
+        auth.accessKey = Constants.CLIENT_ACCESS_KEY
+        auth.secretKey = Constants.CLIENT_SECRET_KEY
 
         return auth
     }
@@ -112,36 +113,13 @@ class HttpManagerHDL {
     }
 
     companion object {
-        //Specific Client
-//        private const val CLIENT_SERVICE_NAME = "execute-api"
-//        private const val CLIENT_REGION = "ap-southeast-1"
-//        private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-//        private const val HOST_NAME = "https://api.central.tech"
-//        private const val CLIENT_ACCESS_KEY = "AKIAJK27ORQKY42QRFWQ"
-//        private const val CLIENT_SECRET_KEY = "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"
-
-        //SIT
-//        private const val CLIENT_SERVICE_NAME = "execute-api"
-//        private const val CLIENT_REGION = "ap-southeast-1"
-//        private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-//        private const val HOST_NAME = "https://sit-api.central.tech"
-//        private const val CLIENT_ACCESS_KEY = "AKIAIZBEAJOWKANSLLYA"
-//        private const val CLIENT_SECRET_KEY = "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"
-
-        //UAT
-        private const val CLIENT_SERVICE_NAME = "execute-api"
-        private const val CLIENT_REGION = "ap-southeast-1"
-        private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        private const val HOST_NAME = "https://uat-api.central.tech"
-        private const val CLIENT_ACCESS_KEY = "AKIAIIIW7RXNLIKRTSNQ"
-        private const val CLIENT_SECRET_KEY = "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"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerHDL? = null
 
-        fun getInstance(): HttpManagerHDL {
+        fun getInstance(context: Context): HttpManagerHDL {
             if (instance == null)
-                instance = HttpManagerHDL()
+                instance = HttpManagerHDL(context)
             return instance as HttpManagerHDL
         }
     }

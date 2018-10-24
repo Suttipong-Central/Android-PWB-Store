@@ -372,7 +372,7 @@ class HttpManagerMagento(context: Context) {
     fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.HOST_NAME)
+                .host(Constants.PWB_HOST_NAME)
                 .addPathSegment("rest")
                 .addPathSegment("V1")
                 .addPathSegment("products")
@@ -725,7 +725,7 @@ class HttpManagerMagento(context: Context) {
     fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<PwbMember>>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.HOST_NAME)
+                .host(Constants.PWB_HOST_NAME)
                 .addPathSegment("rest")
                 .addPathSegment("V1")
                 .addPathSegment("headless")
