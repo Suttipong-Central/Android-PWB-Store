@@ -377,9 +377,9 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         HttpManagerMagento.getInstance(this).getPWBCustomer(mobile, object : ApiResponseCallback<List<PwbMember>> {
             override fun success(response: List<PwbMember>?) {
                 runOnUiThread {
-                    mProgressDialog?.dismiss()
                     if (response?.isNotEmpty() == true) { // it can be null
                         this@PaymentActivity.pwbMembersList = response
+                        mProgressDialog?.dismiss()
                         startMembersFragment()
                     } else {
                         getMembersT1C(mobile)
@@ -400,12 +400,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private fun getMembersT1C(mobile: String) {
         HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
             override fun success(response: List<MemberResponse>?) {
+                mProgressDialog?.dismiss()
                 if (response != null && response.isNotEmpty()) {
                     this@PaymentActivity.membersList = response
                     startMembersFragment()
-                    mProgressDialog?.dismiss()
                 } else {
-                    mProgressDialog?.dismiss()
                     showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
                 }
             }
@@ -421,18 +420,17 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         showProgressDialog()
         HttpMangerSiebel.getInstance(this).getT1CMember(customerId, object : ApiResponseCallback<Member> {
             override fun success(response: Member?) {
+                mProgressDialog?.dismiss()
                 if (response != null) {
                     startBilling(response)
-                    mProgressDialog?.dismiss()
                 } else {
-                    mProgressDialog?.dismiss()
                     showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
                 }
             }
 
             override fun failure(error: APIError) {
-                showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
                 mProgressDialog?.dismiss()
+                showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
             }
         })
     }
