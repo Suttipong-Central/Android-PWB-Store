@@ -319,16 +319,17 @@ class PaymentBillingFragment : Fragment() {
             // t1c member
             hasMember() -> member?.let { member ->
 
+                firstNameEdt.setText(member.getFirstName())
+                lastNameEdt.setText(member.getLastName())
+                contactNumberEdt.setText(member.mobilePhone)
+                emailEdt.setText(member.email)
+
+                // has address?
                 if (member.addresses == null || member.addresses!!.isEmpty()) {
                     return
                 }
 
                 val memberAddress = member.addresses!![0]
-
-                firstNameEdt.setText(member.getFirstName())
-                lastNameEdt.setText(member.getLastName())
-                contactNumberEdt.setText(member.mobilePhone)
-                emailEdt.setText(member.email)
                 homeNoEdt.setText(memberAddress.homeNo ?: "")
                 homeBuildingEdit.setText(memberAddress.building ?: "")
                 homeSoiEdt.setText(memberAddress.soi ?: "")
