@@ -69,7 +69,6 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
             }
 
             productDescription.setText(productList.getName());
-
             Glide.with(Contextor.getInstance().getContext())
                     .load(extension.getImageUrl())
                     //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+extension.getImageUrl())
@@ -104,7 +103,8 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         } else {
             hideSpecialPrice();
         }
-        productBrand.setText(product.getBrand());
+        String brand = product.getBrand();
+        productBrand.setText(!brand.equals("") ? brand : "Brand");
         productName.setText(product.getName());
         itemView.setOnClickListener(this);
         itemView.setTag(product);

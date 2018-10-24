@@ -31,15 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
-import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
@@ -167,11 +164,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     && (totalItemCount) <= (firstVisibleItem + visibleItemCount + visibleThreshold)
                     && isStillHavePages()) {
 
+                layoutProgress.setVisibility(View.VISIBLE);
                 if (isSearch) {
-                    HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
-                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
+//                    HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
+//                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
+                    getProductsFromSearch(keyWord);
                 } else {
-                    layoutProgress.setVisibility(View.VISIBLE);
                     if (brandId != null) {
                         retrieveProductList(departmentId, brandId);
                     } else {
@@ -184,30 +182,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             }
         }
     };
-
-    private void getProductList(String departmentId) {
-        HttpManagerMagento.Companion.getInstance(getContext()).retrieveProductList(
-                "category_id",
-                departmentId,
-                "in",
-                PER_PAGE,
-                getNextPage(),
-                sortType,
-                getString(R.string.product_list),
-                new ApiResponseCallback<ProductResponse>() {
-                    @Override
-                    public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
-                        updateProductList(response);
-                    }
-
-                    @Override
-                    public void failure(@NotNull APIError error) {
-                        Log.d("productDaoResponse", error.toString());
-                        layoutProgress.setVisibility(View.GONE);
-                    }
-                }
-        );
-    }
 
     final Callback<ProductDao> CALLBACK_PRODUCT = new Callback<ProductDao>() {
         @Override
@@ -486,8 +460,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if (savedInstanceState == null) {
             if (isSearch) {
                 showProgressDialog();
-                HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container",
-                        "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
+//                HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container",
+//                        "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
+                getProductsFromSearch(keyWord);
             } else {
                 showProgressDialog();
                 retrieveProductList(departmentId);
@@ -651,7 +626,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     private void retrieveProductList(final String departmentId) {
         if (getContext() != null) {
-            HttpManagerMagento.Companion.getInstance(getContext()).retrieveProductList(
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
                     departmentId,
                     PER_PAGE,
                     getNextPage(),
@@ -659,14 +634,15 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     sortType,
                     new ApiResponseCallback<ProductResponse>() {
                         @Override
-                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                        public void success(@Nullable ProductResponse response) {
                             updateProductList(response);
                         }
 
                         @Override
                         public void failure(@NotNull APIError error) {
-                            Log.d("productDaoResponse", error.toString());
+                            Log.d("productResponse", error.toString());
                             layoutProgress.setVisibility(View.GONE);
+                            mProgressDialog.dismiss();
                         }
                     }
             );
@@ -684,13 +660,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     sortType,
                     new ApiResponseCallback<ProductResponse>() {
                         @Override
-                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+                        public void success(@Nullable ProductResponse response) {
                             updateProductList(response);
                         }
 
                         @Override
                         public void failure(@NotNull APIError error) {
-                            Log.d("productDaoResponse", error.toString());
+                            Log.d("productResponse", error.toString());
 
                             layoutProgress.setVisibility(View.GONE);
                             mProgressDialog.dismiss();
@@ -699,6 +675,27 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             );
         }
     }
+
+    private void getProductsFromSearch(String keyWord) {
+        if (getContext() != null) {
+            HttpManagerMagento.Companion.getInstance(getContext()).getProductFromSearch(
+                    keyWord, PER_PAGE, getNextPage(), new ApiResponseCallback<ProductResponse>() {
+                        @Override
+                        public void success(@Nullable ProductResponse response) {
+                            Log.d("productResponse", "Search success");
+                            updateProductList(response);
+                        }
+
+                        @Override
+                        public void failure(@NotNull APIError error) {
+                            Log.d("productResponse", error.getErrorMessage());
+                            layoutProgress.setVisibility(View.GONE);
+                            mProgressDialog.dismiss();
+                        }
+                    });
+        }
+    }
+
 
     private void getBrands(String departmentId) {
         if (getContext() != null) {
@@ -739,7 +736,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             setTextHeader(totalItem, title);
         }
 
-        getBrands(departmentId);
+        if (!isSearch) {
+            getBrands(departmentId);
+        } else {
+            layoutProgress.setVisibility(View.GONE);
+            mProgressDialog.dismiss();
+        }
     }
 
     // region {@link OnBrandFilterClickListener}

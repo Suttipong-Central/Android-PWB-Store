@@ -87,6 +87,7 @@
         android:imeOptions="actionSearch"
         android:inputType="textFilter"
         android:maxLines="1"
+        android:textCursorDrawable="@drawable/cursor_orange"
         android:textAllCaps="true"
         android:textColor="@color/headerTextColor"
         android:textColorHint="@color/hintColor"

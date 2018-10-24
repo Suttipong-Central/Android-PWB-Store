@@ -158,5 +158,22 @@ public interface ProductService {
             @Query("searchCriteria[sortOrders][0][field]") String name,
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage);
+
+    // TODO: Delete when get new api this case so hard for filter
+    @GET("/rest/V1/products")
+    Call<ProductResponse> getProductFromSearch(
+            @Query("searchCriteria[filterGroups][0][filters][1][field]") String filterName,
+            @Query("searchCriteria[filterGroups][0][filters][1][value]") String name,
+            @Query("searchCriteria[filterGroups][0][filters][1][conditionType]") String ctName,
+            @Query("searchCriteria[filterGroups][0][filters][2][field]") String filterSku,
+            @Query("searchCriteria[filterGroups][0][filters][2][value]") String sku,
+            @Query("searchCriteria[filterGroups][0][filters][2][conditionType]") String ctSku,
+            @Query("searchCriteria[filterGroups][0][filters][3][field]") String filterBrand,
+            @Query("searchCriteria[filterGroups][0][filters][3][value]") String brand,
+            @Query("searchCriteria[filterGroups][0][filters][3][conditionType]") String ctBrand,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("fields") String fields
+    );
     // end region
 }

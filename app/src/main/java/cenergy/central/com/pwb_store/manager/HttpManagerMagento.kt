@@ -223,9 +223,9 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun retrieveProductList(category: String, categoryId: String, conditionType: String,
-                            pageSize: Int, currentPage: Int, typeSearch: String, fields: String,
-                            callback: ApiResponseCallback<ProductResponse?>) {
+    fun retrieveProducts(category: String, categoryId: String, conditionType: String,
+                         pageSize: Int, currentPage: Int, typeSearch: String, fields: String,
+                         callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getProductList(category, categoryId, conditionType, pageSize,
                 currentPage, typeSearch, fields).enqueue(object : Callback<ProductResponse> {
@@ -244,7 +244,7 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
+    fun retrieveProducts(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
@@ -263,7 +263,7 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun retrieveProductList(categoryId: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
+    fun retrieveProducts(categoryId: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
@@ -313,6 +313,26 @@ class HttpManagerMagento(context: Context) {
             }
 
             override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    // TODO: Delete when get new api this case so hard for filter
+    fun getProductFromSearch(keyword: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductFromSearch("name", "%$keyword%", "like",
+                "sku", keyword, "eq", "brand", "%$keyword%", "like", pageSize, currentPage,
+                "items[id,sku,name,price,status],total_count").enqueue(object : Callback<ProductResponse> {
+            override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>?) {
+                if (response != null) {
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
                 callback.failure(APIError(t))
             }
         })

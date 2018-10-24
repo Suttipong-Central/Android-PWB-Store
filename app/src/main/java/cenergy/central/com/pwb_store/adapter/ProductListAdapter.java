@@ -53,6 +53,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     };
     private boolean isLoadingShow = false;
+
     public ProductListAdapter(Context mContext) {
         this.mContext = mContext;
     }
@@ -126,7 +127,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     productListViewHolder.setViewHolder(productList);
 
                 }
-                if( viewType instanceof Product && holder instanceof ProductListViewHolder ){
+                if (viewType instanceof Product && holder instanceof ProductListViewHolder) {
                     Product product = (Product) viewType;
                     ProductListViewHolder productListViewHolder = (ProductListViewHolder) holder;
                     productListViewHolder.setViewHolder(product);
@@ -145,7 +146,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mListViewType.get(position).getViewTypeId();
     }
 
-    public void setProduct(ProductResponse productResponse){
+    public void setProduct(ProductResponse productResponse) {
 
         if (productResponse.isFirstPage()) {
             mListViewType.clear();
@@ -153,14 +154,15 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         // Add deal paginated
         int startPosition = mListViewType.size();
-        for (Product product : productResponse.getProducts()) {
+        ArrayList<Product> products = productResponse.getProducts() == null ? new ArrayList<Product>() : productResponse.getProducts();
+        for (Product product : products) {
             product.setAttributeID(VIEW_TYPE_ID_GRID_VIEW);
             mListViewType.add(product);
         }
 
         if (isLoadingShow) {
             isLoadingShow = false;
-            if (productResponse.getProducts().size() == 0) {
+            if (products.size() == 0) {
                 mListViewType.clear();
                 notifyDataSetChanged();
                 mListViewType.add(VIEW_TYPE_RESULT);
@@ -173,7 +175,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public void setProduct(ProductDao productDao){
+    public void setProduct(ProductDao productDao) {
 
         if (productDao.isFirstPage()) {
             mListViewType.clear();
@@ -222,7 +224,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mListViewType.add(VIEW_TYPE_RESULT);
             notifyItemInserted(0);
             notifyItemRangeInserted(0, mListViewType.size());
-        }else {
+        } else {
             mListViewType.clear();
             notifyDataSetChanged();
             mListViewType.add(VIEW_TYPE_RESULT);
