@@ -128,7 +128,9 @@ public class CategoryFragment extends Fragment {
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
                 @Override
                 public void success(@Nullable Category category) {
-                    mAdapter.setCategory(category);
+                    if (category != null) {
+                        mAdapter.setCategory(category);
+                    }
                 }
 
                 @Override

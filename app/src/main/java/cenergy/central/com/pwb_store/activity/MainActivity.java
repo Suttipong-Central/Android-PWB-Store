@@ -427,8 +427,10 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         HttpManagerMagento.Companion.getInstance(this).retrieveCategories(false, 2, 4, new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
-                mCategoryDao = new CategoryDao(category);
-                createDrawerMenu(category);
+                if (category != null) {
+                    mCategoryDao = new CategoryDao(category);
+                    createDrawerMenu(category);
+                }
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction
                         .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)

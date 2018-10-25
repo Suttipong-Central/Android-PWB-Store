@@ -205,11 +205,13 @@ class HttpManagerMagento(context: Context) {
                         category.filterHeaders.removeAll(toRemove)
                     }
 
-                    // Store to database
-                    database.saveCategory(category)
+                    if (category != null) {
+                        // Store to database
+                        database.saveCategory(category)
 
-                    // Update cached endpoint
-                    database.updateCachedEndpoint(endpointName)
+                        // Update cached endpoint
+                        database.updateCachedEndpoint(endpointName)
+                    }
 
                     callback.success(category)
                 } else {
