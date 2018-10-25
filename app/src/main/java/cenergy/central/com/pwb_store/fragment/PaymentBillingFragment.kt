@@ -196,73 +196,8 @@ class PaymentBillingFragment : Fragment() {
         return rootView
     }
 
-    private fun setupView(rootView: View) {
-        //User
-        firstNameEdt = rootView.findViewById(R.id.first_name_payment)
-        lastNameEdt = rootView.findViewById(R.id.last_name_payment)
-        contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
-        emailEdt = rootView.findViewById(R.id.email_payment)
-        //shipping address
-        homeNoEdt = rootView.findViewById(R.id.house_no_payment)
-        homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
-        homeSoiEdt = rootView.findViewById(R.id.soi_payment)
-        homeRoadEdt = rootView.findViewById(R.id.street_payment)
-        homePhoneEdt = rootView.findViewById(R.id.tell_payment)
-        // setup view input address
-        provinceInput = rootView.findViewById(R.id.input_province)
-        districtInput = rootView.findViewById(R.id.input_district)
-        subDistrictInput = rootView.findViewById(R.id.input_sub_district)
-        postcodeInput = rootView.findViewById(R.id.input_postcode)
-
-        //Billing address
-        billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
-        billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
-        billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
-        billingEmailEdt = rootView.findViewById(R.id.email_billing)
-        billingLayout = rootView.findViewById(R.id.billing_address_layout_payment)
-        billingHomeNoEdt = rootView.findViewById(R.id.billing_house_no_payment)
-        billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
-        billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
-        billingHomeRoadEdt = rootView.findViewById(R.id.billing_street_payment)
-        billingHomePhoneEdt = rootView.findViewById(R.id.billing_tell_payment)
-        // setup view input billing address
-        billingProvinceInput = rootView.findViewById(R.id.billing_input_province)
-        billingDistrictInput = rootView.findViewById(R.id.billing_input_district)
-        billingSubDistrictInput = rootView.findViewById(R.id.billing_input_sub_district)
-        billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
-
-        recycler = rootView.findViewById(R.id.recycler_product_list_payment)
-        totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
-        deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
-
-        //Set Input type
-        contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        contactNumberEdt.setTextLength(10)
-        billingContactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        billingContactNumberEdt.setTextLength(10)
-        homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        homePhoneEdt.setTextLength(10)
-        billingHomePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        billingHomePhoneEdt.setTextLength(10)
-        emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-
-        radioGroup = rootView.findViewById(R.id.radio_group)
-
-        checkSameBilling()
-        radioGroup.setOnCheckedChangeListener { radioGroup, i ->
-            when (radioGroup.checkedRadioButtonId) {
-                R.id.radio_no -> {
-                    isSameBilling = false
-                    checkSameBilling()
-                }
-                R.id.radio_yes -> {
-                    isSameBilling = true
-                    checkSameBilling()
-                }
-            }
-        }
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupInputAddress()
 
         //Setup Member
@@ -318,7 +253,6 @@ class PaymentBillingFragment : Fragment() {
             }
             // t1c member
             hasMember() -> member?.let { member ->
-
                 firstNameEdt.setText(member.getFirstName())
                 lastNameEdt.setText(member.getLastName())
                 contactNumberEdt.setText(member.mobilePhone)
@@ -442,6 +376,74 @@ class PaymentBillingFragment : Fragment() {
         totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
         deliveryBtn.setOnClickListener {
             checkConfirm()
+        }
+    }
+
+    private fun setupView(rootView: View) {
+        //User
+        firstNameEdt = rootView.findViewById(R.id.first_name_payment)
+        lastNameEdt = rootView.findViewById(R.id.last_name_payment)
+        contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
+        emailEdt = rootView.findViewById(R.id.email_payment)
+        //shipping address
+        homeNoEdt = rootView.findViewById(R.id.house_no_payment)
+        homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
+        homeSoiEdt = rootView.findViewById(R.id.soi_payment)
+        homeRoadEdt = rootView.findViewById(R.id.street_payment)
+        homePhoneEdt = rootView.findViewById(R.id.tell_payment)
+        // setup view input address
+        provinceInput = rootView.findViewById(R.id.input_province)
+        districtInput = rootView.findViewById(R.id.input_district)
+        subDistrictInput = rootView.findViewById(R.id.input_sub_district)
+        postcodeInput = rootView.findViewById(R.id.input_postcode)
+
+        //Billing address
+        billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
+        billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
+        billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
+        billingEmailEdt = rootView.findViewById(R.id.email_billing)
+        billingLayout = rootView.findViewById(R.id.billing_address_layout_payment)
+        billingHomeNoEdt = rootView.findViewById(R.id.billing_house_no_payment)
+        billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
+        billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
+        billingHomeRoadEdt = rootView.findViewById(R.id.billing_street_payment)
+        billingHomePhoneEdt = rootView.findViewById(R.id.billing_tell_payment)
+        // setup view input billing address
+        billingProvinceInput = rootView.findViewById(R.id.billing_input_province)
+        billingDistrictInput = rootView.findViewById(R.id.billing_input_district)
+        billingSubDistrictInput = rootView.findViewById(R.id.billing_input_sub_district)
+        billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
+
+        recycler = rootView.findViewById(R.id.recycler_product_list_payment)
+        totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
+        deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
+
+        //Set Input type
+        contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        contactNumberEdt.setTextLength(10)
+        billingContactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        billingContactNumberEdt.setTextLength(10)
+        homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        homePhoneEdt.setTextLength(10)
+        billingHomePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        billingHomePhoneEdt.setTextLength(10)
+        emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+
+        radioGroup = rootView.findViewById(R.id.radio_group)
+
+        checkSameBilling()
+        radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+            when (radioGroup.checkedRadioButtonId) {
+                R.id.radio_no -> {
+                    isSameBilling = false
+                    checkSameBilling()
+                }
+                R.id.radio_yes -> {
+                    isSameBilling = true
+                    checkSameBilling()
+                }
+            }
         }
     }
 
