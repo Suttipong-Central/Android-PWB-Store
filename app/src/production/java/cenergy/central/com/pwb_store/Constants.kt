@@ -11,7 +11,7 @@ import java.util.*
 class Constants {
     companion object {
         // region magento
-        const val BASE_URL_MAGENTO = "https://wwww.powerbuy.co.th"
+        const val BASE_URL_MAGENTO = "https://www.powerbuy.co.th"
         const val CLIENT_MAGENTO = "Bearer ngvids7tnggs94sm81k8a3oxjgl9cd16"
         const val PWB_HOST_NAME = "powerbuy.co.th"
         // endregion
