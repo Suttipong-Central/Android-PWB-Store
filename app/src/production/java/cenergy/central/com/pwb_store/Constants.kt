@@ -8,9 +8,9 @@ package cenergy.central.com.pwb_store
 class Constants {
     companion object {
         // region magento
-        const val BASE_URL_MAGENTO = "https://staging.powerbuy.co.th"
-        const val CLIENT_MAGENTO = "Bearer ba102y6thpckeoqgo196u82tllvlf50q"
-        const val PWB_HOST_NAME = "staging.powerbuy.co.th"
+        const val BASE_URL_MAGENTO = "https://powerbuy.co.th"
+        const val CLIENT_MAGENTO = "Bearer ngvids7tnggs94sm81k8a3oxjgl9cd16"
+        const val PWB_HOST_NAME = "powerbuy.co.th"
         // endregion
 
         // region central
