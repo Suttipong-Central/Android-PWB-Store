@@ -90,12 +90,13 @@ class Product() : IViewType, Parcelable {
     }
 
     fun getImageUrl(): String {
-        val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
-        return if (!image.contains(hostname, true)) {
-            "$hostname$image"
-        } else {
-            image
-        }
+//        val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
+//        return if (!image.contains(hostname, true)) {
+//            "$hostname$image"
+//        } else {
+//            image
+//        }
+        return image
     }
 
     fun isSpecialPrice(): Boolean {
