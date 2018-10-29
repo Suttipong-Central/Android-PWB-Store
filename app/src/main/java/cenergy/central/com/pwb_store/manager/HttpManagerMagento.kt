@@ -322,20 +322,118 @@ class HttpManagerMagento(context: Context) {
 
     // TODO: Delete when get new api this case so hard for filter
     fun getProductFromSearch(keyword: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse>) {
-        val productService = retrofit.create(ProductService::class.java)
-        productService.getProductFromSearch("name", "%$keyword%", "like",
-                "sku", keyword, "eq", "brand", "%$keyword%", "like", pageSize, currentPage,
-                "items[id,sku,name,price,status],total_count").enqueue(object : Callback<ProductResponse> {
-            override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>?) {
+//        val productService = retrofit.create(ProductService::class.java)
+//        productService.getProductFromSearch("name", "%$keyword%", "like",
+//                "sku", keyword, "eq", "brand", "%$keyword%", "like", pageSize, currentPage,
+//                "items[id,sku,name,price,status],total_count").enqueue(object : Callback<ProductResponse> {
+//            override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>?) {
+//                if (response != null) {
+//                    callback.success(response.body())
+//                } else {
+//                    callback.failure(APIErrorUtils.parseError(response))
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
+//                callback.failure(APIError(t))
+//            }
+//        })
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegment("rest")
+                .addPathSegment("V1")
+                .addPathSegment("products")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][1][field]", "name")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][1][value]", "%$keyword%")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][1][conditionType]", "like")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][2][field]", "sku")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][2][value]", keyword)
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][2][conditionType]", "eq")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][3][field]", "brand")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][3][value]", "%$keyword%")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][3][conditionType]", "like")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][3][value]", "%$keyword%")
+                .addQueryParameter("searchCriteria[pageSize]", pageSize.toString())
+                .addQueryParameter("searchCriteria[currentPage]", currentPage.toString())
+                .addQueryParameter("fields", "items[id,sku,name,price,status,custom_attributes],total_count")
+                .build()
+
+        val request = Request.Builder()
+                .url(httpUrl)
+                .build()
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback{
+
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 if (response != null) {
-                    callback.success(response.body())
+                    val data = response.body()
+
+                    try {
+                        val productResponse = ProductResponse()
+                        val productResponseObject = JSONObject(data?.string())
+                        val totalCount = productResponseObject.getInt("total_count")
+                        val productObjList = productResponseObject.getJSONArray("items")
+
+                        val products = arrayListOf<Product>()
+                        if (productObjList != null && productObjList.length() > 0) {
+                            for (i in 0 until productObjList.length()) {
+                                val product = Product()
+                                val productObject = productObjList.getJSONObject(i)
+                                product.id = productObject.getInt("id")
+                                product.sku = productObject.getString("sku")
+                                product.name = productObject.getString("name")
+                                product.price = productObject.getDouble("price")
+                                product.status = productObject.getInt("status")
+
+                                val attrArray = productObject.getJSONArray("custom_attributes")
+                                for (j in 0 until attrArray.length()) {
+                                    val attrName = attrArray.getJSONObject(j).getString("name")
+                                    when (attrName) {
+                                        "special_price" -> {
+                                            val specialPrice = attrArray.getJSONObject(j).getString("value")
+                                            product.specialPrice = if (specialPrice.trim() == "") 0.0 else specialPrice.toDouble()
+                                        }
+
+                                        "special_from_date" -> {
+                                            product.specialFromDate = attrArray.getJSONObject(j).getString("value")
+                                        }
+
+                                        "special_to_date" -> {
+                                            product.specialToDate = attrArray.getJSONObject(j).getString("value")
+                                        }
+
+                                        "image" -> {
+                                            product.image = attrArray.getJSONObject(j).getString("value")
+                                        }
+//
+//                                        "delivery_method" -> {
+//                                            product.deliveryMethod = attrArray.getJSONObject(j).getString("value")
+//                                        }
+//
+//                                        "brand" -> {
+//                                            product.brand = attrArray.getJSONObject(j).getString("value")
+//                                        }
+                                    }
+                                }
+                                products.add(product)
+                            }
+                        }
+
+                        productResponse.products = products
+                        productResponse.totalCount = totalCount
+
+                        callback.success(productResponse)
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
+                        Log.e("JSON Parser", "Error parsing data " + e.toString())
+                    }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
             }
 
-            override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                callback.failure(APIError(e))
             }
         })
     }

@@ -2,10 +2,10 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
+
+import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
-import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -92,13 +92,15 @@ class Product() : IViewType, Parcelable {
     }
 
     fun getImageUrl(): String {
-//        val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
+        val schemes = arrayOf("http", "https")
+        val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
+        return if (!URLUtil.isValidUrl(image)) {
 //        return if (!image.contains(hostname, true)) {
-//            "$hostname$image"
-//        } else {
-//            image
-//        }
-        return image
+            "$hostname$image"
+        } else {
+            image
+        }
+//        return image
     }
 
     fun isSpecialPrice(): Boolean {
