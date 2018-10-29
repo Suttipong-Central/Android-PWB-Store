@@ -17,7 +17,7 @@
     <string name="help" translatable="false">ช่วยเหลือ</string>
 
     <!-- Category -->
-    <string name="category" translatable="false">หมวกหมู่ในการเลือกซื้อสินค้า</string>
+    <string name="category" translatable="false">หมวดหมู่ในการเลือกซื้อสินค้า</string>
     <!-- Search -->
     <string name="search_hint" translatable="false">ค้นหา</string>
     <!-- ProductList -->
