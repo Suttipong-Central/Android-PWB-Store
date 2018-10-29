@@ -2,8 +2,10 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
+import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -105,7 +107,16 @@ class Product() : IViewType, Parcelable {
             val specialFormDateTime = formatter.parse(specialFromDate)
             val specialToDateTime = formatter.parse(specialToDate)
             val current = Date()
-            (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
+            val formatToday = SimpleDateFormat("dd", Locale.ENGLISH)
+            val formatMonth = SimpleDateFormat("MM", Locale.ENGLISH)
+            val formatYear = SimpleDateFormat("yyy", Locale.ENGLISH)
+            if(formatToday.format(specialToDateTime) == formatToday.format(current)
+                    && formatMonth.format(specialToDateTime) == formatMonth.format(current)
+                    && formatYear.format(specialToDateTime) == formatYear.format(current) ){
+                true
+            } else {
+                (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
+            }
         } else {
             false
         }
