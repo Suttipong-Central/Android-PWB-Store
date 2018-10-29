@@ -728,7 +728,8 @@ class PaymentBillingFragment : Fragment() {
 
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
-                || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null)
+                || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
+                || homeRoadEdt.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {
@@ -751,7 +752,8 @@ class PaymentBillingFragment : Fragment() {
 
         return (billingFirstNameEdt.getError() != null || billingLastNameEdt.getError() != null || billingEmailEdt.getError() != null
                 || billingContactNumberEdt.getError() != null || billingHomeNoEdt.getError() != null || billingProvinceInput.getError() != null
-                || billingDistrictInput.getError() != null || billingSubDistrictInput.getError() != null || billingPostcodeInput.getError() != null)
+                || billingDistrictInput.getError() != null || billingSubDistrictInput.getError() != null || billingPostcodeInput.getError() != null
+                || billingHomeRoadEdt.getError() != null)
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
