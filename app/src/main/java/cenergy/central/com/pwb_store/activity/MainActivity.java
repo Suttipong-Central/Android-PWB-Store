@@ -431,10 +431,12 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                     mCategoryDao = new CategoryDao(category);
                     createDrawerMenu(category);
                 }
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction
-                        .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
-                        .commit();
+                if(getSupportFragmentManager() != null){
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction
+                            .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                            .commit();
+                }
                 mProgressDialog.dismiss();
             }
 
