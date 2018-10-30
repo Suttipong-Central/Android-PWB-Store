@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName
  */
 
 data class ShippingInformationResponse(@SerializedName("payment_methods")
-                                       var paymentMethods: ArrayList<String>? = arrayListOf(),
+                                       var paymentMethods: ArrayList<PaymentMethod>? = arrayListOf(),
                                        var totals: CartTotal? = null
 )
+
+data class PaymentMethod(var code: String? = "", var title: String? = "")
