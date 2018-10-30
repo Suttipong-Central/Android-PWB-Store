@@ -21,11 +21,13 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
                      private var items: List<Pair<Long, String>>) : ArrayAdapter<Pair<Long, String>>(mContext, mLayoutResourceId, items) {
     private var listener: FilterClickListener? = null
     private var cacheItems: List<Pair<Long, String>> = arrayListOf()
+    private var listFilter = ListFilter()
 
     fun setItems(items: List<Pair<Long, String>>) {
         this.items = items
         this.cacheItems = items
-        Log.d("MainActivity", "update adapter --> ${items.size}")
+        this.listFilter = ListFilter()
+        Log.d("Debug", "update adapter --> ${items[0]}")
         notifyDataSetChanged()
     }
 
@@ -66,12 +68,12 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
     }
 
     override fun getFilter(): Filter {
-        return ListFilter()
+        return listFilter
     }
 
 
     inner class ListFilter : Filter() {
-        private var filterItems: List<Pair<Long, String>>? = null
+        private var filterItems: List<Pair<Long, String>>? = items
 
         override fun performFiltering(prefix: CharSequence?): FilterResults {
             val results = Filter.FilterResults()
@@ -106,7 +108,7 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
                 cacheItems
             }
 
-            Log.d("MainActivity", "publishResults: ${results.values}")
+            Log.d("Debug", "publishResults: ${results.values}")
             if (results.values != null && results.count > 0) {
                 notifyDataSetChanged()
             } else {
