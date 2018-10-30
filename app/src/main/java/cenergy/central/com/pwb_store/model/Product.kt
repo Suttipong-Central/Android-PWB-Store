@@ -92,7 +92,6 @@ class Product() : IViewType, Parcelable {
     }
 
     fun getImageUrl(): String {
-        val schemes = arrayOf("http", "https")
         val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
         return if (!URLUtil.isValidUrl(image)) {
 //        return if (!image.contains(hostname, true)) {
@@ -109,15 +108,19 @@ class Product() : IViewType, Parcelable {
             val specialFormDateTime = formatter.parse(specialFromDate)
             val specialToDateTime = formatter.parse(specialToDate)
             val current = Date()
-            val formatToday = SimpleDateFormat("dd", Locale.ENGLISH)
-            val formatMonth = SimpleDateFormat("MM", Locale.ENGLISH)
-            val formatYear = SimpleDateFormat("yyy", Locale.ENGLISH)
-            if(formatToday.format(specialToDateTime) == formatToday.format(current)
-                    && formatMonth.format(specialToDateTime) == formatMonth.format(current)
-                    && formatYear.format(specialToDateTime) == formatYear.format(current) ){
-                true
+            if (price != specialPrice) {
+                val formatToday = SimpleDateFormat("dd", Locale.ENGLISH)
+                val formatMonth = SimpleDateFormat("MM", Locale.ENGLISH)
+                val formatYear = SimpleDateFormat("yyy", Locale.ENGLISH)
+                if (formatToday.format(specialToDateTime) == formatToday.format(current)
+                        && formatMonth.format(specialToDateTime) == formatMonth.format(current)
+                        && formatYear.format(specialToDateTime) == formatYear.format(current)) {
+                    true
+                } else {
+                    (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
+                }
             } else {
-                (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
+                false
             }
         } else {
             false

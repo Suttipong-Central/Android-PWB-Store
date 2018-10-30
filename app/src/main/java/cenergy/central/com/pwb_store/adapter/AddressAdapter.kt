@@ -27,7 +27,6 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
         this.items = items
         this.cacheItems = items
         this.listFilter = ListFilter()
-        Log.d("Debug", "update adapter --> ${items[0]}")
         notifyDataSetChanged()
     }
 
@@ -108,7 +107,6 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
                 cacheItems
             }
 
-            Log.d("Debug", "publishResults: ${results.values}")
             if (results.values != null && results.count > 0) {
                 notifyDataSetChanged()
             } else {

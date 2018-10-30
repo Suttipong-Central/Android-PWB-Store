@@ -206,7 +206,6 @@ class PaymentBillingFragment : Fragment() {
     private fun initMember() {
         //Setup Member
         if (shippingAddress != null) {
-            Log.d("Debug", "else shippingAddress")
 
             firstNameEdt.setText(shippingAddress!!.firstname)
             lastNameEdt.setText(shippingAddress!!.lastname)
@@ -258,7 +257,6 @@ class PaymentBillingFragment : Fragment() {
         } else {
             when {
                 hasPwbMember() -> pwbMember?.let { pwbMember ->
-                    Log.d("Debug", "hasPwbMember")
 
                     firstNameEdt.setText(pwbMember.firstname ?: "")
                     lastNameEdt.setText(pwbMember.lastname ?: "")
@@ -322,7 +320,6 @@ class PaymentBillingFragment : Fragment() {
                 }
                 // t1c member
                 hasMember() -> member?.let { member ->
-                    Log.d("Debug", "t1c member")
                     firstNameEdt.setText(member.getFirstName())
                     lastNameEdt.setText(member.getLastName())
                     contactNumberEdt.setText(member.mobilePhone)
@@ -485,8 +482,6 @@ class PaymentBillingFragment : Fragment() {
 
     private fun setupInputAddress() {
         // setup province
-        Log.d("Debug", "setup${districtNameList.size}")
-
         provinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, provinceNameList)
         provinceAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
             override fun onItemClickListener(item: Pair<Long, String>) {
@@ -497,7 +492,6 @@ class PaymentBillingFragment : Fragment() {
                 districtInput.setText("")
                 districts = database.getDistrictsByProvinceId(item.first)
                 districtNameList = getDistrictNameList()
-                Log.d("Debug", districtNameList[0].second)
                 districtAdapter?.setItems(districtNameList)
                 hideKeyboard()
             }
