@@ -123,7 +123,6 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
             context?.let {
                 HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                     override fun success(response: ShippingSlotResponse?) {
-                        progressDialog?.dismiss()
                         if (response != null) {
                             if (response.shippingSlot.isNotEmpty()) {
                                 if (response.shippingSlot.size > 14) {
@@ -133,22 +132,25 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                                         }
                                         enableShippingSlot.add(response.shippingSlot[i])
                                     }
+                                    progressDialog?.dismiss()
                                     createShippingData(true)
                                 } else {
-                                    response.shippingSlot.forEach {
-                                        enableShippingSlot.add(it)
+                                    response.shippingSlot.forEach {shippingSlot ->
+                                        enableShippingSlot.add(shippingSlot)
                                     }
                                     if (enableShippingSlot.size == 14) {
+                                        progressDialog?.dismiss()
                                         createShippingData(true)
                                     } else {
                                         getNextMonthShippingSlot()
                                     }
                                 }
                             } else {
-                                showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                                getNextMonthShippingSlot()
                             }
                         } else {
-                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                            progressDialog?.dismiss()
+                            showAlertDialog("", getString(R.string.not_have_day_to_delivery))
                         }
                     }
 
@@ -180,11 +182,16 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                             }
                             enableShippingSlot.add(response.shippingSlot[i])
                         }
+                        progressDialog?.dismiss()
                         createShippingData(true)
+                    } else {
+                        getNextMonthShippingSlot()
                     }
                 }
 
                 override fun failure(error: APIError) {
+                    progressDialog?.dismiss()
+                    showAlertDialog("", error.errorMessage)
                 }
             })
         }

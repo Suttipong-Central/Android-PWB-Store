@@ -505,7 +505,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 period = period, customDetail = customDetail)
         HttpManagerHDL.getInstance(this@PaymentActivity).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
-                mProgressDialog?.dismiss()
                 if (response != null) {
                     if (response.shippingSlot.isNotEmpty()) {
                         if (response.shippingSlot.size > 14) {
@@ -515,22 +514,25 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                                 }
                                 enableShippingSlot.add(response.shippingSlot[i])
                             }
+                            mProgressDialog?.dismiss()
                             startDeliveryHomeFragment()
                         } else {
                             response.shippingSlot.forEach {
                                 enableShippingSlot.add(it)
                             }
                             if (enableShippingSlot.size == 14) {
+                                mProgressDialog?.dismiss()
                                 startDeliveryHomeFragment()
                             } else {
                                 getNextMonthShippingSlot()
                             }
                         }
                     } else {
-                        showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                        getNextMonthShippingSlot()
                     }
                 } else {
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", getString(R.string.not_have_day_to_delivery))
                 }
             }
 
@@ -557,11 +559,16 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                         }
                         enableShippingSlot.add(response.shippingSlot[i])
                     }
+                    mProgressDialog?.dismiss()
                     startDeliveryHomeFragment()
+                } else {
+                    getNextMonthShippingSlot()
                 }
             }
 
             override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                showAlertDialog("", error.errorMessage)
             }
         })
     }
