@@ -24,6 +24,9 @@ import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
+import cenergy.central.com.pwb_store.extensions.formatter
+import cenergy.central.com.pwb_store.extensions.formatterUTC
+import cenergy.central.com.pwb_store.extensions.toDate
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.*
@@ -219,7 +222,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
         //Setup customer
-        orderDate.text = orderResponse.updatedAt
+        orderDate.text = orderResponse.createdAt.toDate().formatterUTC()
         email.text = shippingAddress?.email
         contactNo.text = shippingAddress?.telephone
         mProgressDialog?.dismiss()

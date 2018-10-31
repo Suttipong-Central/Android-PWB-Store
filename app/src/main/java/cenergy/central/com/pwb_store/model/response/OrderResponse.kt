@@ -33,8 +33,8 @@ open class OrderResponse(
         var storeId: Int? = null,
         @SerializedName("store_name")
         var storeName: String? = null,
-        @SerializedName("updated_at")
-        var updatedAt: String = "",
+        @SerializedName("created_at")
+        var createdAt: String = "",
         var weight: Double = 0.0,
         @SerializedName("items")
         var items: RealmList<Item>? = null,

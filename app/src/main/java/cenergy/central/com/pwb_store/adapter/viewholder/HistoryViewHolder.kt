@@ -5,6 +5,8 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.extensions.formatterUTC
+import cenergy.central.com.pwb_store.extensions.toDate
 import cenergy.central.com.pwb_store.model.Order
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
@@ -19,7 +21,7 @@ class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bindView(order: Order) {
         val orderResponse = order.orderResponse
         orderNumber.text = "${itemView.context.resources.getString(R.string.order_number)} ${orderResponse?.orderId}"
-        orderDate.text = "${itemView.context.resources.getString(R.string.order_date_history)} ${orderResponse?.updatedAt}"
+        orderDate.text = "${itemView.context.resources.getString(R.string.order_date_history)} ${orderResponse?.createdAt?.toDate()?.formatterUTC()}"
         orderMember.text = "${itemView.context.resources.getString(R.string.name_user_order)} ${orderResponse?.billingAddress?.getDisplayName()}"
     }
 }

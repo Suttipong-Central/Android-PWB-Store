@@ -21,6 +21,7 @@ import cenergy.central.com.pwb_store.realm.seeder.DistrictSeeder;
 import cenergy.central.com.pwb_store.realm.seeder.PostcodeSeeder;
 import cenergy.central.com.pwb_store.realm.seeder.ProvinceSeeder;
 import cenergy.central.com.pwb_store.realm.seeder.SubDistrictSeeder;
+import me.a3cha.android.thaiaddress.models.Postcode;
 
 /**
  * Created by napabhat on 9/21/2017 AD.
@@ -66,7 +67,11 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void forward() {
-        if (preferenceManager.isAddressLoaded()) {
+        Boolean hasProvinces = database.getProvinces() != null;
+        Boolean hasDistricts = database.getDistricts() != null;
+        Boolean hasSubDistricts = database.getSubDistricts() != null;
+        Boolean hasPostcode = database.getSubDistricts() != null;
+        if (preferenceManager.isAddressLoaded() && hasProvinces && hasDistricts && hasSubDistricts && hasPostcode) {
             start();
         } else {
             storeAddressRawJson();
