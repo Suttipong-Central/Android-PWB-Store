@@ -16,7 +16,7 @@ data class CartTotal(@SerializedName("grand_total")
                      @SerializedName("base_subtotal")
                      var baseSubTotal: Double = 0.0,
                      @SerializedName("discount_amount")
-                     var discountAmount: Int = 0,
+                     var discountAmount: Double = 0.0,
                      @SerializedName("tax_amount")
                      var taxAmount: Double = 0.0,
                      @SerializedName("base_currency_code")
