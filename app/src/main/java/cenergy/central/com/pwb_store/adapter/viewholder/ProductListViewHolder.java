@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -122,6 +123,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
     @Override
     public void onClick(View v) {
+        itemView.setEnabled(false);
         if (itemView.getTag() instanceof ProductList) {
             ProductList productListList = (ProductList) itemView.getTag();
             EventBus.getDefault().post(new ProductDetailBus(productListList.getProductId(), v));
@@ -131,5 +133,11 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
             Product product = (Product) itemView.getTag();
             EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getSku()), v));
         }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                itemView.setEnabled(true);
+            }
+        },1000);
     }
 }
