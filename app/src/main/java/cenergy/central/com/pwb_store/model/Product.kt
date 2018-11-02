@@ -108,7 +108,7 @@ class Product() : IViewType, Parcelable {
             val specialFormDateTime = formatter.parse(specialFromDate)
             val specialToDateTime = formatter.parse(specialToDate)
             val current = Date()
-            if (price != specialPrice) {
+            if (specialPrice < price) {
                 val formatToday = SimpleDateFormat("dd", Locale.ENGLISH)
                 val formatMonth = SimpleDateFormat("MM", Locale.ENGLISH)
                 val formatYear = SimpleDateFormat("yyy", Locale.ENGLISH)
