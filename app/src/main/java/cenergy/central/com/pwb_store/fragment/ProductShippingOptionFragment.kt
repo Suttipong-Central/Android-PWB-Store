@@ -69,7 +69,18 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isAdded) {
-            getShippingHomeDelivery()
+            product?.let { product ->
+                if (product.deliveryMethod.contains(HOME_DELIVERY)) {
+                    header.visibility = View.VISIBLE
+                    mCalendarView.visibility = View.VISIBLE
+                    tvNoHaveHomeDelivery.visibility = View.GONE
+                    getShippingHomeDelivery()
+                } else {
+                    header.visibility = View.GONE
+                    mCalendarView.visibility = View.GONE
+                    tvNoHaveHomeDelivery.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
@@ -90,17 +101,6 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         mCalendarView = rootView.findViewById(R.id.custom_calendar)
         mCalendarView.setListener(this)
         tvNoHaveHomeDelivery = rootView.findViewById(R.id.tvNotHaveHomeDelivery)
-        product?.let { product ->
-            if (product.deliveryMethod.contains(HOME_DELIVERY)) {
-                header.visibility = View.VISIBLE
-                mCalendarView.visibility = View.VISIBLE
-                tvNoHaveHomeDelivery.visibility = View.GONE
-            } else {
-                header.visibility = View.GONE
-                mCalendarView.visibility = View.GONE
-                tvNoHaveHomeDelivery.visibility = View.VISIBLE
-            }
-        }
     }
 
     private fun getShippingHomeDelivery() {
