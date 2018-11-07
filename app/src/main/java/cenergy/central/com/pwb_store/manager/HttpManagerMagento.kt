@@ -438,6 +438,28 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
+    fun getProductFromSearchNewAPI(keyword: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>){
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductSearch(keyword, pageSize, currentPage).enqueue(object : Callback<ProductSearchResponse>{
+            override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
+                if (response != null){
+                    val productSearchResponse = response.body()
+                    if(productSearchResponse != null){
+                        callback.success(ProductResponse.asProductResponse(keyword, productSearchResponse))
+                    } else {
+                        callback.failure(APIErrorUtils.setErrorMessage("ProductSearchResponse is null"))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<ProductSearchResponse>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
     fun getBrands(categoryId: String, callback: ApiResponseCallback<List<Brand>>) {
         val productService = retrofit.create(ProductService::class.java)
         productService.getBrands(categoryId).enqueue(object : Callback<BrandResponse> {

@@ -50,4 +50,17 @@ public class APIErrorUtils {
 
         return error;
     }
+
+    public static APIError setErrorMessage(String message) {
+
+        APIError error = new APIError();
+
+        try {
+            error.setErrorMessage(message);
+        } catch (Exception e) {
+            return new APIError();
+        }
+
+        return error;
+    }
 }

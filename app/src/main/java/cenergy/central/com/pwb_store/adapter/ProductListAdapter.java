@@ -53,6 +53,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     };
     private boolean isLoadingShow = false;
+    private ArrayList<String> skuList = new ArrayList<>();
 
     public ProductListAdapter(Context mContext) {
         this.mContext = mContext;
@@ -150,19 +151,22 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if (productResponse.isFirstPage()) {
             mListViewType.clear();
+            skuList.clear();
             notifyDataSetChanged();
         }
         // Add deal paginated
         int startPosition = mListViewType.size();
         ArrayList<Product> products = productResponse.getProducts() == null ? new ArrayList<Product>() : productResponse.getProducts();
         for (Product product : products) {
-            product.setAttributeID(VIEW_TYPE_ID_GRID_VIEW);
-            mListViewType.add(product);
+            if(skuList.indexOf(product.getSku()) == -1){
+                skuList.add(product.getSku());
+                product.setAttributeID(VIEW_TYPE_ID_GRID_VIEW);
+                mListViewType.add(product);
+            }
         }
-
         if (isLoadingShow) {
             isLoadingShow = false;
-            if (products.size() == 0) {
+            if (skuList.size() == 0) {
                 mListViewType.clear();
                 notifyDataSetChanged();
                 mListViewType.add(VIEW_TYPE_RESULT);

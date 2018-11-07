@@ -5,35 +5,35 @@ import android.os.Parcelable
 
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.model.response.ProductSearch
 import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Product() : IViewType, Parcelable {
-
-    var id: Int = 0
-    var sku: String = ""
-    var name: String = ""
-    var price: Double = 0.0
-    @SerializedName("special_price")
-    var specialPrice: Double = 0.0
-    @SerializedName("special_from_date")
-    var specialFromDate: String? = null
-    @SerializedName("special_to_date")
-    var specialToDate: String? = null
-    var brand: String = ""
-    var image: String = ""
-    var deliveryMethod: String = ""
-    @SerializedName("media_gallery_entries")
-    var gallery: List<ProductGallery> = arrayListOf()
-    var viewTypeID: Int = 0
-    var attributeID: Int = 0
-    var status: Int = 1
-    @SerializedName("extension_attributes")
-    var extension: ProductExtension? = null
-    private var productImageList: ProductDetailImage? = null
+class Product(
+        var id: Int = 0,
+        var sku: String = "",
+        var name: String = "",
+        var price: Double = 0.0,
+        @SerializedName("special_price")
+        var specialPrice: Double = 0.0,
+        @SerializedName("special_from_date")
+        var specialFromDate: String? = null,
+        @SerializedName("special_to_date")
+        var specialToDate: String? = null,
+        var brand: String = "",
+        var image: String = "",
+        var deliveryMethod: String = "",
+        @SerializedName("media_gallery_entries")
+        var gallery: List<ProductGallery> = arrayListOf(),
+        var viewTypeID: Int = 0,
+        var attributeID: Int = 0,
+        var status: Int = 1,
+        @SerializedName("extension_attributes")
+        var extension: ProductExtension? = null,
+        private var productImageList: ProductDetailImage? = null) : IViewType, Parcelable {
 
     constructor(parcel: Parcel) : this() {
         id = parcel.readInt()
@@ -161,6 +161,11 @@ class Product() : IViewType, Parcelable {
 
         override fun newArray(size: Int): Array<Product?> {
             return arrayOfNulls(size)
+        }
+
+        fun asProduct(product: ProductSearch): Product{
+            return Product(id = product.id!!, sku = product.sku!!, price = product.price!!,
+                    name = product.name!!, image = product.thumbnail?: "", brand = product.brand!!)
         }
     }
 }

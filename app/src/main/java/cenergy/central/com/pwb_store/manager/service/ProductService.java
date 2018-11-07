@@ -7,6 +7,7 @@ import cenergy.central.com.pwb_store.model.ProductDetailDao;
 import cenergy.central.com.pwb_store.model.response.BrandResponse;
 import cenergy.central.com.pwb_store.model.response.ProductByBarcodeResponse;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
+import cenergy.central.com.pwb_store.model.response.ProductSearchResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -87,6 +88,13 @@ public interface ProductService {
             @Query("branch_id") String branchId);
 
     // region new api
+
+    @GET("/rest/V1/headless/search-suggestion")
+    Call<ProductSearchResponse> getProductSearch(
+            @Query("q") String keyword,
+            @Query("searchCriteria[pageSize]") int pageSize,
+            @Query("searchCriteria[currentPage]") int currentPage);
+
     @GET("/rest/V1/products")
     Call<ProductResponse> getProductList(
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String category,
