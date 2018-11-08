@@ -78,12 +78,13 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         public void onResponse(Call<AvailableStoreDao> call, Response<AvailableStoreDao> response) {
             if (response.isSuccessful()){
                 mAvailableStoreDao = response.body();
+                if(!isFinishing() && getSupportFragmentManager() != null){
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction
+                            .replace(R.id.container, AvailableFragment.newInstance(mAvailableStoreDao, mStoreDao))
+                            .commit();
+                }
                 mProgressDialog.dismiss();
-
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction
-                        .replace(R.id.container, AvailableFragment.newInstance(mAvailableStoreDao, mStoreDao))
-                        .commit();
             }else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
@@ -104,7 +105,6 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         @Override
         public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
             if (response.isSuccessful()){
-                mProgressDialog.dismiss();
                 mStoreDao = new StoreDao(response.body());
                 HttpManagerHDLOld.getInstance().getHDLService().getStore(sku).enqueue(CALLBACK_AVALIABLE);
             }else {
