@@ -241,6 +241,7 @@
     <string name="for_staff">สำหรับเจ้าหน้าที่</string>
     <string name="how_to_staff_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
     <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
+    <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
 
 
 </resources>

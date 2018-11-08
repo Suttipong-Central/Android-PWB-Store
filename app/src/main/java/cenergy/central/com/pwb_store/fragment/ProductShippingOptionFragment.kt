@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.manager.HttpManagerHDL
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ShippingItem
+import cenergy.central.com.pwb_store.model.UserInformation
 import cenergy.central.com.pwb_store.model.body.CustomDetail
 import cenergy.central.com.pwb_store.model.body.PeriodBody
 import cenergy.central.com.pwb_store.model.body.ProductHDLBody
@@ -52,13 +53,14 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     private var progressDialog: ProgressDialog? = null
     private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private var specialSKUList: List<Long>? = null
+    private val userInformation: UserInformation = database.userInformation
+    private var store = userInformation.store
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
         product = productDetailListener?.getProduct()
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_product_shipping_option, container, false)
@@ -70,18 +72,25 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         super.onViewCreated(view, savedInstanceState)
         if (isAdded) {
             product?.let { product ->
-                if (product.deliveryMethod.contains(HOME_DELIVERY)) {
+                if (product.deliveryMethod.contains(HOME_DELIVERY) && store != null) {
                     header.visibility = View.VISIBLE
                     mCalendarView.visibility = View.VISIBLE
                     tvNoHaveHomeDelivery.visibility = View.GONE
                     getShippingHomeDelivery()
+                } else if (product.deliveryMethod.contains(HOME_DELIVERY) && store == null){
+                    hideCalendarView()
+                    showAlertDialog("", resources.getString(R.string.cannot_get_shipping_slot))
                 } else {
-                    header.visibility = View.GONE
-                    mCalendarView.visibility = View.GONE
-                    tvNoHaveHomeDelivery.visibility = View.VISIBLE
+                    hideCalendarView()
                 }
             }
         }
+    }
+
+    fun hideCalendarView(){
+        header.visibility = View.GONE
+        mCalendarView.visibility = View.GONE
+        tvNoHaveHomeDelivery.visibility = View.VISIBLE
     }
 
     //region calendar click
@@ -112,13 +121,11 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
             if ((getSpecialSKUList() ?: arrayListOf()).contains(product.sku.toLong())) {
                 customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
             }
-            val userInformation = database.userInformation
-            val store = userInformation.store!!
             val dateTime = DateTime.now()
             val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
             val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                    district = store.district ?: "", subDistrict = store.subDistrict ?: "",
-                    province = store.province ?: "", postalId = store.postalCode ?: "",
+                    district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
+                    province = store?.province ?: "", postalId = store?.postalCode ?: "",
                     period = period, customDetail = customDetail)
             context?.let {
                 HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
@@ -164,13 +171,11 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     }
 
     fun getNextMonthShippingSlot() {
-        val userInformation = database.userInformation
-        val store = userInformation.store!!
         val dateTime = DateTime.now()
         val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                district = store.district ?: "", subDistrict = store.subDistrict ?: "",
-                province = store.province ?: "", postalId = store.postalCode ?: "",
+                district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
+                province = store?.province ?: "", postalId = store?.postalCode ?: "",
                 period = period, customDetail = customDetail)
         context?.let {
             HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
