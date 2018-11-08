@@ -37,17 +37,73 @@ class ProductOverviewFragment : Fragment() {
     private lateinit var line2: View
     private var overviewVisible = false
     private var specVisible = false
+    private var getScaleManager: WebViewGetScaleManager? = null
+    private var scale: Int = 0
+
+    companion object {
+        const val style = "<meta charset='UTF-8'><style> body, div, p { font-size: 15 !important; } </style>"
+    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
         product = productDetailListener?.getProduct()
+        getScaleManager = WebViewGetScaleManager(context)
+        if(getScaleManager != null){
+            scale = getScaleManager!!.getScale()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_product_overview, container, false)
         setupView(rootView)
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.trim().isNotBlank()) {
+            overviewLayout.visibility = View.VISIBLE
+            line1.visibility = View.VISIBLE
+            val html = style + product?.extension?.shortDescription
+            overview.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+            overview.setInitialScale(scale)
+            overviewLayout.setOnClickListener { _ ->
+                if (overviewVisible) {
+                    overviewWebLayout.visibility = View.GONE
+                    context?.let { overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
+                    overviewVisible = false
+                } else {
+                    overviewWebLayout.visibility = View.VISIBLE
+                    context?.let{overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up))}
+                    overviewVisible = true
+                }
+            }
+        } else {
+            overviewLayout.visibility = View.GONE
+            line1.visibility = View.GONE
+        }
+        if (product?.extension?.description != null && product?.extension?.description!!.trim().isNotBlank()) {
+            specLayout.visibility = View.VISIBLE
+            line2.visibility = View.VISIBLE
+            val html = style + product?.extension?.description
+            spec.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+            spec.setInitialScale(scale)
+            specLayout.setOnClickListener { _ ->
+                if (specVisible) {
+                    specWebLayout.visibility = View.GONE
+                    context?.let { specArrowIcon.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
+                    specVisible = false
+                } else {
+                    specWebLayout.visibility = View.VISIBLE
+                    context?.let { specArrowIcon.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
+                    specVisible = true
+                }
+            }
+        } else {
+            specLayout.visibility = View.GONE
+            line2.visibility = View.GONE
+        }
     }
 
     private fun setupView(rootView: View) {
@@ -61,52 +117,5 @@ class ProductOverviewFragment : Fragment() {
         spec = rootView.findViewById(R.id.specWeb)
         specArrowIcon = rootView.findViewById(R.id.specArrowIcon)
         line2 = rootView.findViewById(R.id.line2)
-
-        val getScaleManager = WebViewGetScaleManager(rootView.context)
-        val style = "<meta charset='UTF-8'><style> body, div, p { font-size: 15 !important; } </style>"
-
-        if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.trim().isNotBlank()) {
-            overviewLayout.visibility = View.VISIBLE
-            line1.visibility = View.VISIBLE
-            val html = style + product?.extension?.shortDescription!!
-            overview.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
-            overview.setInitialScale(getScaleManager.getScale())
-            overviewLayout.setOnClickListener {
-                if (overviewVisible) {
-                    overviewWebLayout.visibility = View.GONE
-                    overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_down))
-                    overviewVisible = false
-                } else {
-                    overviewWebLayout.visibility = View.VISIBLE
-                    overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_up))
-                    overviewVisible = true
-                }
-            }
-        } else {
-            overviewLayout.visibility = View.GONE
-            line1.visibility = View.GONE
-        }
-
-        if (product?.extension?.description != null && product?.extension?.description!!.trim().isNotBlank()) {
-            specLayout.visibility = View.VISIBLE
-            line2.visibility = View.VISIBLE
-            val html = style + product?.extension?.description!!
-            spec.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
-            spec.setInitialScale(getScaleManager.getScale())
-            specLayout.setOnClickListener {
-                if (specVisible) {
-                    specWebLayout.visibility = View.GONE
-                    specArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_down))
-                    specVisible = false
-                } else {
-                    specWebLayout.visibility = View.VISIBLE
-                    specArrowIcon.setImageDrawable(ContextCompat.getDrawable(rootView.context, R.drawable.ic_keyboard_arrow_up))
-                    specVisible = true
-                }
-            }
-        } else {
-            specLayout.visibility = View.GONE
-            line2.visibility = View.GONE
-        }
     }
 }
