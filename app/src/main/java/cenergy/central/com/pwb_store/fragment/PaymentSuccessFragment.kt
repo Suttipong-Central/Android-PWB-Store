@@ -243,10 +243,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             tvDeliveryType.text = orderResponse.shippingType
             tvReceiverName.text = shippingAddress?.getDisplayName()
             tvDeliveryAddress.text = getAddress(shippingAddress)
-            tvDeliveryInfo.text = order.orderResponse?.shippingDescription
+            tvDeliveryInfo.text = orderResponse.shippingDescription
             tvBillingName.text = billingAddress?.getDisplayName()
             tvBillingAddress.text = getAddress(billingAddress)
-            if(orderResponse.billingAddress!!.sameBilling == SAME_BILLING){
+            if(billingAddress?.sameBilling == SAME_BILLING){
                 billingEmailLayout.visibility = View.GONE
                 billingTelephoneLayout.visibility = View.GONE
             } else {
@@ -263,7 +263,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             storeAddressLayout.visibility = View.VISIBLE
             customerNameLayout.visibility = View.VISIBLE
 
-            name.text = billingAddress!!.getDisplayName()
+            name.text = billingAddress?.getDisplayName()
 
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 
