@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,6 +26,7 @@ import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
+import cenergy.central.com.pwb_store.utils.DialogUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +39,7 @@ public class CategoryFragment extends Fragment {
     private static final String TAG = CategoryFragment.class.getSimpleName();
 
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
+    private ProgressDialog mProgressDialog;
 
     //Data Members
     private CategoryAdapter mAdapter;
@@ -46,28 +49,6 @@ public class CategoryFragment extends Fragment {
     public CategoryFragment() {
         super();
     }
-
-    final Callback<List<Category>> CALLBACK_CATEGORY = new Callback<List<Category>>() {
-        @Override
-        public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-            if (response.isSuccessful()) {
-                mCategoryDao = new CategoryDao(response.body());
-                mAdapter.setCategory(mCategoryDao);
-            } else {
-                //mockData();
-                APIError error = APIErrorUtils.parseError(response);
-                Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                showAlertDialog(error.getErrorMessage(), false);
-                //mProgressDialog.dismiss();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<Category>> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            //mockData();
-        }
-    };
 
     @SuppressWarnings("unused")
     public static CategoryFragment newInstance(CategoryDao categoryDao) {
@@ -116,7 +97,11 @@ public class CategoryFragment extends Fragment {
 //            HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
             retrieveCategories(); // force retrieve category
         } else {
-            mAdapter.setCategory(mCategoryDao);
+            try {
+                mAdapter.setCategory(mCategoryDao);
+            } catch (Exception e) {
+                retrieveCategories();
+            }
         }
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -125,16 +110,21 @@ public class CategoryFragment extends Fragment {
 
     private void retrieveCategories() {
         if (getContext() != null) {
+            showProgressDialog();
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
                 @Override
                 public void success(@Nullable Category category) {
                     if (category != null) {
-                        mAdapter.setCategory(category);
+                        if (isAdded()) {
+                            mAdapter.setCategory(category);
+                        }
+                        dismissProgressDialog();
                     }
                 }
 
                 @Override
                 public void failure(@NotNull APIError error) {
+                    dismissProgressDialog();
                     showAlertDialog(error.getErrorMessage(), false);
                 }
             });
@@ -197,6 +187,21 @@ public class CategoryFragment extends Fragment {
                     });
 
             builder.show();
+        }
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = DialogUtils.createProgressDialog(getContext());
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.show();
+        }
+    }
+
+    private void dismissProgressDialog() {
+        if (getActivity() != null && mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
     }
 }

@@ -140,7 +140,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setCategory(CategoryDao categoryDao) {
 
-        if (categoryDao.getCategoryList().size() == 1 &&
+        if (categoryDao.getCategoryList() != null &&
+                categoryDao.getCategoryList().size() == 1 &&
                 categoryDao.getCategoryList().get(0).getDepartmentName().equals("Default Category")) {
 
             setCategory(categoryDao.getCategoryList().get(0));
