@@ -26,16 +26,26 @@ class ProductResponse(
                         products.add(product)
                     }
                 }
-                productSearchResponse.popularSearches?.forEach { popularSearch ->
-                    if(popularSearch.title?.toLowerCase() == keyword.toLowerCase()){
-                        popularSearch.productList?.forEach { productSearch ->
-                            val product = Product.asProduct(productSearch)
-                            if(products.firstOrNull{ it.sku == product.sku} == null){
-                                products.add(product)
-                            }
+//                productSearchResponse.popularSearches?.forEach { popularSearch ->
+//                    if(popularSearch.title?.toLowerCase() == keyword.toLowerCase()){
+//                        popularSearch.productList?.forEach { productSearch ->
+//                            val product = Product.asProduct(productSearch)
+//                            if(products.firstOrNull{ it.sku == product.sku} == null){
+//                                products.add(product)
+//                            }
+//                        }
+//                        totalCount = popularSearch.result?: 0
+//                    }
+//                }
+                if (productSearchResponse.popularSearches!!.size > 1) {
+                    val popularSearch = productSearchResponse.popularSearches!![0]
+                    popularSearch.productList?.forEach { productSearch ->
+                        val product = Product.asProduct(productSearch)
+                        if (products.firstOrNull { it.sku == product.sku } == null) {
+                            products.add(product)
                         }
-                        totalCount = popularSearch.result?: 0
                     }
+                    totalCount = popularSearch.result ?: 0
                 }
                 productResponse = ProductResponse(products = products, totalCount = totalCount)
 
@@ -47,6 +57,18 @@ class ProductResponse(
                     }
                 }
                 productResponse = ProductResponse(products = products, totalCount = products.size)
+            } else if (productSearchResponse.hasPopularSearch()) {
+                if (productSearchResponse.popularSearches!!.size > 1) {
+                    val popularSearch = productSearchResponse.popularSearches!![0]
+                    popularSearch.productList?.forEach { productSearch ->
+                        val product = Product.asProduct(productSearch)
+                        if (products.firstOrNull { it.sku == product.sku } == null) {
+                            products.add(product)
+                        }
+                    }
+                    totalCount = popularSearch.result ?: 0
+                }
+                productResponse = ProductResponse(products = products, totalCount = totalCount)
             }
             return productResponse
         }
