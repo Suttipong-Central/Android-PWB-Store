@@ -52,7 +52,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 //        public void onResponse(Call<List<AvaliableStoreItem>> call, Response<List<AvaliableStoreItem>> response) {
 //            if (response.isSuccessful()){
 //                mAvaliableStoreDao = new AvaliableStoreDao(response.body());
-//                mProgressDialog.dismiss();
+//                dismissProgressDialog();
 //
 //                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 //                fragmentTransaction
@@ -62,14 +62,14 @@ public class AvaliableStoreActivity extends AppCompatActivity{
 //                    APIError error = APIErrorUtils.parseError(response);
 //                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
 //                    showAlertDialog(error.getErrorMessage(), false);
-//                    mProgressDialog.dismiss();
+//                    dismissProgressDialog();
 //            }
 //        }
 //
 //        @Override
 //        public void onFailure(Call<List<AvaliableStoreItem>> call, Throwable t) {
 //            Log.e(TAG, "onFailure: ", t);
-//            mProgressDialog.dismiss();
+//            dismissProgressDialog();
 //        }
 //    };
 
@@ -84,12 +84,12 @@ public class AvaliableStoreActivity extends AppCompatActivity{
                             .replace(R.id.container, AvailableFragment.newInstance(mAvailableStoreDao, mStoreDao))
                             .commit();
                 }
-                mProgressDialog.dismiss();
+                dismissProgressDialog();
             }else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
                 showAlertDialog(error.getErrorMessage(), false);
-                mProgressDialog.dismiss();
+                dismissProgressDialog();
             }
 
         }
@@ -97,7 +97,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         @Override
         public void onFailure(Call<AvailableStoreDao> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
+            dismissProgressDialog();
         }
     };
 
@@ -110,14 +110,14 @@ public class AvaliableStoreActivity extends AppCompatActivity{
             }else {
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                mProgressDialog.dismiss();
+                dismissProgressDialog();
             }
         }
 
         @Override
         public void onFailure(Call<List<StoreList>> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
+            dismissProgressDialog();
         }
     };
 
@@ -197,24 +197,33 @@ public class AvaliableStoreActivity extends AppCompatActivity{
     }
 
     private void showAlertDialog(String message, final boolean shouldCloseActivity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        if (shouldCloseActivity) finish();
-                    }
-                });
-
-        builder.show();
+        if (!isFinishing()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (shouldCloseActivity) finish();
+                        }
+                    });
+            builder.show();
+        }
     }
 
     private void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = DialogUtils.createProgressDialog(this);
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.show();
+        if (!isFinishing()) {
+            if (mProgressDialog == null) {
+                mProgressDialog = DialogUtils.createProgressDialog(this);
+                mProgressDialog.show();
+            } else {
+                mProgressDialog.show();
+            }
+        }
+    }
+
+    private void dismissProgressDialog() {
+        if (!isFinishing() && mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
     }
 }

@@ -102,9 +102,7 @@ class AvailableStoreAdapter(val mContext: Context, private val mStoreDao: StoreD
             availableStoreDao.viewTypeId = VIEW_TYPE_ID_STORE_TOPIC
             mListViewType.add(availableStoreDao)
 
-            makeAvailableStoreItems.forEach {
-                Log.d("StoreID", "$storeCode -> ${it.storeName}")
-            }
+
             val storeStaff = makeAvailableStoreItems.firstOrNull{it.storeName == storeCode}
             if(storeStaff != null){
                 storeStaff.viewTypeId = VIEW_TYPE_ID_STORE_DETAIL
