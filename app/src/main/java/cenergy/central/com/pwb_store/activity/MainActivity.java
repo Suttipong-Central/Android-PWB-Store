@@ -109,14 +109,14 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                 APIError error = APIErrorUtils.parseError(response);
                 Log.e(TAG, "onResponse: " + error.getErrorMessage());
                 showAlertDialog(error.getErrorMessage(), false);
-                mProgressDialog.dismiss();
+                dismissProgressDialog();
             }
         }
 
         @Override
         public void onFailure(Call<List<StoreList>> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
+            dismissProgressDialog();
         }
     };
 
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                     APIError error = APIErrorUtils.parseError(response);
                     Log.e(TAG, "onResponse: " + error.getErrorMessage());
                     showAlertDialog(error.getErrorMessage(), false);
-                    mProgressDialog.dismiss();
+                    dismissProgressDialog();
                 }
 
             }
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         @Override
         public void onFailure(Call<TokenResponse> call, Throwable t) {
             Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
+            dismissProgressDialog();
         }
     };
 
@@ -427,23 +427,25 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         HttpManagerMagento.Companion.getInstance(this).retrieveCategories(false, 2, 4, new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
-                if (category != null) {
-                    mCategoryDao = new CategoryDao(category);
-                    createDrawerMenu(category);
+                if (!isFinishing()) {
+                    if (category != null) {
+                        mCategoryDao = new CategoryDao(category);
+                        createDrawerMenu(category);
+                    }
+                    if (getSupportFragmentManager() != null) {
+                        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction
+                                .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                                .commit();
+                    }
+                    dismissProgressDialog();
                 }
-                if(getSupportFragmentManager() != null){
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction
-                            .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
-                            .commit();
-                }
-                mProgressDialog.dismiss();
             }
 
             @Override
             public void failure(@NotNull APIError error) {
                 Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                mProgressDialog.dismiss();
+                dismissProgressDialog();
             }
         });
     }
@@ -590,11 +592,17 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
 
     private void startLogin() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
+            dismissProgressDialog();
         }
 
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private void dismissProgressDialog() {
+        if (!isFinishing() && mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 }
