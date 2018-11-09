@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by napabhat on 6/29/2017 AD.
  */
 
-public class DrawerItem implements IViewType,Parcelable{
+public class DrawerItem implements IViewType, Parcelable{
     //private int icon;
     private int viewTypeId;
     @SerializedName("name")
@@ -21,12 +21,6 @@ public class DrawerItem implements IViewType,Parcelable{
     private String id;
     private ProductFilterHeader productFilterHeader;
 
-    protected DrawerItem(Parcel in) {
-        //icon = in.readInt();
-        title = in.readString();
-        id = in.readString();
-        productFilterHeader = in.readParcelable(ProductFilterHeader.class.getClassLoader());
-    }
 
 //    public DrawerItem(String title, int departmentId, int parentId, int rootDeptId, String departmentNameEN) {
 //        //this.icon = icon;
@@ -44,6 +38,21 @@ public class DrawerItem implements IViewType,Parcelable{
         this.productFilterHeader = productFilterHeader;
     }
 
+//    public int getIcon() {
+//        return icon;
+//    }
+//
+//    public void setIcon(int icon) {
+//        this.icon = icon;
+//    }
+
+    protected DrawerItem(Parcel in) {
+        viewTypeId = in.readInt();
+        title = in.readString();
+        id = in.readString();
+        productFilterHeader = in.readParcelable(ProductFilterHeader.class.getClassLoader());
+    }
+
     public static final Creator<DrawerItem> CREATOR = new Creator<DrawerItem>() {
         @Override
         public DrawerItem createFromParcel(Parcel in) {
@@ -56,32 +65,12 @@ public class DrawerItem implements IViewType,Parcelable{
         }
     };
 
-//    public int getIcon() {
-//        return icon;
-//    }
-//
-//    public void setIcon(int icon) {
-//        this.icon = icon;
-//    }
-
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        //dest.writeInt(icon);
-        dest.writeString(title);
-        dest.writeParcelable(productFilterHeader, flags);
     }
 
     @Override
@@ -108,5 +97,18 @@ public class DrawerItem implements IViewType,Parcelable{
 
     public void setProductFilterHeader(ProductFilterHeader productFilterHeader) {
         this.productFilterHeader = productFilterHeader;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(viewTypeId);
+        dest.writeString(title);
+        dest.writeString(id);
+        dest.writeParcelable(productFilterHeader, flags);
     }
 }
