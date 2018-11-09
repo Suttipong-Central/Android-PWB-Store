@@ -8,7 +8,7 @@ class ShippingSlotResponse(
 )
 
 class ShippingSlot(
-        var shippingDate: String = "",
+        var shippingDate: String? = "",
         var slot: ArrayList<Slot> = arrayListOf()
 )
 

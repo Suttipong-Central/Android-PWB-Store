@@ -6,7 +6,6 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -359,11 +357,11 @@ public class CalendarViewCustom extends LinearLayout {
     private void checkWeekDays() {
         Boolean equalFirstDay = false;
         Boolean equalLastDay = false;
-        for (String day : nextPreWeekday){
-            if (day.equals(firstDay.getShippingDate())){
+        for (String day : nextPreWeekday) {
+            if (firstDay != null && day.equals(firstDay.getShippingDate() == null ? "" : firstDay.getShippingDate())) {
                 equalFirstDay = true;
             }
-            if (day.equals(lastDay.getShippingDate())){
+            if (lastDay != null && day.equals(lastDay.getShippingDate() == null ? "" : lastDay.getShippingDate())) {
                 equalLastDay = true;
             }
         }

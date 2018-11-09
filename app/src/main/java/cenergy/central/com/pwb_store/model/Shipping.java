@@ -13,7 +13,7 @@ import java.util.List;
  * Created by napabhat on 8/1/2018 AD.
  */
 
-public class Shipping implements IViewType,Parcelable {
+public class Shipping implements IViewType, Parcelable {
     private int viewTypeId;
     @SerializedName("shippingDate")
     @Expose
@@ -63,7 +63,7 @@ public class Shipping implements IViewType,Parcelable {
     }
 
     public String getShippingDate() {
-        return shippingDate;
+        return shippingDate == null ? "" : shippingDate;
     }
 
     public void setShippingDate(String shippingDate) {
