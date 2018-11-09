@@ -171,14 +171,14 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
                     tvNotFound.visibility = View.VISIBLE
                     containerGroupView.visibility = View.INVISIBLE
                 }
-                progressDialog?.dismiss()
+                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
                 Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
                     showAlertDialog(error.errorUserMessage, false)
-                    progressDialog?.dismiss()
+                    dismissProgressDialog()
                 }
             }
         })
@@ -199,14 +199,14 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
                     tvNotFound.visibility = View.VISIBLE
                     containerGroupView.visibility = View.INVISIBLE
                 }
-                progressDialog?.dismiss()
+                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
                 Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
                     showAlertDialog(error.errorUserMessage, false)
-                    progressDialog?.dismiss()
+                    dismissProgressDialog()
                 }
             }
         })
@@ -240,7 +240,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> progressDialog?.dismiss() }
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dismissProgressDialog() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -249,14 +249,16 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     }
 
     private fun showAlertDialog(message: String, shouldCloseActivity: Boolean) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok)) { dialog, which ->
-                    dialog.dismiss()
-                    if (shouldCloseActivity) finish()
-                }
+        if (!isFinishing) {
+            val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                        dialog.dismiss()
+                        if (shouldCloseActivity) finish()
+                    }
 
-        builder.show()
+            builder.show()
+        }
     }
 
     private fun showAlertDialog(message: String) {
@@ -285,12 +287,12 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         val count = database.compareProducts.size
         Log.d(TAG, "" + count)
         if (count >= 4) {
-            progressDialog?.dismiss()
+            dismissProgressDialog()
             showAlertDialog(getString(R.string.alert_count))
         } else {
             val compareProduct = database.getCompareProduct(product.sku)
             if (compareProduct != null) {
-                progressDialog?.dismiss()
+                dismissProgressDialog()
                 showAlertDialog(getString(R.string.alert_compare)
                         + "" + compareProduct.name + "" + getString(R.string.alert_compare_yes))
             } else {
@@ -303,13 +305,13 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     private fun saveCompareProduct(product: Product) {
         RealmController.with(this).saveCompareProduct(product, object : DatabaseListener {
             override fun onSuccessfully() {
-                progressDialog?.dismiss()
+                dismissProgressDialog()
                 updateCompareBadge()
                 Toast.makeText(this@ProductDetailActivity2, "Generate compare complete.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onFailure(error: Throwable) {
-                progressDialog?.dismiss()
+                dismissProgressDialog()
                 Log.d(TAG, "" + error.message)
             }
         })
@@ -340,7 +342,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
             }
 
             override fun failure(error: APIError) {
-                progressDialog?.dismiss()
+                dismissProgressDialog()
                 showAlertDialog("", error.errorUserMessage)
             }
         })
@@ -351,11 +353,11 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
                 saveCartItem(response, product)
-                progressDialog?.dismiss()
+                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
-                progressDialog?.dismiss()
+                dismissProgressDialog()
 
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
                     showClearCartDialog()
@@ -374,7 +376,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
             }
 
             override fun onFailure(error: Throwable) {
-                progressDialog?.dismiss()
+                dismissProgressDialog()
                 showAlertDialog("", "" + error.message)
             }
         })
@@ -411,6 +413,12 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     private fun clearCart() {
         database.deleteAllCacheCartItem()
         preferenceManager.clearCartId()
+    }
+
+    private fun dismissProgressDialog() {
+        if (!isFinishing && progressDialog != null && progressDialog!!.isShowing) {
+            progressDialog!!.dismiss()
+        }
     }
 
     companion object {
