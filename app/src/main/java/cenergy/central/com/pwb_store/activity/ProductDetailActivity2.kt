@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -94,7 +95,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
-        mToolbar.setNavigationOnClickListener { finish() }
+//        mToolbar.setNavigationOnClickListener { finish() }
 
         searchImageView.setOnClickListener { v ->
             val intent = Intent(this@ProductDetailActivity2, SearchActivity::class.java)
@@ -108,6 +109,13 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
 //        mBuyCompareView.setListener(this)
         mBuyCompareView.visibility = View.GONE
         mBuyShoppingCartView.setListener(this)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item != null && item.itemId == android.R.id.home){
+            finish()
+        }
+        return true
     }
 
     // region product ProductDetailProtocol
