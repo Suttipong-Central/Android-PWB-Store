@@ -15,14 +15,14 @@ class ProductResponse(
     }
 
     companion object {
-        fun asProductResponse(keyword: String, productSearchResponse: ProductSearchResponse): ProductResponse?{
+        fun asProductResponse(keyword: String, productSearchResponse: ProductSearchResponse): ProductResponse? {
             var productResponse: ProductResponse? = null
             val products: ArrayList<Product> = arrayListOf()
             var totalCount = 0
-            if(productSearchResponse.hasPopularProducts() && productSearchResponse.hasPopularSearch()){
+            if (productSearchResponse.hasPopularProducts() && productSearchResponse.hasPopularSearch()) {
                 productSearchResponse.popularProducts?.forEach { popularProduct ->
                     val product = Product.asProduct(popularProduct)
-                    if(products.firstOrNull{ it.sku == product.sku} == null){
+                    if (products.none { it.sku == product.sku }) {
                         products.add(product)
                     }
                 }
@@ -41,7 +41,7 @@ class ProductResponse(
                     val popularSearch = productSearchResponse.popularSearches!![0]
                     popularSearch.productList?.forEach { productSearch ->
                         val product = Product.asProduct(productSearch)
-                        if (products.firstOrNull { it.sku == product.sku } == null) {
+                        if (products.none { it.sku == product.sku }) {
                             products.add(product)
                         }
                     }
@@ -49,10 +49,10 @@ class ProductResponse(
                 }
                 productResponse = ProductResponse(products = products, totalCount = totalCount)
 
-            } else if (productSearchResponse.hasPopularProducts()){
+            } else if (productSearchResponse.hasPopularProducts()) {
                 productSearchResponse.popularProducts?.forEach { popularProduct ->
                     val product = Product.asProduct(popularProduct)
-                    if(products.firstOrNull{ it.sku == product.sku} == null){
+                    if (products.none { it.sku == product.sku }) {
                         products.add(product)
                     }
                 }
@@ -62,7 +62,7 @@ class ProductResponse(
                     val popularSearch = productSearchResponse.popularSearches!![0]
                     popularSearch.productList?.forEach { productSearch ->
                         val product = Product.asProduct(productSearch)
-                        if (products.firstOrNull { it.sku == product.sku } == null) {
+                        if (products.none { it.sku == product.sku }) {
                             products.add(product)
                         }
                     }
