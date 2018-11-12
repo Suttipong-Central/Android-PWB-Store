@@ -37,7 +37,7 @@ class ProductResponse(
 //                        totalCount = popularSearch.result?: 0
 //                    }
 //                }
-                if (productSearchResponse.popularSearches!!.size > 1) {
+                if (productSearchResponse.popularSearches!!.isNotEmpty()) {
                     val popularSearch = productSearchResponse.popularSearches!![0]
                     popularSearch.productList?.forEach { productSearch ->
                         val product = Product.asProduct(productSearch)
@@ -58,7 +58,7 @@ class ProductResponse(
                 }
                 productResponse = ProductResponse(products = products, totalCount = products.size)
             } else if (productSearchResponse.hasPopularSearch()) {
-                if (productSearchResponse.popularSearches!!.size > 1) {
+                if (productSearchResponse.popularSearches!!.isNotEmpty()) {
                     val popularSearch = productSearchResponse.popularSearches!![0]
                     popularSearch.productList?.forEach { productSearch ->
                         val product = Product.asProduct(productSearch)
