@@ -8,7 +8,7 @@ import cenergy.central.com.pwb_store.dialogs.adapter.viewholder.TimeSlotViewHold
 import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
 import cenergy.central.com.pwb_store.model.response.Slot
 
-class TimeSlotAdapter(val slot: ArrayList<Slot>, private val timeSlotClickListener: TimeSlotClickListener?): RecyclerView.Adapter<TimeSlotViewHolder>() {
+class TimeSlotAdapter(val slot: List<Slot>, private val timeSlotClickListener: TimeSlotClickListener?): RecyclerView.Adapter<TimeSlotViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeSlotViewHolder {
         return TimeSlotViewHolder(LayoutInflater.from(parent.context)

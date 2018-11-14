@@ -46,7 +46,7 @@ class TimeSlotDialogFragment : DialogFragment() {
         dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
         val recycler: RecyclerView = rootView.findViewById(R.id.time_slot_recycler)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recycler.adapter = TimeSlotAdapter(slot, timeSlotClickListener)
+        recycler.adapter = TimeSlotAdapter(slot.sortedBy { it.description }, timeSlotClickListener)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
