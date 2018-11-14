@@ -48,7 +48,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
-    private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
     // data
     private val database = RealmController.with(this)
@@ -80,7 +79,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
         showProgressDialog()
-        val preferenceManager = PreferenceManager(this)
+        preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
@@ -243,7 +242,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        preferenceManager = PreferenceManager(this)
         mToolbar?.setNavigationOnClickListener {
             backPressed()
         }

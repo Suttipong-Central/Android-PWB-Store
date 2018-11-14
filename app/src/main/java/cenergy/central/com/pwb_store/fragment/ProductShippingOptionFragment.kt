@@ -77,7 +77,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                     mCalendarView.visibility = View.VISIBLE
                     tvNoHaveHomeDelivery.visibility = View.GONE
                     getShippingHomeDelivery()
-                } else if (product.deliveryMethod.contains(HOME_DELIVERY) && store == null){
+                } else if (product.deliveryMethod.contains(HOME_DELIVERY) && store == null) {
                     hideCalendarView()
                     showAlertDialog("", resources.getString(R.string.cannot_get_shipping_slot))
                 } else {
@@ -87,7 +87,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         }
     }
 
-    fun hideCalendarView(){
+    fun hideCalendarView() {
         header.visibility = View.GONE
         mCalendarView.visibility = View.GONE
         tvNoHaveHomeDelivery.visibility = View.VISIBLE
@@ -142,7 +142,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                                     progressDialog?.dismiss()
                                     createShippingData(true)
                                 } else {
-                                    response.shippingSlot.forEach {shippingSlot ->
+                                    response.shippingSlot.forEach { shippingSlot ->
                                         enableShippingSlot.add(shippingSlot)
                                     }
                                     if (enableShippingSlot.size == 14) {
@@ -214,6 +214,20 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         val shippingItemsD = arrayListOf<ShippingItem>()
         val shippingItemsE = arrayListOf<ShippingItem>()
         val shippingItemsF = arrayListOf<ShippingItem>()
+        val shippingItemsG = arrayListOf<ShippingItem>()
+        val shippingItemsH = arrayListOf<ShippingItem>()
+        val shippingItemsI = arrayListOf<ShippingItem>()
+        val shippingItemsJ = arrayListOf<ShippingItem>()
+        val shippingItemsK = arrayListOf<ShippingItem>()
+        val shippingItemsL = arrayListOf<ShippingItem>()
+        val shippingItemsM = arrayListOf<ShippingItem>()
+        val shippingItemsN = arrayListOf<ShippingItem>()
+        val shippingItemsO = arrayListOf<ShippingItem>()
+        val shippingItemsP = arrayListOf<ShippingItem>()
+        val shippingItemsQ = arrayListOf<ShippingItem>()
+        val shippingItemsR = arrayListOf<ShippingItem>()
+        val shippingItemsS = arrayListOf<ShippingItem>()
+        val availableTime = arrayListOf<String>()
         if (nextPreWeekday.isEmpty()) {
             nextPreWeekday = mCalendarView.weekDay
         }
@@ -222,15 +236,35 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 currentWeekday.add(item)
             }
         }
+        currentWeekday.forEach { shippingSlot ->
+            shippingSlot.slot.forEach { slot ->
+                if (availableTime.none { it == slot.description }) {
+                    availableTime.add(slot.description)
+                }
+            }
+        }
         for (day in nextPreWeekday) {
             val currentDay = currentWeekday.firstOrNull { it.shippingDate == day }
             if (currentDay != null) {
-                var itemA = ShippingItem(1, "FULL")
-                var itemB = ShippingItem(2, "FULL")
-                var itemC = ShippingItem(3, "FULL")
-                var itemD = ShippingItem(6, "FULL")
-                var itemE = ShippingItem(7, "FULL")
-                var itemF = ShippingItem(8, "FULL")
+                var itemA = ShippingItem(0, "FULL")
+                var itemB = ShippingItem(0, "FULL")
+                var itemC = ShippingItem(0, "FULL")
+                var itemD = ShippingItem(0, "FULL")
+                var itemE = ShippingItem(0, "FULL")
+                var itemF = ShippingItem(0, "FULL")
+                var itemG = ShippingItem(0, "FULL")
+                var itemH = ShippingItem(0, "FULL")
+                var itemI = ShippingItem(0, "FULL")
+                var itemJ = ShippingItem(0, "FULL")
+                var itemK = ShippingItem(0, "FULL")
+                var itemL = ShippingItem(0, "FULL")
+                var itemM = ShippingItem(0, "FULL")
+                var itemN = ShippingItem(0, "FULL")
+                var itemO = ShippingItem(0, "FULL")
+                var itemP = ShippingItem(0, "FULL")
+                var itemQ = ShippingItem(0, "FULL")
+                var itemR = ShippingItem(0, "FULL")
+                var itemS = ShippingItem(0, "FULL")
 
                 for (shippingItem in currentDay.slot) {
                     val slotTime = shippingItem.description
@@ -238,20 +272,59 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                         "09:00-09:30" -> {
                             itemA = ShippingItem(shippingItem.id, shippingItem.description)
                         }
-                        "11:00-11:30" -> {
+                        "09:30-10:00" -> {
                             itemB = ShippingItem(shippingItem.id, shippingItem.description)
                         }
-                        "13:00-13:30" -> {
+                        "10:00-10:30" -> {
                             itemC = ShippingItem(shippingItem.id, shippingItem.description)
                         }
-                        "15:00-15:30" -> {
+                        "10:30-11:00" -> {
                             itemD = ShippingItem(shippingItem.id, shippingItem.description)
                         }
-                        "17:00-17:30" -> {
+                        "11:00-11:30" -> {
                             itemE = ShippingItem(shippingItem.id, shippingItem.description)
                         }
-                        "19:00-19:30" -> {
+                        "11:30-12:00" -> {
                             itemF = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "13:00-13:30" -> {
+                            itemG = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "13:30-14:00" -> {
+                            itemH = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "14:00-14:30" -> {
+                            itemI = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "14:30-15:00" -> {
+                            itemJ = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "15:00-15:30" -> {
+                            itemK = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "15:30-16:00" -> {
+                            itemL = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "16:00-16:30" -> {
+                            itemM = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "16:30-17:00" -> {
+                            itemN = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "17:00-17:30" -> {
+                            itemO = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "17:30-18:00" -> {
+                            itemP = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "18:00-18:30" -> {
+                            itemQ = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "18:30-19:00" -> {
+                            itemR = ShippingItem(shippingItem.id, shippingItem.description)
+                        }
+                        "19:00-19:30" -> {
+                            itemS = ShippingItem(shippingItem.id, shippingItem.description)
                         }
                     }
                 }
@@ -261,21 +334,103 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 shippingItemsD.add(itemD)
                 shippingItemsE.add(itemE)
                 shippingItemsF.add(itemF)
+                shippingItemsG.add(itemG)
+                shippingItemsH.add(itemH)
+                shippingItemsI.add(itemI)
+                shippingItemsJ.add(itemJ)
+                shippingItemsK.add(itemK)
+                shippingItemsL.add(itemL)
+                shippingItemsM.add(itemM)
+                shippingItemsN.add(itemN)
+                shippingItemsO.add(itemO)
+                shippingItemsP.add(itemP)
+                shippingItemsQ.add(itemQ)
+                shippingItemsR.add(itemR)
+                shippingItemsS.add(itemS)
             } else {
-                shippingItemsA.add(ShippingItem(1, "-"))
-                shippingItemsB.add(ShippingItem(2, "-"))
-                shippingItemsC.add(ShippingItem(3, "-"))
-                shippingItemsD.add(ShippingItem(6, "-"))
-                shippingItemsE.add(ShippingItem(7, "-"))
-                shippingItemsF.add(ShippingItem(8, "-"))
+                shippingItemsA.add(ShippingItem(0, "-"))
+                shippingItemsB.add(ShippingItem(0, "-"))
+                shippingItemsC.add(ShippingItem(0, "-"))
+                shippingItemsD.add(ShippingItem(0, "-"))
+                shippingItemsE.add(ShippingItem(0, "-"))
+                shippingItemsF.add(ShippingItem(0, "-"))
+                shippingItemsG.add(ShippingItem(0, "-"))
+                shippingItemsH.add(ShippingItem(0, "-"))
+                shippingItemsI.add(ShippingItem(0, "-"))
+                shippingItemsJ.add(ShippingItem(0, "-"))
+                shippingItemsK.add(ShippingItem(0, "-"))
+                shippingItemsL.add(ShippingItem(0, "-"))
+                shippingItemsM.add(ShippingItem(0, "-"))
+                shippingItemsN.add(ShippingItem(0, "-"))
+                shippingItemsO.add(ShippingItem(0, "-"))
+                shippingItemsP.add(ShippingItem(0, "-"))
+                shippingItemsQ.add(ShippingItem(0, "-"))
+                shippingItemsR.add(ShippingItem(0, "-"))
+                shippingItemsS.add(ShippingItem(0, "-"))
             }
         }
-        shippingItems.addAll(shippingItemsA)
-        shippingItems.addAll(shippingItemsB)
-        shippingItems.addAll(shippingItemsC)
-        shippingItems.addAll(shippingItemsD)
-        shippingItems.addAll(shippingItemsE)
-        shippingItems.addAll(shippingItemsF)
+        availableTime.sortedBy { it }.forEach { time ->
+            when (time) {
+                "09:00-09:30" -> {
+                    shippingItems.addAll(shippingItemsA)
+                }
+                "09:30-10:00" -> {
+                    shippingItems.addAll(shippingItemsB)
+                }
+                "10:00-10:30" -> {
+                    shippingItems.addAll(shippingItemsC)
+                }
+                "10:30-11:00" -> {
+                    shippingItems.addAll(shippingItemsD)
+                }
+                "11:00-11:30" -> {
+                    shippingItems.addAll(shippingItemsE)
+                }
+                "11:30-12:00" -> {
+                    shippingItems.addAll(shippingItemsF)
+                }
+                "13:00-13:30" -> {
+                    shippingItems.addAll(shippingItemsG)
+                }
+                "13:30-14:00" -> {
+                    shippingItems.addAll(shippingItemsH)
+                }
+                "14:00-14:30" -> {
+                    shippingItems.addAll(shippingItemsI)
+                }
+                "14:30-15:00" -> {
+                    shippingItems.addAll(shippingItemsJ)
+                }
+                "15:00-15:30" -> {
+                    shippingItems.addAll(shippingItemsK)
+                }
+                "15:30-16:00" -> {
+                    shippingItems.addAll(shippingItemsL)
+                }
+                "16:00-16:30" -> {
+                    shippingItems.addAll(shippingItemsM)
+                }
+                "16:30-17:00" -> {
+                    shippingItems.addAll(shippingItemsN)
+                }
+                "17:00-17:30" -> {
+                    shippingItems.addAll(shippingItemsO)
+                }
+                "17:30-18:00" -> {
+                    shippingItems.addAll(shippingItemsP)
+                }
+                "18:00-18:30" -> {
+                    shippingItems.addAll(shippingItemsQ)
+                }
+                "18:30-19:00" -> {
+                    shippingItems.addAll(shippingItemsR)
+                }
+                "19:00-19:30" -> {
+                    shippingItems.addAll(shippingItemsS)
+                }
+            }
+        }
+        mCalendarView.hideTimeColumn(availableTime)
         mCalendarView.setTimeSlotItem(shippingItems)
     }
     // endregion

@@ -36,60 +36,41 @@ import cenergy.central.com.pwb_store.utils.CommonMethod;
  * Created by napabhat on 8/18/2017 AD.
  */
 
+@SuppressLint("SetTextI18n")
 public class CalendarViewCustom extends LinearLayout {
 
     private static final String TAG = CalendarViewCustom.class.getSimpleName();
 
-    @BindView(R.id.previous_month)
     ImageView previousButton;
-
-    @BindView(R.id.next_month)
     ImageView nextButton;
-
-    @BindView(R.id.display_current_date)
     PowerBuyTextView currentDate;
-
-    @BindView(R.id.calendar_grid)
     GridView calendarGridView;
-
-    @BindView(R.id.sun)
     PowerBuyTextView sunday;
-
-    @BindView(R.id.mon)
     PowerBuyTextView monday;
-
-    @BindView(R.id.tue)
     PowerBuyTextView tuesday;
-
-    @BindView(R.id.wed)
     PowerBuyTextView wednesday;
-
-    @BindView(R.id.thu)
     PowerBuyTextView thursday;
-
-    @BindView(R.id.fri)
     PowerBuyTextView friday;
-
-    @BindView(R.id.sat)
     PowerBuyTextView saturday;
-
-    @BindView(R.id.text10am)
-    PowerBuyTextView text10am;
-
-    @BindView(R.id.text12pm)
-    PowerBuyTextView text12pm;
-
-    @BindView(R.id.text14pm)
-    PowerBuyTextView text14pm;
-
-    @BindView(R.id.text16pm)
-    PowerBuyTextView text16pm;
-
-    @BindView(R.id.text18pm)
-    PowerBuyTextView text18pm;
-
-    @BindView(R.id.text20pm)
-    PowerBuyTextView text20pm;
+    PowerBuyTextView tvLength1;
+    PowerBuyTextView tvLength2;
+    PowerBuyTextView tvLength3;
+    PowerBuyTextView tvLength4;
+    PowerBuyTextView tvLength5;
+    PowerBuyTextView tvLength6;
+    PowerBuyTextView tvLength7;
+    PowerBuyTextView tvLength8;
+    PowerBuyTextView tvLength9;
+    PowerBuyTextView tvLength10;
+    PowerBuyTextView tvLength11;
+    PowerBuyTextView tvLength12;
+    PowerBuyTextView tvLength13;
+    PowerBuyTextView tvLength14;
+    PowerBuyTextView tvLength15;
+    PowerBuyTextView tvLength16;
+    PowerBuyTextView tvLength17;
+    PowerBuyTextView tvLength18;
+    PowerBuyTextView tvLength19;
 
     private static final int MAX_CALENDAR_COLUMN = 42;
     private Context context;
@@ -136,18 +117,21 @@ public class CalendarViewCustom extends LinearLayout {
 
     public CalendarViewCustom(Context context) {
         super(context);
+        this.context = context;
         initInflate();
         initInstance();
     }
 
     public CalendarViewCustom(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         initInflate();
         initInstance();
     }
 
     public CalendarViewCustom(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.context = context;
         initInflate();
         initInstance();
     }
@@ -155,6 +139,7 @@ public class CalendarViewCustom extends LinearLayout {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public CalendarViewCustom(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        this.context = context;
         initInflate();
         initInstance();
     }
@@ -172,6 +157,7 @@ public class CalendarViewCustom extends LinearLayout {
         nextPreWeekday = getWeekDay();
         firstDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[0]);
         lastDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[6]);
+
 //        try
 //        {
 //            new LoadViewsInToWeekView().execute("");
@@ -195,8 +181,37 @@ public class CalendarViewCustom extends LinearLayout {
     }
 
     private void initInstance() {
-        ButterKnife.bind(this);
+        previousButton = findViewById(R.id.previous_month);
+        nextButton = findViewById(R.id.next_month);
+        currentDate = findViewById(R.id.display_current_date);
+        calendarGridView = findViewById(R.id.calendar_grid);
+        sunday = findViewById(R.id.sun);
+        monday = findViewById(R.id.mon);
+        tuesday = findViewById(R.id.tue);
+        wednesday = findViewById(R.id.wed);
+        thursday = findViewById(R.id.thu);
+        friday = findViewById(R.id.fri);
+        saturday = findViewById(R.id.sat);
 
+        tvLength1 = findViewById(R.id.tv_9am_to_half_9am);
+        tvLength2 = findViewById(R.id.tv_half_9am_to_10am);
+        tvLength3 = findViewById(R.id.tv_10am_to_half_10am);
+        tvLength4 = findViewById(R.id.tv_half_10am_to_11am);
+        tvLength5 = findViewById(R.id.tv_11am_to_half_11am);
+        tvLength6 = findViewById(R.id.tv_half_11am_to_12pm);
+        tvLength7 = findViewById(R.id.tv_1pm_to_half_1pm);
+        tvLength8 = findViewById(R.id.tv_half_1pm_to_2pm);
+        tvLength9 = findViewById(R.id.tv_2pm_to_half_2pm);
+        tvLength10 = findViewById(R.id.tv_half_2pm_to_3pm);
+        tvLength11 = findViewById(R.id.tv_3pm_to_half_3pm);
+        tvLength12 = findViewById(R.id.tv_half_3pm_to_4pm);
+        tvLength13 = findViewById(R.id.tv_4pm_to_half_4pm);
+        tvLength14 = findViewById(R.id.tv_half_4pm_to_5pm);
+        tvLength15 = findViewById(R.id.tv_5pm_to_half_5pm);
+        tvLength16 = findViewById(R.id.tv_half_5pm_to_6pm);
+        tvLength17 = findViewById(R.id.tv_6pm_to_half_6pm);
+        tvLength18 = findViewById(R.id.tv_half_6pm_to_7pm);
+        tvLength19 = findViewById(R.id.tv_7pm_to_half_7pm);
         //setUpCalendarAdapter();
         //setDate();
 
@@ -217,37 +232,37 @@ public class CalendarViewCustom extends LinearLayout {
         friday.setText("FRI\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
         saturday.setText("SAT\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
 
-        // time
-        text10am.setText(getContext().getResources().getString(R.string.time_10am));
-        text12pm.setText(getContext().getResources().getString(R.string.time_12pm));
-        text14pm.setText(getContext().getResources().getString(R.string.time_14pm));
-        text16pm.setText(getContext().getResources().getString(R.string.time_16pm));
-        text18pm.setText(getContext().getResources().getString(R.string.time_18pm));
-        text20pm.setText(getContext().getResources().getString(R.string.time_20pm));
-
-//        setPreviousButtonClickEvent();
-//        setNextButtonClickEvent();
+        setPreviousButtonClickEvent();
+        setNextButtonClickEvent();
         setGridCellClickEvents();
     }
 
-//    private void setPreviousButtonClickEvent(){
-//        previousButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                weekDays = getWeekDayPrev();
-//                showDate(weekDays);
-//            }
-//        });
-//    }
-//    private void setNextButtonClickEvent(){
-//        nextButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                weekDays = getWeekDayNext();
-//                showDate(weekDays);
-//            }
-//        });
-//    }
+    private void setPreviousButtonClickEvent(){
+        previousButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                weekDays = getWeekDayPrev();
+                showDate(weekDays);
+                if (mListener != null) {
+                    mListener.onPreviousClick(weekDays);
+                }
+            }
+        });
+    }
+
+    private void setNextButtonClickEvent(){
+        nextButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                weekDays = getWeekDayNext();
+                showDate(weekDays);
+                if (mListener != null) {
+                    mListener.onNextClick(weekDays);
+                }
+            }
+        });
+    }
+
     private void setGridCellClickEvents(){
         calendarGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -592,28 +607,50 @@ public class CalendarViewCustom extends LinearLayout {
         this.mListener = listener;
     }
 
-    @OnClick(R.id.previous_month)
-    public void onImageViewPreviousClick(ImageView imageView) {
-        weekDays = getWeekDayPrev();
-        showDate(weekDays);
-        if (mListener != null) {
-            mListener.onPreviousClick(weekDays);
-        }
-    }
+//    @OnClick(R.id.previous_month)
+//    public void onImageViewPreviousClick(ImageView imageView) {
+//        weekDays = getWeekDayPrev();
+//        showDate(weekDays);
+//        if (mListener != null) {
+//            mListener.onPreviousClick(weekDays);
+//        }
+//    }
 
-    @OnClick(R.id.next_month)
-    public void onImageViewNextClick(ImageView imageView) {
-        weekDays = getWeekDayNext();
-        showDate(weekDays);
-        if (mListener != null) {
-            mListener.onNextClick(weekDays);
-        }
-    }
+//    @OnClick(R.id.next_month)
+//    public void onImageViewNextClick(ImageView imageView) {
+//        weekDays = getWeekDayNext();
+//        showDate(weekDays);
+//        if (mListener != null) {
+//            mListener.onNextClick(weekDays);
+//        }
+//    }
 
     public void setFirstDayAndLastDay(@NotNull ShippingSlot firstDay, @NotNull ShippingSlot lastDay) {
         this.firstDay = firstDay;
         this.lastDay = lastDay;
         checkWeekDays();
+    }
+
+    public void hideTimeColumn(@NotNull ArrayList<String> availableTime) {
+        tvLength1.checkHide(availableTime);
+        tvLength2.checkHide(availableTime);
+        tvLength3.checkHide(availableTime);
+        tvLength4.checkHide(availableTime);
+        tvLength5.checkHide(availableTime);
+        tvLength6.checkHide(availableTime);
+        tvLength7.checkHide(availableTime);
+        tvLength8.checkHide(availableTime);
+        tvLength9.checkHide(availableTime);
+        tvLength10.checkHide(availableTime);
+        tvLength11.checkHide(availableTime);
+        tvLength12.checkHide(availableTime);
+        tvLength13.checkHide(availableTime);
+        tvLength14.checkHide(availableTime);
+        tvLength15.checkHide(availableTime);
+        tvLength16.checkHide(availableTime);
+        tvLength17.checkHide(availableTime);
+        tvLength18.checkHide(availableTime);
+        tvLength19.checkHide(availableTime);
     }
 
     public interface OnItemClickListener {

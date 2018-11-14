@@ -95,12 +95,25 @@
     <string name="fri" translatable="false">FRI</string>
     <string name="sat" translatable="false">SAT</string>
     <string name="last_date" translatable="false">30</string>
-    <string name="time_10am" translatable="false">09:00 - 09:30</string>
-    <string name="time_12pm" translatable="false">11:00 - 11:30</string>
-    <string name="time_14pm" translatable="false">13:00 - 13:30</string>
-    <string name="time_16pm" translatable="false">15:00 - 15:30</string>
-    <string name="time_18pm" translatable="false">17:00 - 17:30</string>
-    <string name="time_20pm" translatable="false">19:00 - 19:30</string>
+    <string name="time_9am_to_half_9am" translatable="false">09:00 - 09:30</string>
+    <string name="time_half_9am_to_10am" translatable="false">09:30 - 10:00</string>
+    <string name="time_10am_to_half_10am" translatable="false">10:00 - 10:30</string>
+    <string name="time_half_10am_to_11am" translatable="false">10:30 - 11:00</string>
+    <string name="time_11am_to_half_11am" translatable="false">11:00 - 11:30</string>
+    <string name="time_half_11am_to_12pm" translatable="false">11:30 - 12:00</string>
+    <string name="time_1pm_to_half_1pm" translatable="false">13:00 - 13:30</string>
+    <string name="time_half_1pm_to_2pm" translatable="false">13:30 - 14:00</string>
+    <string name="time_2pm_to_half_2pm" translatable="false">14:00 - 14:30</string>
+    <string name="time_half_2pm_to_3pm" translatable="false">14:30 - 15:00</string>
+    <string name="time_3pm_to_half_3pm" translatable="false">15:00 - 15:30</string>
+    <string name="time_half_3pm_to_4pm" translatable="false">15:30 - 16:00</string>
+    <string name="time_4pm_to_half_4pm" translatable="false">16:00 - 16:30</string>
+    <string name="time_half_4pm_to_5pm" translatable="false">16:30 - 17:00</string>
+    <string name="time_5pm_to_half_5pm" translatable="false">17:00 - 17:30</string>
+    <string name="time_half_5pm_to_6pm" translatable="false">17:30 - 18:00</string>
+    <string name="time_6pm_to_half_6pm" translatable="false">18:00 - 18:30</string>
+    <string name="time_half_6pm_to_7pm" translatable="false">18:30 - 19:00</string>
+    <string name="time_7pm_to_half_7pm" translatable="false">19:00 - 19:30</string>
 
     <!--API-->
     <!--<string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>-->

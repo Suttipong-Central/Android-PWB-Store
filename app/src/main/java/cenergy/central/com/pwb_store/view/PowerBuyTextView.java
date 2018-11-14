@@ -9,9 +9,12 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+
+import java.util.ArrayList;
 
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.TypeFaceManager;
@@ -95,6 +98,18 @@ public class PowerBuyTextView extends TextView {
         } else {
             setPaintFlags(getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
+    }
+
+    public String replaceEmptyString(){
+        return getText().toString().replace(" ","");
+    }
+
+    public void gone(){
+        setVisibility(View.GONE);
+    }
+
+    public void checkHide(ArrayList<String> availableTime) {
+        if (!availableTime.contains(replaceEmptyString())) gone();
     }
 }
 

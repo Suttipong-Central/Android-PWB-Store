@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_custom_calendar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -17,11 +17,10 @@
             android:id="@+id/previous_month"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:background="?attr/selectableItemBackground"
-            android:clickable="true"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_keyboard_arrow_left_white"/>
 
@@ -33,20 +32,20 @@
             android:layout_marginTop="4dp"
             android:gravity="center"
             android:maxLines="2"
-            android:text="Date"
+            tools:text="Date"
             android:textColor="@color/powerBuyWhite"
             android:textSize="22sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            tools:ignore="RelativeOverlap" />
 
         <ImageView
             android:id="@+id/next_month"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackground"
-            android:clickable="true"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_keyboard_arrow_right_white"/>
     </RelativeLayout>
@@ -157,7 +156,8 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="0dp">
+        android:padding="0dp"
+        android:baselineAligned="false">
 
         <RelativeLayout
             android:id="@+id/relative"
@@ -167,69 +167,212 @@
             android:padding="0dp">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/text10am"
+                android:id="@+id/tv_9am_to_half_9am"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="0dp"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/nameProductColor"
-                android:text="@string/time_10am"/>
+                android:text="@string/time_9am_to_half_9am"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/text12pm"
+                android:id="@+id/tv_half_9am_to_10am"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="0dp"
-                android:layout_below="@+id/text10am"
+                android:layout_below="@+id/tv_9am_to_half_9am"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/nameProductColor"
-                android:text="@string/time_12pm"/>
+                android:text="@string/time_half_9am_to_10am"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/text14pm"
+                android:id="@+id/tv_10am_to_half_10am"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="0dp"
-                android:layout_below="@+id/text12pm"
+                android:layout_below="@+id/tv_half_9am_to_10am"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/nameProductColor"
-                android:text="@string/time_14pm"/>
+                android:text="@string/time_10am_to_half_10am"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/text16pm"
+                android:id="@+id/tv_half_10am_to_11am"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="0dp"
-                android:layout_below="@+id/text14pm"
+                android:layout_below="@+id/tv_10am_to_half_10am"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/nameProductColor"
-                android:text="@string/time_14pm"/>
+                android:text="@string/time_half_10am_to_11am"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/text18pm"
+                android:id="@+id/tv_11am_to_half_11am"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="0dp"
-                android:layout_below="@+id/text16pm"
+                android:layout_below="@+id/tv_half_10am_to_11am"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/nameProductColor"
-                android:text="@string/time_18pm"/>
+                android:text="@string/time_11am_to_half_11am"/>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/text20pm"
+                android:id="@+id/tv_half_11am_to_12pm"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="0dp"
-                android:layout_below="@+id/text18pm"
+                android:layout_below="@+id/tv_11am_to_half_11am"
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/nameProductColor"
-                android:text="@string/time_20pm"/>
+                android:text="@string/time_half_11am_to_12pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_1pm_to_half_1pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_11am_to_12pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_1pm_to_half_1pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_half_1pm_to_2pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_1pm_to_half_1pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_half_1pm_to_2pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_2pm_to_half_2pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_1pm_to_2pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_2pm_to_half_2pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_half_2pm_to_3pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_2pm_to_half_2pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_half_2pm_to_3pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_3pm_to_half_3pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_2pm_to_3pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_3pm_to_half_3pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_half_3pm_to_4pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_3pm_to_half_3pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_half_3pm_to_4pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_4pm_to_half_4pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_3pm_to_4pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_4pm_to_half_4pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_half_4pm_to_5pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_4pm_to_half_4pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_half_4pm_to_5pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_5pm_to_half_5pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_4pm_to_5pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_5pm_to_half_5pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_half_5pm_to_6pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_5pm_to_half_5pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_half_5pm_to_6pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_6pm_to_half_6pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_5pm_to_6pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_6pm_to_half_6pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_half_6pm_to_7pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_6pm_to_half_6pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_half_6pm_to_7pm"/>
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_7pm_to_half_7pm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:layout_below="@+id/tv_half_6pm_to_7pm"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/nameProductColor"
+                android:text="@string/time_7pm_to_half_7pm"/>
         </RelativeLayout>
 
         <RelativeLayout
