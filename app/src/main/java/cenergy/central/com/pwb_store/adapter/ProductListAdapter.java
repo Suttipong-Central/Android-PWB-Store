@@ -1,10 +1,14 @@
 package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +17,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductListViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDao;
@@ -54,6 +59,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     };
     private boolean isLoadingShow = false;
     private ArrayList<String> skuList = new ArrayList<>();
+    private Boolean clicked = true;
 
     public ProductListAdapter(Context mContext) {
         this.mContext = mContext;
@@ -122,16 +128,31 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 //                break;
 
             case VIEW_TYPE_ID_GRID_VIEW:
-                if (viewType instanceof ProductList && holder instanceof ProductListViewHolder) {
-                    ProductList productList = (ProductList) viewType;
-                    ProductListViewHolder productListViewHolder = (ProductListViewHolder) holder;
-                    productListViewHolder.setViewHolder(productList);
-
-                }
+//                if (viewType instanceof ProductList && holder instanceof ProductListViewHolder) {
+//                    ProductList productList = (ProductList) viewType;
+//                    ProductListViewHolder productListViewHolder = (ProductListViewHolder) holder;
+//                    productListViewHolder.setViewHolder(productList);
+//
+//                }
                 if (viewType instanceof Product && holder instanceof ProductListViewHolder) {
-                    Product product = (Product) viewType;
+                    final Product product = (Product) viewType;
                     ProductListViewHolder productListViewHolder = (ProductListViewHolder) holder;
                     productListViewHolder.setViewHolder(product);
+                    productListViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(clicked){
+                                clicked = false;
+                                EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getSku()), view));
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        clicked = true;
+                                    }
+                                },1000);
+                            }
+                        }
+                    });
                 }
                 break;
         }
@@ -179,40 +200,39 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public void setProduct(ProductDao productDao) {
-
-        if (productDao.isFirstPage()) {
-            mListViewType.clear();
-            notifyDataSetChanged();
-        }
-        // Add deal paginated
-        int startPosition = mListViewType.size();
-        for (ProductList productList : productDao.getProductListList()) {
-            productList.setViewTypeId(VIEW_TYPE_ID_GRID_VIEW);
-            mListViewType.add(productList);
-        }
-
-        if (isLoadingShow) {
-            isLoadingShow = false;
-            if (productDao.getProductListList().size() == 0) {
-                mListViewType.clear();
-                notifyDataSetChanged();
-                mListViewType.add(VIEW_TYPE_RESULT);
-                notifyItemInserted(0);
-            }
-            notifyItemChanged(0);
-            notifyItemRangeInserted(0, mListViewType.size());
-        } else {
-            notifyItemRangeInserted(startPosition, productDao.getProductListList().size());
-        }
-
+//    public void setProduct(ProductDao productDao) {
+//
+//        if (productDao.isFirstPage()) {
+//            mListViewType.clear();
+//            notifyDataSetChanged();
+//        }
+//        // Add deal paginated
+//        int startPosition = mListViewType.size();
+//        for (ProductList productList : productDao.getProductListList()) {
+//            productList.setViewTypeId(VIEW_TYPE_ID_GRID_VIEW);
+//            mListViewType.add(productList);
+//        }
+//
+//        if (isLoadingShow) {
+//            isLoadingShow = false;
+//            if (productDao.getProductListList().size() == 0) {
+//                mListViewType.clear();
+//                notifyDataSetChanged();
+//                mListViewType.add(VIEW_TYPE_RESULT);
+//                notifyItemInserted(0);
+//            }
+//            notifyItemChanged(0);
+//            notifyItemRangeInserted(0, mListViewType.size());
+//        } else {
+//            notifyItemRangeInserted(startPosition, productDao.getProductListList().size());
+//        }
 //        for (ProductList productList : productDao.getProductListList()){
 //            productList.setViewTypeId(VIEW_TYPE_ID_GRID_VIEW);
 //            mListViewType.add(productList);
 //        }
 //
 //        notifyDataSetChanged();
-    }
+//    }
 
     public void showLoading() {
         //mListViewType.add(VIEW_TYPE_LOADING);

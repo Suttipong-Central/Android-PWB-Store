@@ -3,10 +3,14 @@ package cenergy.central.com.pwb_store.adapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +20,8 @@ import cenergy.central.com.pwb_store.adapter.viewholder.CategoryFullFillerViewHo
 import cenergy.central.com.pwb_store.adapter.viewholder.CategoryViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchProductViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.TextBannerViewHolder;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.IViewType;
@@ -63,6 +69,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
         }
     };
+    private Boolean clicked = true;
 
     public CategoryAdapter(Context mContext) {
         this.mContext = mContext;
@@ -101,30 +108,58 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         int viewTypeId = getItemViewType(position);
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_CATEGORY:
                 if (viewType instanceof ProductFilterHeader && holder instanceof CategoryViewHolder) {
-                    ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
+                    final ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
                     categoryViewHolder.setViewHolder(categoryHeader);
+                    categoryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(clicked){
+                                clicked = false;
+                                EventBus.getDefault().post(new ProductFilterHeaderBus(categoryHeader, position));
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        clicked = true;
+                                    }
+                                },1000);
+                            }
+                        }
+                    });
                 } else if (viewType instanceof ProductFilterSubHeader && holder instanceof CategoryViewHolder){
-                    ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) viewType;
-                    CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
-                    categoryViewHolder.setViewHolder(categorySubHeader);
+                    final ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) viewType;
+                    CategoryViewHolder categoryFilterViewHolder = (CategoryViewHolder) holder;
+                    categoryFilterViewHolder.setViewHolder(categorySubHeader);
+                    categoryFilterViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (clicked){
+                                clicked = false;
+                                EventBus.getDefault().post(new ProductFilterSubHeaderBus(categorySubHeader, position));
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        clicked = true;
+                                    }
+                                },1000);
+                            }
+                        }
+                    });
                 }
                 break;
-
             case VIEW_TYPE_ID_TEXT_BANNER:
-            if (viewType instanceof TextBanner && holder instanceof TextBannerViewHolder) {
-                TextBanner textBanner = (TextBanner) viewType;
-                TextBannerViewHolder textBannerViewHolder = (TextBannerViewHolder) holder;
-                textBannerViewHolder.setViewHolder(textBanner.getTitle(), false);
-            }
-            break;
-
+                if (viewType instanceof TextBanner && holder instanceof TextBannerViewHolder) {
+                    TextBanner textBanner = (TextBanner) viewType;
+                    TextBannerViewHolder textBannerViewHolder = (TextBannerViewHolder) holder;
+                    textBannerViewHolder.setViewHolder(textBanner.getTitle(), false);
+                }
+                break;
         }
     }
 
@@ -171,13 +206,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void setCategory(Category category) {
-
         //mListViewType.clear();
         mListViewType.add(VIEW_TYPE_SEARCH);
         TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
         textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
         mListViewType.add(textBanner);
-
         //int startPosition = mListViewType.size();
         for (ProductFilterHeader header : category.getFilterHeaders()) {
             category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
@@ -187,13 +220,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void setCategoryHeader(ProductFilterHeader productFilterHeader) {
-
         //mListViewType.clear();
         mListViewType.add(VIEW_TYPE_SEARCH);
         TextBanner textBanner = new TextBanner(productFilterHeader.getName());
         textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
         mListViewType.add(textBanner);
-
         //int startPosition = mListViewType.size();
         for (ProductFilterSubHeader subHeader : productFilterHeader.getProductFilterSubHeaders()) {
             productFilterHeader.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
