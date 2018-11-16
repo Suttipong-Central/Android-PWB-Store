@@ -122,7 +122,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             tvOverQty.visibility = if (qty >= max) {
                 View.VISIBLE
             } else {
-                View.INVISIBLE
+                View.GONE
             }
         }
     }
@@ -135,8 +135,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private fun getDisplayPrice(unit: String, price: Double): String {
         val vat = price * 0.07
         val total = (price + vat).roundToInt()
-        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
-                Locale.getDefault()).format(java.lang.Double.parseDouble(total.toString())))
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(total))
     }
 
     private fun confirmDelete(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
@@ -155,7 +154,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
 
     fun hideDeleteItem(cartItem: CartItem) {
-        tvOverQty.visibility = View.INVISIBLE
+        tvOverQty.visibility = View.GONE
         deleteImageView.visibility = View.GONE
         qtyTextTitle.text = itemView.resources.getString(R.string.qty_title)
         productQty.visibility = View.GONE
