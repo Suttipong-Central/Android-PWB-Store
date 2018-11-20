@@ -32,6 +32,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
     private PowerBuyTextView oldPrice;
     private PowerBuyTextView newPrice;
     private PowerBuyTextView productBrand;
+    private Boolean clicked = true;
 
     public ProductListViewHolder(View itemView) {
         super(itemView);
@@ -43,47 +44,47 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         productBrand = itemView.findViewById(R.id.txt_product_brand);
     }
 
-    public void setViewHolder(ProductList productList) {
-
-        String unit = Contextor.getInstance().getContext().getString(R.string.baht);
-
-        Extension extension = productList.getExtension();
-        if (extension != null) {
-
-            for (ProductListStore productListStore : extension.getProductListStores()) {
-                Log.d(TAG, "price : " + productListStore.getPrice());
-                Log.d(TAG, "specialPrice : " + productListStore.getSpecialPrice());
-                oldPrice.setText("");
-                oldPrice.setEnableStrikeThrough(false);
-                newPrice.setText("");
-                if (productListStore.getPrice().equals(productListStore.getSpecialPrice())) {
-                    Log.d(TAG, "In if");
-                    oldPrice.setText(productListStore.getDisplayOldPrice(unit));
-                    newPrice.setText("");
-                } else {
-                    Log.d(TAG, "In else");
-                    oldPrice.setText(productListStore.getDisplayOldPrice(unit));
-                    oldPrice.setEnableStrikeThrough(true);
-                    newPrice.setText(productListStore.getDisplayNewPrice(unit));
-                    Log.d(TAG, "new : " + productListStore.getDisplayNewPrice(unit));
-                }
-            }
-
-            productDescription.setText(productList.getName());
-            Glide.with(Contextor.getInstance().getContext())
-                    .load(extension.getImageUrl())
+//    public void setViewHolder(ProductList productList) {
+//
+//        String unit = Contextor.getInstance().getContext().getString(R.string.baht);
+//
+//        Extension extension = productList.getExtension();
+//        if (extension != null) {
+//
+//            for (ProductListStore productListStore : extension.getProductListStores()) {
+//                Log.d(TAG, "price : " + productListStore.getPrice());
+//                Log.d(TAG, "specialPrice : " + productListStore.getSpecialPrice());
+//                oldPrice.setText("");
+//                oldPrice.setEnableStrikeThrough(false);
+//                newPrice.setText("");
+//                if (productListStore.getPrice().equals(productListStore.getSpecialPrice())) {
+//                    Log.d(TAG, "In if");
+//                    oldPrice.setText(productListStore.getDisplayOldPrice(unit));
+//                    newPrice.setText("");
+//                } else {
+//                    Log.d(TAG, "In else");
+//                    oldPrice.setText(productListStore.getDisplayOldPrice(unit));
+//                    oldPrice.setEnableStrikeThrough(true);
+//                    newPrice.setText(productListStore.getDisplayNewPrice(unit));
+//                    Log.d(TAG, "new : " + productListStore.getDisplayNewPrice(unit));
+//                }
+//            }
+//
+//            productDescription.setText(productList.getName());
+//            Glide.with(Contextor.getInstance().getContext())
+//                    .load(extension.getImageUrl())
                     //.load(Contextor.getInstance().getContext().getString(R.string.url_image)+extension.getImageUrl())
-                    .placeholder(R.drawable.ic_pwb_logo_detail)
-                    .crossFade()
-                    .fitCenter()
-                    .into(mImageView);
-
-            productBrand.setText(extension.getBrand());
-        }
-        productName.setText(productList.getName());
-        itemView.setOnClickListener(this);
-        itemView.setTag(productList);
-    }
+//                    .placeholder(R.drawable.ic_pwb_logo_detail)
+//                    .crossFade()
+//                    .fitCenter()
+//                    .into(mImageView);
+//
+//            productBrand.setText(extension.getBrand());
+//        }
+//        productName.setText(productList.getName());
+//        itemView.setOnClickListener(this);
+//        itemView.setTag(productList);
+//    }
 
     public void setViewHolder(Product product) {
 
@@ -107,7 +108,6 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
         String brand = product.getBrand();
         productBrand.setText(!brand.equals("") ? brand : "Brand");
         productName.setText(product.getName());
-        itemView.setOnClickListener(this);
         itemView.setTag(product);
     }
 
@@ -123,21 +123,11 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder implements Vi
 
     @Override
     public void onClick(View v) {
-        itemView.setEnabled(false);
-        if (itemView.getTag() instanceof ProductList) {
-            ProductList productListList = (ProductList) itemView.getTag();
-            EventBus.getDefault().post(new ProductDetailBus(productListList.getProductId(), v));
-        }
+//        if (itemView.getTag() instanceof ProductList) {
+//            ProductList productListList = (ProductList) itemView.getTag();
+//            EventBus.getDefault().post(new ProductDetailBus(productListList.getProductId(), v));
+//        }
         //new intent for product
-        if (itemView.getTag() instanceof Product) {
-            Product product = (Product) itemView.getTag();
-            EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getSku()), v));
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                itemView.setEnabled(true);
-            }
-        },1000);
+
     }
 }

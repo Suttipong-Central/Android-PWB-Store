@@ -27,8 +27,10 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.response.UserResponse;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 
@@ -206,14 +208,16 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     private void checkLogin() {
-        if (!mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
-            username = mEditTextUserName.getText().toString();
-            password = mEditTextPassword.getText().toString();
-            mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.powerBuyOrange));
-            mLoginButton.setOnClickListener(this);
-        } else {
-            mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.hintColor));
-            mLoginButton.setOnClickListener(null);
+        if(getContext() != null){
+            if (!mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
+                username = mEditTextUserName.getText().toString();
+                password = mEditTextPassword.getText().toString();
+                mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.powerBuyOrange));
+                mLoginButton.setOnClickListener(this);
+            } else {
+                mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.hintColor));
+                mLoginButton.setOnClickListener(null);
+            }
         }
     }
 
@@ -233,20 +237,45 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
                             if (response != null) {
-                                EventBus.getDefault().post(new LoginSuccessBus(true));
-                                mProgressDialog.dismiss();
+                                if (response.getStore() != null && response.getStore().getPostalCode() != null) {
+                                    dismissDialog();
+                                    EventBus.getDefault().post(new LoginSuccessBus(true));
+                                } else {
+                                    dismissDialog();
+                                    showAlertDialog("", getString(R.string.some_thing_wrong));
+                                    userLogout();
+                                }
                             } else {
-                                mProgressDialog.dismiss();
+                                dismissDialog();
                                 showAlertDialog("", getString(R.string.some_thing_wrong));
                             }
                         }
 
                         @Override
                         public void failure(@NotNull APIError error) {
+                            dismissDialog();
                             showAlertDialog("", error.getError() == null ? getString(R.string.some_thing_wrong) : error.getError());
-                            mProgressDialog.dismiss();
                         }
                     });
+        }
+    }
+
+    private void clearData() {
+        if (getContext() != null) {
+            PreferenceManager preferenceManager = new PreferenceManager(getContext());
+            RealmController realmController = RealmController.with(this);
+            preferenceManager.userLogout();
+            realmController.userLogout();
+        }
+    }
+
+    private void userLogout() {
+        clearData();
+    }
+
+    private void dismissDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
         }
     }
 }

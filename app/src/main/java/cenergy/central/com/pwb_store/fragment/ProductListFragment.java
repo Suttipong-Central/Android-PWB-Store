@@ -184,13 +184,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
     };
 
-    final Callback<ProductDao> CALLBACK_PRODUCT = new Callback<ProductDao>() {
-        @Override
-        public void onResponse(Call<ProductDao> call, Response<ProductDao> response) {
-            if (response.isSuccessful()) {
-                //mProductDao = response.body();
-                ProductDao productDao = response.body();
-                //TODO Test Total Page.
+//    final Callback<ProductDao> CALLBACK_PRODUCT = new Callback<ProductDao>() {
+//        @Override
+//        public void onResponse(Call<ProductDao> call, Response<ProductDao> response) {
+//            if (response.isSuccessful()) {
+//                //mProductDao = response.body();
+//                ProductDao productDao = response.body();
+//                //TODO Test Total Page.
 //                if (currentPage == 0) {
 //                    currentPage = getNextPage();
 //                    if (productDao != null) {
@@ -202,43 +202,43 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 //                        productDao.setCurrentPage(currentPage);
 //                    }
 //                }
-
-                totalItem = productDao.getTotalElement();
-                totalPage = totalPageCal(totalItem);
-                Log.d(TAG, " totalPage :" + totalPage);
-                if (productDao.getProductListList() != null) {
-                    currentPage = getNextPage();
-                    if (productDao != null) {
-                        productDao.setCurrentPage(currentPage);
-                    }
-                    mProductListAdapter.setProduct(productDao);
-                } else if (productDao.getProductListList() == null) {
-                    mProductListAdapter.setError();
-                } else {
-                    mProductListAdapter.setError();
-                }
-                setTextHeader(totalItem, title);
-                layoutProgress.setVisibility(View.GONE);
-                mProgressDialog.dismiss();
-            } else {
-                mProductListAdapter.setError();
-                setTextHeader(totalItem, title);
-                APIError error = APIErrorUtils.parseError(response);
-                Log.e(TAG, "onResponse: " + error.getErrorMessage());
-//                showAlertDialog(error.getErrorMessage(), false);
-                mProgressDialog.dismiss();
-                layoutProgress.setVisibility(View.GONE);
-            }
-        }
-
-        @Override
-        public void onFailure(Call<ProductDao> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            mProgressDialog.dismiss();
-            layoutProgress.setVisibility(View.GONE);
-            setTextHeader(totalItem, title);
-        }
-    };
+//
+//                totalItem = productDao.getTotalElement();
+//                totalPage = totalPageCal(totalItem);
+//                Log.d(TAG, " totalPage :" + totalPage);
+//                if (productDao.getProductListList() != null) {
+//                    currentPage = getNextPage();
+//                    if (productDao != null) {
+//                        productDao.setCurrentPage(currentPage);
+//                    }
+//                    mProductListAdapter.setProduct(productDao);
+//                } else if (productDao.getProductListList() == null) {
+//                    mProductListAdapter.setError();
+//                } else {
+//                    mProductListAdapter.setError();
+//                }
+//                setTextHeader(totalItem, title);
+//                layoutProgress.setVisibility(View.GONE);
+//                mProgressDialog.dismiss();
+//            } else {
+//                mProductListAdapter.setError();
+//                setTextHeader(totalItem, title);
+//                APIError error = APIErrorUtils.parseError(response);
+//                Log.e(TAG, "onResponse: " + error.getErrorMessage());
+////                showAlertDialog(error.getErrorMessage(), false);
+//                mProgressDialog.dismiss();
+//                layoutProgress.setVisibility(View.GONE);
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call<ProductDao> call, Throwable t) {
+//            Log.e(TAG, "onFailure: ", t);
+//            mProgressDialog.dismiss();
+//            layoutProgress.setVisibility(View.GONE);
+//            setTextHeader(totalItem, title);
+//        }
+//    };
 
     @Subscribe
     public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {

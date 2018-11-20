@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.content.Context;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -24,8 +24,8 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
-    ImageView mImageView;
-    PowerBuyTextView mTextView;
+    private ImageView mImageView;
+    private PowerBuyTextView mTextView;
 
     public CategoryViewHolder(View itemView) {
         super(itemView);
@@ -47,13 +47,6 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
         mTextView.setText(categoryHeader.getName());
         itemView.setTag(categoryHeader);
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProductFilterHeader categoryHeader = (ProductFilterHeader) itemView.getTag();
-                EventBus.getDefault().post(new ProductFilterHeaderBus(categoryHeader, getAdapterPosition()));
-            }
-        });
     }
 
     public void setViewHolder(ProductFilterSubHeader categorySubHeader) {
@@ -68,15 +61,7 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
             mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));
         }
 
-
         mTextView.setText(categorySubHeader.getName());
         itemView.setTag(categorySubHeader);
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) itemView.getTag();
-                EventBus.getDefault().post(new ProductFilterSubHeaderBus(categorySubHeader, getAdapterPosition()));
-            }
-        });
     }
 }
