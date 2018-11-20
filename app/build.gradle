@@ -54,7 +54,7 @@ android {
         production {
             manifestPlaceholders = [applicationLabel: "PowerBuy Store"]
             resValue 'string', 'app_name', '\"PoweBuy Store\"'
-            versionCode 10
+            versionCode 11
             versionName "1.0.0-dev"
         }
 
