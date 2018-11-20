@@ -84,7 +84,9 @@
             android:name="io.fabric.ApiKey"
             android:value="66f02a1aa825afbd81a5fc6ff950f030c64099ff" />
 
-        <activity android:name=".activity.ProductDetailActivity2"></activity>
+        <activity android:name=".activity.ProductDetailActivity2"
+        android:screenOrientation="portrait"
+        android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
 
 </manifest>
