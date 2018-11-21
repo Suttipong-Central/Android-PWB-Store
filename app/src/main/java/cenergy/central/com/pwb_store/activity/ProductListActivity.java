@@ -7,11 +7,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
@@ -25,6 +27,9 @@ public class ProductListActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    private ImageView searchButton;
+    private PowerBuyShoppingCartView cartButton;
 
     private boolean isSearch;
     private String productId;
@@ -52,6 +57,10 @@ public class ProductListActivity extends AppCompatActivity {
 
     private void initView() {
         ButterKnife.bind(this);
+        searchButton = findViewById(R.id.search_button);
+        cartButton = findViewById(R.id.shopping_cart_compare);
+        searchButton.setVisibility(View.GONE);
+        cartButton.setVisibility(View.GONE);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
