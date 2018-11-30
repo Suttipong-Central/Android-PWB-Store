@@ -78,7 +78,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
-                android:text="@string/how_to_do_for_staff" />
+                android:text="@string/staff_descriptions" />
 
             <LinearLayout
                 android:id="@+id/staffIconLayout"

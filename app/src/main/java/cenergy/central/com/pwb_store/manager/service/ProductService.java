@@ -93,7 +93,9 @@ public interface ProductService {
     Call<ProductSearchResponse> getProductSearch(
             @Query("q") String keyword,
             @Query("searchCriteria[pageSize]") int pageSize,
-            @Query("searchCriteria[currentPage]") int currentPage);
+            @Query("searchCriteria[currentPage]") int currentPage,
+            @Query("searchCriteria[sortOrders][0][field]") String orderName,
+            @Query("searchCriteria[sortOrders][0][direction]") String dir);
 
     @GET("/rest/V1/products")
     Call<ProductResponse> getProductList(

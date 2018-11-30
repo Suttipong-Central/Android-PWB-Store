@@ -1,9 +1,11 @@
 package cenergy.central.com.pwb_store.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -54,15 +56,9 @@ import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
-import cenergy.central.com.pwb_store.model.response.ProductSearchResponse;
-import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import static java.lang.Math.ceil;
 
 /**
@@ -77,7 +73,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private static final String ARG_DEPARTMENT_ID = "ARG_DEPARTMENT_ID";
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
     private static final String ARG_PRODUCT_FILTER = "ARG_PRODUCT_FILTER";
-    private static final String ARG_PRODUCT_FILTER_TEMP = "ARG_PRODUCT_FILTER_TEMP";
+//    private static final String ARG_PRODUCT_FILTER_TEMP = "ARG_PRODUCT_FILTER_TEMP";
     private static final String ARG_SORT_NAME = "ARG_SORT_NAME";
     private static final String ARG_SORT_TYPE = "ARG_SORT_TYPE";
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
@@ -92,12 +88,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private PowerBuyTextView productCount;
     private LinearLayout layoutProgress;
 
-//    @BindView(R.id.layout_product)
-//    LinearLayout productLayout;
-//
-//    @BindView(R.id.layout_sort)
-//    LinearLayout sortLayout;
-
     //Data Member
     private ProductListAdapter mProductListAdapter;
     private GridLayoutManager mLayoutManger;
@@ -106,7 +96,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     //    private ProductFilterList mTempProductFilterList;
     private List<Brand> brands = new ArrayList<>();
     private SortingList mSortingList;
-    //    private SortingList mTempSortingList;
     private String title;
     private PowerBuyPopupWindow mPowerBuyPopupWindow;
     private ProgressDialog mProgressDialog;
@@ -114,12 +103,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private boolean isSearch;
     private String departmentId;
     private Long brandId;
-    private String storeId;
     private String sortName;
-    private Category mCategory;
-    private ProductFilterSubHeader mProductFilterSubHeader;
+
     //Pagination
     private static final int PER_PAGE = 20;
+
     // Page
     private boolean isLoadingMore;
     private boolean isSorting = false;
@@ -130,7 +118,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private Context mContext;
     private String keyWord;
     private String sortType;
-    private List<ProductDao> mProductDaoList = new ArrayList<>();
 
     public ProductListFragment() {
         super();
@@ -167,8 +154,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
                 layoutProgress.setVisibility(View.VISIBLE);
                 if (isSearch) {
-//                    HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container", "search_term",
-//                            keyWord, PER_PAGE, getNextPage(), getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                     getProductsFromSearch(keyWord);
                 } else {
                     if (brandId != null) {
@@ -279,18 +264,24 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         SortingItem sortingItem = sortingItemBus.getSortingItem();
         isDoneFilter = true;
         isSorting = true;
-        callFilter(departmentId, sortingItem.getSlug(), sortingItem.getValue());
+        if(isSearch){
+            callFilter(keyWord, sortingItem.getSlug(), sortingItem.getValue());
+        } else {
+            callFilter(departmentId, sortingItem.getSlug(), sortingItem.getValue());
+        }
         mPowerBuyPopupWindow.updateSingleSortingItem(sortingItemBus.getSortingItem());
     }
 
     @Subscribe
     public void onEvent(ProductDetailBus productDetailBus) {
-        Intent intent = new Intent(getContext(), ProductDetailActivity2.class);
-        intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, productDetailBus.getProductId());
-        ActivityCompat.startActivity(getContext(), intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())
-                        .toBundle());
+        if(getContext() != null){
+            Intent intent = new Intent(getContext(), ProductDetailActivity2.class);
+            intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, productDetailBus.getProductId());
+            ActivityCompat.startActivity(getContext(), intent,
+                    ActivityOptionsCompat
+                            .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())
+                            .toBundle());
+        }
     }
 
     @SuppressWarnings("unused")
@@ -332,8 +323,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_product_list, container, false);
         initInstances(rootView, savedInstanceState);
         resetPage();
@@ -346,8 +336,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             title = getArguments().getString(ARG_TITLE);
             isSearch = getArguments().getBoolean(ARG_SEARCH);
             departmentId = getArguments().getString(ARG_DEPARTMENT_ID);
-            storeId = getArguments().getString(ARG_STORE_ID);
-            mProductFilterSubHeader = getArguments().getParcelable(ARG_PRODUCT_FILTER_SUB_HEADER);
+            ProductFilterSubHeader mProductFilterSubHeader = getArguments().getParcelable(ARG_PRODUCT_FILTER_SUB_HEADER);
 
             // setup filter list
             if (mProductFilterSubHeader != null) {
@@ -461,8 +450,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if (savedInstanceState == null) {
             if (isSearch) {
                 showProgressDialog();
-//                HttpManagerMagentoOld.getInstance().getProductService().getProductSearch("quick_search_container",
-//                        "search_term", keyWord, PER_PAGE, 1, getString(R.string.product_list), UserInfoManager.getInstance().getUserId()).enqueue(CALLBACK_PRODUCT);
                 getProductsFromSearch(keyWord);
             } else {
                 showProgressDialog();
@@ -479,8 +466,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
         mRecyclerView.scrollToPosition(scrollPosition);
         mRecyclerView.addOnScrollListener(SCROLL);
-
-        //Log.d(TAG, "start Page" + isDoneFilter);
     }
 
     private void resetPage() {
@@ -489,7 +474,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         totalPage = 1;
         isLoadingMore = true;
         mPreviousTotal = 0;
-        if (isSorting == false) {
+        if (!isSorting) {
             sortName = "name";
             sortType = "ASC";
         }
@@ -544,7 +529,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
      * Save Instance State Here
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
         outState.putParcelable(ARG_PRODUCT, mProductDao);
@@ -582,22 +567,30 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     private void popUpShow() {
-        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mPowerBuyPopupWindow = new PowerBuyPopupWindow(getActivity(), layoutInflater);
-        mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
+        if(getContext() != null){
+            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            assert layoutInflater != null;
+            mPowerBuyPopupWindow = new PowerBuyPopupWindow(getActivity(), layoutInflater);
+            mPowerBuyPopupWindow.setOnDismissListener(ON_POPUP_DISMISS_LISTENER);
+        }
     }
 
     private void callFilter(String departmentId, String sortNameT, String sortTypeT) {
         resetPage();
         sortName = sortNameT;
         sortType = sortTypeT;
-        if (brandId != null) {
-            retrieveProductList(departmentId, brandId);
+        if(isSearch){
+            getProductsFromSearch(keyWord);
         } else {
-            retrieveProductList(departmentId);
+            if (brandId != null) {
+                retrieveProductList(departmentId, brandId);
+            } else {
+                retrieveProductList(departmentId);
+            }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void setTextHeader(int total, String name) {
         productCount.setText(name + " " + mContext.getString(R.string.filter_count, String.valueOf(total)));
     }
@@ -708,7 +701,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 //                        }
 //                    });
             HttpManagerMagento.Companion.getInstance(getContext()).getProductFromSearchNewAPI(
-                    keyWord, PER_PAGE, getNextPage(), new ApiResponseCallback<ProductResponse>() {
+                    keyWord,
+                    PER_PAGE,
+                    getNextPage(),
+                    sortName,
+                    sortType,
+                    new ApiResponseCallback<ProductResponse>() {
                         @Override
                         public void success(@Nullable final ProductResponse response) {
                             if (getActivity() != null) {

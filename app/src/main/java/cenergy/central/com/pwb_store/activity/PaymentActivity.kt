@@ -33,9 +33,7 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import com.google.gson.reflect.TypeToken
-import me.a3cha.android.thaiaddress.models.Postcode
 import org.joda.time.DateTime
-import java.text.SimpleDateFormat
 import java.util.*
 
 class PaymentActivity : AppCompatActivity(), CheckoutListener,
@@ -129,7 +127,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
                         "", "", "")
-                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null, subscribeCheckOut)
+                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), null, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -160,7 +158,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 if (response != null) {
                     val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
                             shippingDate, slot.id.toString(), slot.description)
-                    showAlertCheckPayment("", resources.getString(R.string.confrim_oder), null, subscribeCheckOut)
+                    showAlertCheckPayment("", resources.getString(R.string.confirm_oder), null, subscribeCheckOut)
 
                 } else {
                     mProgressDialog?.dismiss()
@@ -649,7 +647,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email, "", "", "")
                 // store shipping this case can be anything
-                showAlertCheckPayment("", resources.getString(R.string.confrim_oder), shippingAddress, subscribeCheckOut)
+                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), shippingAddress, subscribeCheckOut)
             }
         }
     }

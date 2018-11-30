@@ -35,6 +35,7 @@
     <string name="product_stock_less" translatable="false">จำนวนสินค้าในคลัง: น้อย</string>
     <string name="product_out_stock" translatable="false">สินค้าหมด</string>
     <string name="filter_count" translatable="false">(%1$s)</string>
+    <string name="brand">แบรนด์</string>
 
     <!-- Product Detail -->
     <string name="promotion_header" translatable="false">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
@@ -81,6 +82,7 @@
     <string name="drawer_cart" translatable="false">รถเข็น</string>
     <string name="drawer_history" translatable="false">ประวัติการสร้างรายการ</string>
     <string name="drawer_help" translatable="false">ช่วยเหลือ</string>
+    <string name="drawer_logout">ออกจากระบบ</string>
 
     <!-- AppSecret -->
     <string name="secret" translatable="false">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
@@ -126,11 +128,8 @@
     <string name="username">ชื่อผู้ใช้</string>
     <string name="password">รหัสผ่าน</string>
     <string name="login">เข้าสู่ระบบ</string>
-    <string name="user">PwbUserName</string>
-    <string name="passwordDetail">Pwb1199</string>
     <string name="error">พบข้อผิดพลาด</string>
     <string name="error_login">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
-    <string name="brand">แบรนด์</string>
     <string name="loading">กำลังโหลด...</string>
 
     <!--Payment-->
@@ -141,7 +140,7 @@
     <string name="last_name">นามสกุล</string>
     <string name="tell">เบอร์ติดต่อ</string>
     <string name="email">อีเมลล์</string>
-    <string name="house_on">บ้านเลขที่</string>
+    <string name="house_no">บ้านเลขที่</string>
     <string name="place_or_building">สถานที่/อาคาร</string>
     <string name="soi">ซอย</string>
     <string name="street">ถนน</string>
@@ -189,7 +188,7 @@
     <string name="fill_in_important_information">กรุณากรอกข้อมูลที่สำคัญให้ถูกต้อง</string>
     <string name="sorry">ขออภัย</string>
     <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
-    <string name="confrim_oder">ยืนยันการซื้อสินค้า</string>
+    <string name="confirm_oder">ยืนยันการซื้อสินค้า</string>
     <string name="ok_alert">ตกลง</string>
     <string name="cancel_alert">ยกเลิก</string>
     <string name="cannot_get_cart_item">ไม่สามารถเรียกสินค้าในรถเข็นได้</string>
@@ -206,7 +205,6 @@
     <string name="sort">เรียง</string>
     <string name="regular_price">ราคาปกติ: </string>
     <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
-    <string name="drawer_logout">ออกจากระบบ</string>
     <string name="user_logout">คุณต้องการจะออกจากระบบใช่หรือไม่</string>
     <string name="shopping">ช้อปต่อ</string>
     <string name="please_select_date">กรุณาเลือกวันที่คุณต้องการ</string>
@@ -250,11 +248,9 @@
     <string name="freebie_promotion_not_found">โปรดเช็คโปรโมชั่นและของแถมเมื่อใส่สินค้าลงรถเข็น</string>
     <string name="not_have_day_to_delivery">ไม่มีวันจัดส่ง</string>
     <string name="next_step">ขั้นตอนต่อไป</string>
-    <string name="how_to_do_for_staff">1. คุณจะได้รับอีเมลยืนยันการสั่งซื้อ\n2. แสดงอีเมลที่ได้รับ /หรือแสดงหน้าจอนี้ /หรือเลขที่ใบสั่งซื้อ ต่อเจ้าหน้าที่แคชเชียร์\n3. ทำการจ่ายเงินที่แคชเชียร์ จากนั้นรับใบเสร็จจากเจ้าหน้าที่</string>
+    <string name="staff_descriptions">1. คุณจะได้รับอีเมลยืนยันการสั่งซื้อ\n2. แสดงอีเมลที่ได้รับ /หรือแสดงหน้าจอนี้ /หรือเลขที่ใบสั่งซื้อ ต่อเจ้าหน้าที่แคชเชียร์\n3. ทำการจ่ายเงินที่แคชเชียร์ จากนั้นรับใบเสร็จจากเจ้าหน้าที่</string>
     <string name="for_staff">สำหรับเจ้าหน้าที่</string>
-    <string name="how_to_staff_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
+    <string name="staff_descriptions_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
     <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
     <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
-
-
 </resources>
