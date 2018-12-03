@@ -46,6 +46,9 @@ public class Category extends RealmObject implements IViewType, Parcelable {
         level = in.readString();
         departmentName = in.readString();
         imageURL = in.readString();
+        includeInMenu = in.readInt();
+        this.mFilterHeaders = new RealmList<>();
+        this.mFilterHeaders.addAll(in.createTypedArrayList(ProductFilterHeader.CREATOR));
     }
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {
@@ -72,6 +75,8 @@ public class Category extends RealmObject implements IViewType, Parcelable {
         dest.writeString(level);
         dest.writeString(departmentName);
         dest.writeString(imageURL);
+        dest.writeInt(includeInMenu);
+        dest.writeTypedList(mFilterHeaders);
     }
 
     @Override

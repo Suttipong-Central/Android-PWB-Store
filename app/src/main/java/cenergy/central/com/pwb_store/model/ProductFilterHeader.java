@@ -87,19 +87,29 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
     protected ProductFilterHeader(Parcel in) {
         viewTypeId = in.readInt();
         id = in.readString();
+        level = in.readString();
         name = in.readString();
-        type = in.readString();
-        isExpanded = in.readByte() != 0;
         imageURL = in.readString();
+        includeInMenu = in.readInt();
+        type = in.readString();
+        position = in.readInt();
+        isExpanded = in.readByte() != 0;
+        this.mProductFilterSubHeaders = new RealmList<>();
+        this.mProductFilterSubHeaders.addAll(in.createTypedArrayList(ProductFilterSubHeader.CREATOR));
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(viewTypeId);
         dest.writeString(id);
+        dest.writeString(level);
         dest.writeString(name);
-        dest.writeByte((byte) (isExpanded ? 1 : 0));
         dest.writeString(imageURL);
+        dest.writeInt(includeInMenu);
+        dest.writeString(type);
+        dest.writeInt(position);
+        dest.writeByte((byte) (isExpanded ? 1 : 0));
+        dest.writeTypedList(mProductFilterSubHeaders);
     }
 
     @Override

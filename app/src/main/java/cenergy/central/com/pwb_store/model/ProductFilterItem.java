@@ -14,18 +14,8 @@ import io.realm.annotations.Ignore;
  * Created by napabhat on 7/13/2017 AD.
  */
 
-public class ProductFilterItem extends RealmObject implements IViewType, Parcelable {
-    public static final Creator<ProductFilterItem> CREATOR = new Creator<ProductFilterItem>() {
-        @Override
-        public ProductFilterItem createFromParcel(Parcel in) {
-            return new ProductFilterItem(in);
-        }
+public class ProductFilterItem extends RealmObject implements IViewType, Parcelable{
 
-        @Override
-        public ProductFilterItem[] newArray(int size) {
-            return new ProductFilterItem[size];
-        }
-    };
     private static final String TAG = "ProductFilterItem";
     @Ignore
     private int viewTypeId;
@@ -64,6 +54,9 @@ public class ProductFilterItem extends RealmObject implements IViewType, Parcela
 
     protected ProductFilterItem(Parcel in) {
         viewTypeId = in.readInt();
+        id = in.readString();
+        level = in.readString();
+        urlName = in.readString();
         filterId = in.readInt();
         filterName = in.readString();
         slug = in.readString();
@@ -71,20 +64,17 @@ public class ProductFilterItem extends RealmObject implements IViewType, Parcela
         value = in.readString();
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(viewTypeId);
-        dest.writeInt(filterId);
-        dest.writeString(filterName);
-        dest.writeString(slug);
-        dest.writeByte((byte) (isSelected ? 1 : 0));
-        dest.writeString(value);
-    }
+    public static final Creator<ProductFilterItem> CREATOR = new Creator<ProductFilterItem>() {
+        @Override
+        public ProductFilterItem createFromParcel(Parcel in) {
+            return new ProductFilterItem(in);
+        }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+        @Override
+        public ProductFilterItem[] newArray(int size) {
+            return new ProductFilterItem[size];
+        }
+    };
 
     @Override
     public int getViewTypeId() {
@@ -162,5 +152,23 @@ public class ProductFilterItem extends RealmObject implements IViewType, Parcela
 
     public void setUrlName(String urlName) {
         this.urlName = urlName;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(viewTypeId);
+        parcel.writeString(id);
+        parcel.writeString(level);
+        parcel.writeString(urlName);
+        parcel.writeString(filterName);
+        parcel.writeString(slug);
+        parcel.writeString(value);
+        parcel.writeByte((byte) (isSelected ? 1 : 0));
+        parcel.writeInt(filterId);
     }
 }

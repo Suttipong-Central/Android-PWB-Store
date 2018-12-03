@@ -17,6 +17,20 @@ public class CategoryDao implements IViewType, Parcelable {
     private List<Category> mCategoryList = new ArrayList<>();
     private Category category;
 
+    public CategoryDao(List<Category> categoryList) {
+        this.mCategoryList = categoryList;
+    }
+
+    public CategoryDao(Category category) {
+        mCategoryList.add(category);
+    }
+
+    protected CategoryDao(Parcel in) {
+        viewTypeId = in.readInt();
+        category = in.readParcelable(Category.class.getClassLoader());
+        mCategoryList = in.createTypedArrayList(Category.CREATOR);
+    }
+
     public static final Creator<CategoryDao> CREATOR = new Creator<CategoryDao>() {
         @Override
         public CategoryDao createFromParcel(Parcel in) {
@@ -28,30 +42,6 @@ public class CategoryDao implements IViewType, Parcelable {
             return new CategoryDao[size];
         }
     };
-
-    public CategoryDao(List<Category> categoryList) {
-        this.mCategoryList = categoryList;
-    }
-
-    public CategoryDao(Category category) {
-        mCategoryList.add(category);
-    }
-
-    protected CategoryDao(Parcel in) {
-        viewTypeId = in.readInt();
-        mCategoryList = in.createTypedArrayList(Category.CREATOR);
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(viewTypeId);
-        dest.writeTypedList(mCategoryList);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     @Override
     public int getViewTypeId() {
@@ -69,5 +59,17 @@ public class CategoryDao implements IViewType, Parcelable {
 
     public void setCategoryList(List<Category> categoryList) {
         mCategoryList = categoryList;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(viewTypeId);
+        parcel.writeTypedList(mCategoryList);
+        parcel.writeParcelable(category, i);
     }
 }

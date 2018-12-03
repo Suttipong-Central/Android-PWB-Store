@@ -15,17 +15,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 
 public class ProductFilterSubHeader extends RealmObject implements IViewType, Parcelable {
-    public static final Creator<ProductFilterSubHeader> CREATOR = new Creator<ProductFilterSubHeader>() {
-        @Override
-        public ProductFilterSubHeader createFromParcel(Parcel in) {
-            return new ProductFilterSubHeader(in);
-        }
-
-        @Override
-        public ProductFilterSubHeader[] newArray(int size) {
-            return new ProductFilterSubHeader[size];
-        }
-    };
     private static final String TAG = "ProductFilterSubHeader";
     @Ignore
     private int viewTypeId;
@@ -73,28 +62,27 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
     protected ProductFilterSubHeader(Parcel in) {
         viewTypeId = in.readInt();
         id = in.readString();
+        level = in.readString();
         name = in.readString();
-        type = in.readString();
-        isExpanded = in.readByte() != 0;
         urlName = in.readString();
         includeInMenu = in.readString();
+        type = in.readString();
+        isExpanded = in.readByte() != 0;
+        this.mProductFilterItemList = new RealmList<>();
+        this.mProductFilterItemList.addAll(in.createTypedArrayList(ProductFilterItem.CREATOR));
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(viewTypeId);
-        dest.writeString(id);
-        dest.writeString(name);
-        dest.writeTypedList(mProductFilterItemList);
-        dest.writeByte((byte) (isExpanded ? 1 : 0));
-        dest.writeString(urlName);
-        dest.writeString(includeInMenu);
-    }
+    public static final Creator<ProductFilterSubHeader> CREATOR = new Creator<ProductFilterSubHeader>() {
+        @Override
+        public ProductFilterSubHeader createFromParcel(Parcel in) {
+            return new ProductFilterSubHeader(in);
+        }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+        @Override
+        public ProductFilterSubHeader[] newArray(int size) {
+            return new ProductFilterSubHeader[size];
+        }
+    };
 
     @Override
     public int getViewTypeId() {
@@ -252,5 +240,23 @@ public class ProductFilterSubHeader extends RealmObject implements IViewType, Pa
         }
 
         return resultString.substring(0, resultString.length() - 1);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(viewTypeId);
+        parcel.writeString(id);
+        parcel.writeString(level);
+        parcel.writeString(name);
+        parcel.writeString(urlName);
+        parcel.writeString(includeInMenu);
+        parcel.writeString(type);
+        parcel.writeByte((byte) (isExpanded ? 1 : 0));
+        parcel.writeTypedList(this.mProductFilterItemList);
     }
 }
