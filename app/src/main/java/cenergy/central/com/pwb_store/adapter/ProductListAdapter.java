@@ -179,7 +179,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int startPosition = mListViewType.size();
         ArrayList<Product> products = productResponse.getProducts() == null ? new ArrayList<Product>() : productResponse.getProducts();
         for (Product product : products) {
-            if(skuList.indexOf(product.getSku()) == -1){
+            if(skuList.indexOf(product.getSku()) == -1 && product.getPrice() > 0){
                 skuList.add(product.getSku());
                 product.setAttributeID(VIEW_TYPE_ID_GRID_VIEW);
                 mListViewType.add(product);

@@ -40,7 +40,7 @@ class ProductResponse(
                 val popularSearch = productSearchResponse.popularSearches!![0]
                 popularSearch.productList?.forEach { productSearch ->
                     val product = Product.asProduct(productSearch)
-                    if (products.none { it.sku == product.sku }) {
+                    if (products.none { it.sku == product.sku } && product.price > 0) {
                         products.add(product)
                     }
                 }
@@ -50,7 +50,7 @@ class ProductResponse(
             } else if (productSearchResponse.hasPopularProducts()) {
                 productSearchResponse.popularProducts?.forEach { popularProduct ->
                     val product = Product.asProduct(popularProduct)
-                    if (products.none { it.sku == product.sku }) {
+                    if (products.none { it.sku == product.sku } && product.price > 0) {
                         products.add(product)
                     }
                 }
@@ -59,7 +59,7 @@ class ProductResponse(
                 val popularSearch = productSearchResponse.popularSearches!![0]
                 popularSearch.productList?.forEach { productSearch ->
                     val product = Product.asProduct(productSearch)
-                    if (products.none { it.sku == product.sku }) {
+                    if (products.none { it.sku == product.sku } && product.price > 0) {
                         products.add(product)
                     }
                 }
