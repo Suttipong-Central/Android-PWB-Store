@@ -24,14 +24,14 @@ import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
-import cenergy.central.com.pwb_store.extensions.formatter
 import cenergy.central.com.pwb_store.extensions.formatterUTC
 import cenergy.central.com.pwb_store.extensions.toDate
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.response.Item
 import cenergy.central.com.pwb_store.model.response.OrderResponse
+import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -40,6 +40,7 @@ import java.util.*
 
 class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
+    private var preferenceManager: PreferenceManager? = null
     // widget view
     private lateinit var recycler: RecyclerView
     private lateinit var orderNumber: PowerBuyTextView
@@ -78,10 +79,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     // data
     private var orderId: String? = null
     private var cacheOrderId: String? = null
-    private var listItems: List<Item>? = arrayListOf()
     private var orderProductListAdapter = OrderProductListAdapter()
     private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
-    private var database = RealmController.with(context)
+    private var database = RealmController.getInstance()
     private var deliveryType: DeliveryType? = null
     //TODO: Delete shippingInfo && billingInfo this is for testing the api still not sent about sub address in custom_attribute
     private var shippingInfo: AddressInformation? = null
@@ -116,6 +116,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        preferenceManager = context?.let { PreferenceManager(it) }
         orderId = arguments?.getString(ARG_ORDER_ID)
         cacheOrderId = arguments?.getString(ARG_CACHE_ORDER_ID)
         cacheCartItems = arguments?.getParcelableArrayList(ARG_CART_ITEMS)
@@ -204,20 +205,19 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     private fun getOrderFromLocalDatabase(orderId: String) {
         cacheOrder = database.getOrder(orderId)
-        cacheOrder?.let { updateViewOrder(it) }
+        cacheOrder?.let { cacheOrder -> updateViewOrder(cacheOrder) }
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(order: Order) {
         val orderResponse = order.orderResponse
-        listItems = orderResponse!!.items
 
         val unit = context!!.getString(R.string.baht)
 
-        val shippingAddress = orderResponse.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress
+        val shippingAddress = orderResponse!!.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress
         val billingAddress = orderResponse.billingAddress
 
-        orderProductListAdapter.listItems = listItems ?: arrayListOf()
+        orderProductListAdapter.listItems = orderResponse.items ?: arrayListOf()
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
@@ -225,7 +225,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderDate.text = orderResponse.createdAt.toDate().formatterUTC()
         email.text = shippingAddress?.email
         contactNo.text = shippingAddress?.telephone
-        mProgressDialog?.dismiss()
         finishButton.setOnClickListener {
             finishThisPage()
         }
@@ -281,6 +280,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         val amount = (orderResponse.baseTotal - orderResponse.shippingAmount)
         tvAmount.text = getDisplayPrice(unit, amount.toString())
         tvShippingAmount.text = getDisplayPrice(unit, orderResponse.shippingAmount.toString())
+        mProgressDialog?.dismiss()
     }
 
     private fun finishThisPage() {
@@ -319,35 +319,53 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     // {@like implement ApiResponseCallback<OrderResponse>}
-    override fun success(orderResponse: OrderResponse?) {
-        if (orderResponse != null) {
+    override fun success(response: OrderResponse?) {
+        if (response != null) {
 
             // TODO: Delete shippingInfo && billingInfo... this is for testing the api still not sent about sub address in custom_attribute
-            orderResponse.billingAddress = billingInfo ?: shippingInfo
+            response.billingAddress = billingInfo ?: shippingInfo
 
-            if (orderResponse.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
-                orderResponse.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress = shippingInfo
+            if (response.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
+                response.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress = shippingInfo
             }
 
             // add shipping type
-            orderResponse.shippingType = deliveryType?.toString() ?: ""
+            response.shippingType = deliveryType?.toString() ?: ""
 
             // TBD- keep imageUrl .... remove later waiting API have imageURL
-            for (cacheItem in cacheCartItems!!) {
-                val items = orderResponse.items?.filter { it.sku == cacheItem.sku }
-                if (items != null && items.isNotEmpty()) {
-                    Log.d("OrderResponse", cacheItem.imageUrl)
-                    items[0].imageUrl = cacheItem.imageUrl
+//            for (cacheItem in cacheCartItems!!) {
+//                val items = response.items?.filter { it.sku == cacheItem.sku }
+//                if (items != null && items.isNotEmpty()) {
+//                    Log.d("OrderResponse", cacheItem.imageUrl)
+//                    items[0].imageUrl = cacheItem.imageUrl
+//                }
+//            }
+
+            response.items?.forEach { item ->
+                val isCacheItem = cacheCartItems?.firstOrNull { it.sku == item.sku }
+                if (isCacheItem != null){
+                    item.imageUrl = isCacheItem.imageUrl
+                } else {
+                    item.isFreebie = true
                 }
             }
 
             // save order to local database
             val userInformation = database.userInformation
-            val order = Order(orderId = orderResponse.orderId
-                    ?: "", userInformation = userInformation, orderResponse = orderResponse, branchShipping = branchAddress)
-            database.saveOrder(order)
+            val order = Order(orderId = response.orderId ?: "", userInformation = userInformation, orderResponse = response, branchShipping = branchAddress)
 
-            updateViewOrder(order)
+            database.saveOrder(order, object : DatabaseListener{
+                override fun onSuccessfully() {
+                    updateViewOrder(order)
+                }
+
+                override fun onFailure(error: Throwable) {
+                    mProgressDialog?.dismiss()
+                    showAlertDialog("", "" + error.message)
+                }
+            })
+//            database.saveOrder(order)
+            clearCachedCart() // clear cache item
         } else {
             mProgressDialog?.dismiss()
             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -389,5 +407,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         text += address.region + ", "
         text += address.postcode
         return text
+    }
+
+    private fun clearCachedCart() {
+        preferenceManager?.clearCartId()
+        RealmController.getInstance().deleteAllCacheCartItem()
+        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

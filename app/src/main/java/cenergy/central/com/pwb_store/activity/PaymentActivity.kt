@@ -179,11 +179,9 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     }
 
     private fun startSuccessfullyFragment(orderId: String) {
-        // get cache item
-        val cacheCartItems = arrayListOf<CacheCartItem>()
-        cacheCartItems.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
-        clearCachedCart() // clear cache item
-        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItems))
+        val cacheCartItem = arrayListOf<CacheCartItem>()
+        cacheCartItem.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
+        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItem))
     }
 
     private fun startStorePickupFragment(totalBranch: Int) {
@@ -296,12 +294,6 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             builder.setTitle(title)
         }
         builder.show()
-    }
-
-    private fun clearCachedCart() {
-        preferenceManager.clearCartId()
-        RealmController.getInstance().deleteAllCacheCartItem()
-        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 
     private fun showAlertCheckPayment(title: String, message: String, storeAddress: AddressInformation?,

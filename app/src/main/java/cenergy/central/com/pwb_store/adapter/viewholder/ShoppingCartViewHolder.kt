@@ -95,7 +95,6 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         productQty.setQty(item.qty!!)
         totalPrice.text = "FREE"
         totalPrice.setTextColor(ContextCompat.getColor(itemView.context, R.color.freeColor))
-
     }
     // endregion
 

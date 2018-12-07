@@ -269,15 +269,37 @@ public class RealmController {
     // endregion
 
     // region Order
-    public void saveOrder(final Order order) {
+    public void saveOrder(final Order order, final DatabaseListener listener) {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
                 realm.copyToRealmOrUpdate(order);
             }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                if (listener != null) {
+                    listener.onSuccessfully();
+                }
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(@NonNull Throwable error) {
+                if (listener != null) {
+                    listener.onFailure(error);
+                }
+            }
         });
     }
+
+//
+//    public void saveOrder(final Order order) {
+//        Realm realm = getRealm();
+//        realm.beginTransaction();
+//        realm.insertOrUpdate(order);
+//        realm.commitTransaction();
+//    }
 
     public List<Order> deleteOrder(final String orderId) {
         Realm realm = getRealm();

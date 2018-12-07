@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.OrderProductListViewHolder
-import cenergy.central.com.pwb_store.model.response.Item
+import cenergy.central.com.pwb_store.model.Item
 
 class OrderProductListAdapter : RecyclerView.Adapter<OrderProductListViewHolder>() {
 
