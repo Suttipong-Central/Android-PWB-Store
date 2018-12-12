@@ -71,6 +71,7 @@ public class ProductDetailFragment extends Fragment {
     private AddCompare addCompare;
     private long count;
     private ProgressDialog mProgressDialog;
+    private RealmController database = RealmController.getInstance();
 
     public ProductDetailFragment() {
         super();
@@ -149,7 +150,6 @@ public class ProductDetailFragment extends Fragment {
 
     private void actionAddToCompare(Product product) {
         showProgressDialog();
-        RealmController database = RealmController.with(this);
         long count = database.getCompareProducts().size();
         Log.d(TAG, "" + count);
         if (count >= 4) {
@@ -169,7 +169,7 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void saveCompareProduct(Product product) {
-        RealmController.with(this).saveCompareProduct(product, new DatabaseListener() {
+        database.saveCompareProduct(product, new DatabaseListener() {
             @Override
             public void onSuccessfully() {
                 mProgressDialog.dismiss();
@@ -240,7 +240,7 @@ public class ProductDetailFragment extends Fragment {
 //        ButterKnife.bind(this, rootView);
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
         //get realm instance
-        this.mRealm = RealmController.with(this).getRealm();
+        this.mRealm = database.getRealm();
         //mRealm = Realm.getDefaultInstance();
 
         mAdapter = new ProductDetailAdapter(getContext(), getChildFragmentManager());

@@ -40,7 +40,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
 
     private var productDetailListener: ProductDetailListener? = null
     private var product: Product? = null
-    private val database by lazy { RealmController.with(context) }
+    private val database = RealmController.getInstance()
 
     // older code
     private lateinit var header: PowerBuyTextView

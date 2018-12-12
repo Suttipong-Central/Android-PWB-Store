@@ -48,7 +48,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
     private var cartId: String = ""
     private var unit: String = ""
-    private val database: RealmController = RealmController.with(this)
+    private val database = RealmController.getInstance()
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -164,7 +164,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     }
 
     private fun updateViewShoppingCart(response: List<CartItem>) {
-        val database = RealmController.getInstance()
         cartItemList = response
         shoppingCartAdapter.cartItemList = cartItemList
 

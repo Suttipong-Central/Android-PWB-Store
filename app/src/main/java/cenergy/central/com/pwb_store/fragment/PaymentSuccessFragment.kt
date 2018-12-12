@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -77,13 +78,13 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var mProgressDialog: ProgressDialog? = null
 
     // data
+    private val unit: String by lazy { resources.getString(R.string.baht) }
     private var orderId: String? = null
     private var cacheOrderId: String? = null
     private var orderProductListAdapter = OrderProductListAdapter()
     private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
     private var database = RealmController.getInstance()
     private var deliveryType: DeliveryType? = null
-    //TODO: Delete shippingInfo && billingInfo this is for testing the api still not sent about sub address in custom_attribute
     private var shippingInfo: AddressInformation? = null
     private var billingInfo: AddressInformation? = null
     private var branchAddress: Branch? = null
@@ -212,8 +213,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private fun updateViewOrder(order: Order) {
         val orderResponse = order.orderResponse
 
-        val unit = context!!.getString(R.string.baht)
-
         val shippingAddress = orderResponse!!.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress
         val billingAddress = orderResponse.billingAddress
 
@@ -332,15 +331,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             // add shipping type
             response.shippingType = deliveryType?.toString() ?: ""
 
-            // TBD- keep imageUrl .... remove later waiting API have imageURL
-//            for (cacheItem in cacheCartItems!!) {
-//                val items = response.items?.filter { it.sku == cacheItem.sku }
-//                if (items != null && items.isNotEmpty()) {
-//                    Log.d("OrderResponse", cacheItem.imageUrl)
-//                    items[0].imageUrl = cacheItem.imageUrl
-//                }
-//            }
-
             response.items?.forEach { item ->
                 val isCacheItem = cacheCartItems?.firstOrNull { it.sku == item.sku }
                 if (isCacheItem != null){
@@ -411,7 +401,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     private fun clearCachedCart() {
         preferenceManager?.clearCartId()
-        RealmController.getInstance().deleteAllCacheCartItem()
+        database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

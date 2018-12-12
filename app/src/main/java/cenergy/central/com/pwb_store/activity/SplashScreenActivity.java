@@ -21,7 +21,6 @@ import cenergy.central.com.pwb_store.realm.seeder.DistrictSeeder;
 import cenergy.central.com.pwb_store.realm.seeder.PostcodeSeeder;
 import cenergy.central.com.pwb_store.realm.seeder.ProvinceSeeder;
 import cenergy.central.com.pwb_store.realm.seeder.SubDistrictSeeder;
-import me.a3cha.android.thaiaddress.models.Postcode;
 
 /**
  * Created by napabhat on 9/21/2017 AD.
@@ -32,13 +31,12 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     private TelephonyManager mTelephonyManager;
-    private RealmController database;
+    private RealmController database = RealmController.getInstance();
     private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = RealmController.with(this);
         preferenceManager = new PreferenceManager(this);
         initView();
     }

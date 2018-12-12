@@ -179,7 +179,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 }
                 if (holder instanceof DrawerUserNewViewHolder) {
                     DrawerUserNewViewHolder drawerUserViewHolder = (DrawerUserNewViewHolder) holder;
-                    drawerUserViewHolder.setViewHolder(mContext);
+                    drawerUserViewHolder.setViewHolder();
                 }
                 break;
 

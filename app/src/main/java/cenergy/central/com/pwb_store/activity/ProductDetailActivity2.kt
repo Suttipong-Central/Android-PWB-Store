@@ -50,7 +50,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
 
     // data
     private val preferenceManager by lazy { PreferenceManager(this@ProductDetailActivity2) }
-    private val database by lazy { RealmController.with(this@ProductDetailActivity2) }
+    private val database = RealmController.getInstance()
     private var productId: String? = null
     private var isBarcode: Boolean = false
     private var product: Product? = null
@@ -291,7 +291,6 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     // region action compare product
     private fun addToCompare(product: Product) {
         showProgressDialog()
-        val database = RealmController.with(this)
         val count = database.compareProducts.size
         Log.d(TAG, "" + count)
         if (count >= 4) {
@@ -311,7 +310,7 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     }
 
     private fun saveCompareProduct(product: Product) {
-        RealmController.with(this).saveCompareProduct(product, object : DatabaseListener {
+        database.saveCompareProduct(product, object : DatabaseListener {
             override fun onSuccessfully() {
                 dismissProgressDialog()
                 updateCompareBadge()

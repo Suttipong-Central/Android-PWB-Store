@@ -17,8 +17,8 @@ class DrawerUserNewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
     private val fullName: PowerBuyTextView = itemView.findViewById(R.id.txt_view_full_name)
     private val storeName: PowerBuyTextView = itemView.findViewById(R.id.txt_store)
 
-    fun setViewHolder(context: Context) {
-        val userInformation = RealmController.with(context).userInformation
+    fun setViewHolder() {
+        val userInformation = RealmController.getInstance().userInformation
 //        imgProfile.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_person))
         fullName.text = userInformation.user?.name ?: ""
         if (userInformation.store != null) {

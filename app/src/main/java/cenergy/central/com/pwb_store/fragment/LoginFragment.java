@@ -61,7 +61,6 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     private String username;
     private String password;
 
-
     public LoginFragment() {
         super();
     }
@@ -263,9 +262,8 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     private void clearData() {
         if (getContext() != null) {
             PreferenceManager preferenceManager = new PreferenceManager(getContext());
-            RealmController realmController = RealmController.with(this);
             preferenceManager.userLogout();
-            realmController.userLogout();
+            RealmController.getInstance().userLogout();
         }
     }
 

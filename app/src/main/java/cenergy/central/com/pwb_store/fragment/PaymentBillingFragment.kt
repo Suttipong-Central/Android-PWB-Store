@@ -84,7 +84,7 @@ class PaymentBillingFragment : Fragment() {
     private var mProgressDialog: ProgressDialog? = null
 
     // data
-    private val database = RealmController.with(context)
+    private val database = RealmController.getInstance()
     private var cartItemList: List<CartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var paymentProtocol: PaymentProtocol? = null

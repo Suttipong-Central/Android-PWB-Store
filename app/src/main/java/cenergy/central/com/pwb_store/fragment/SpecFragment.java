@@ -63,6 +63,7 @@ public class SpecFragment extends Fragment {
     private Runnable runOnUiThread;
     private AddCompare addCompare;
     private ProgressDialog mProgressDialog;
+    private RealmController database = RealmController.getInstance();
 
     public SpecFragment() {
         super();
@@ -72,7 +73,7 @@ public class SpecFragment extends Fragment {
     public void onEvent(SpecAddToCompareBus specAddToCompareBus){
         if (specAddToCompareBus.isAdded() == true){
             showProgressDialog();
-            long count = RealmController.with(this).getCompareProducts().size();
+            long count = database.getCompareProducts().size();
             Log.d(TAG, "" + count);
             if (count >= 4){
                 mProgressDialog.dismiss();
@@ -156,7 +157,7 @@ public class SpecFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         //get realm instance
-        this.mRealm = RealmController.with(this).getRealm();
+        this.mRealm = database.getRealm();
         mAdapter = new SpecDetailAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
@@ -259,7 +260,7 @@ public class SpecFragment extends Fragment {
     private String checkPrimary(){
         String result;
         String id = mRealmProductDetail.getProductCode();
-        addCompare = RealmController.with(this).getCompare(id);
+        addCompare = database.getCompare(id);
         if (addCompare == null){
             result = "";
         }else {

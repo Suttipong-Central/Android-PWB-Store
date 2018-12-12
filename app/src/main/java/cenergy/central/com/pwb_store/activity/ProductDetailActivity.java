@@ -94,6 +94,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     private Realm mRealm;
     private ProductDetailDao mProductDetailDao;
     private Product product;
+    private RealmController database = RealmController.getInstance();
 
     final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
         @Override
@@ -273,8 +274,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     @Subscribe
     public void onEvent(UpdateBadgeBus updateBadgeBus) {
         if (updateBadgeBus.isUpdate()) {
-//            long count = RealmController.with(this).getCount();
-            long count = RealmController.with(this).getCompareProducts().size();
+            long count = database.getCompareProducts().size();
             mBuyCompareView.updateCartCount((int) count);
         }
     }
@@ -435,8 +435,8 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
 
         //get realm instance
-        this.mRealm = RealmController.with(this).getRealm();
-        int count = RealmController.with(this).getCompareProducts().size();
+        this.mRealm = database.getRealm();
+        int count = database.getCompareProducts().size();
 
         mBuyCompareView.setListener(this);
         mBuyShoppingCartView.setListener(this);
@@ -652,7 +652,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-        long count = RealmController.with(this).getCompareProducts().size();
+        long count = database.getCompareProducts().size();
         mBuyCompareView.updateCartCount((int) count);
 
         updateShoppingCartBadge();
@@ -696,7 +696,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     @Override
     public void onShoppingCartClick(View view) {
-        if (RealmController.with(this).getCacheCartItems().size() > 0) {
+        if (database.getCacheCartItems().size() > 0) {
             ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
@@ -761,7 +761,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
     }
 
     private void saveCartItem(CartItem cartItem, final Product product) {
-        RealmController.with(this).saveCartItem(CacheCartItem.asCartItem(cartItem, product), new DatabaseListener() {
+        database.saveCartItem(CacheCartItem.asCartItem(cartItem, product), new DatabaseListener() {
             @Override
             public void onSuccessfully() {
                 updateShoppingCartBadge();
@@ -780,7 +780,7 @@ public class ProductDetailActivity extends AppCompatActivity implements PowerBuy
 
     private void updateShoppingCartBadge() {
         int count = 0;
-        List<CacheCartItem> items = RealmController.with(this).getCacheCartItems();
+        List<CacheCartItem> items = database.getCacheCartItems();
         for (CacheCartItem item : items) {
             if (item.getQty() != null) {
                 count += item.getQty();

@@ -29,9 +29,10 @@ import java.util.concurrent.TimeUnit
 
 
 class HttpManagerMagento(context: Context) {
+
     private var retrofit: Retrofit
     private var defaultHttpClient: OkHttpClient
-    private var database: RealmController = RealmController.with(context)
+    private var database = RealmController.getInstance()
 
     private lateinit var userToken: String
 
@@ -467,7 +468,6 @@ class HttpManagerMagento(context: Context) {
                 if (response != null) {
                     val brandResponse = response.body()
                     val brands = brandResponse?.items ?: arrayListOf()
-                    val database = RealmController.getInstance()
                     for (brand in brands) {
                         database.saveBands(brand)
                     }

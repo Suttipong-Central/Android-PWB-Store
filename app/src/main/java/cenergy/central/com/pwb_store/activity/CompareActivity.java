@@ -50,6 +50,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     PowerBuyShoppingCartView mBuyShoppingCartView;
     private PreferenceManager preferenceManager;
     private ProgressDialog mProgressDialog;
+    private RealmController database = RealmController.getInstance();
 
     @Subscribe
     public void onEvent(CompareDetailBus compareDetailBus) {
@@ -134,7 +135,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
 
     @Override
     public void onShoppingCartClick(View view) {
-        if (RealmController.with(this).getCacheCartItems().size() > 0) {
+        if (database.getCacheCartItems().size() > 0) {
             ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
@@ -238,7 +239,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     }
 
     private void saveCartItem(CartItem cartItem, final CompareProduct compareProduct) {
-        RealmController.with(this).saveCartItem(CacheCartItem.asCartItem(cartItem, compareProduct), new DatabaseListener() {
+        database.saveCartItem(CacheCartItem.asCartItem(cartItem, compareProduct), new DatabaseListener() {
             @Override
             public void onSuccessfully() {
                 updateShoppingCartBadge();
@@ -257,7 +258,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
 
     private void updateShoppingCartBadge() {
         int count = 0;
-        List<CacheCartItem> items = RealmController.with(this).getCacheCartItems();
+        List<CacheCartItem> items = database.getCacheCartItems();
         for (CacheCartItem item : items) {
             if (item.getQty() != null) {
                 count += item.getQty();
@@ -282,7 +283,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     }
 
     private void clearCart() {
-        RealmController.with(this).deleteAllCacheCartItem();
+        database.deleteAllCacheCartItem();
         preferenceManager.clearCartId();
     }
 

@@ -69,6 +69,7 @@ public class CompareFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private String sku = "";
     private boolean isDelete;
+    private RealmController database = RealmController.getInstance();
 
     public CompareFragment() {
         super();
@@ -138,7 +139,7 @@ public class CompareFragment extends Fragment {
 //        showProgressDialog();
 
         CompareProduct compareProduct = compareDeleteBus.getCompareProduct();
-        List<CompareProduct> compareProducts = RealmController.getInstance().deleteCompareProduct(compareProduct.getSku());
+        List<CompareProduct> compareProducts = database.deleteCompareProduct(compareProduct.getSku());
         mAdapter.updateCompareProducts(compareProducts, mCompareDao);
 
 //        HttpManagerMagentoOld.getInstance().getCompareService().getCompareProductList("sku",sku,"in","in_stores",
@@ -221,7 +222,7 @@ public class CompareFragment extends Fragment {
     private void init(Bundle savedInstanceState) {
         // Init Fragment level's variable(s) here
         //get realm instance
-        this.mRealm = RealmController.with(this).getRealm();
+        this.mRealm = database.getRealm();
         isDelete = false;
     }
 
@@ -254,7 +255,7 @@ public class CompareFragment extends Fragment {
 
         // TDB- example
         mockData();
-        List<CompareProduct> compareProducts = RealmController.getInstance().getCompareProducts();
+        List<CompareProduct> compareProducts = database.getCompareProducts();
         mAdapter.updateCompareProducts(compareProducts, mCompareDao);
 
     }
@@ -423,7 +424,7 @@ public class CompareFragment extends Fragment {
         String listString1 = "";
         String listString2 = "";
         String detail = "";
-        results = RealmController.with(this).getCompares();
+        results = database.getCompares();
         ArrayList<String> list = new ArrayList<String>();
         if (results != null) {
             for (AddCompare addCompare :

@@ -48,7 +48,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
 
     // data
-    private val database = RealmController.with(this)
+    private val database = RealmController.getInstance()
     private var cartId: String? = null
     private var productHDLList: ArrayList<ProductHDLBody> = arrayListOf()
     private var customDetail = CustomDetail.createCustomDetail("1", "", "00139")

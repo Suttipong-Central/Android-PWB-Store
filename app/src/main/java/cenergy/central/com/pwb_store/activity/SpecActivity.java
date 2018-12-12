@@ -51,8 +51,8 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     private ProductDetail mProductDetail;
     private ProgressDialog mProgressDialog;
     private String productId;
-
     private Product product;
+    private RealmController database = RealmController.getInstance();
 
 //    final Callback<ProductDetail> CALLBACK_PRODUCT_DETAIL = new Callback<ProductDetail>() {
 //        @Override
@@ -93,8 +93,7 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     @Subscribe
     public void onEvent(UpdateBadgeBus updateBadgeBus){
         if (updateBadgeBus.isUpdate()){
-//            long count = RealmController.with(this).getCount();
-            long count = RealmController.with(this).getCompareProducts().size();
+            long count = database.getCompareProducts().size();
             mBuyCompareView.updateCartCount((int) count);
         }
     }
@@ -152,8 +151,8 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
         });
 
         //get realm instance
-        this.mRealm = RealmController.with(this).getRealm();
-        int count = RealmController.with(this).getCompareProducts().size();
+        this.mRealm = database.getRealm();
+        int count = database.getCompareProducts().size();
 
         mBuyCompareView.setListener(this);
         mBuyCompareView.updateCartCount(count);
@@ -176,7 +175,7 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-        int count = RealmController.with(this).getCompareProducts().size();
+        int count = database.getCompareProducts().size();
         mBuyCompareView.updateCartCount(count);
     }
 

@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private String storeId;
     private ProgressDialog mProgressDialog;
     public static Handler handler = new Handler();
+    private RealmController database = RealmController.getInstance();
 
     final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
         @Override
@@ -551,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         switch (action) {
             case ACTION_CART: {
                 String cartId = new PreferenceManager(this).getCartId();
-                int count = RealmController.with(this).getCacheCartItems().size();
+                int count = database.getCacheCartItems().size();
                 if (cartId != null && count > 0) {
                     ShoppingCartActivity.Companion.startActivity(this, cartId);
                 } else {
@@ -576,9 +577,8 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
 
     private void clearData() {
         PreferenceManager preferenceManager = new PreferenceManager(this);
-        RealmController realmController = RealmController.with(this);
         preferenceManager.userLogout();
-        realmController.userLogout();
+        database.userLogout();
 
         // post delay start login
         showProgressDialog();
