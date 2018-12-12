@@ -182,6 +182,7 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
         val cacheCartItem = arrayListOf<CacheCartItem>()
         cacheCartItem.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
         startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItem))
+        clearCachedCart() // clear cache item
     }
 
     private fun startStorePickupFragment(totalBranch: Int) {
@@ -697,5 +698,11 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
             inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
             inputManager.hideSoftInputFromInputMethod(currentFocus.windowToken, 0)
         }
+    }
+
+    private fun clearCachedCart() {
+        preferenceManager.clearCartId()
+        database.deleteAllCacheCartItem()
+        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

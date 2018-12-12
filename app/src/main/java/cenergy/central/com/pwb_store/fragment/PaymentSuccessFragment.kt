@@ -36,6 +36,7 @@ import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
 
@@ -84,11 +85,14 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var orderProductListAdapter = OrderProductListAdapter()
     private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
     private var database = RealmController.getInstance()
-    private var deliveryType: DeliveryType? = null
-    private var shippingInfo: AddressInformation? = null
-    private var billingInfo: AddressInformation? = null
-    private var branchAddress: Branch? = null
     private var cacheOrder: Order? = null
+
+    // get data activity
+    private val paymentListener by lazy { context as PaymentProtocol }
+    private val deliveryType by lazy { paymentListener.getSelectedDeliveryType() }
+    private val shippingInfo by lazy { paymentListener.getShippingAddress() }
+    private val billingInfo by lazy { paymentListener.getBillingAddress() }
+    private val branchAddress by lazy { paymentListener.getSelectedBranch() }
 
 
     companion object {
@@ -121,19 +125,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderId = arguments?.getString(ARG_ORDER_ID)
         cacheOrderId = arguments?.getString(ARG_CACHE_ORDER_ID)
         cacheCartItems = arguments?.getParcelableArrayList(ARG_CART_ITEMS)
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        try {
-            val paymentListener = context as PaymentProtocol
-            this.deliveryType = paymentListener.getSelectedDeliveryType()
-            this.shippingInfo = paymentListener.getShippingAddress()
-            this.billingInfo = paymentListener.getBillingAddress()
-            this.branchAddress = paymentListener.getSelectedBranch()
-        } catch (e: Exception) {
-        }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -211,25 +202,23 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(order: Order) {
-        val orderResponse = order.orderResponse
+        val shippingAddress = order.shippingAddress ?: throw IllegalArgumentException("Shipping address must not be null")
+        val billingAddress = order.billingAddress ?: throw IllegalArgumentException("Billing address must not be null")
 
-        val shippingAddress = orderResponse!!.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress
-        val billingAddress = orderResponse.billingAddress
-
-        orderProductListAdapter.listItems = orderResponse.items ?: arrayListOf()
+        orderProductListAdapter.listItems = order.items
         //Setup order number
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
         //Setup customer
-        orderDate.text = orderResponse.createdAt.toDate().formatterUTC()
-        email.text = shippingAddress?.email
-        contactNo.text = shippingAddress?.telephone
+        orderDate.text = order.createdAt
+        email.text = shippingAddress.email
+        contactNo.text = shippingAddress.telephone
         finishButton.setOnClickListener {
             finishThisPage()
         }
 
         // setup shipping address or pickup at store
-        if (orderResponse.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
+        if (order.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
             deliveryLayout.visibility = View.VISIBLE
             billingAddressLayout.visibility = View.VISIBLE
             deliveryInfoLayout.visibility = View.VISIBLE
@@ -238,20 +227,20 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             customerNameLayout.visibility = View.GONE
 
             tvShippingHeader.text = getString(R.string.delivery_detail)
-            tvDeliveryType.text = orderResponse.shippingType
-            tvReceiverName.text = shippingAddress?.getDisplayName()
+            tvDeliveryType.text = order.shippingType
+            tvReceiverName.text = shippingAddress.getDisplayName()
             tvDeliveryAddress.text = getAddress(shippingAddress)
-            tvDeliveryInfo.text = orderResponse.shippingDescription
-            tvBillingName.text = billingAddress?.getDisplayName()
+            tvDeliveryInfo.text = order.shippingDescription
+            tvBillingName.text = billingAddress.getDisplayName()
             tvBillingAddress.text = getAddress(billingAddress)
-            if(billingAddress?.sameBilling == SAME_BILLING){
+            if(billingAddress.sameBilling == SAME_BILLING){
                 billingEmailLayout.visibility = View.GONE
                 billingTelephoneLayout.visibility = View.GONE
             } else {
                 billingEmailLayout.visibility = View.VISIBLE
                 billingTelephoneLayout.visibility = View.VISIBLE
-                tvBillingEmail.text = billingAddress?.email
-                tvBillingTelephone.text = billingAddress?.telephone
+                tvBillingEmail.text = billingAddress.email
+                tvBillingTelephone.text = billingAddress.telephone
             }
         } else {
             deliveryLayout.visibility = View.GONE
@@ -261,7 +250,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             storeAddressLayout.visibility = View.VISIBLE
             customerNameLayout.visibility = View.VISIBLE
 
-            name.text = billingAddress?.getDisplayName()
+            name.text = billingAddress.getDisplayName()
 
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 
@@ -275,10 +264,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         // setup total or summary
-        totalPrice.text = getDisplayPrice(unit, orderResponse.baseTotal.toString())
-        val amount = (orderResponse.baseTotal - orderResponse.shippingAmount)
+        totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
+        val amount = (order.baseTotal - order.shippingAmount)
         tvAmount.text = getDisplayPrice(unit, amount.toString())
-        tvShippingAmount.text = getDisplayPrice(unit, orderResponse.shippingAmount.toString())
+        tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
         mProgressDialog?.dismiss()
     }
 
@@ -321,7 +310,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     override fun success(response: OrderResponse?) {
         if (response != null) {
 
-            // TODO: Delete shippingInfo && billingInfo... this is for testing the api still not sent about sub address in custom_attribute
             response.billingAddress = billingInfo ?: shippingInfo
 
             if (response.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
@@ -334,6 +322,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             response.items?.forEach { item ->
                 val isCacheItem = cacheCartItems?.firstOrNull { it.sku == item.sku }
                 if (isCacheItem != null){
+                    Log.d("TESTIMAGE","Image url ${isCacheItem.imageUrl}")
                     item.imageUrl = isCacheItem.imageUrl
                 } else {
                     item.isFreebie = true
@@ -341,8 +330,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             }
 
             // save order to local database
-            val userInformation = database.userInformation
-            val order = Order(orderId = response.orderId ?: "", userInformation = userInformation, orderResponse = response, branchShipping = branchAddress)
+            val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress)
 
             database.saveOrder(order, object : DatabaseListener{
                 override fun onSuccessfully() {
@@ -354,8 +342,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                     showAlertDialog("", "" + error.message)
                 }
             })
-//            database.saveOrder(order)
-            clearCachedCart() // clear cache item
         } else {
             mProgressDialog?.dismiss()
             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -397,11 +383,5 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         text += address.region + ", "
         text += address.postcode
         return text
-    }
-
-    private fun clearCachedCart() {
-        preferenceManager?.clearCartId()
-        database.deleteAllCacheCartItem()
-        Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 }

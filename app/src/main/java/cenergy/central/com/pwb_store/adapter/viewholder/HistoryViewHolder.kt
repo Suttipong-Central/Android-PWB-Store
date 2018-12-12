@@ -19,9 +19,8 @@ class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private var orderMember: PowerBuyTextView = itemView.findViewById(R.id.order_name_history)
 
     fun bindView(order: Order) {
-        val orderResponse = order.orderResponse
-        orderNumber.text = "${itemView.context.resources.getString(R.string.order_number)} ${orderResponse?.orderId}"
-        orderDate.text = "${itemView.context.resources.getString(R.string.order_date_history)} ${orderResponse?.createdAt?.toDate()?.formatterUTC()}"
-        orderMember.text = "${itemView.context.resources.getString(R.string.name_user_order)} ${orderResponse?.billingAddress?.getDisplayName()}"
+        orderNumber.text = "${itemView.context.resources.getString(R.string.order_number)} ${order.orderId}"
+        orderDate.text = "${itemView.context.resources.getString(R.string.order_date_history)} ${order.createdAt}"
+        orderMember.text = "${itemView.context.resources.getString(R.string.name_user_order)} ${order.memberName}"
     }
 }

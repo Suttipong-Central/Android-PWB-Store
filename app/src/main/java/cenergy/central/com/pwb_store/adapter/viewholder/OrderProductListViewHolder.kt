@@ -23,7 +23,6 @@ class OrderProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemV
     fun bindView(item: Item) {
         val unit = itemView.context.getString(R.string.baht)
         productImage.setImageUrl(item.imageUrl)
-        productImage.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.ic_pwb_logo_detail))
         productName.text = item.name
         productQty.text = item.qty.toString()
         if (!item.isFreebie){

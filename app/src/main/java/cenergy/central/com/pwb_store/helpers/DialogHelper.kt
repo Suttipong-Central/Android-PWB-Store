@@ -10,7 +10,7 @@ class DialogHelper(var context: Context) {
     fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)

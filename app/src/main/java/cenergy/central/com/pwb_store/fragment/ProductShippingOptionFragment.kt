@@ -87,7 +87,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         }
     }
 
-    fun hideCalendarView() {
+    private fun hideCalendarView() {
         header.visibility = View.GONE
         mCalendarView.visibility = View.GONE
         tvNoHaveHomeDelivery.visibility = View.VISIBLE
@@ -456,7 +456,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         val builder = context?.let {
             AlertDialog.Builder(it, R.style.AlertDialogTheme)
                     .setMessage(message)
-                    .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+                    .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
         }
         if (!TextUtils.isEmpty(title)) {
             builder?.setTitle(title)

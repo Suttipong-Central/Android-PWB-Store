@@ -239,7 +239,6 @@ public class RealmController {
 
     // region Order
     public void saveOrder(final Order order, final DatabaseListener listener) {
-        Realm realm = getRealm();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
