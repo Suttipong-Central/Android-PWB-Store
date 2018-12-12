@@ -61,10 +61,6 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     private String username;
     private String password;
 
-    public LoginFragment() {
-        super();
-    }
-
     @SuppressWarnings("unused")
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
@@ -74,54 +70,11 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init(savedInstanceState);
-
-        if (savedInstanceState != null)
-            onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_login, container, false);
         initInstances(rootView, savedInstanceState);
-
-//        String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
-//        String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
-
-        // setup onClick login
-//        rootView.findViewById(R.id.card_view_login).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                hideSoftKeyboard(v);
-//                showProgressDialog();
-//                try {
-//                    String username = rootView.<EditText>findViewById(R.id.edit_text_username).getText().toString();
-//                    String password = rootView.<EditText>findViewById(R.id.edit_text_password).getText().toString();
-//
-//                    if (username.equals(Contextor.getInstance().getContext().getString(R.string.user)) && password.equals(Contextor.getInstance().getContext().getString(R.string.passwordDetail))) {
-//                        EventBus.getDefault().post(new LoginSuccessBus(true));
-//                        mProgressDialog.dismiss();
-//                    } else {
-//                        mProgressDialog.dismiss();
-//                        showAlertDialog(Contextor.getInstance().getContext().getString(R.string.error), Contextor.getInstance().getContext().getString(R.string.error_login));
-//                    }
-//
-//                } catch (NullPointerException ex) {
-//                    mProgressDialog.dismiss();
-//                    Log.e(TAG, "onCardViewLoginClick: ", ex);
-///               }
-//            }
-//        });
-
         return rootView;
-    }
-
-    private void init(Bundle savedInstanceState) {
-        // Init Fragment level's variable(s) here
-//        preferenceManager = new PreferenceManager(getContext());
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -131,33 +84,6 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
         mLoginButton = rootView.findViewById(R.id.card_view_login);
         mEditTextUserName.addTextChangedListener(this);
         mEditTextPassword.addTextChangedListener(this);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    /*
-     * Save Instance State Here
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Save Instance State here
-    }
-
-    /*
-     * Restore Instance State Here
-     */
-    @SuppressWarnings("UnusedParameters")
-    private void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Restore Instance State here
     }
 
     private void showAlertDialog(String title, String message) {
