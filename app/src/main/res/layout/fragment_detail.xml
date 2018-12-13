@@ -86,17 +86,17 @@
             app:typeFaceAsset="RobotoLight.ttf"
             tools:text="Product Code : " />
 
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/txt_stock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginLeft="40dp"
-            android:maxLines="1"
-            android:textColor="@color/inStockColor"
-            android:textSize="18sp"
-            app:typeFaceAsset="RobotoLight.ttf"
-            tools:text="In Stock" />
+        <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
+            <!--android:id="@+id/txt_stock"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="40dp"-->
+            <!--android:layout_marginLeft="40dp"-->
+            <!--android:maxLines="1"-->
+            <!--android:textColor="@color/inStockColor"-->
+            <!--android:textSize="18sp"-->
+            <!--app:typeFaceAsset="RobotoLight.ttf"-->
+            <!--tools:text="In Stock" />-->
 
     </LinearLayout>
 

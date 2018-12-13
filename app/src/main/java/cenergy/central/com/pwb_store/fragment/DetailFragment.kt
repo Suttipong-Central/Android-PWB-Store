@@ -40,7 +40,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var ivProductImage: ImageView
     private lateinit var rvProductImage: RecyclerView
     private lateinit var tvProductName: TextView
-    private lateinit var tvStock: TextView
+//    private lateinit var tvStock: TextView
     private lateinit var tvProductCode: TextView
     private lateinit var tvTitleSpecialPrice: TextView
     private lateinit var tvSpecialPrice: TextView
@@ -92,7 +92,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         ivProductImage = rootView.findViewById(R.id.ivProductImage)
         rvProductImage = rootView.findViewById(R.id.rvProductImage)
         tvProductName = rootView.findViewById(R.id.tvProductName)
-        tvStock = rootView.findViewById(R.id.txt_stock)
+//        tvStock = rootView.findViewById(R.id.txt_stock)
         tvProductCode = rootView.findViewById(R.id.txt_view_product_code)
         tvTitleSpecialPrice = rootView.findViewById(R.id.txt_name_price)
         tvSpecialPrice = rootView.findViewById(R.id.txt_sale_price)
@@ -135,33 +135,38 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
-        val txtStock: String
+//        val txtStock: String
+//        if (product.extension?.stokeItem?.isInStock == true) {
+//            when {
+//                product.extension?.stokeItem?.qty!! > 5 -> {
+//                    txtStock = getString(R.string.product_stock_more)
+//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.inStockColor)) }
+//                }
+//                product.extension?.stokeItem?.qty!! > 1 -> {
+//                    txtStock = getString(R.string.product_stock_medium)
+//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.powerBuyOrange)) }
+//                }
+//                product.extension?.stokeItem?.qty!! > 0 -> {
+//                    txtStock = getString(R.string.product_stock_less)
+//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
+//                }
+//                else -> {
+//                    txtStock = getString(R.string.product_out_stock)
+//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
+//                }
+//            }
+//            context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
+//            addItemButton.setOnClickListener(this)
+//        } else {
+//            txtStock = getString(R.string.product_out_stock)
+//            context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
+//        }
+//        tvStock.text = txtStock
+
         if (product.extension?.stokeItem?.isInStock == true) {
-            when {
-                product.extension?.stokeItem?.qty!! > 5 -> {
-                    txtStock = getString(R.string.product_stock_more)
-                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.inStockColor)) }
-                }
-                product.extension?.stokeItem?.qty!! > 1 -> {
-                    txtStock = getString(R.string.product_stock_medium)
-                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.powerBuyOrange)) }
-                }
-                product.extension?.stokeItem?.qty!! > 0 -> {
-                    txtStock = getString(R.string.product_stock_less)
-                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
-                }
-                else -> {
-                    txtStock = getString(R.string.product_out_stock)
-                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
-                }
-            }
             context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
             addItemButton.setOnClickListener(this)
-        } else {
-            txtStock = getString(R.string.product_out_stock)
-            context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
         }
-        tvStock.text = txtStock
 
         // setup onclick
         storeButton.setOnClickListener(this)
