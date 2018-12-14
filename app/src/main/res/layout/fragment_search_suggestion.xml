@@ -12,17 +12,6 @@
         android:layout_height="64dp"
         android:gravity="end|center_vertical">
 
-        <ImageView
-            android:id="@+id/image_view"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/ic_arrow_back"
-            android:foreground="?attr/selectableItemBackground"
-            />
-
         <cenergy.central.com.pwb_store.view.ClearAbleEditText
             android:id="@+id/text_search"
             android:layout_width="match_parent"

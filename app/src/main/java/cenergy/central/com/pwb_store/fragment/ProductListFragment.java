@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -39,8 +40,9 @@ import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
+import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
+import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
@@ -49,6 +51,7 @@ import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductDao;
+import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -118,10 +121,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private Context mContext;
     private String keyWord;
     private String sortType;
-
-    public ProductListFragment() {
-        super();
-    }
 
     final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
         @Override
@@ -372,7 +371,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.layout_title:
-                EventBus.getDefault().post(new ProductBackBus(true));
+//                EventBus.getDefault().post(new ProductBackBus(true));
+                EventBus.getDefault().post(new CategoryTwoBus());
                 break;
             case R.id.layout_product:
                 if (mProductFilterList == null) {
@@ -502,21 +502,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         EventBus.getDefault().register(this);
         mContext = context;
-
     }
 
     @Override

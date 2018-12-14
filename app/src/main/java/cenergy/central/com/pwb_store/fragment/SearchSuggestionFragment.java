@@ -59,9 +59,6 @@ public class SearchSuggestionFragment extends Fragment {
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @BindView(R.id.image_view)
-    ImageView mBack;
-
     @BindView(R.id.text_search)
     ClearAbleEditText mTextSearch;
 
@@ -219,12 +216,6 @@ public class SearchSuggestionFragment extends Fragment {
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
-    }
-
-    @OnClick(R.id.image_view)
-    public void onClick(ImageView imageView) {
-        EventBus.getDefault().post(new BackSearchBus(imageView, true));
-
     }
 
     @OnTextChanged(value = R.id.text_search,

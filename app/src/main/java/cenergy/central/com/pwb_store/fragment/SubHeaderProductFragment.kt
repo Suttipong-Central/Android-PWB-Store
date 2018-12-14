@@ -30,8 +30,6 @@ class SubHeaderProductFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         val subHeaderRecycler = rootView.findViewById<RecyclerView>(R.id.sub_header_recycler)
-//        val subHeaderTitle = rootView.findViewById<PowerBuyTextView>(R.id.sub_header_title_text)
-//        subHeaderTitle.text = productFilterHeader?.name
         val adapter = CategoryAdapter(context)
         Log.d("productFilterHeader", "${productFilterHeader?.productFilterSubHeaders?.size}")
         adapter.setCategoryHeader(productFilterHeader)

@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +19,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -48,7 +45,7 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
-import cenergy.central.com.pwb_store.manager.bus.event.CategoryBus;
+import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
@@ -80,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
     private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
+    private static final String TAG_FRAGMENT_PRODUCT_LIST = "product_list";
     private static final int TIME_TO_WAIT = 2000;
 
     //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
@@ -98,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private ProgressDialog mProgressDialog;
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
+
+    private ProductFilterHeaderBus productFilterHeaderBus;
 
     final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
         @Override
@@ -137,73 +137,35 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
 
     @Subscribe
     public void onEvent(HomeBus homeBus) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                .commit();
+        startCategoryFragment();
     }
 
+    // Event from onClick back button in product list
     @Subscribe
-    public void onEvent(CategoryBus categoryBus) {
-        if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Change Language to Thai")) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                    .commit();
-        } else if (categoryBus.getCategory().getDepartmentName().equalsIgnoreCase("Compare")) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                    .commit();
-        } else {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, ProductListFragment.newInstance(categoryBus.getCategory().getDepartmentName(), false,
-                            categoryBus.getCategory().getId(), storeId, categoryBus.getCategory(), ""))
-                    .commit();
-        }
+    public void onEvent(CategoryTwoBus categoryTwoBus) {
+        startCategoryLvTwoFragment();
     }
 
     // Event from onClick category item
     @Subscribe
     public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container,
-                        SubHeaderProductFragment.Companion.newInstance(productFilterHeaderBus.getProductFilterHeader()),
-                        TAG_FRAGMENT_SUB_HEADER)
-                .commit();
+        this.productFilterHeaderBus = productFilterHeaderBus;
+        startCategoryLvTwoFragment();
     }
 
     // Event from onClick product filter sub header item
     @Subscribe
     public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {
         if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Change Language to Thai")) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                    .commit();
+            startCategoryFragment();
         } else if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Compare")) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                    .commit();
+            startCategoryFragment();
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
                     .replace(R.id.container, ProductListFragment.newInstance(productFilterSubHeaderBus.getProductFilterSubHeader().getName()
                             , false, productFilterSubHeaderBus.getProductFilterSubHeader().getId(),
-                            storeId, "", productFilterSubHeaderBus.getProductFilterSubHeader()))
-                    .commit();
-        }
-    }
-
-    @Subscribe
-    public void onEvent(ProductBackBus productBackBus) {
-        if (productBackBus.isHome() == true) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
+                            storeId, "", productFilterSubHeaderBus.getProductFilterSubHeader()), TAG_FRAGMENT_PRODUCT_LIST)
                     .commit();
         }
     }
@@ -224,16 +186,6 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
             intent.putExtra(ProductListActivity.ARG_KEY_WORD, searchEventBus.getKeyword());
             intent.putExtra(ProductListActivity.ARG_SEARCH, searchEventBus.isClick());
             startActivity(intent);
-        }
-    }
-
-    @Subscribe
-    public void onEvent(BackSearchBus backSearchBus) {
-        if (backSearchBus.isClick() == true) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                    .commit();
         }
     }
 
@@ -282,12 +234,8 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
 //            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
             // TODO: ignore getStores
             retrieveCategories();
-
         } else {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao))
-                    .commit();
+            startCategoryFragment();
         }
 
     }
@@ -400,24 +348,15 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         }
     }
 
-    private void hideSoftKeyboard(View view) {
-        // Check if no view has focus:
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             super.onBackPressed();
         } else {
             if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SUB_HEADER) != null) {
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.container,
-                        CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
-                        .commit();
+                startCategoryFragment();
+            } else if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_PRODUCT_LIST) != null) {
+                startCategoryLvTwoFragment();
             } else {
                 supportFinishAfterTransition();
             }
@@ -434,10 +373,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                         createDrawerMenu(category);
                     }
                     if (getSupportFragmentManager() != null) {
-                        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction
-                                .replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
-                                .commit();
+                        startCategoryFragment();
                     }
                     dismissProgressDialog();
                 }
@@ -594,10 +530,24 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             dismissProgressDialog();
         }
-
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private void startCategoryFragment(){
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
+                .commit();
+    }
+
+    private void startCategoryLvTwoFragment(){
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction
+                .replace(R.id.container,
+                        SubHeaderProductFragment.Companion.newInstance(productFilterHeaderBus.getProductFilterHeader()),
+                        TAG_FRAGMENT_SUB_HEADER)
+                .commit();
     }
 
     private void dismissProgressDialog() {

@@ -24,6 +24,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
+import cenergy.central.com.pwb_store.model.Event;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -71,6 +72,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     };
     private Boolean clicked = true;
 
+    private ProductFilterHeader categoryLv2;
+    private int positionLv2;
+
     public CategoryAdapter(Context mContext) {
         this.mContext = mContext;
     }
@@ -115,6 +119,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_ID_CATEGORY:
                 if (viewType instanceof ProductFilterHeader && holder instanceof CategoryViewHolder) {
                     final ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
+                    this.categoryLv2 = categoryHeader;
+                    this.positionLv2 = position;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
                     categoryViewHolder.setViewHolder(categoryHeader);
                     categoryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {

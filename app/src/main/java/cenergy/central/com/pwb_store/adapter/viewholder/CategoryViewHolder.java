@@ -1,19 +1,12 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
-
-import org.greenrobot.eventbus.EventBus;
-
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;

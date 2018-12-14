@@ -9,12 +9,8 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.SortingHeader;
-import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
