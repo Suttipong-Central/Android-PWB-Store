@@ -4,10 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import cenergy.central.com.pwb_store.R
 
-/**
- * Created by Anuphap Suwannamas on 23/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 class PreferenceManager(private var context: Context) {
     private var pref: SharedPreferences = context.getSharedPreferences(this.context.getString(R.string.preference_file_name), Context.MODE_PRIVATE)
 
@@ -37,6 +33,14 @@ class PreferenceManager(private var context: Context) {
         clearPreference()
     }
 
+    fun setDefaultLanguage(lang: AppLanguage) {
+        val editor = pref.edit()
+        editor.putString(PREF_LANGUAGE, lang.toString())
+        editor.apply()
+    }
+
+    fun getDefaultLanguage(): String = pref.getString(PREF_LANGUAGE, AppLanguage.TH.key)
+
     private fun clearPreference() {
         pref.edit().clear().apply()
     }
@@ -44,5 +48,15 @@ class PreferenceManager(private var context: Context) {
     companion object {
         const val PREF_CART_ID = "cart_id"
         const val PREF_ADDRESS_LOADED = "address_loaded"
+        const val PREF_LANGUAGE = "pref_language"
     }
+}
+
+enum class AppLanguage(val key: String) {
+    TH("th") {
+        override fun toString(): String = "th"
+    },
+    EN("en") {
+        override fun toString(): String = "en"
+    },
 }

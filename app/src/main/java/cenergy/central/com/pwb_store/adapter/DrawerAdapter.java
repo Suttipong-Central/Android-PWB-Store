@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.activity.interfaces.LanguageListener;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerChangeViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerDeliveryViewHolder;
@@ -22,6 +23,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.DrawerSubHeaderViewHolde
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserNewViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.IViewType;
@@ -57,11 +59,15 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private Context mContext;
     private MenuDrawerClickListener listener;
+    private LanguageListener languageListener;
     private List<IViewType> mListViewType = new ArrayList<>();
+    private PreferenceManager preferenceManager;
 
     public DrawerAdapter(Context context) {
         this.mContext = context;
         this.listener = (MenuDrawerClickListener) context ;
+        this.languageListener = (LanguageListener) context;
+        this.preferenceManager = new PreferenceManager(context);
     }
 
     @Override
@@ -85,7 +91,8 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return new DrawerUserNewViewHolder(
                         LayoutInflater
                                 .from(parent.getContext())
-                                .inflate(R.layout.drawer_user_new, parent, false)
+                                .inflate(R.layout.drawer_user_new, parent, false),
+                        languageListener, preferenceManager
                 );
 
             case VIEW_TYPE_ID_DELIVERY:

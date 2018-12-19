@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/layout_header_user"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_header_user"
     android:layout_width="match_parent"
     android:layout_height="130dp"
     android:background="@color/powerBuyPurple"
     android:orientation="horizontal"
-    android:paddingBottom="12dp"
-    android:paddingEnd="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:paddingStart="16dp"
+    android:paddingLeft="16dp"
     android:paddingTop="12dp"
-    android:weightSum="1"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:paddingEnd="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="12dp"
+    android:weightSum="1">
 
     <ImageView
         android:id="@+id/image_view_profile"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center_vertical"
-        android:padding="5dp"
-        android:src="@drawable/ic_person"
         android:background="@drawable/ic_circle_grey_placeholder"
-        android:contentDescription="@string/app_name" />
+        android:contentDescription="@string/app_name"
+        android:padding="5dp"
+        android:src="@drawable/ic_person" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/txt_view_full_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            android:padding="5dp"
-            tools:text="Panisa Punjavorn"/>
+            tools:text="Panisa Punjavorn" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/txt_store"
@@ -47,19 +47,56 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:maxLines="1"
+            android:padding="5dp"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            android:padding="5dp"
-            tools:text="Central World"/>
+            tools:text="Central World" />
+
+        <RadioGroup
+            android:id="@+id/toggle_language"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/bg_purple_out_line"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/lang_th"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_toggle"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/hint_th"
+                android:textColor="@color/powerBuyWhite" />
+
+            <RadioButton
+                android:id="@+id/lang_en"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_toggle"
+                android:button="@null"
+                android:gravity="center"
+                android:text="@string/hint_en"
+                android:textColor="@color/powerBuyWhite" />
+        </RadioGroup>
 
     </LinearLayout>
 
     <!--<ImageView-->
-        <!--android:id="@+id/img_arrow_next"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center_vertical"-->
-        <!--android:src="@drawable/ic_arrow_next"-->
-        <!--android:contentDescription="@string/app_name" />-->
+    <!--android:id="@+id/img_arrow_next"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--android:src="@drawable/ic_arrow_next"-->
+    <!--android:contentDescription="@string/app_name" />-->
 
 </LinearLayout>

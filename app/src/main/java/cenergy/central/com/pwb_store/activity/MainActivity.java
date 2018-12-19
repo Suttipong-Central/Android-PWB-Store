@@ -3,6 +3,8 @@ package cenergy.central.com.pwb_store.activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -18,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,10 +34,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.activity.interfaces.LanguageListener;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
@@ -43,16 +48,15 @@ import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
-import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductBackBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
@@ -70,7 +74,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements MenuDrawerClickListener {
+public class MainActivity extends AppCompatActivity implements MenuDrawerClickListener, LanguageListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
@@ -85,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    private DrawerLayout drawer;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
@@ -96,30 +101,9 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private ProgressDialog mProgressDialog;
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
+    private PreferenceManager preferenceManager;
 
     private ProductFilterHeaderBus productFilterHeaderBus;
-
-    final Callback<List<StoreList>> CALLBACK_STORE_LIST = new Callback<List<StoreList>>() {
-        @Override
-        public void onResponse(Call<List<StoreList>> call, Response<List<StoreList>> response) {
-            if (response.isSuccessful()) {
-                mStoreDao = new StoreDao(response.body());
-//                HttpManagerMagentoOld.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
-                retrieveCategories();
-            } else {
-                APIError error = APIErrorUtils.parseError(response);
-                Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                showAlertDialog(error.getErrorMessage(), false);
-                dismissProgressDialog();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<StoreList>> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            dismissProgressDialog();
-        }
-    };
 
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
@@ -226,7 +210,9 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        preferenceManager = new PreferenceManager(this);
 
+        handleChangeLanguage(preferenceManager.getDefaultLanguage());
         initView();
 
         if (savedInstanceState == null) {
@@ -255,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         recyclerViewMenu.setLayoutManager(mLayoutManager);
         recyclerViewMenu.setAdapter(mAdapter);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
                 MainActivity.this,
                 drawer,
@@ -535,13 +521,13 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         startActivity(intent);
     }
 
-    private void startCategoryFragment(){
+    private void startCategoryFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
                 .commit();
     }
 
-    private void startCategoryLvTwoFragment(){
+    private void startCategoryLvTwoFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container,
@@ -555,4 +541,29 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
             mProgressDialog.dismiss();
         }
     }
+
+    // region {@link LanguageListener}
+    @Override
+    public void onChangedLanguage(@NotNull AppLanguage lang) {
+        drawer.closeDrawers();
+        preferenceManager.setDefaultLanguage(lang); // save language
+        handleChangeLanguage(lang.getKey());
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void handleChangeLanguage(String lang) {
+
+        Toast.makeText(this, "Change language to " + lang, Toast.LENGTH_SHORT).show();
+
+        Resources res = getResources();
+        // Change locale settings in the app.
+        DisplayMetrics dm = res.getDisplayMetrics();
+        android.content.res.Configuration conf = res.getConfiguration();
+        conf.setLocale(new Locale(lang));
+        res.updateConfiguration(conf, dm);
+    }
+    // endregion
 }

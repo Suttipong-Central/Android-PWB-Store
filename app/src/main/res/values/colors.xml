@@ -41,4 +41,9 @@
     <color name="network_disconnected">#D0021B</color>
     <color name="network_connecting">#F4893F</color>
     <color name="network_connected">#5DA807</color>
+
+    <!-- Language toggle-->
+    <color name="transparent">#00ffffff</color>
+    <color name="color_toggle">#bd8bff</color>
+    <color name="color_toggle_selected">#895fc1</color>
 </resources>
