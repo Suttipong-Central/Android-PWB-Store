@@ -26,8 +26,9 @@ public interface CategoryService {
     @GET("/rest/V1/categories")
     Call<Category> getCategories();
 
-    @GET("/rest/V1/headless/categories")
+    @GET("/{lang}/rest/V1/headless/categories")
     Call<Category> getCategories(
+            @Path("lang") String lang,
             @Query("categoryId") int categoryId,
             @Query("categoryLevel") int categoryLevel);
 }

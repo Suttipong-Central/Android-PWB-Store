@@ -1,121 +1,121 @@
 <resources>
     <!--<string name="app_name">PowerBuy Store</string>-->
 
-    <string name="home" >Home</string>
-    <string name="home_tv" translatable="false">TV &amp; Home Entertainment</string>
-    <string name="home_app" translatable="false">Home Appliances</string>
-    <string name="home_cooling" translatable="false">Cooling &amp; Heating</string>
-    <string name="home_small" translatable="false">Small Appliances</string>
-    <string name="home_kitchen" translatable="false">Kitchen</string>
-    <string name="home_health" translatable="false">Health &amp; Beauty</string>
-    <string name="home_life" translatable="false">Lifestyle Electronic</string>
-    <string name="home_wearable" translatable="false">Wearable &amp; Gadgets</string>
-    <string name="home_accessories" translatable="false">Accessories</string>
-    <string name="schedule" translatable="false">HDL Schedule</string>
-    <string name="compare" translatable="false">เปรียบเทียบ</string>
-    <string name="change" translatable="false">Change Language to Thai</string>
-    <string name="help" translatable="false">ช่วยเหลือ</string>
+    <string name="home">Home</string>
+    <string name="home_tv">TV &amp; Home Entertainment</string>
+    <string name="home_app">Home Appliances</string>
+    <string name="home_cooling">Cooling &amp; Heating</string>
+    <string name="home_small">Small Appliances</string>
+    <string name="home_kitchen">Kitchen</string>
+    <string name="home_health">Health &amp; Beauty</string>
+    <string name="home_life">Lifestyle Electronic</string>
+    <string name="home_wearable">Wearable &amp; Gadgets</string>
+    <string name="home_accessories">Accessories</string>
+    <string name="schedule">HDL Schedule</string>
+    <string name="compare">เปรียบเทียบ</string>
+    <string name="change">Change Language to Thai</string>
+    <string name="help">ช่วยเหลือ</string>
 
     <!-- Category -->
-    <string name="category" translatable="false">หมวดหมู่ในการเลือกซื้อสินค้า</string>
+    <string name="category">หมวดหมู่ในการเลือกซื้อสินค้า</string>
     <!-- Search -->
-    <string name="search_hint" translatable="false">ค้นหา</string>
+    <string name="search_hint">ค้นหา</string>
     <!-- ProductList -->
-    <string name="baht" translatable="false">฿</string>
-    <string name="product_overview" translatable="false">ข้อมูลสินค้า</string>
-    <string name="product_available" translatable="false">ดูสาขาที่มีสินค้า</string>
-    <string name="product_compare" translatable="false">เปรียบเทียบสินค้า</string>
-    <string name="product_read" translatable="false">Read More >></string>
-    <string name="product_promotion" translatable="false">โปรโมชั่น</string>
-    <string name="product_spec" translatable="false">คุณลักษณะ</string>
-    <string name="product_delivery" translatable="false">Delivery / Warranty / Refund</string>
-    <string name="product_stock" translatable="false">มีสินค้า</string>
-    <string name="product_stock_more" translatable="false">จำนวนสินค้าในคลัง: มาก</string>
-    <string name="product_stock_medium" translatable="false">จำนวนสินค้าในคลัง: ปานกลาง</string>
-    <string name="product_stock_less" translatable="false">จำนวนสินค้าในคลัง: น้อย</string>
-    <string name="product_out_stock" translatable="false">สินค้าหมด</string>
-    <string name="filter_count" translatable="false">(%1$s)</string>
+    <string name="baht">฿</string>
+    <string name="product_overview">ข้อมูลสินค้า</string>
+    <string name="product_available">ดูสาขาที่มีสินค้า</string>
+    <string name="product_compare">เปรียบเทียบสินค้า</string>
+    <string name="product_read">Read More >></string>
+    <string name="product_promotion">โปรโมชั่น</string>
+    <string name="product_spec">คุณลักษณะ</string>
+    <string name="product_delivery">Delivery / Warranty / Refund</string>
+    <string name="product_stock">มีสินค้า</string>
+    <string name="product_stock_more">จำนวนสินค้าในคลัง: มาก</string>
+    <string name="product_stock_medium">จำนวนสินค้าในคลัง: ปานกลาง</string>
+    <string name="product_stock_less">จำนวนสินค้าในคลัง: น้อย</string>
+    <string name="product_out_stock">สินค้าหมด</string>
+    <string name="filter_count">(%1$s)</string>
     <string name="brand">แบรนด์</string>
 
     <!-- Product Detail -->
-    <string name="promotion_header" translatable="false">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
-    <string name="promotion_detail" translatable="false">ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560</string>
-    <string name="error_ssl_cert_invalid" translatable="false">คุณกำลังไปยังหน้าที่อาจจะไม่ปลอดภัย ต้องการดำเนินการต่อหรือไม่?</string>
-    <string name="spec_product" translatable="false">คุณสมบัติ</string>
-    <string name="book_time" translatable="false">จองเวลานัดส่งสินค้า</string>
-    <string name="hdl_url" translatable="false">http://hdl.powerbuy.co.th/Users/Login</string>
-    <string name="ok" translatable="false">ตกลง</string>
-    <string name="cancel" translatable="false">ยกเลิก</string>
-    <string name="product_code" translatable="false">รหัสสินค้า: </string>
-    <string name="the_1_card" translatable="false">Redeem your point %1$,d points</string>
-    <string name="alert_compare" translatable="false">มีการเพิ่มสินค้า</string>
-    <string name="alert_compare_yes" translatable="false">\nเรียบร้อยแล้ว</string>
-    <string name="alert_count" translatable="false">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
-    <string name="alert_stock" translatable="false">สินค้าไม่มีในคลังสินค้า</string>
+    <string name="promotion_header">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
+    <string name="promotion_detail">ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560</string>
+    <string name="error_ssl_cert_invalid">คุณกำลังไปยังหน้าที่อาจจะไม่ปลอดภัย ต้องการดำเนินการต่อหรือไม่?</string>
+    <string name="spec_product">คุณสมบัติ</string>
+    <string name="book_time">จองเวลานัดส่งสินค้า</string>
+    <string name="hdl_url">http://hdl.powerbuy.co.th/Users/Login</string>
+    <string name="ok">ตกลง</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="product_code">รหัสสินค้า: </string>
+    <string name="the_1_card">Redeem your point %1$,d points</string>
+    <string name="alert_compare">มีการเพิ่มสินค้า</string>
+    <string name="alert_compare_yes">\nเรียบร้อยแล้ว</string>
+    <string name="alert_count">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
+    <string name="alert_stock">สินค้าไม่มีในคลังสินค้า</string>
     <string name="add_to_cart">ใส่รถเข็น</string>
     <string name="tab_promotion">โปรโมชั่นและของแถม</string>
     <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
 
     <!-- Compare -->
-    <string name="compare_header" translatable="false">เปรียบเทียบสินค้า</string>
+    <string name="compare_header">เปรียบเทียบสินค้า</string>
 
-    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
-    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Search -->
-    <string name="clear_history" translatable="false">Clear History</string>
-    <string name="search_result_header" translatable="false">search result for</string>
+    <string name="clear_history">Clear History</string>
+    <string name="search_result_header">search result for</string>
 
     <!-- Store -->
-    <string name="select_store" translatable="false">เลือกสาขา</string>
-    <string name="store_avaliable" translatable="false">สาขาที่มีอยู่</string>
-    <string name="store_code" translatable="false">รหัสสาขา</string>
-    <string name="store_name" translatable="false">ชื่อสาขา</string>
-    <string name="address" translatable="false">ที่อยู่</string>
-    <string name="stock" translatable="false">จำนวนสินค้าในสาขา</string>
-    <string name="telephone" translatable="false">เบอร์ติดต่อ</string>
+    <string name="select_store">เลือกสาขา</string>
+    <string name="store_avaliable">สาขาที่มีอยู่</string>
+    <string name="store_code">รหัสสาขา</string>
+    <string name="store_name">ชื่อสาขา</string>
+    <string name="address">ที่อยู่</string>
+    <string name="stock">จำนวนสินค้าในสาขา</string>
+    <string name="telephone">เบอร์ติดต่อ</string>
 
     <!-- Drawer -->
-    <string name="drawer_delivery" translatable="false">Delivery Schedule</string>
-    <string name="drawer_compare" translatable="false">เปรียบเทียบสินค้า</string>
-    <string name="drawer_change" translatable="false">เปลี่ยนภาษา</string>
-    <string name="drawer_cart" translatable="false">รถเข็น</string>
-    <string name="drawer_history" translatable="false">ประวัติการสร้างรายการ</string>
-    <string name="drawer_help" translatable="false">ช่วยเหลือ</string>
+    <string name="drawer_delivery">Delivery Schedule</string>
+    <string name="drawer_compare">เปรียบเทียบสินค้า</string>
+    <string name="drawer_change">เปลี่ยนภาษา</string>
+    <string name="drawer_cart">รถเข็น</string>
+    <string name="drawer_history">ประวัติการสร้างรายการ</string>
+    <string name="drawer_help">ช่วยเหลือ</string>
     <string name="drawer_logout">ออกจากระบบ</string>
 
     <!-- AppSecret -->
-    <string name="secret" translatable="false">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
-    <string name="url_hdl" translatable="false">http://10.5.0.31/HDLAPI/Token/CreateToken</string>
+    <string name="secret">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
+    <string name="url_hdl">http://10.5.0.31/HDLAPI/Token/CreateToken</string>
 
     <!-- Date -->
-    <string name="sun" translatable="false">SUN</string>
-    <string name="mon" translatable="false">MON</string>
-    <string name="tue" translatable="false">TUE</string>
-    <string name="wed" translatable="false">WED</string>
-    <string name="thu" translatable="false">THU</string>
-    <string name="fri" translatable="false">FRI</string>
-    <string name="sat" translatable="false">SAT</string>
-    <string name="last_date" translatable="false">30</string>
-    <string name="time_9am_to_half_9am" translatable="false">09:00 - 09:30</string>
-    <string name="time_half_9am_to_10am" translatable="false">09:30 - 10:00</string>
-    <string name="time_10am_to_half_10am" translatable="false">10:00 - 10:30</string>
-    <string name="time_half_10am_to_11am" translatable="false">10:30 - 11:00</string>
-    <string name="time_11am_to_half_11am" translatable="false">11:00 - 11:30</string>
-    <string name="time_half_11am_to_12pm" translatable="false">11:30 - 12:00</string>
-    <string name="time_1pm_to_half_1pm" translatable="false">13:00 - 13:30</string>
-    <string name="time_half_1pm_to_2pm" translatable="false">13:30 - 14:00</string>
-    <string name="time_2pm_to_half_2pm" translatable="false">14:00 - 14:30</string>
-    <string name="time_half_2pm_to_3pm" translatable="false">14:30 - 15:00</string>
-    <string name="time_3pm_to_half_3pm" translatable="false">15:00 - 15:30</string>
-    <string name="time_half_3pm_to_4pm" translatable="false">15:30 - 16:00</string>
-    <string name="time_4pm_to_half_4pm" translatable="false">16:00 - 16:30</string>
-    <string name="time_half_4pm_to_5pm" translatable="false">16:30 - 17:00</string>
-    <string name="time_5pm_to_half_5pm" translatable="false">17:00 - 17:30</string>
-    <string name="time_half_5pm_to_6pm" translatable="false">17:30 - 18:00</string>
-    <string name="time_6pm_to_half_6pm" translatable="false">18:00 - 18:30</string>
-    <string name="time_half_6pm_to_7pm" translatable="false">18:30 - 19:00</string>
-    <string name="time_7pm_to_half_7pm" translatable="false">19:00 - 19:30</string>
+    <string name="sun">SUN</string>
+    <string name="mon">MON</string>
+    <string name="tue">TUE</string>
+    <string name="wed">WED</string>
+    <string name="thu">THU</string>
+    <string name="fri">FRI</string>
+    <string name="sat">SAT</string>
+    <string name="last_date">30</string>
+    <string name="time_9am_to_half_9am">09:00 - 09:30</string>
+    <string name="time_half_9am_to_10am">09:30 - 10:00</string>
+    <string name="time_10am_to_half_10am">10:00 - 10:30</string>
+    <string name="time_half_10am_to_11am">10:30 - 11:00</string>
+    <string name="time_11am_to_half_11am">11:00 - 11:30</string>
+    <string name="time_half_11am_to_12pm">11:30 - 12:00</string>
+    <string name="time_1pm_to_half_1pm">13:00 - 13:30</string>
+    <string name="time_half_1pm_to_2pm">13:30 - 14:00</string>
+    <string name="time_2pm_to_half_2pm">14:00 - 14:30</string>
+    <string name="time_half_2pm_to_3pm">14:30 - 15:00</string>
+    <string name="time_3pm_to_half_3pm">15:00 - 15:30</string>
+    <string name="time_half_3pm_to_4pm">15:30 - 16:00</string>
+    <string name="time_4pm_to_half_4pm">16:00 - 16:30</string>
+    <string name="time_half_4pm_to_5pm">16:30 - 17:00</string>
+    <string name="time_5pm_to_half_5pm">17:00 - 17:30</string>
+    <string name="time_half_5pm_to_6pm">17:30 - 18:00</string>
+    <string name="time_6pm_to_half_6pm">18:00 - 18:30</string>
+    <string name="time_half_6pm_to_7pm">18:30 - 19:00</string>
+    <string name="time_7pm_to_half_7pm">19:00 - 19:30</string>
 
     <!--API-->
     <!--<string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>-->

@@ -1,7 +1,265 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--<string name="app_name">PowerBuy Store</string>-->
 
     <string name="home">หน้าหลัก</string>
+    <string name="home_tv">TV &amp; Home Entertainment</string>
+    <string name="home_app">Home Appliances</string>
+    <string name="home_cooling">Cooling &amp; Heating</string>
+    <string name="home_small">Small Appliances</string>
+    <string name="home_kitchen">Kitchen</string>
+    <string name="home_health">Health &amp; Beauty</string>
+    <string name="home_life">Lifestyle Electronic</string>
+    <string name="home_wearable">Wearable &amp; Gadgets</string>
+    <string name="home_accessories">Accessories</string>
+    <string name="schedule">HDL Schedule</string>
+    <string name="compare">เปรียบเทียบ</string>
+    <string name="change">Change Language to Thai</string>
+    <string name="help">ช่วยเหลือ</string>
 
+    <!-- Category -->
+    <string name="category">หมวดหมู่ในการเลือกซื้อสินค้า</string>
+    <!-- Search -->
+    <string name="search_hint">ค้นหา</string>
+    <!-- ProductList -->
+    <string name="baht">฿</string>
+    <string name="product_overview">ข้อมูลสินค้า</string>
+    <string name="product_available">ดูสาขาที่มีสินค้า</string>
+    <string name="product_compare">เปรียบเทียบสินค้า</string>
+    <string name="product_read">Read More >></string>
+    <string name="product_promotion">โปรโมชั่น</string>
+    <string name="product_spec">คุณลักษณะ</string>
+    <string name="product_delivery">Delivery / Warranty / Refund</string>
+    <string name="product_stock">มีสินค้า</string>
+    <string name="product_stock_more">จำนวนสินค้าในคลัง: มาก</string>
+    <string name="product_stock_medium">จำนวนสินค้าในคลัง: ปานกลาง</string>
+    <string name="product_stock_less">จำนวนสินค้าในคลัง: น้อย</string>
+    <string name="product_out_stock">สินค้าหมด</string>
+    <string name="filter_count">(%1$s)</string>
+    <string name="brand">แบรนด์</string>
+
+    <!-- Product Detail -->
+    <string name="promotion_header">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>
+    <string name="promotion_detail">ระยะเวลาโปรโมชั่น 17/07/2560 ถึง 23/07/2560</string>
+    <string name="error_ssl_cert_invalid">คุณกำลังไปยังหน้าที่อาจจะไม่ปลอดภัย ต้องการดำเนินการต่อหรือไม่?</string>
+    <string name="spec_product">คุณสมบัติ</string>
+    <string name="book_time">จองเวลานัดส่งสินค้า</string>
+    <string name="hdl_url">http://hdl.powerbuy.co.th/Users/Login</string>
+    <string name="ok">ตกลง</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="product_code">รหัสสินค้า: </string>
+    <string name="the_1_card">Redeem your point %1$,d points</string>
+    <string name="alert_compare">มีการเพิ่มสินค้า</string>
+    <string name="alert_compare_yes">\nเรียบร้อยแล้ว</string>
+    <string name="alert_count">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
+    <string name="alert_stock">สินค้าไม่มีในคลังสินค้า</string>
+    <string name="add_to_cart">ใส่รถเข็น</string>
+    <string name="tab_promotion">โปรโมชั่นและของแถม</string>
+    <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
+
+    <!-- Compare -->
+    <string name="compare_header">เปรียบเทียบสินค้า</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Search -->
+    <string name="clear_history">Clear History</string>
+    <string name="search_result_header">search result for</string>
+
+    <!-- Store -->
+    <string name="select_store">เลือกสาขา</string>
+    <string name="store_avaliable">สาขาที่มีอยู่</string>
+    <string name="store_code">รหัสสาขา</string>
+    <string name="store_name">ชื่อสาขา</string>
+    <string name="address">ที่อยู่</string>
+    <string name="stock">จำนวนสินค้าในสาขา</string>
+    <string name="telephone">เบอร์ติดต่อ</string>
+
+    <!-- Drawer -->
+    <string name="drawer_delivery">Delivery Schedule</string>
+    <string name="drawer_compare">เปรียบเทียบสินค้า</string>
+    <string name="drawer_change">เปลี่ยนภาษา</string>
+    <string name="drawer_cart">รถเข็น</string>
+    <string name="drawer_history">ประวัติการสร้างรายการ</string>
+    <string name="drawer_help">ช่วยเหลือ</string>
+    <string name="drawer_logout">ออกจากระบบ</string>
+
+    <!-- AppSecret -->
+    <string name="secret">djZtdHRZck9rTDdKVGhkZWF3NEdlN2FDR0JRQlQ0aFovQ0ViWktCNnd2eG5UQUVneFdpVDJRPT0=</string>
+    <string name="url_hdl">http://10.5.0.31/HDLAPI/Token/CreateToken</string>
+
+    <!-- Date -->
+    <string name="sun">SUN</string>
+    <string name="mon">MON</string>
+    <string name="tue">TUE</string>
+    <string name="wed">WED</string>
+    <string name="thu">THU</string>
+    <string name="fri">FRI</string>
+    <string name="sat">SAT</string>
+    <string name="last_date">30</string>
+    <string name="time_9am_to_half_9am">09:00 - 09:30</string>
+    <string name="time_half_9am_to_10am">09:30 - 10:00</string>
+    <string name="time_10am_to_half_10am">10:00 - 10:30</string>
+    <string name="time_half_10am_to_11am">10:30 - 11:00</string>
+    <string name="time_11am_to_half_11am">11:00 - 11:30</string>
+    <string name="time_half_11am_to_12pm">11:30 - 12:00</string>
+    <string name="time_1pm_to_half_1pm">13:00 - 13:30</string>
+    <string name="time_half_1pm_to_2pm">13:30 - 14:00</string>
+    <string name="time_2pm_to_half_2pm">14:00 - 14:30</string>
+    <string name="time_half_2pm_to_3pm">14:30 - 15:00</string>
+    <string name="time_3pm_to_half_3pm">15:00 - 15:30</string>
+    <string name="time_half_3pm_to_4pm">15:30 - 16:00</string>
+    <string name="time_4pm_to_half_4pm">16:00 - 16:30</string>
+    <string name="time_half_4pm_to_5pm">16:30 - 17:00</string>
+    <string name="time_5pm_to_half_5pm">17:00 - 17:30</string>
+    <string name="time_half_5pm_to_6pm">17:30 - 18:00</string>
+    <string name="time_6pm_to_half_6pm">18:00 - 18:30</string>
+    <string name="time_half_6pm_to_7pm">18:30 - 19:00</string>
+    <string name="time_7pm_to_half_7pm">19:00 - 19:30</string>
+
+    <!--API-->
+    <!--<string name="product_list">items[id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,brand]],total_count</string>-->
+    <string name="product_list">items[id,sku,name,attribute_set_id,price,status,created_at_updated_at],total_count</string>
+    <!--<string name="product_detail">id,sku,name,attribute_set_id,status,extension_attributes[description,image,by_store,specifications,promotion,payment,brand]</string>-->
+    <string name="product_detail">id,sku,name,attribute_set_id,price,status,created_at_updated_at,custom_attributes</string>
+    <string name="url_image">https://prod.powerbuy.co.th/media/catalog/product</string>
+
+    <!--Login-->
+    <string name="username">ชื่อผู้ใช้</string>
+    <string name="password">รหัสผ่าน</string>
+    <string name="login">เข้าสู่ระบบ</string>
+    <string name="error">พบข้อผิดพลาด</string>
+    <string name="error_login">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+    <string name="loading">กำลังโหลด...</string>
+
+    <!--Payment-->
+    <string name="payment_header">ชำระเงิน</string>
+    <string name="user_profile">ข้อมูลส่วนตัว</string>
+    <string name="required_field">*</string>
+    <string name="first_name">ชื่อ</string>
+    <string name="last_name">นามสกุล</string>
+    <string name="tell">เบอร์ติดต่อ</string>
+    <string name="email">อีเมลล์</string>
+    <string name="house_no">บ้านเลขที่</string>
+    <string name="place_or_building">สถานที่/อาคาร</string>
+    <string name="soi">ซอย</string>
+    <string name="street">ถนน</string>
+    <string name="tel_or_mobile">เบอร์โทรศัพท์</string>
+    <string name="province">จังหวัด</string>
+    <string name="district">อำเภอ</string>
+    <string name="sub_district">ตำบล</string>
+    <string name="post_code">รหัสไปรษณีย์</string>
+    <string name="title_order_success">บันทึกการสั่งซื้อเรียบร้อยแล้ว</string>
+    <string name="order_number">ใบสั่งซื้อเลขที่: </string>
+    <string name="products">สินค้า</string>
+    <string name="price">ราคา</string>
+    <string name="qty">จำนวน</string>
+    <string name="total">ยอดรวม</string>
+    <string name="total_price">ยอดรวมทั้งสิ้น</string>
+    <string name="finished">สิ้นสุดการทำรายการ</string>
+    <string name="order_detail">รายละเอียดการสั่งซื้อสินค้า</string>
+    <string name="personal_detail">ข้อมูลการสั่งซื้อ</string>
+    <string name="store_collection_detail">สาขารับสินค้า</string>
+    <string name="delivery_detail">ที่อยู่จัดส่งสินค้า</string>
+    <string name="order_date">วันที่สั่งซื้อ</string>
+    <string name="customer_name">ชื่อลูกค้า</string>
+    <string name="phone">เบอร์ติดต่อ</string>
+    <string name="open_today">เปิดทำการ</string>
+    <string name="branch">สาขา</string>
+    <string name="search_not_found">ไม่พบข้อมูลที่ค้นหา</string>
+    <string name="product_price">ราคา:</string>
+    <string name="label_billing_address">ใบกำกับภาษี/ที่อยู่</string>
+    <string name="label_shipping_type">บริการจัดส่ง</string>
+    <string name="label_delivery_info">วิธีการจัดส่ง</string>
+
+    <!-- Shared Preference -->
+    <string name="preference_file_name">pwb_app_preference</string>
+    <string name="added_to_cart">สินค้านี้ถูกเพิ่มลงรถเข็นแล้ว</string>
+
+    <!-- Cart -->
+    <string name="title_confirm_delete_item">คุณต้องการลบสินค้าชิ้นนี้ออกจากรถเข็น?</string>
+    <string name="yes">ใช่</string>
+    <string name="no">ไม่ใช่</string>
+    <string name="format_header_cart_items">รถเข็นของคุณ(%s ชิ้น)</string>
+    <string name="name_price">ราคา:</string>
+    <string name="skip"><u>ข้าม</u></string>
+    <string name="billing_address">ที่อยู่ในการออกใบเสร็จ</string>
+    <string name="qty_title">จำนวน:</string>
+    <string name="fill_in_important_information">กรุณากรอกข้อมูลที่สำคัญให้ถูกต้อง</string>
+    <string name="sorry">ขออภัย</string>
+    <string name="some_thing_wrong">มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
+    <string name="confirm_oder">ยืนยันการซื้อสินค้า</string>
+    <string name="ok_alert">ตกลง</string>
+    <string name="cancel_alert">ยกเลิก</string>
+    <string name="cannot_get_cart_item">ไม่สามารถเรียกสินค้าในรถเข็นได้</string>
+    <string name="not_have_products_in_cart">ไม่มีสินค้าอยู่ในรถเข็น กรุณาเพิ่มสินค้าที่ท่านต้องการ</string>
+    <string name="not_have_user">ไม่มีผู้ใช้ในระบบ ต้องการที่จะข้ามขั้นตอนนี้หรือไม่</string>
+    <string name="choose">เลือก</string>
+    <string name="history">ประวัติ</string>
+    <string name="not_found_data">ไม่พบข้อมูล</string>
+    <string name="not_have_data">ไม่มีข้อมูล</string>
+    <string name="name_user_order">ชื่อลูกค้า: </string>
+    <string name="receiver_name">ชื่อผู้รับ: </string>
+    <string name="order_date_history">วันที่สั่งซื้อ: </string>
+    <string name="product">สินค้า</string>
+    <string name="sort">เรียง</string>
+    <string name="regular_price">ราคาปกติ: </string>
+    <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
+    <string name="user_logout">คุณต้องการจะออกจากระบบใช่หรือไม่</string>
+    <string name="shopping">ช้อปต่อ</string>
+    <string name="please_select_date">กรุณาเลือกวันที่คุณต้องการ</string>
+    <string name="check_your_date">กรุณาตรวจสอบวันที่เลือก</string>
+    <string name="choose_delivery_option">เลือกการจัดส่งสินค้า</string>
+    <string name="add_over_qty">สินค้าไม่เพียงพอ</string>
+    <string name="title_free_item">ฟรีของแถม</string>
+    <string name="shopping_delete"><u>ลบ</u></string>
+
+    <!-- Error -->
+    <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
+    <string name="error_form_email_pattern_not_match">อีเมลต้องอยู่ในรูปแบบ example@mail.com</string>
+    <string name="error_form_password_too_short">รหัสผ่านต้องมากกว่า %d ตัวอักษร</string>
+    <string name="error_form_confirmation_password_not_matched">ยืนยันรหัสผ่านไม่ถูกต้อง</string>
+    <string name="error_form_phone_number_invalid">เบอร์โทรศัพท์ไม่ถูกต้อง</string>
+    <string name="error_form_has_special">ข้อมูลจะต้องไม่มีสัญลักษณ์พิเศษ</string>
+    <string name="error_form_name">ชื่อหรือนามสกุลจะต้องไม่มีสัญลักษณ์พิเศษ และตัวเลข</string>
+    <string name="error_form_password_not_correctly">อย่างน้อย 9 ตัว ประกอบด้วยตัวพิมพ์ใหญ่ พิมพ์เล็ก และตัวเลข</string>
+    <string name="error_form_passport_invalid">พาสปอร์ตไม่ถูกต้อง</string>
+    <string name="error_form_name_en">Invalid name</string>
+    <string name="error_verify_otp_time_out">ขออภัยการเชื่อมต่อผิดพลาด</string>
+    <string name="delivery">การจัดส่ง</string>
+    <string name="select_store_title">เลือกสาขาที่ต้องการรับสินค้า</string>
+    <string name="store_address">ที่อยู่สาขา</string>
+    <string name="telephone_number">หมายเลขโทรศัพท์</string>
+    <string name="store_open">เปิดทำการ</string>
+    <string name="choose_store">เลือกสาขานี้</string>
+    <string name="please_select_store">กรุณาเลือกสาขาที่ต้องการ</string>
+    <string name="select_date_delivery">กำหนดวันจัดส่งสินค้า</string>
+    <string name="date">วันที่</string>
+    <string name="time">เวลา</string>
+    <string name="please_select_date_and_time">กรุณาเลือกวันและเวลาในการจัดส่งสินค้า</string>
+    <string name="please_try_again">กรุณาลองใหม่อีกครั้ง</string>
+    <string name="select_option_delivery">เลือกการจัดส่ง</string>
+    <string name="same_billing">ที่อยู่จัดส่งสินค้า เป็นที่อยู่เดียวกันกับที่อยู่ในการเรียกเก็บเงิน</string>
+    <string name="shipping_address">ที่อยู่จัดส่งสินค้า</string>
+    <string name="select_shipping_dialog">เลือกจัดส่งตามที่อยู่</string>
+    <string name="select_store_dialog">เลือกรับที่สาขา</string>
+    <string name="title_clear_cart">เราเจอปัญหากับรถเข็นนี้ (จำเป็นต้องลบรถเข็น)</string>
+    <string name="developing_system_compare">กำลังพัฒนาระบบ ไม่สามารถเปรียบเทียบสินค้าในขณะนี้</string>
+    <string name="freebie_promotion_not_found">โปรดเช็คโปรโมชั่นและของแถมเมื่อใส่สินค้าลงรถเข็น</string>
+    <string name="not_have_day_to_delivery">ไม่มีวันจัดส่ง</string>
+    <string name="next_step">ขั้นตอนต่อไป</string>
+    <string name="staff_descriptions">1. คุณจะได้รับอีเมลยืนยันการสั่งซื้อ\n2. แสดงอีเมลที่ได้รับ /หรือแสดงหน้าจอนี้ /หรือเลขที่ใบสั่งซื้อ ต่อเจ้าหน้าที่แคชเชียร์\n3. ทำการจ่ายเงินที่แคชเชียร์ จากนั้นรับใบเสร็จจากเจ้าหน้าที่</string>
+    <string name="for_staff">สำหรับเจ้าหน้าที่</string>
+    <string name="staff_descriptions_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
+    <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
+    <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
+    <!-- Network state -->
+    <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>
+    <string name="network_state_connected">เชื่อมต่อแล้ว</string>
+    <string name="network_state_connecting">กำลังเชื่อมต่ออินเทอร์เน็ต</string>
+    <string name="network_disconnected">ไม่ได้เชื่อมต่ออินเทอร์เน็ต</string>
+
+    <!-- Language -->
+    <string name="hint_th">TH</string>
+    <string name="hint_en">EN</string>
 </resources>

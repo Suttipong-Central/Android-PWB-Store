@@ -2,9 +2,11 @@ package cenergy.central.com.pwb_store.manager
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.preference.PreferenceManager
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
@@ -33,6 +35,7 @@ class HttpManagerMagento(context: Context) {
     private var retrofit: Retrofit
     private var defaultHttpClient: OkHttpClient
     private var database = RealmController.getInstance()
+    private val preferenceManager by lazy { cenergy.central.com.pwb_store.manager.preferences.PreferenceManager(context) }
 
     private lateinit var userToken: String
 
@@ -181,16 +184,28 @@ class HttpManagerMagento(context: Context) {
 
     fun retrieveCategories(force: Boolean, categoryId: Int, categoryLevel: Int, callback: ApiResponseCallback<Category?>) {
         // If already cached then do
-        val endpointName = "/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+        when (getLanguage()) {
+            AppLanguage.EN.key -> {
+                val endpointName = "/th/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+                database.clearCachedEndpoint(endpointName)
+
+            }
+            AppLanguage.TH.key -> {
+                val endpointName = "/en/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+                database.clearCachedEndpoint(endpointName)
+
+            }
+        }
+        val endpointName = "/${getLanguage()}/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
         if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
-            Log.i("PBE", "retrieveCategories: using cached")
+            Log.i("PBE", "retrieveCategories: using cached ${getLanguage()}")
             callback.success(database.category)
             return
         }
 
-        Log.i("PBE", "retrieveCategories: calling endpoint")
+        Log.i("PBE", "retrieveCategories: calling endpoint ${getLanguage()}")
         val categoryService = retrofit.create(CategoryService::class.java)
-        categoryService.getCategories(categoryId, categoryLevel).enqueue(object : Callback<Category> {
+        categoryService.getCategories(getLanguage(),categoryId, categoryLevel).enqueue(object : Callback<Category> {
 
             override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
                 if (response != null) {
@@ -1000,4 +1015,6 @@ class HttpManagerMagento(context: Context) {
         })
     }
     // endregion
+
+    private fun getLanguage(): String = preferenceManager.getDefaultLanguage()
 }
