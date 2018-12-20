@@ -59,15 +59,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private Context mContext;
     private MenuDrawerClickListener listener;
-    private LanguageListener languageListener;
     private List<IViewType> mListViewType = new ArrayList<>();
-    private PreferenceManager preferenceManager;
 
     public DrawerAdapter(Context context) {
         this.mContext = context;
         this.listener = (MenuDrawerClickListener) context ;
-        this.languageListener = (LanguageListener) context;
-        this.preferenceManager = new PreferenceManager(context);
     }
 
     @Override
@@ -91,8 +87,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return new DrawerUserNewViewHolder(
                         LayoutInflater
                                 .from(parent.getContext())
-                                .inflate(R.layout.drawer_user_new, parent, false),
-                        languageListener, preferenceManager
+                                .inflate(R.layout.drawer_user_new, parent, false)
                 );
 
             case VIEW_TYPE_ID_DELIVERY:
