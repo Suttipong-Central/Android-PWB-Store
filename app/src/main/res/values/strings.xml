@@ -258,4 +258,5 @@
     <string name="network_state_connected">เชื่อมต่อแล้ว</string>
     <string name="network_state_connecting">กำลังเชื่อมต่ออินเทอร์เน็ต</string>
     <string name="network_disconnected">ไม่ได้เชื่อมต่ออินเทอร์เน็ต</string>
+    <string name="t1_points">เมื่อซื้อ รับคะแนนเดอะวัน %d คะแนน</string>
 </resources>

@@ -42,6 +42,7 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     private lateinit var searchImageView: ImageView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var title: PowerBuyTextView
+    private lateinit var tvT1: PowerBuyTextView
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
     // data
@@ -95,13 +96,12 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     }
 
     private fun initView() {
-
         unit = Contextor.getInstance().context.getString(R.string.baht)
-
         mToolbar = findViewById(R.id.toolbar)
         searchImageView = findViewById(R.id.search_button)
         recycler = findViewById(R.id.recycler_view_shopping_cart)
         totalPrice = findViewById(R.id.txt_total_price_shopping_cart)
+        tvT1 = findViewById(R.id.txt_t1_shopping_cart)
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
@@ -174,13 +174,16 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         updateTitle(sum)
 
         var total = 0.0
-        cartItemList.forEach {
-            if (database.getCacheCartItem(it.id) != null) {
-                total += it.qty!! * it.price!!
+        cartItemList.forEach {cartItem ->
+            val item = database.getCacheCartItem(cartItem.id)
+            if (item != null) {
+                total += cartItem.qty!! * cartItem.price!!
             }
         }
         val vat = total * 0.07
+        val t1Points = ((total + vat) - ((total + vat) % 50)) / 50
         totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
+        tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
         checkCanClickPayment()
     }
 
