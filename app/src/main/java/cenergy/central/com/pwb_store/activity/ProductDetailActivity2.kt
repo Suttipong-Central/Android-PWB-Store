@@ -365,11 +365,15 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
 
             override fun failure(error: APIError) {
                 dismissProgressDialog()
-
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
                     showClearCartDialog()
                 } else {
-                    showAlertDialog("", error.errorMessage)
+                    // We found some crash in fabric but we didn't know why errorMessage is null
+                    if(error.errorMessage != null || error.error != null || error.errorUserMessage != null){
+                        showAlertDialog("", error.errorMessage?: error.error?: error.errorUserMessage)
+                    } else {
+                        throw IllegalArgumentException("Some error message is null, Error code is ${error.errorCode}")
+                    }
                 }
             }
         })
