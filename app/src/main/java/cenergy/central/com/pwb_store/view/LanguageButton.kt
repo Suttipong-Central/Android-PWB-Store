@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 
 class LanguageButton : RadioGroup {
 
@@ -15,12 +16,34 @@ class LanguageButton : RadioGroup {
     private lateinit var thaiToggle: RadioButton
     private lateinit var engToggle: RadioButton
 
+    // callback
+    private var listener: LanguageListener? = null
+
     constructor(context: Context) : super(context) {
         prepareView()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         init(context, attrs)
+    }
+
+    fun setOnLanguageChangeListener(listener: LanguageListener) {
+        this.listener = listener
+    }
+
+    fun setDefaultLanguage(lang: String) {
+        when (lang) {
+            AppLanguage.TH.key -> {
+                thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
+                engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
+                thaiToggle.isChecked = true
+            }
+            AppLanguage.EN.key -> {
+                engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
+                thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
+                engToggle.isChecked = true
+            }
+        }
     }
 
     private fun prepareView() {
@@ -34,27 +57,28 @@ class LanguageButton : RadioGroup {
                 R.id.lang_th -> {
                     thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
                     engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
-//                    languageListener?.onChangedLanguage(AppLanguage.TH)
+
+                    listener?.onChangedLanguage(AppLanguage.TH) // callback
                 }
                 R.id.lang_en -> {
                     engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
                     thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
 
-//                    languageListener?.onChangedLanguage(AppLanguage.EN)
+                    listener?.onChangedLanguage(AppLanguage.EN) // callback
                 }
             }
         }
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
-        val typedArray = context.theme
-                .obtainStyledAttributes(attrs, R.styleable.PowerBuyAutoCompleteTextStroke, 0, 0)
+//        val typedArray = context.theme
+//                .obtainStyledAttributes(attrs, R.styleable.LanguageButton, 0, 0)
 
         //Get attribute values
 //        textHeader = typedArray.getString(R.styleable.PowerBuyAutoCompleteTextStroke_act_header)
 //        required = typedArray.getBoolean(R.styleable.PowerBuyAutoCompleteTextStroke_act_required, false)
 
-        typedArray.recycle()
+//        typedArray.recycle()
 
         prepareView()
 
@@ -63,5 +87,9 @@ class LanguageButton : RadioGroup {
 
     private fun notifyAttributeChanged() {
 
+    }
+
+    interface LanguageListener {
+        fun onChangedLanguage(lang: AppLanguage)
     }
 }
