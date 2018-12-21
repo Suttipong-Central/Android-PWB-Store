@@ -1,16 +1,9 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.Toast
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.interfaces.LanguageListener
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 

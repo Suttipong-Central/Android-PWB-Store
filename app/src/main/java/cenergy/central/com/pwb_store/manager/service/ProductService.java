@@ -116,8 +116,9 @@ public interface ProductService {
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage);
 
-    @GET("/rest/V1/headless/categories/{categoryId}/products")
+    @GET("/{lang}/rest/V1/headless/categories/{categoryId}/products")
     Call<ProductResponse> getProductList(
+            @Path("lang") String lang,
             @Path("categoryId") String categoryId,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") int statusValue,
@@ -139,8 +140,9 @@ public interface ProductService {
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage);
 
-    @GET("/rest/V1/headless/categories/{categoryId}/products")
+    @GET("/{lang}/rest/V1/headless/categories/{categoryId}/products")
     Call<ProductResponse> getProductsFilterByBrand(
+            @Path("lang") String lang,
             @Path("categoryId") String categoryId,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String statusQuery,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") int statusValue,

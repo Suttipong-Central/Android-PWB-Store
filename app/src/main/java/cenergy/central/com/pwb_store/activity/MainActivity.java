@@ -3,24 +3,21 @@ package cenergy.central.com.pwb_store.activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,12 +31,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import cenergy.central.com.pwb_store.BaseActivity;
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.activity.interfaces.LanguageListener;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
@@ -47,7 +41,6 @@ import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
-import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
@@ -64,21 +57,21 @@ import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
+import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.StoreDao;
-import cenergy.central.com.pwb_store.model.StoreList;
-import cenergy.central.com.pwb_store.model.response.TokenResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
-import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import cenergy.central.com.pwb_store.view.LanguageButton;
 
-public class MainActivity extends AppCompatActivity implements MenuDrawerClickListener, LanguageListener {
+public class MainActivity extends BaseActivity implements MenuDrawerClickListener, LanguageButton.LanguageListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
+    // new arg
+    private static final String ARG_FILTER_CATEGORY_1 = "arg_filter_category_1";
+    private static final String ARG_FILTER_CATEGORY_2 = "arg_filter_category_2";
+
     private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
     private static final String TAG_FRAGMENT_PRODUCT_LIST = "product_list";
@@ -86,9 +79,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
 
     //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-
+    private Toolbar toolbar;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerAdapter mAdapter;
@@ -99,24 +90,21 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private CategoryDao mCategoryDao;
     private String storeId;
     private ProgressDialog mProgressDialog;
+
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
     private PreferenceManager preferenceManager;
 
-    private ProductFilterHeaderBus productFilterHeaderBus;
+    private ProductFilterHeader productFilterHeader;
+    private ProductFilterSubHeader productFilterSubHeader;
+    private Fragment currentFragment;
 
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
         Toast.makeText(this, "" + drawItemBus.getDrawerItem().getTitle(), Toast.LENGTH_SHORT).show();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//        fragmentTransaction
-//                .replace(R.id.container, ProductListFragment.newInstance(drawerItem.getTitle(), false,
-//                        drawerItem.getProductFilterHeader().getId(), storeId, "", drawerItem.getProductFilterHeader()))
-//                .commit();
-        fragmentTransaction
-                .replace(R.id.container, SubHeaderProductFragment.Companion.newInstance(drawerItem.getProductFilterHeader()))
-                .commit();
+        this.productFilterHeader = drawerItem.getProductFilterHeader();
+        startCategoryLvTwoFragment(this.productFilterHeader);
     }
 
     @Subscribe
@@ -127,14 +115,15 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     // Event from onClick back button in product list
     @Subscribe
     public void onEvent(CategoryTwoBus categoryTwoBus) {
-        startCategoryLvTwoFragment();
+        startCategoryLvTwoFragment(this.productFilterHeader);
     }
 
     // Event from onClick category item
     @Subscribe
     public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
-        this.productFilterHeaderBus = productFilterHeaderBus;
-        startCategoryLvTwoFragment();
+        this.productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
+        Log.d(TAG, "onEvent " + productFilterHeader.getId());
+        startCategoryLvTwoFragment(this.productFilterHeader);
     }
 
     // Event from onClick product filter sub header item
@@ -145,12 +134,8 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         } else if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Compare")) {
             startCategoryFragment();
         } else {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, ProductListFragment.newInstance(productFilterSubHeaderBus.getProductFilterSubHeader().getName()
-                            , false, productFilterSubHeaderBus.getProductFilterSubHeader().getId(),
-                            storeId, "", productFilterSubHeaderBus.getProductFilterSubHeader()), TAG_FRAGMENT_PRODUCT_LIST)
-                    .commit();
+            this.productFilterSubHeader = productFilterSubHeaderBus.getProductFilterSubHeader();
+            startProductListFragment(this.productFilterSubHeader);
         }
     }
 
@@ -182,70 +167,48 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                         .toBundle());
     }
 
-    final Callback<TokenResponse> CALLBACK_CREATE_TOKEN = new Callback<TokenResponse>() {
-        @Override
-        public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-            if (response.isSuccessful()) {
-                TokenResponse tokenResponse = response.body();
-                if (tokenResponse.getResultStatus() != null) {
-                    UserInfoManager.getInstance().setCreateToken(tokenResponse);
-                } else {
-                    APIError error = APIErrorUtils.parseError(response);
-                    Log.e(TAG, "onResponse: " + error.getErrorMessage());
-                    showAlertDialog(error.getErrorMessage(), false);
-                    dismissProgressDialog();
-                }
-
-            }
-        }
-
-        @Override
-        public void onFailure(Call<TokenResponse> call, Throwable t) {
-            Log.e(TAG, "onFailure: ", t);
-            dismissProgressDialog();
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        preferenceManager = new PreferenceManager(this);
 
+        preferenceManager = new PreferenceManager(this);
         handleChangeLanguage(preferenceManager.getDefaultLanguage());
         initView();
 
-        if (savedInstanceState == null) {
-            showProgressDialog();
-//            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
-            // TODO: ignore getStores
-            retrieveCategories();
-        } else {
-            startCategoryFragment();
-        }
-
+//        if (savedInstanceState == null) {
+//            retrieveCategories();
+//        } else {
+//            startCategoryFragment();
+//        }
+        retrieveCategories();
     }
 
     private void initView() {
-        ButterKnife.bind(this);
         //initHeaderView();
+        // widget view
+        toolbar = findViewById(R.id.toolbar);
+        drawer = findViewById(R.id.drawer_layout);
+        RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
 
-        setSupportActionBar(mToolbar);
+        LanguageButton languageButton = findViewById(R.id.switch_language_button);
+        languageButton.setDefaultLanguage(preferenceManager.getDefaultLanguage());
+        languageButton.setOnLanguageChangeListener(this);
+
+        setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
         mAdapter = new DrawerAdapter(this);
         mLayoutManager = new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false);
-        RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
         recyclerViewMenu.setLayoutManager(mLayoutManager);
         recyclerViewMenu.setAdapter(mAdapter);
 
-        drawer = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
                 MainActivity.this,
                 drawer,
-                mToolbar,
+                toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         drawer.addDrawerListener(mDrawerToggle);
@@ -254,28 +217,6 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
     }
-
-//    private void initHeaderView() {
-//        mDrawerHeader = mNavigationView.getHeaderView(0);
-//    }
-
-//    private void mockData(){
-//                //Dummy Data
-//        mDrawerItemList = new ArrayList<DrawerItem>();
-//        mDrawerItemList.add(new DrawerItem("",1, 1, 1, getResources().getString(R.string.home_tv)));
-//        mDrawerItemList.add(new DrawerItem("",2, 2, 2, getResources().getString(R.string.home_app)));
-//        mDrawerItemList.add(new DrawerItem("",3, 3, 3, getResources().getString(R.string.home_cooling)));
-//        mDrawerItemList.add(new DrawerItem("",4, 4, 4, getResources().getString(R.string.home_small)));
-//        mDrawerItemList.add(new DrawerItem("",5, 5, 5, getResources().getString(R.string.home_kitchen)));
-//        mDrawerItemList.add(new DrawerItem("",6, 6, 6, getResources().getString(R.string.home_health)));
-//        mDrawerItemList.add(new DrawerItem("",7, 7, 7, getResources().getString(R.string.home_life)));
-//        mDrawerItemList.add(new DrawerItem("",8, 8, 8, getResources().getString(R.string.home_wearable)));
-//        mDrawerItemList.add(new DrawerItem("",9, 9, 9, getResources().getString(R.string.home_accessories)));
-//        mDrawerItemList.add(new DrawerItem("",10, 10, 10, getResources().getString(R.string.schedule)));
-//        mDrawerItemList.add(new DrawerItem("",11, 11, 11, getResources().getString(R.string.compare)));
-//        mDrawerItemList.add(new DrawerItem("",12, 12, 12, getResources().getString(R.string.change)));
-//        mDrawerItemList.add(new DrawerItem("",13, 13, 13, getResources().getString(R.string.help)));
-//    }
 
     private void showProgressDialog() {
         if (mProgressDialog == null) {
@@ -289,17 +230,21 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(ARG_CATEGORY, mCategoryDao);
-        outState.putParcelableArrayList(ARG_DRAWER_LIST, mDrawerItemList);
-        outState.putString(ARG_STORE_ID, storeId);
+        outState.putParcelable(ARG_FILTER_CATEGORY_1, productFilterHeader);
+        outState.putParcelable(ARG_FILTER_CATEGORY_2, productFilterSubHeader);
+//        outState.putParcelable(ARG_CATEGORY, mCategoryDao);
+//        outState.putParcelableArrayList(ARG_DRAWER_LIST, mDrawerItemList);
+//        outState.putString(ARG_STORE_ID, storeId);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mCategoryDao = savedInstanceState.getParcelable(ARG_CATEGORY);
-        mDrawerItemList = savedInstanceState.getParcelableArrayList(ARG_DRAWER_LIST);
-        storeId = savedInstanceState.getString(ARG_STORE_ID);
+        productFilterHeader = savedInstanceState.getParcelable(ARG_FILTER_CATEGORY_1);
+        productFilterSubHeader = savedInstanceState.getParcelable(ARG_FILTER_CATEGORY_2);
+//        mCategoryDao = savedInstanceState.getParcelable(ARG_CATEGORY);
+//        mDrawerItemList = savedInstanceState.getParcelableArrayList(ARG_DRAWER_LIST);
+//        storeId = savedInstanceState.getString(ARG_STORE_ID);
     }
 
     @Override
@@ -326,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
                 intent.putExtra(ProductDetailActivity2.ARG_IS_BARCODE, true);
                 ActivityCompat.startActivity(MainActivity.this, intent,
                         ActivityOptionsCompat
-                                .makeScaleUpAnimation(mToolbar, 0, 0, mToolbar.getWidth(), mToolbar.getHeight())
+                                .makeScaleUpAnimation(toolbar, 0, 0, toolbar.getWidth(), toolbar.getHeight())
                                 .toBundle());
             }
         } else {
@@ -342,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
             if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SUB_HEADER) != null) {
                 startCategoryFragment();
             } else if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_PRODUCT_LIST) != null) {
-                startCategoryLvTwoFragment();
+                startCategoryLvTwoFragment(this.productFilterHeader);
             } else {
                 supportFinishAfterTransition();
             }
@@ -350,18 +295,12 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     }
 
     private void retrieveCategories() {
+        showProgressDialog();
         HttpManagerMagento.Companion.getInstance(this).retrieveCategories(false, 2, 4, new ApiResponseCallback<Category>() {
             @Override
             public void success(@Nullable Category category) {
                 if (!isFinishing()) {
-                    if (category != null) {
-                        mCategoryDao = new CategoryDao(category);
-                        createDrawerMenu(category);
-                    }
-                    if (getSupportFragmentManager() != null) {
-                        startCategoryFragment();
-                    }
-                    dismissProgressDialog();
+                    handleRetrieveCateSuccess(category);
                 }
             }
 
@@ -373,47 +312,61 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         });
     }
 
+    private void handleRetrieveCateSuccess(Category category) {
+        if (category != null) {
+            mCategoryDao = new CategoryDao(category);
+            createDrawerMenu(category);
+            String log = this.productFilterHeader == null ? "null" : this.productFilterHeader.getId();
+
+            if (currentFragment instanceof SubHeaderProductFragment) {
+                Log.d(TAG, "ProductFilterHeader 1 " + log + " /" + TAG_FRAGMENT_SUB_HEADER);
+                List<ProductFilterHeader> newProductFilterHeaders = category.getFilterHeaders();
+                for (ProductFilterHeader filterHeader : newProductFilterHeaders) {
+                    if (filterHeader.getId().equals(this.productFilterHeader.getId())) {
+                        this.productFilterHeader = filterHeader; // update product filter header
+                        startCategoryLvTwoFragment(filterHeader);
+                        Log.d(TAG, "Found filterHeader" + filterHeader.getId() + TAG_FRAGMENT_SUB_HEADER);
+                        dismissProgressDialog();
+                        return;
+                    }
+                }
+
+            } else if (currentFragment instanceof ProductListFragment) {
+                List<ProductFilterHeader> newProductFilterHeaders = category.getFilterHeaders();
+                for (ProductFilterHeader filterHeader : newProductFilterHeaders) {
+                    if (filterHeader.getId().equals(this.productFilterHeader.getId())) {
+                        this.productFilterHeader = filterHeader; // update product filter header
+
+                        // find sub header
+                        for (ProductFilterSubHeader filterSubHeader : filterHeader.getProductFilterSubHeaders()) {
+                            if (filterSubHeader.getId().equals(this.productFilterSubHeader.getId())) {
+                                startProductListFragment(filterSubHeader);
+                                Log.d(TAG, "Found filterSubHeader " + filterSubHeader.getId() + TAG_FRAGMENT_SUB_HEADER);
+                                dismissProgressDialog();
+                                return;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            startCategoryFragment();
+        }
+
+        dismissProgressDialog();
+    }
+
     private void createDrawerMenu(Category category) {
+        mAdapter.clearItems();
+        mDrawerItemList.clear(); // clear drawer
         mDrawerDao = new DrawerDao(mDrawerItemList);
         // TODO: ignore getStores
         if (mDrawerItemList.size() == 0 && category != null) {
             for (ProductFilterHeader item : category.getFilterHeaders()) {
                 mDrawerItemList.add(new DrawerItem(item.getName(), item.getId(), item));
-                Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+//                Log.d(TAG, "Detail : " + mDrawerItemList.toString());
             }
-//                    mDrawerDao.setStoreDao(mStoreDao);
-//                    if (UserInfoManager.getInstance().getUserId() == null ||
-//                            UserInfoManager.getInstance().getUserId().equalsIgnoreCase("")) {
-//                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
-//                        storeId = "00096";
-//                        UserInfoManager.getInstance().setUserIdLogin(storeId);
-//                        for (StoreList storeList : mStoreDao.getStoreLists()) {
-//                            if (storeList.getStoreId().equalsIgnoreCase(storeId)) {
-//                                UserInfoManager.getInstance().setStore(storeList);
-//                            }
-//                        }
-//                        if (!mStoreDao.isStoreEmpty()) {
-//                            if (mStoreDao.isStoreListItemListAvailable()) {
-//                                List<StoreList> storeLists = mStoreDao.getStoreLists();
-//                                for (StoreList headerStore :
-//                                        storeLists) {
-//                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        Log.d(TAG, "User : " + UserInfoManager.getInstance().getUserId());
-//                        storeId = UserInfoManager.getInstance().getUserId();
-//                        if (!mStoreDao.isStoreEmpty()) {
-//                            if (mStoreDao.isStoreListItemListAvailable()) {
-//                                List<StoreList> storeLists = mStoreDao.getStoreLists();
-//                                for (StoreList headerStore :
-//                                        storeLists) {
-//                                    headerStore.setSelected(headerStore.getStoreId().equalsIgnoreCase(storeId));
-//                                }
-//                            }
-//                        }
-//                    }
             mAdapter.setDrawItem(mDrawerDao);
         } else {
             mAdapter.setDrawItem(mDrawerDao);
@@ -522,17 +475,25 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     }
 
     private void startCategoryFragment() {
+        currentFragment = CategoryFragment.newInstance(mCategoryDao);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
+        fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_CATEGORY_DEFAULT)
                 .commit();
     }
 
-    private void startCategoryLvTwoFragment() {
+    private void startCategoryLvTwoFragment(ProductFilterHeader productFilterHeader) {
+        currentFragment = SubHeaderProductFragment.Companion.newInstance(productFilterHeader);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
-                .replace(R.id.container,
-                        SubHeaderProductFragment.Companion.newInstance(productFilterHeaderBus.getProductFilterHeader()),
-                        TAG_FRAGMENT_SUB_HEADER)
+                .replace(R.id.container, currentFragment, TAG_FRAGMENT_SUB_HEADER)
+                .commit();
+    }
+
+    private void startProductListFragment(ProductFilterSubHeader productFilterSubHeader) {
+        currentFragment = ProductListFragment.newInstance(productFilterSubHeader, false, storeId, "");
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction
+                .replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
                 .commit();
     }
 
@@ -542,28 +503,15 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
         }
     }
 
-    // region {@link LanguageListener}
+    // region {@link LanguageButton.LanguageListener}
     @Override
     public void onChangedLanguage(@NotNull AppLanguage lang) {
         drawer.closeDrawers();
         preferenceManager.setDefaultLanguage(lang); // save language
         handleChangeLanguage(lang.getKey());
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void handleChangeLanguage(String lang) {
-
-        Toast.makeText(this, "Change language to " + lang, Toast.LENGTH_SHORT).show();
-
-        Resources res = getResources();
-        // Change locale settings in the app.
-        DisplayMetrics dm = res.getDisplayMetrics();
-        android.content.res.Configuration conf = res.getConfiguration();
-        conf.setLocale(new Locale(lang));
-        res.updateConfiguration(conf, dm);
+        retrieveCategories();
+//        recreate();
     }
     // endregion
 }

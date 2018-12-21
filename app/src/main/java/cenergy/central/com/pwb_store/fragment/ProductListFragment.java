@@ -298,13 +298,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return fragment;
     }
 
-    public static ProductListFragment newInstance(String title, boolean search, String departmentId,
-                                                  String storeId, String keyWord, ProductFilterSubHeader productFilterSubHeader) {
+    public static ProductListFragment newInstance(ProductFilterSubHeader productFilterSubHeader,
+                                                  boolean search, String storeId, String keyWord) {
         ProductListFragment fragment = new ProductListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
+        args.putString(ARG_TITLE, productFilterSubHeader.getName());
         args.putBoolean(ARG_SEARCH, search);
-        args.putString(ARG_DEPARTMENT_ID, departmentId);
+        args.putString(ARG_DEPARTMENT_ID, productFilterSubHeader.getId());
         args.putString(ARG_STORE_ID, storeId);
         args.putParcelable(ARG_PRODUCT_FILTER_SUB_HEADER, productFilterSubHeader);
         args.putString(ARG_KEY_WORD, keyWord);

@@ -31,8 +31,6 @@ public class ProductFilterHeader extends RealmObject implements IViewType, Parce
     private static final String TAG = "ProductFilterHeader";
     @Ignore
     private int viewTypeId;
-    @SerializedName("entity_id")
-    @Expose
     private String id;
     @SerializedName("level")
     @Expose

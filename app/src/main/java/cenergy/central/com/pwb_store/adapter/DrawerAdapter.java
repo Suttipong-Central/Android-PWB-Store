@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.activity.interfaces.LanguageListener;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerChangeViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerDeliveryViewHolder;
@@ -23,7 +22,6 @@ import cenergy.central.com.pwb_store.adapter.viewholder.DrawerSubHeaderViewHolde
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserNewViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.IViewType;
@@ -64,6 +62,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public DrawerAdapter(Context context) {
         this.mContext = context;
         this.listener = (MenuDrawerClickListener) context ;
+    }
+
+    public void clearItems() {
+        this.mListViewType.clear();
     }
 
     @Override
@@ -174,11 +176,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
 
             case VIEW_TYPE_ID_USER:
-                if (viewType instanceof StoreDao && holder instanceof DrawerUserViewHolder) {
+//                if (viewType instanceof StoreDao && holder instanceof DrawerUserViewHolder) {
 //                    StoreDao storeDao = (StoreDao) viewType;
 //                    DrawerUserViewHolder drawerUserViewHolder = (DrawerUserViewHolder) holder;
 //                    drawerUserViewHolder.setViewHolder(mContext, storeDao);
-                }
+//                }
                 if (holder instanceof DrawerUserNewViewHolder) {
                     DrawerUserNewViewHolder drawerUserViewHolder = (DrawerUserNewViewHolder) holder;
                     drawerUserViewHolder.setViewHolder();
