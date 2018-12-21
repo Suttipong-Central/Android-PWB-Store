@@ -2,7 +2,6 @@ package cenergy.central.com.pwb_store.manager
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.preference.PreferenceManager
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
@@ -283,7 +282,7 @@ class HttpManagerMagento(context: Context) {
 
     fun retrieveProducts(categoryId: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
+        productService.getProductList(getLanguage(), categoryId, "status", 1, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                 if (response != null) {
                     val product = response.body()
@@ -320,7 +319,7 @@ class HttpManagerMagento(context: Context) {
 
     fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductsFilterByBrand(categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
+        productService.getProductsFilterByBrand(getLanguage(), categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                 if (response != null) {
                     val product = response.body()
