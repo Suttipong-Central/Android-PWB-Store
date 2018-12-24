@@ -128,9 +128,11 @@
     <string name="username">ชื่อผู้ใช้</string>
     <string name="password">รหัสผ่าน</string>
     <string name="login">เข้าสู่ระบบ</string>
-    <string name="error">พบข้อผิดพลาด</string>
-    <string name="error_login">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
     <string name="loading">กำลังโหลด...</string>
+    <string name="user_not_found">รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+    <string name="not_connected_network">ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</string>
+    <string name="server_not_found">ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง</string>
+
 
     <!--Payment-->
     <string name="payment_header">ชำระเงิน</string>
