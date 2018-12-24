@@ -39,9 +39,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginEnd="36dp"
-                            android:layout_marginRight="36dp"
                             android:padding="6dp"
-                            android:src="@drawable/ic_account" />
+                            android:src="@drawable/ic_account"
+                            android:contentDescription="@string/username" />
 
                         <android.support.design.widget.TextInputLayout
                             android:id="@+id/username_wrapper"
@@ -50,7 +50,7 @@
                             android:hint="@string/username"
                             android:theme="@style/TextWrapperStyle">
 
-                            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                            <cenergy.central.com.pwb_store.view.PowerBuyEditText
                                 android:id="@+id/edit_text_username"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -75,9 +75,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginEnd="36dp"
-                            android:layout_marginRight="36dp"
                             android:padding="6dp"
-                            android:src="@drawable/ic_lock" />
+                            android:src="@drawable/ic_lock"
+                            android:contentDescription="@string/password" />
 
                         <android.support.design.widget.TextInputLayout
                             android:id="@+id/password_wrapper"

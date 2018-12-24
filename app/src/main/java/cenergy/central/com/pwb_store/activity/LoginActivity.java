@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity implements NetworkReceiver.
 
     private NetworkReceiver onNetworkReceived = new NetworkReceiver(this);
     private NetworkStateView stateView;
+
     @Subscribe
     public void onEvent(LoginSuccessBus loginSuccessBus) {
         if (loginSuccessBus.isSuccess()) {
@@ -105,5 +106,4 @@ public class LoginActivity extends AppCompatActivity implements NetworkReceiver.
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
     }
-
 }

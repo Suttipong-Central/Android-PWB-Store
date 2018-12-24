@@ -4,16 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +20,6 @@ import android.view.inputmethod.InputMethodManager;
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
-import butterknife.BindView;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
@@ -31,6 +28,7 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.response.UserResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 
@@ -39,24 +37,9 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     public static final String TAG = LoginFragment.class.getSimpleName();
 
     //View Members
-    @BindView(R.id.layout_content)
-    ViewGroup mLayoutContent;
-
-    @BindView(R.id.username_wrapper)
-    TextInputLayout mUserNameWrapper;
-
-    @BindView(R.id.edit_text_username)
-    AppCompatAutoCompleteTextView mEditTextUserName;
-
-    @BindView(R.id.password_wrapper)
-    TextInputLayout mPasswordWrapper;
-
-    @BindView(R.id.edit_text_password)
-    PowerBuyEditText mEditTextPassword;
-
-    @BindView(R.id.card_view_login)
-    CardView mLoginButton;
-
+    private PowerBuyEditText mEditTextUserName;
+    private PowerBuyEditText mEditTextPassword;
+    private CardView mLoginButton;
     private ProgressDialog mProgressDialog;
     private String username;
     private String password;
@@ -87,7 +70,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     private void showAlertDialog(String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme)
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -170,16 +153,26 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                                     showAlertDialog("", getString(R.string.some_thing_wrong));
                                     userLogout();
                                 }
-                            } else {
-                                dismissDialog();
-                                showAlertDialog("", getString(R.string.some_thing_wrong));
                             }
                         }
 
                         @Override
                         public void failure(@NotNull APIError error) {
                             dismissDialog();
-                            showAlertDialog("", error.getErrorMessage() == null ? getString(R.string.some_thing_wrong) : error.getErrorMessage());
+                            if(error.getErrorCode() == null){
+                                showAlertDialog("", getString(R.string.not_connected_network));
+                            } else {
+                                switch (error.getErrorCode()){
+                                    case "401": showAlertDialog("", getString(R.string.user_not_found));
+                                        break;
+                                    case "408":
+                                    case "404":
+                                    case "500": showAlertDialog("", getString(R.string.server_not_found));
+                                        break;
+                                    default: showAlertDialog("", getString(R.string.some_thing_wrong));
+                                        break;
+                                }
+                            }
                         }
                     });
         }
