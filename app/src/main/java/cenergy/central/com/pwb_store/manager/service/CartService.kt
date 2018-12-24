@@ -18,9 +18,9 @@ internal interface CartService {
     fun addProduct(@Path("cartId") cartId: String,
                    @Body cartItemBody: CartItemBody): Call<CartItem>
 
-    @GET("/rest/V1/guest-carts/{quoteId}/items")
-    fun viewCart(
-            @Path("quoteId") quoteID: String): Call<List<CartItem>>
+    @GET("/{lang}/rest/V1/guest-carts/{quoteId}/items")
+    fun viewCart(@Path("lang") language: String,
+                 @Path("quoteId") quoteID: String): Call<List<CartItem>>
 
     @DELETE("/rest/V1/guest-carts/{cartId}/items/{itemId}")
     fun deleteItem(@Path("cartId") cartId: String,

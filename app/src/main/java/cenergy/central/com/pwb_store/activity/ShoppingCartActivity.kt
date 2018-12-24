@@ -18,23 +18,27 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import cenergy.central.com.pwb_store.BaseActivity
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
 
-class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCartListener {
-    private lateinit var preferenceManager: PreferenceManager
+class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener, LanguageButton.LanguageListener {
+
+    private lateinit var languageButton: LanguageButton
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
     private lateinit var backToShopButton: CardView
@@ -75,6 +79,8 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+        languageButton = findViewById(R.id.switch_language_button)
+        handleChangeLanguage()
 
         cartId = intent.getStringExtra(CART_ID)
         initView()
@@ -105,7 +111,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
-        preferenceManager = PreferenceManager(this)
 
         updateTitle(0) // default title
 
@@ -133,6 +138,16 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
     override fun onUpdateItem(cartId: String, itemId: Long, qty: Int) {
         updateItem(cartId, itemId, qty)
     }
+    //end region
+
+    //region {@link implement LanguageButton.LanguageListener  }
+    override fun onChangedLanguage(lang: AppLanguage) {
+        super.onChangedLanguage(lang)
+        showProgressDialog()
+        getCartItem()
+    }
+
+    override fun getSwitchButton(): LanguageButton? = languageButton
     //end region
 
     private fun getCartItem() {
@@ -273,7 +288,6 @@ class ShoppingCartActivity : AppCompatActivity(), ShoppingCartAdapter.ShoppingCa
 
         builder.show()
     }
-
 
     private fun clearCart() {
         database.deleteAllCacheCartItem()
