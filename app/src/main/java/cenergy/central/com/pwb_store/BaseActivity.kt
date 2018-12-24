@@ -50,4 +50,9 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
         //        recreate();
     }
     // region
+
+    companion object {
+        // request update
+        const val REQUEST_UPDATE_LANGUAGE = 4000
+    }
 }

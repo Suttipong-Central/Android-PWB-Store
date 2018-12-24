@@ -93,6 +93,15 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         updateShoppingCartBadge()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BaseActivity.REQUEST_UPDATE_LANGUAGE) {
+            if (getSwitchButton() != null) {
+                getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
+            }
+        }
+    }
+
     private fun bindView() {
         mToolbar = findViewById(R.id.toolbar)
         mBuyCompareView = mToolbar.findViewById(R.id.button_compare)

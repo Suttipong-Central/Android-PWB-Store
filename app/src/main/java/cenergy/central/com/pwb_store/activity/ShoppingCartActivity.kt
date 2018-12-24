@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -62,7 +63,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         fun startActivity(context: Context, view: View, cartId: String?) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
             intent.putExtra(CART_ID, cartId)
-            ActivityCompat.startActivity(context, intent,
+            ActivityCompat.startActivityForResult((context as Activity), intent, REQUEST_UPDATE_LANGUAGE,
                     ActivityOptionsCompat
                             .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
                             .toBundle())
@@ -72,7 +73,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         fun startActivity(context: Context, cartId: String?) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
             intent.putExtra(CART_ID, cartId)
-            context.startActivity(intent)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
 

@@ -77,9 +77,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private static final String TAG_FRAGMENT_PRODUCT_LIST = "product_list";
     private static final int TIME_TO_WAIT = 2000;
 
-    // request update
-    public static final int REQUEST_UPDATE_LANGUAGE = 4000;
-
     //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     private Toolbar toolbar;
