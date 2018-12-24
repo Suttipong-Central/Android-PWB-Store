@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.activity.MainActivity;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
@@ -276,7 +277,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if(getContext() != null){
             Intent intent = new Intent(getContext(), ProductDetailActivity2.class);
             intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, productDetailBus.getProductId());
-            ActivityCompat.startActivity(getContext(), intent,
+            ActivityCompat.startActivityForResult(getActivity(), intent, MainActivity.REQUEST_UPDATE_LANGUAGE,
                     ActivityOptionsCompat
                             .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())
                             .toBundle());

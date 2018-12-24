@@ -529,6 +529,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
+                .addPathSegment(getLanguage())
                 .addPathSegment("rest")
                 .addPathSegment("V1")
                 .addPathSegment("products")

@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import cenergy.central.com.pwb_store.BaseActivity
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.fragment.DetailFragment
@@ -24,6 +25,7 @@ import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
 import cenergy.central.com.pwb_store.fragment.WebViewFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CacheCartItem
@@ -34,10 +36,11 @@ import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
 
-class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
+class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
 
     // widgetview
@@ -47,10 +50,11 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
     lateinit var tvNotFound: TextView
     lateinit var containerGroupView: LinearLayout
+    private lateinit var languageButton: LanguageButton
 
     // data
-    private val preferenceManager by lazy { PreferenceManager(this@ProductDetailActivity2) }
     private val database = RealmController.getInstance()
+    private var productSku: String? = null
     private var productId: String? = null
     private var isBarcode: Boolean = false
     private var product: Product? = null
@@ -58,21 +62,28 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_detail2)
+        languageButton = findViewById(R.id.switch_language_button)
+        handleChangeLanguage()
 
         // get intent
         val mIntent = intent
         val extras = mIntent.extras
         if (extras != null) {
-            productId = extras.getString(ARG_PRODUCT_SKU)
+            productSku = extras.getString(ARG_PRODUCT_SKU)
+            productId = extras.getString(ARG_PRODUCT_ID)
             isBarcode = extras.getBoolean(ARG_IS_BARCODE)
         }
 
         bindView()
 
+       retrieveProductDetail()
+    }
+
+    private fun retrieveProductDetail() {
         if (!isBarcode) {
-            productId?.let { retrieveProduct(it) }
+            productSku?.let { retrieveProduct(it) }
         } else {
-            retrieveProductFromBarcode(mIntent.getStringExtra(ARG_PRODUCT_ID))
+            productId?.let { retrieveProductFromBarcode(it) }
         }
     }
 
@@ -95,7 +106,6 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
-//        mToolbar.setNavigationOnClickListener { finish() }
 
         searchImageView.setOnClickListener { v ->
             val intent = Intent(this@ProductDetailActivity2, SearchActivity::class.java)
@@ -106,7 +116,6 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         }
 
         // setup badge
-//        mBuyCompareView.setListener(this)
         mBuyCompareView.visibility = View.GONE
         mBuyShoppingCartView.setListener(this)
     }
@@ -117,6 +126,13 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
         }
         return true
     }
+
+    override fun onChangedLanguage(lang: AppLanguage) {
+        super.onChangedLanguage(lang)
+        retrieveProductDetail()
+    }
+
+    override fun getSwitchButton(): LanguageButton? = languageButton
 
     // region product ProductDetailProtocol
     override fun getProduct(): Product? = product
@@ -286,7 +302,6 @@ class ProductDetailActivity2 : AppCompatActivity(), ProductDetailListener, Power
             progressDialog?.show()
         }
     }
-
 
     // region action compare product
     private fun addToCompare(product: Product) {

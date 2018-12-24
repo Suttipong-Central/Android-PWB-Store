@@ -63,7 +63,7 @@ import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 
-public class MainActivity extends BaseActivity implements MenuDrawerClickListener, LanguageButton.LanguageListener {
+public class MainActivity extends BaseActivity implements MenuDrawerClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
@@ -76,6 +76,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
     private static final String TAG_FRAGMENT_PRODUCT_LIST = "product_list";
     private static final int TIME_TO_WAIT = 2000;
+
+    // request update
+    public static final int REQUEST_UPDATE_LANGUAGE = 4000;
 
     //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
@@ -90,10 +93,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private CategoryDao mCategoryDao;
     private String storeId;
     private ProgressDialog mProgressDialog;
+    private LanguageButton languageButton;
 
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
-    private PreferenceManager preferenceManager;
 
     private ProductFilterHeader productFilterHeader;
     private ProductFilterSubHeader productFilterSubHeader;
@@ -171,9 +174,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        languageButton = findViewById(R.id.switch_language_button);
 
-        preferenceManager = new PreferenceManager(this);
-        handleChangeLanguage(preferenceManager.getDefaultLanguage());
+        handleChangeLanguage();
         initView();
 
 //        if (savedInstanceState == null) {
@@ -190,10 +193,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         toolbar = findViewById(R.id.toolbar);
         drawer = findViewById(R.id.drawer_layout);
         RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
-
-        LanguageButton languageButton = findViewById(R.id.switch_language_button);
-        languageButton.setDefaultLanguage(preferenceManager.getDefaultLanguage());
-        languageButton.setOnLanguageChangeListener(this);
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -276,6 +275,12 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (requestCode == REQUEST_UPDATE_LANGUAGE) {
+            if (getSwitchButton() != null) {
+                getSwitchButton().setDefaultLanguage(getPreferenceManager().getDefaultLanguage());
+            }
         }
     }
 
@@ -389,7 +394,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void showAlertDialog(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -503,15 +508,17 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         }
     }
 
-    // region {@link LanguageButton.LanguageListener}
+    // override method from BaseActivity
     @Override
     public void onChangedLanguage(@NotNull AppLanguage lang) {
         drawer.closeDrawers();
-        preferenceManager.setDefaultLanguage(lang); // save language
-        handleChangeLanguage(lang.getKey());
-
+        super.onChangedLanguage(lang);
         retrieveCategories();
-//        recreate();
     }
-    // endregion
+
+    @Nullable
+    @Override
+    public LanguageButton getSwitchButton() {
+        return languageButton;
+    }
 }

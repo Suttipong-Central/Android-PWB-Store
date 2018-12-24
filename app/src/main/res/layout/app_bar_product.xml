@@ -28,6 +28,13 @@
             android:layout_gravity="center"
             android:src="@mipmap/ic_logo"/>
 
+        <cenergy.central.com.pwb_store.view.LanguageButton
+            android:id="@+id/switch_language_button"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_margin="8dp" />
+
         <ImageView
             android:id="@+id/img_search"
             android:layout_width="wrap_content"
@@ -45,8 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="15dp"
-            />
+            android:layout_marginRight="15dp" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
             android:id="@+id/shopping_cart"
@@ -55,9 +61,7 @@
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
             android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp">
-
-        </cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView>
+            android:layout_marginEnd="10dp"/>
 
     </android.support.v7.widget.Toolbar>
 
