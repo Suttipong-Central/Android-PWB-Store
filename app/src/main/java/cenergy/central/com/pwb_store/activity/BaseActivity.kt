@@ -1,4 +1,4 @@
-package cenergy.central.com.pwb_store
+package cenergy.central.com.pwb_store.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
