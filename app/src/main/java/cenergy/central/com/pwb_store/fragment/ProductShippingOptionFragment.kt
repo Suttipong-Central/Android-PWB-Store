@@ -56,6 +56,11 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     private val userInformation: UserInformation = database.userInformation
     private var store = userInformation.store
 
+    // date
+    private val dateTime = DateTime.now()
+    private var month = dateTime.monthOfYear
+    private var year = dateTime.year
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
@@ -121,8 +126,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
             if ((getSpecialSKUList() ?: arrayListOf()).contains(product.sku.toLong())) {
                 customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
             }
-            val dateTime = DateTime.now()
-            val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
+            val period = PeriodBody.createPeriod(year, month)
             val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
                     district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
                     province = store?.province ?: "", postalId = store?.postalCode ?: "",
@@ -171,8 +175,13 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     }
 
     fun getNextMonthShippingSlot() {
-        val dateTime = DateTime.now()
-        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
+        val period: PeriodBody
+        if(month == 12){
+            month = 1
+            period = PeriodBody.createPeriod(year + 1, month)
+        } else {
+            period = PeriodBody.createPeriod(year, month + 1)
+        }
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
                 district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
                 province = store?.province ?: "", postalId = store?.postalCode ?: "",

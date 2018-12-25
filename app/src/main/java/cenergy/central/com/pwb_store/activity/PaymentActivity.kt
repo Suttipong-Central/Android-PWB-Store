@@ -68,6 +68,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private var specialSKUList: List<Long>? = null
 
+    // date
+    private val dateTime = DateTime.now()
+    private var year = dateTime.year
+    private var month = dateTime.monthOfYear
+
     companion object {
         fun intent(context: Context) {
             val intent = Intent(context, PaymentActivity::class.java)
@@ -501,8 +506,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             }
         }
 
-        val dateTime = DateTime.now()
-        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear)
+        val period = PeriodBody.createPeriod(year, month)
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
                 district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
                 province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
@@ -548,8 +552,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     fun getNextMonthShippingSlot() {
-        val dateTime = DateTime.now()
-        val period = PeriodBody.createPeriod(dateTime.year, dateTime.monthOfYear + 1)
+        val period = PeriodBody()
+        if(month == 12){
+            month = 1
+            PeriodBody.createPeriod(year + 1, month)
+        } else {
+            PeriodBody.createPeriod(year, month + 1)
+        }
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
                 district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
                 province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
