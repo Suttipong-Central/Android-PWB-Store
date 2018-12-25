@@ -30,10 +30,10 @@
     <string name="product_spec">คุณลักษณะ</string>
     <string name="product_delivery">Delivery / Warranty / Refund</string>
     <string name="product_stock">มีสินค้า</string>
+    <string name="product_out_stock">สินค้าหมด</string>
     <string name="product_stock_more">จำนวนสินค้าในคลัง: มาก</string>
     <string name="product_stock_medium">จำนวนสินค้าในคลัง: ปานกลาง</string>
     <string name="product_stock_less">จำนวนสินค้าในคลัง: น้อย</string>
-    <string name="product_out_stock">สินค้าหมด</string>
     <string name="filter_count">(%1$s)</string>
     <string name="brand">แบรนด์</string>
 
@@ -58,7 +58,6 @@
 
     <!-- Compare -->
     <string name="compare_header">เปรียบเทียบสินค้า</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -89,13 +88,13 @@
     <string name="url_hdl">http://10.5.0.31/HDLAPI/Token/CreateToken</string>
 
     <!-- Date -->
-    <string name="sun">SUN</string>
-    <string name="mon">MON</string>
-    <string name="tue">TUE</string>
-    <string name="wed">WED</string>
-    <string name="thu">THU</string>
-    <string name="fri">FRI</string>
-    <string name="sat">SAT</string>
+    <string name="sun">อา</string>
+    <string name="mon">จ</string>
+    <string name="tue">อ</string>
+    <string name="wed">พ</string>
+    <string name="thu">พฤ</string>
+    <string name="fri">ศ</string>
+    <string name="sat">ส</string>
     <string name="last_date">30</string>
     <!--<string name="time_9am_to_half_9am">09:00 - 09:30</string>-->
     <!--<string name="time_half_9am_to_10am">09:30 - 10:00</string>-->
@@ -134,7 +133,7 @@
     <string name="server_not_found">ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง</string>
 
     <!--Payment-->
-    <string name="payment_header">ชำระเงิน</string>
+    <string name="payment_header">กรอกข้อมูลเพื่อจัดส่ง</string>
     <string name="user_profile">ข้อมูลส่วนตัว</string>
     <string name="required_field">*</string>
     <string name="first_name">ชื่อ</string>
