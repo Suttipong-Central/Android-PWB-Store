@@ -150,7 +150,7 @@
     <string name="sub_district">Sub District</string>
     <string name="post_code">Postcode</string>
     <string name="title_order_success">Your order is successfully placed.</string>
-    <string name="order_number">Order no. </string>
+    <string name="order_number">Order no: </string>
     <string name="products">Product</string>
     <string name="price">Price</string>
     <string name="qty">Quantity</string>
@@ -171,6 +171,7 @@
     <string name="label_billing_address">Billing Address</string>
     <string name="label_shipping_type">Delivery type</string>
     <string name="label_delivery_info">Delivery option</string>
+    <string name="delivery_price">Delivery price</string>
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>

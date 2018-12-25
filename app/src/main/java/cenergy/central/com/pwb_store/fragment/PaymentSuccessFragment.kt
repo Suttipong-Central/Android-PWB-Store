@@ -140,17 +140,17 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderNumber = rootView.findViewById(R.id.order_number_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
         orderDate = rootView.findViewById(R.id.txt_order_date_order_success)
-        tvShippingHeader = rootView.findViewById(R.id.tvShippingHeader)
-        tvDeliveryType = rootView.findViewById(R.id.tvDeliveryType)
-        tvDeliveryAddress = rootView.findViewById(R.id.tvDeliveryAddress)
-        tvReceiverName = rootView.findViewById(R.id.tvReceiverName)
-        tvBillingName = rootView.findViewById(R.id.tvBillingName)
-        tvBillingAddress = rootView.findViewById(R.id.tvBillingAddress)
-        tvBillingTelephone = rootView.findViewById(R.id.tvBillingTelephone)
-        tvBillingEmail = rootView.findViewById(R.id.tvBillingEmail)
-        tvDeliveryInfo = rootView.findViewById(R.id.tvDeliveryInfo)
-        tvShippingAmount = rootView.findViewById(R.id.tvShippingAmount)
-        tvAmount = rootView.findViewById(R.id.tvAmount)
+        tvShippingHeader = rootView.findViewById(R.id.shipping_header_order_success)
+        tvDeliveryType = rootView.findViewById(R.id.txt_delivery_type_order_success)
+        tvDeliveryAddress = rootView.findViewById(R.id.txt_delivery_address_order_success)
+        tvReceiverName = rootView.findViewById(R.id.txt_receiver_name_order_success)
+        tvBillingName = rootView.findViewById(R.id.txt_billing_name_order_success)
+        tvBillingAddress = rootView.findViewById(R.id.txt_billing_address_order_success)
+        tvBillingTelephone = rootView.findViewById(R.id.txt_billing_tel_order_success)
+        tvBillingEmail = rootView.findViewById(R.id.txt_billing_email_order_success)
+        tvDeliveryInfo = rootView.findViewById(R.id.txt_delivery_option_order_success)
+        tvShippingAmount = rootView.findViewById(R.id.txt_delivery_price_order_success)
+        tvAmount = rootView.findViewById(R.id.txt_total_order_success)
 
         storeAddressLayout = rootView.findViewById(R.id.storeAddressLayout)
         billingAddressLayout = rootView.findViewById(R.id.billingAddressLayout)
@@ -192,6 +192,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     fun retrieveOrder() {
+        if(mProgressDialog != null && !mProgressDialog!!.isShowing){
+            showProgressDialog()
+        }
         context?.let { HttpManagerMagento.getInstance(it).getOrder(orderId!!, this) }
     }
 
@@ -204,6 +207,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private fun updateViewOrder(order: Order) {
         val shippingAddress = order.shippingAddress ?: throw IllegalArgumentException("Shipping address must not be null")
         val billingAddress = order.billingAddress ?: throw IllegalArgumentException("Billing address must not be null")
+
+        updateLabel()
 
         orderProductListAdapter.listItems = order.items
         //Setup order number
@@ -269,6 +274,44 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvAmount.text = getDisplayPrice(unit, amount.toString())
         tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
         mProgressDialog?.dismiss()
+    }
+
+    private fun updateLabel() {
+        // setup label
+        view?.let { rootView ->
+            rootView.findViewById<PowerBuyTextView>(R.id.header_order_success).text = getString(R.string.title_order_success)
+            rootView.findViewById<PowerBuyTextView>(R.id.next_step_order_success).text = getString(R.string.next_step)
+            rootView.findViewById<PowerBuyTextView>(R.id.staff_description_order_success).text = getString(R.string.staff_descriptions)
+            rootView.findViewById<PowerBuyTextView>(R.id.for_staff_order_success).text = getString(R.string.for_staff)
+            rootView.findViewById<PowerBuyTextView>(R.id.order_info_sub_header_order_success).text = getString(R.string.personal_detail)
+            rootView.findViewById<PowerBuyTextView>(R.id.order_date_order_success).text = getString(R.string.order_date)
+            rootView.findViewById<PowerBuyTextView>(R.id.name_order_success).text = getString(R.string.customer_name)
+            rootView.findViewById<PowerBuyTextView>(R.id.email_order_success).text = getString(R.string.email)
+            rootView.findViewById<PowerBuyTextView>(R.id.contact_no_order_success).text = getString(R.string.tell)
+            rootView.findViewById<PowerBuyTextView>(R.id.delivery_option_order_success).text = getString(R.string.label_delivery_info)
+            rootView.findViewById<PowerBuyTextView>(R.id.branch_order_success).text = getString(R.string.branch)
+            rootView.findViewById<PowerBuyTextView>(R.id.address_order_success).text = getString(R.string.address)
+            rootView.findViewById<PowerBuyTextView>(R.id.tell_order_success).text = getString(R.string.phone)
+            rootView.findViewById<PowerBuyTextView>(R.id.open_today_order_success).text = getString(R.string.open_today)
+            rootView.findViewById<PowerBuyTextView>(R.id.header_billing_address_order_success).text = getString(R.string.label_billing_address)
+            rootView.findViewById<PowerBuyTextView>(R.id.billing_name_order_success).text = getString(R.string.receiver_name)
+            rootView.findViewById<PowerBuyTextView>(R.id.billing_address_order_success).text = getString(R.string.address)
+            rootView.findViewById<PowerBuyTextView>(R.id.billing_email_order_success).text = getString(R.string.email)
+            rootView.findViewById<PowerBuyTextView>(R.id.billing_tel_order_success).text = getString(R.string.telephone)
+            rootView.findViewById<PowerBuyTextView>(R.id.delivery_type_order_success).text = getString(R.string.label_shipping_type)
+            rootView.findViewById<PowerBuyTextView>(R.id.receiver_name_order_success).text = getString(R.string.receiver_name)
+            rootView.findViewById<PowerBuyTextView>(R.id.delivery_address_order_success).text = getString(R.string.address)
+            rootView.findViewById<PowerBuyTextView>(R.id.order_detail_order_success).text = getString(R.string.order_detail)
+            rootView.findViewById<PowerBuyTextView>(R.id.product_recycler_order_success).text = getString(R.string.product)
+            rootView.findViewById<PowerBuyTextView>(R.id.price_recycler_order_success).text = getString(R.string.price)
+            rootView.findViewById<PowerBuyTextView>(R.id.qty_recycler_order_success).text = getString(R.string.qty)
+            rootView.findViewById<PowerBuyTextView>(R.id.total_recycler_order_success).text = getString(R.string.total)
+            rootView.findViewById<PowerBuyTextView>(R.id.total_order_success).text = getString(R.string.total)
+            rootView.findViewById<PowerBuyTextView>(R.id.delivery_price_order_success).text = getString(R.string.delivery_price)
+            rootView.findViewById<PowerBuyTextView>(R.id.total_result_order_success).text = getString(R.string.total_price)
+            rootView.findViewById<PowerBuyTextView>(R.id.txt_finish_btn_order_success).text = getString(R.string.finished)
+        }
+        // end set label
     }
 
     private fun finishThisPage() {

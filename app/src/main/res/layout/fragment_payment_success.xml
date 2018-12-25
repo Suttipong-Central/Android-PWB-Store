@@ -37,6 +37,7 @@
                     android:orientation="vertical">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/header_order_success"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_order_success"
@@ -67,12 +68,14 @@
             android:weightSum="1">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/next_step_order_success"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/next_step"
                 android:textStyle="bold" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/staff_description_order_success"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -94,6 +97,7 @@
                     android:src="@drawable/ic_staff" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/for_staff_order_success"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="3dp"
@@ -114,8 +118,8 @@
             android:paddingEnd="16dp"
             android:paddingStart="16dp">
 
-
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/order_info_sub_header_order_success"
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,6 +134,7 @@
                 android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/order_date_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -155,6 +160,7 @@
                 android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/name_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -179,6 +185,7 @@
                 android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/email_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -203,6 +210,7 @@
                 android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/contact_no_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -228,6 +236,7 @@
                 android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/delivery_option_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -236,7 +245,7 @@
                     tools:ignore="NestedWeights" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/tvDeliveryInfo"
+                    android:id="@+id/txt_delivery_option_order_success"
                     style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -252,7 +261,7 @@
                 android:background="@color/lightGray" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                android:id="@+id/tvShippingHeader"
+                android:id="@+id/shipping_header_order_success"
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -274,6 +283,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/branch_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -298,6 +308,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/address_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -322,6 +333,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/tell_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -346,6 +358,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/open_today_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -378,6 +391,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/delivery_type_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -386,7 +400,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvDeliveryType"
+                        android:id="@+id/txt_delivery_type_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -402,6 +416,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/receiver_name_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -410,7 +425,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvReceiverName"
+                        android:id="@+id/txt_receiver_name_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -426,6 +441,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/delivery_address_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -434,7 +450,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvDeliveryAddress"
+                        android:id="@+id/txt_delivery_address_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -458,7 +474,7 @@
                 android:orientation="vertical">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/tvBillingHeader"
+                    android:id="@+id/header_billing_address_order_success"
                     style="@style/textPaymentHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -472,6 +488,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/billing_name_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -480,7 +497,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvBillingName"
+                        android:id="@+id/txt_billing_name_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -496,6 +513,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/billing_address_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -504,7 +522,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvBillingAddress"
+                        android:id="@+id/txt_billing_address_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -520,6 +538,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/billing_email_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -528,7 +547,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvBillingEmail"
+                        android:id="@+id/txt_billing_email_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -544,6 +563,7 @@
                     android:orientation="horizontal">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/billing_tel_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -552,7 +572,7 @@
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvBillingTelephone"
+                        android:id="@+id/txt_billing_tel_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -569,6 +589,7 @@
             </LinearLayout>
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/order_detail_order_success"
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -587,6 +608,7 @@
                 android:weightSum="10">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/product_recycler_order_success"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -596,6 +618,7 @@
                     android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/price_recycler_order_success"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -606,6 +629,7 @@
                     android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/qty_recycler_order_success"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -616,6 +640,7 @@
                     android:textSize="16sp" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/total_recycler_order_success"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -667,26 +692,25 @@
                         app:layout_constraintGuide_percent="0.77" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvAmountLabel"
+                        android:id="@+id/total_order_success"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="รวม"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline80" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/delivery_price_order_success"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="ค่าส่ง"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline80"
-                        app:layout_constraintTop_toBottomOf="@+id/tvAmountLabel" />
+                        app:layout_constraintTop_toBottomOf="@+id/total_order_success" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvAmount"
+                        android:id="@+id/txt_total_order_success"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -700,7 +724,7 @@
                         tools:text="4,404" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/tvShippingAmount"
+                        android:id="@+id/txt_delivery_price_order_success"
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -711,7 +735,7 @@
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/guideline80"
-                        app:layout_constraintTop_toBottomOf="@+id/tvAmount"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_order_success"
                         tools:text="0" />
 
                 </android.support.constraint.ConstraintLayout>
@@ -733,6 +757,7 @@
                     app:layout_constraintGuide_percent="0.775" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/total_result_order_success"
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -770,6 +795,7 @@
                 app:cardBackgroundColor="@color/colorPrimary">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/txt_finish_btn_order_success"
                     style="@style/RaisedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
