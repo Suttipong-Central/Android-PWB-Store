@@ -1,4 +1,4 @@
-package me.a3cha.android.thaiaddress.models
+package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject

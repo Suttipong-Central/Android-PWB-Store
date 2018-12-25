@@ -1,5 +1,6 @@
-package me.a3cha.android.thaiaddress.models
+package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -21,6 +22,13 @@ open class District(
         var nameEn: String = "",
         @SerializedName("name_th")
         var nameTh: String = ""): RealmObject() {
+
+    fun getDistrictName(lang: String): String {
+        return when (lang) {
+            AppLanguage.EN.key -> nameEn
+            else -> nameTh
+        }
+    }
 
     companion object {
         const val FIELD_ID = "districtId"

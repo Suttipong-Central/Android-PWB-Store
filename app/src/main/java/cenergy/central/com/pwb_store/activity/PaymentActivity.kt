@@ -32,17 +32,17 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.view.LanguageButton
 import com.google.gson.reflect.TypeToken
 import org.joda.time.DateTime
 import java.util.*
 
-class PaymentActivity : AppCompatActivity(), CheckoutListener,
+class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
         PaymentProtocol, StorePickUpListener, DeliveryHomeListener {
 
     var mToolbar: Toolbar? = null
 
-    private lateinit var preferenceManager: PreferenceManager
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
@@ -76,14 +76,17 @@ class PaymentActivity : AppCompatActivity(), CheckoutListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
+        handleChangeLanguage() // update language
+
         showProgressDialog()
-        preferenceManager = PreferenceManager(this)
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
         initView()
         getCartItems()
     }
+
+    override fun getSwitchButton(): LanguageButton?  = null
 
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {

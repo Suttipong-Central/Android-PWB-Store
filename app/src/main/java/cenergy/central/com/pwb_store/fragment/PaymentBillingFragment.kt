@@ -8,9 +8,10 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
-import android.util.Log
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,21 +24,15 @@ import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
-import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.Member
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import me.a3cha.android.thaiaddress.models.District
-import me.a3cha.android.thaiaddress.models.Postcode
-import me.a3cha.android.thaiaddress.models.Province
-import me.a3cha.android.thaiaddress.models.SubDistrict
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -84,7 +79,9 @@ class PaymentBillingFragment : Fragment() {
     private var mProgressDialog: ProgressDialog? = null
 
     // data
-    private val database = RealmController.getInstance()
+    private lateinit var preferenceManager : PreferenceManager
+    private var defaultLanguage = AppLanguage.TH.key
+    private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var paymentProtocol: PaymentProtocol? = null
@@ -117,14 +114,14 @@ class PaymentBillingFragment : Fragment() {
     private var districts = emptyList<District>()
     private var subDistricts = emptyList<SubDistrict>()
     private var postcodes = emptyList<Postcode>()
-    private var provinceNameList = getProvinceNameList()
-    private var districtNameList = getDistrictNameList()
-    private var subDistrictNameList = getSubDistrictNameList()
-    private var postcodeList = getPostcodeList()
-    private var billingProvinceNameList = getProvinceNameList()
-    private var billingDistrictNameList = getDistrictNameList()
-    private var billingSubDistrictNameList = getSubDistrictNameList()
-    private var billingPostcodeList = getPostcodeList()
+    private var provinceNameList = listOf<Pair<Long,String>>()
+    private var districtNameList = listOf<Pair<Long,String>>()
+    private var subDistrictNameList = listOf<Pair<Long,String>>()
+    private var postcodeList = listOf<Pair<Long,String>>()
+    private var billingProvinceNameList = listOf<Pair<Long,String>>()
+    private var billingDistrictNameList = listOf<Pair<Long,String>>()
+    private var billingSubDistrictNameList = listOf<Pair<Long,String>>()
+    private var billingPostcodeList = listOf<Pair<Long,String>>()
 
     private var province: Province? = null
     private var district: District? = null
@@ -176,6 +173,8 @@ class PaymentBillingFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        preferenceManager = PreferenceManager(context)
+        defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
         cartItemList = paymentProtocol?.getItems() ?: arrayListOf()
@@ -217,9 +216,9 @@ class PaymentBillingFragment : Fragment() {
             homeRoadEdt.setText(shippingAddress!!.street!![0]!!)
 
             // validate province with local db
-            val province = database.getProvinceByNameTh(shippingAddress!!.region)
+            val province = database.getProvinceByName(shippingAddress!!.region)
             if (province != null) {
-                provinceInput.setText(province.nameTh)
+                provinceInput.setText(province.getProvinceName(defaultLanguage))
                 this.province = province
                 this.districts = database.getDistrictsByProvinceId(province.provinceId)
                 this.districtNameList = getDistrictNameList()
@@ -227,9 +226,9 @@ class PaymentBillingFragment : Fragment() {
             }
 
             // validate district with local db
-            val district = database.getDistrictByNameTh(shippingAddress!!.subAddress!!.district)
+            val district = database.getDistrictByName(shippingAddress!!.subAddress?.district)
             if (district != null) {
-                districtInput.setText(district.nameTh)
+                districtInput.setText(district.getDistrictName(defaultLanguage))
                 this.district = district
                 this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
                 this.subDistrictNameList = getSubDistrictNameList()
@@ -237,9 +236,9 @@ class PaymentBillingFragment : Fragment() {
             }
 
             // validate sub district with local db
-            val subDistrict = database.getSubDistrictByNameTh(shippingAddress!!.subAddress!!.subDistrict)
+            val subDistrict = database.getSubDistrictByName(shippingAddress!!.subAddress?.subDistrict)
             if (subDistrict != null) {
-                subDistrictInput.setText(subDistrict.nameTh)
+                subDistrictInput.setText(subDistrict.getSubDistrictName(defaultLanguage))
                 this.subDistrict = subDistrict
                 this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
                 this.postcodeList = getPostcodeList()
@@ -247,13 +246,13 @@ class PaymentBillingFragment : Fragment() {
             }
 
             // validate postcode with local db
-            val postcode = database.getPostcodeByCode(shippingAddress!!.subAddress!!.postcode)
+            val postcode = database.getPostcodeByCode(shippingAddress!!.subAddress?.postcode)
             if (postcode != null) {
                 postcodeInput.setText(postcode.postcode.toString())
                 this.postcode = postcode
             }
 
-            homePhoneEdt.setText(shippingAddress!!.subAddress!!.mobile)
+            homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
         } else {
             when {
                 hasPwbMember() -> pwbMember?.let { pwbMember ->
@@ -272,7 +271,7 @@ class PaymentBillingFragment : Fragment() {
                     if (provinceId != null) {
                         val province = database.getProvince(provinceId.toLong())
                         if (province != null) {
-                            provinceInput.setText(province.nameTh)
+                            provinceInput.setText(province.getProvinceName(defaultLanguage))
                             this.province = province
                             this.districts = database.getDistrictsByProvinceId(province.provinceId)
                             this.districtNameList = getDistrictNameList()
@@ -286,7 +285,7 @@ class PaymentBillingFragment : Fragment() {
                     if (districtId != null && districtId != "") {
                         val district = database.getDistrict(districtId.toLong())
                         if (district != null) {
-                            districtInput.setText(district.nameTh)
+                            districtInput.setText(district.getDistrictName(defaultLanguage))
                             this.district = district
                             this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
                             this.subDistrictNameList = getSubDistrictNameList()
@@ -299,7 +298,7 @@ class PaymentBillingFragment : Fragment() {
                     if (subDistrictId != null && subDistrictId != "") {
                         val subDistrict = database.getSubDistrict(subDistrictId.toLong())
                         if (subDistrict != null) {
-                            subDistrictInput.setText(subDistrict.nameTh)
+                            subDistrictInput.setText(subDistrict.getSubDistrictName(defaultLanguage))
                             this.subDistrict = subDistrict
                             this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
                             this.postcodeList = getPostcodeList()
@@ -336,7 +335,7 @@ class PaymentBillingFragment : Fragment() {
                         // validate province with local db
                         val province = database.getProvinceByName(memberAddress.province)
                         if (province != null) {
-                            provinceInput.setText(province.nameTh)
+                            provinceInput.setText(province.getProvinceName(defaultLanguage))
                             this.province = province
                             this.districts = database.getDistrictsByProvinceId(province.provinceId)
                             this.districtNameList = getDistrictNameList()
@@ -346,7 +345,7 @@ class PaymentBillingFragment : Fragment() {
                         // validate district with local db
                         val district = database.getDistrictByName(memberAddress.district)
                         if (district != null) {
-                            districtInput.setText(district.nameTh)
+                            districtInput.setText(district.getDistrictName(defaultLanguage))
                             this.district = district
                             this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
                             this.subDistrictNameList = getSubDistrictNameList()
@@ -356,7 +355,7 @@ class PaymentBillingFragment : Fragment() {
                         // validate sub district with local db
                         val subDistrict = database.getSubDistrictByName(memberAddress.subDistrict)
                         if (subDistrict != null) {
-                            subDistrictInput.setText(subDistrict.nameTh)
+                            subDistrictInput.setText(subDistrict.getSubDistrictName(defaultLanguage))
                             this.subDistrict = subDistrict
                             this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
                             this.postcodeList = getPostcodeList()
@@ -481,6 +480,16 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun setupInputAddress() {
+        // setup list dropdown
+        provinceNameList = getProvinceNameList()
+        districtNameList = getDistrictNameList()
+        subDistrictNameList = getSubDistrictNameList()
+        postcodeList = getPostcodeList()
+        billingProvinceNameList = getProvinceNameList()
+        billingDistrictNameList = getDistrictNameList()
+        billingSubDistrictNameList = getSubDistrictNameList()
+        billingPostcodeList = getPostcodeList()
+
         // setup province
         provinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, provinceNameList)
         provinceAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
@@ -665,13 +674,13 @@ class PaymentBillingFragment : Fragment() {
         homeSoi = homeSoiEdt.getText()
         homeRoad = homeRoadEdt.getText()
         homeProvinceId = province?.provinceId?.toString() ?: ""
-        homeProvince = province?.nameTh ?: ""
+        homeProvince = province?.getProvinceName(defaultLanguage) ?: ""
         homeCountryId = province?.countryId ?: ""
         homeProvinceCode = province?.code ?: ""
         homeDistrictId = district?.districtId?.toString() ?: ""
-        homeDistrict = district?.nameTh ?: ""
+        homeDistrict = district?.getDistrictName(defaultLanguage) ?: ""
         homeSubDistrictId = subDistrict?.subDistrictId?.toString() ?: ""
-        homeSubDistrict = subDistrict?.nameTh ?: ""
+        homeSubDistrict = subDistrict?.getSubDistrictName(defaultLanguage) ?: ""
         homePostalCodeId = postcode?.id?.toString() ?: ""
         homePostalCode = postcode?.postcode?.toString() ?: ""
         homePhone = homePhoneEdt.getText()
@@ -695,13 +704,13 @@ class PaymentBillingFragment : Fragment() {
         homeSoi = billingHomeSoiEdt.getText()
         homeRoad = billingHomeRoadEdt.getText()
         homeProvinceId = billingProvince?.provinceId?.toString() ?: ""
-        homeProvince = billingProvince?.nameTh ?: ""
+        homeProvince = billingProvince?.getProvinceName(defaultLanguage) ?: ""
         homeCountryId = billingProvince?.countryId ?: ""
         homeProvinceCode = billingProvince?.code ?: ""
         homeDistrictId = billingDistrict?.districtId?.toString() ?: ""
-        homeDistrict = billingDistrict?.nameTh ?: ""
+        homeDistrict = billingDistrict?.getDistrictName(defaultLanguage) ?: ""
         homeSubDistrictId = billingSubDistrict?.subDistrictId?.toString() ?: ""
-        homeSubDistrict = billingSubDistrict?.nameTh ?: ""
+        homeSubDistrict = billingSubDistrict?.getSubDistrictName(defaultLanguage) ?: ""
         homePostalCodeId = billingPostcode?.id?.toString() ?: ""
         homePostalCode = billingPostcode?.postcode?.toString() ?: ""
         homePhone = billingHomePhoneEdt.getText()
@@ -798,15 +807,15 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun getProvinceNameList(): List<Pair<Long, String>> {
-        return provinces.map { Pair(first = it.provinceId, second = it.nameTh) }
+        return provinces.map { Pair(first = it.provinceId, second = it.getProvinceName(defaultLanguage)) }
     }
 
     private fun getDistrictNameList(): List<Pair<Long, String>> {
-        return districts.map { Pair(first = it.districtId, second = it.nameTh) }
+        return districts.map { Pair(first = it.districtId, second = it.getDistrictName(defaultLanguage)) }
     }
 
     private fun getSubDistrictNameList(): List<Pair<Long, String>> {
-        return subDistricts.map { Pair(first = it.subDistrictId, second = it.nameTh) }
+        return subDistricts.map { Pair(first = it.subDistrictId, second = it.getSubDistrictName(defaultLanguage)) }
     }
 
     private fun getPostcodeList(): List<Pair<Long, String>> {

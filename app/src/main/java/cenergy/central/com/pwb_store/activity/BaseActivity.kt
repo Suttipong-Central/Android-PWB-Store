@@ -25,10 +25,10 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
         Toast.makeText(this, "Change language to $language", Toast.LENGTH_SHORT).show()
 
-        if (languageButton == null) {
+        if (languageButton == null && getSwitchButton() != null) {
             languageButton = getSwitchButton()
-            languageButton?.setDefaultLanguage(language)
-            languageButton?.setOnLanguageChangeListener(this)
+            languageButton!!.setDefaultLanguage(language)
+            languageButton!!.setOnLanguageChangeListener(this)
         }
 
         val res = resources

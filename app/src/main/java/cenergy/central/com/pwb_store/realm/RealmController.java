@@ -1,10 +1,7 @@
 package cenergy.central.com.pwb_store.realm;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
+
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import java.util.Date;
@@ -16,17 +13,17 @@ import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
+import cenergy.central.com.pwb_store.model.District;
 import cenergy.central.com.pwb_store.model.Order;
+import cenergy.central.com.pwb_store.model.Postcode;
 import cenergy.central.com.pwb_store.model.Product;
+import cenergy.central.com.pwb_store.model.Province;
+import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import me.a3cha.android.thaiaddress.models.District;
-import me.a3cha.android.thaiaddress.models.Postcode;
-import me.a3cha.android.thaiaddress.models.Province;
-import me.a3cha.android.thaiaddress.models.SubDistrict;
 
 /**
  * Created by napabhat on 9/13/2017 AD.
