@@ -90,6 +90,15 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         getCartItem()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BaseActivity.REQUEST_UPDATE_LANGUAGE) {
+            if (getSwitchButton() != null) {
+                getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
+            }
+        }
+    }
+
     private fun setUpToolbar() {
         setSupportActionBar(mToolbar)
         if (supportActionBar != null) {

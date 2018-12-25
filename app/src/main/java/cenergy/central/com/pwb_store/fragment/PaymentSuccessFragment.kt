@@ -178,7 +178,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         recycler.adapter = orderProductListAdapter
 
         if (orderId != null) {
-            getOrder()
+            retrieveOrder()
         }
 
         if (cacheOrderId != null) {
@@ -191,7 +191,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
     }
 
-    private fun getOrder() {
+    fun retrieveOrder() {
         context?.let { HttpManagerMagento.getInstance(it).getOrder(orderId!!, this) }
     }
 

@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.view
 
 import android.content.Context
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.widget.AutoCompleteTextView
@@ -14,10 +15,11 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
 
     private var header: PowerBuyTextView? = null
     private var requiredField: PowerBuyTextView? = null
-    lateinit var inputText: AutoCompleteTextView
+    private lateinit var inputText: AutoCompleteTextView
     private var required = false
     private var textHeader = ""
     private var textEditText = ""
+    private var enable : Boolean = true
 
     constructor(context: Context) : super(context) {
         prepareView()
@@ -78,6 +80,15 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         }
     }
 
+    fun setTextChangeListener(watcher: TextWatcher) {
+        this.inputText.addTextChangedListener(watcher)
+    }
+
+    fun setEnableInput(enable: Boolean) {
+        this.enable = enable
+        notifyAttributeChanged()
+    }
+
     fun setText(input: String) {
         this.textEditText = input
         notifyAttributeChanged()
@@ -94,7 +105,9 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     }
 
     fun showDropDown() {
-        this.inputText.showDropDown()
+        if (enable) {
+            this.inputText.showDropDown()
+        }
     }
 
     fun setAdapter(adapter: AddressAdapter?) {

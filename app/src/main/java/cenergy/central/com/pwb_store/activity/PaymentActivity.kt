@@ -1,15 +1,16 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -25,7 +26,7 @@ import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.body.*
@@ -46,6 +47,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
+    private lateinit var languageButton: LanguageButton
 
     // data
     private val database = RealmController.getInstance()
@@ -69,13 +71,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     companion object {
         fun intent(context: Context) {
             val intent = Intent(context, PaymentActivity::class.java)
-            context.startActivity(intent)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
+        languageButton = findViewById(R.id.switch_language_button)
+        languageButton.visibility = View.INVISIBLE
         handleChangeLanguage() // update language
 
         showProgressDialog()
@@ -86,7 +90,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         getCartItems()
     }
 
-    override fun getSwitchButton(): LanguageButton?  = null
+    override fun getSwitchButton(): LanguageButton? = languageButton
+
+    override fun onChangedLanguage(lang: AppLanguage) {
+        super.onChangedLanguage(lang)
+        if (currentFragment is PaymentSuccessFragment) {
+            (currentFragment as PaymentSuccessFragment).retrieveOrder() // update content
+        }
+    }
 
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {
@@ -182,6 +193,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun startSuccessfullyFragment(orderId: String) {
+        languageButton.visibility = View.VISIBLE
         val cacheCartItem = arrayListOf<CacheCartItem>()
         cacheCartItem.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
         startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItem))
@@ -572,7 +584,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
-        val storeId = branch?.storeId ?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
+        val storeId = branch?.storeId
+                ?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
 
         HttpManagerMagento.getInstance(this).updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
