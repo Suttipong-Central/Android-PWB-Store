@@ -18,6 +18,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -151,11 +152,21 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
         showProgressDialog()
+        updateView()
         getCartItem()
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
     //end region
+
+    private fun updateView() {
+        // update shit! button using card view =[]='
+        backToShopButton.findViewById<TextView>(R.id.back_title_text_view).setText(R.string.shopping)
+        paymentButton.findViewById<TextView>(R.id.title_text_view).setText(R.string.payment_header)
+
+        // update text label
+        findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
+    }
 
     private fun getCartItem() {
         HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {

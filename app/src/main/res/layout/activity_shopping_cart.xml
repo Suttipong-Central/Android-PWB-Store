@@ -66,6 +66,7 @@
                 app:layout_constraintBottom_toTopOf="@id/payment"
                 app:layout_constraintEnd_toEndOf="parent">
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/label_total_text_view"
                     style="@style/textNameProduct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -140,6 +141,7 @@
                         android:src="@drawable/ic_back" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/back_title_text_view"
                         style="@style/RaisedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -181,6 +183,7 @@
                         android:src="@drawable/ic_check" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/title_text_view"
                         style="@style/RaisedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

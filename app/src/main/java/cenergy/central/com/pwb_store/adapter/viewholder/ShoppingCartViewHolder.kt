@@ -31,7 +31,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val qtyText: PowerBuyTextView = itemView.findViewById(R.id.txt_qty_title_list_shopping_cart)
     private val qtyTextTitle: PowerBuyTextView = itemView.findViewById(R.id.qty_title_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
-    private val deleteImageView: TextView = itemView.findViewById(R.id.deleteItemImageView)
+    private val deleteItemTextView: TextView = itemView.findViewById(R.id.deleteItemTextView)
     private val productImage: ImageView = itemView.findViewById(R.id.product_image_list_shopping_cart)
     private val tvOverQty: TextView = itemView.findViewById(R.id.tvOverQty)
     private val tvTitleFreebie: TextView = itemView.findViewById(R.id.tvTitleFreebie)
@@ -43,6 +43,9 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     @SuppressLint("SetTextI18n")
     fun bindProductView(item: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
+        qtyTextTitle.text = itemView.resources.getString(R.string.qty)
+        deleteItemTextView.text = itemView.resources.getString(R.string.shopping_delete)
+
         tvTitleFreebie.visibility = View.GONE // hide title free item
         val unit = itemView.context.getString(R.string.baht)
         this.listener = listener
@@ -63,8 +66,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 .into(productImage)
 
         productQty.setOnClickQuantity(this, true)
-        deleteImageView.visibility = View.VISIBLE
-        deleteImageView.setOnClickListener {
+        deleteItemTextView.visibility = View.VISIBLE
+        deleteItemTextView.setOnClickListener {
             confirmDelete(item, listener)
         }
 
@@ -79,6 +82,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     // region freebie item
     @SuppressLint("SetTextI18n")
     fun bindFreebieView(item: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
+        qtyTextTitle.text = itemView.resources.getString(R.string.qty)
+        deleteItemTextView.text = itemView.resources.getString(R.string.shopping_delete)
         tvTitleFreebie.visibility = View.VISIBLE // visible title free item
 
         val unit = itemView.context.getString(R.string.baht)
@@ -91,7 +96,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
         // hide for freebie
         productQty.setOnClickQuantity(this, false)
-        deleteImageView.visibility = View.GONE
+        deleteItemTextView.visibility = View.GONE
         productQty.setQty(item.qty!!)
         totalPrice.text = "FREE"
         totalPrice.setTextColor(ContextCompat.getColor(itemView.context, R.color.freeColor))
@@ -154,7 +159,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     fun hideDeleteItem(cartItem: CartItem) {
         tvOverQty.visibility = View.GONE
-        deleteImageView.visibility = View.GONE
+        deleteItemTextView.visibility = View.GONE
         qtyTextTitle.text = itemView.resources.getString(R.string.qty_title)
         productQty.visibility = View.GONE
         qtyText.text = cartItem.qty.toString()
