@@ -75,4 +75,10 @@ public class ProductListActivity extends BaseActivity {
                 .replace(R.id.container, ProductListFragment.newInstance(keyWord, isSearch, "0" , "", null, keyWord))
                 .commit();
     }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_UPDATE_LANGUAGE);
+        finish();
+    }
 }

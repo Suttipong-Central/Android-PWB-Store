@@ -115,7 +115,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
 
         searchImageView.setOnClickListener { v ->
             val intent = Intent(this@ProductDetailActivity2, SearchActivity::class.java)
-            ActivityCompat.startActivity(this@ProductDetailActivity2, intent,
+            ActivityCompat.startActivityForResult(this@ProductDetailActivity2, intent, REQUEST_UPDATE_LANGUAGE,
                     ActivityOptionsCompat
                             .makeScaleUpAnimation(v, 0, 0, v.width, v.height)
                             .toBundle())

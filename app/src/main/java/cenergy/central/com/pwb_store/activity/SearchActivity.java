@@ -2,10 +2,7 @@ package cenergy.central.com.pwb_store.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -16,22 +13,25 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.SearchSuggestionFragment;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.view.LanguageButton;
 
 /**
  * Created by napabhat on 7/11/2017 AD.
  */
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
     public static final String TAG = SearchActivity.class.getSimpleName();
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
+    private LanguageButton languageButton;
+    private PreferenceManager preferenceManager;
 
     @Subscribe
     public void onEvent(BarcodeBus barcodeBus){
@@ -47,9 +47,16 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        preferenceManager = new PreferenceManager(this);
+        languageButton = findViewById(R.id.switch_language_button);
 
+        handleChangeLanguage();
         initView();
         //TODO ยังไม่มี Suggestion รอ API
+        startSearchSuggestion();
+    }
+
+    private void startSearchSuggestion() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container, SearchSuggestionFragment.newInstance())
@@ -57,7 +64,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        ButterKnife.bind(this);
+        Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -104,14 +111,28 @@ public class SearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(SearchActivity.this, ProductDetailActivity2.class);
                 intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_ID, result.getContents());
                 intent.putExtra(ProductDetailActivity2.ARG_IS_BARCODE, true);
-                ActivityCompat.startActivity(SearchActivity.this, intent,
-                        ActivityOptionsCompat
-                                .makeScaleUpAnimation(mToolbar, 0, 0, mToolbar.getWidth(), mToolbar.getHeight())
-                                .toBundle());
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+        
+        if (resultCode == BaseActivity.RESULT_UPDATE_LANGUAGE) {
+                if (getSwitchButton() != null) {
+                    getSwitchButton().setDefaultLanguage(preferenceManager.getDefaultLanguage());
+                }
+        }
     }
 
+    @Override
+    public void onChangedLanguage(@NotNull AppLanguage lang) {
+        super.onChangedLanguage(lang);
+        startSearchSuggestion();
+    }
+
+    @Nullable
+    @Override
+    public LanguageButton getSwitchButton() {
+        return languageButton;
+    }
 }

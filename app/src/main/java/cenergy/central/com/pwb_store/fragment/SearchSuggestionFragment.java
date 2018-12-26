@@ -34,6 +34,8 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.BarcodeScanActivity;
+import cenergy.central.com.pwb_store.activity.BaseActivity;
+import cenergy.central.com.pwb_store.activity.MainActivity;
 import cenergy.central.com.pwb_store.activity.ProductListActivity;
 import cenergy.central.com.pwb_store.adapter.SearchListSuggestionAdapter;
 import cenergy.central.com.pwb_store.manager.bus.event.BackSearchBus;
@@ -84,10 +86,7 @@ public class SearchSuggestionFragment extends Fragment {
         Intent intent = new Intent(getContext(), ProductListActivity.class);
         intent.putExtra(ProductListActivity.ARG_PRODUCT_ID, "");
         intent.putExtra(ProductListActivity.ARG_SEARCH, true);
-        ActivityCompat.startActivity(getContext(), intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(searchQueryBus.getView(), 0, 0, searchQueryBus.getView().getWidth(), searchQueryBus.getView().getHeight())
-                        .toBundle());
+        startActivityForResult(intent, BaseActivity.REQUEST_UPDATE_LANGUAGE);
     }
 
     @Subscribe
@@ -117,8 +116,7 @@ public class SearchSuggestionFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search_suggestion, container, false);
         initInstances(rootView, savedInstanceState);
         return rootView;
@@ -180,16 +178,6 @@ public class SearchSuggestionFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         EventBus.getDefault().register(this);
@@ -217,33 +205,6 @@ public class SearchSuggestionFragment extends Fragment {
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
     }
-
-    @OnTextChanged(value = R.id.text_search,
-            callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
-    protected void onQueryChanged(Editable editable) {
-        mQuery = editable.toString().trim();
-
-        //performSearch();
-
-//        if (mTextSearch.hasFocus()) {
-//            final List<SearchSuggestionItem> filteredList = new ArrayList<>();
-//
-//            for (int i = 0; i < mSearchSuggestion.getSearchSuggestionItemList().size(); i++) {
-//
-//                final String text = mSearchSuggestion.getSearchSuggestionItemList().get(i).getType().toLowerCase();
-//                if (text.contains(mQuery)) {
-//
-//                    filteredList.add(mSearchSuggestion.getSearchSuggestionItemList().get(i));
-//                }
-//            }
-//
-//            mRecyclerView.setLayoutManager(mLayoutManager);
-//            mAdapter.setSearchDetail(filteredList);
-//            mRecyclerView.setAdapter(mAdapter);
-//            mAdapter.notifyDataSetChanged();  // data set changed
- //       }
-    }
-
 
     private void hideSoftKeyboard(View view) {
         // Check if no view has focus:
@@ -273,38 +234,6 @@ public class SearchSuggestionFragment extends Fragment {
         Intent intent = new Intent(getContext(), ProductListActivity.class);
         intent.putExtra(ProductListActivity.ARG_KEY_WORD, mTextSearch.getText().toString());
         intent.putExtra(ProductListActivity.ARG_SEARCH, true);
-        startActivity(intent);
+        startActivityForResult(intent, MainActivity.REQUEST_UPDATE_LANGUAGE);
     }
-
-//    public void addTextListener(){
-//
-//        mTextSearch.addTextChangedListener(new TextWatcher() {
-//
-//            public void afterTextChanged(Editable s) {}
-//
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-//
-//            public void onTextChanged(CharSequence query, int start, int before, int count) {
-//
-////                query = query.toString().toLowerCase();
-////
-////                final List<SearchSuggestionItem> filteredList = new ArrayList<>();
-////
-////                for (int i = 0; i < mSearchSuggestion.getSearchSuggestionItemList().size(); i++) {
-////
-////                    final String text = mSearchSuggestion.getSearchSuggestionItemList().get(i).getType().toLowerCase();
-////                    if (text.contains(query)) {
-////
-////                        filteredList.add(mSearchSuggestion.getSearchSuggestionItemList().get(i));
-////                    }
-////                }
-////
-////                mRecyclerView.setLayoutManager(mLayoutManager);
-////                mAdapter.setSearchDetail(filteredList);
-////                mRecyclerView.setAdapter(mAdapter);
-////                mAdapter.notifyDataSetChanged();  // data set changed
-//            }
-//        });
-//    }
-
 }
