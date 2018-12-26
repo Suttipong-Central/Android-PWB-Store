@@ -111,7 +111,7 @@ public class SearchActivity extends BaseActivity {
                 Intent intent = new Intent(SearchActivity.this, ProductDetailActivity2.class);
                 intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_ID, result.getContents());
                 intent.putExtra(ProductDetailActivity2.ARG_IS_BARCODE, true);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
