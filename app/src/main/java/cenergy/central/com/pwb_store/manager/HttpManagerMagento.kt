@@ -455,7 +455,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getProductFromSearchNewAPI(keyword: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>){
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductSearch(keyword, pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductSearchResponse>{
+        productService.getProductSearch(getLanguage(), keyword, pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductSearchResponse>{
             override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
                 if (response != null){
                     val productSearchResponse = response.body()

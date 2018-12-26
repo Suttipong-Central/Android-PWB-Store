@@ -153,7 +153,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             Intent intent = new Intent(this, ProductListActivity.class);
             intent.putExtra(ProductListActivity.ARG_KEY_WORD, searchEventBus.getKeyword());
             intent.putExtra(ProductListActivity.ARG_SEARCH, searchEventBus.isClick());
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE);
         }
     }
 

@@ -663,33 +663,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     private void getProductsFromSearch(String keyWord) {
         if (getContext() != null) {
-//            HttpManagerMagento.Companion.getInstance(getContext()).getProductFromSearch(
-//                    keyWord, PER_PAGE, getNextPage(), new ApiResponseCallback<ProductResponse>() {
-//                        @Override
-//                        public void success(@Nullable final ProductResponse response) {
-//                            Log.d("productResponse", "Search success");
-//                            if (getActivity() != null) {
-//                                getActivity().runOnUiThread(new Runnable() {
-//                                    public void run() {
-//                                        updateProductList(response);
-//                                    }
-//                                });
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void failure(@NotNull APIError error) {
-//                            Log.d("productResponse", error.getErrorMessage());
-//                            if (getActivity() != null) {
-//                                getActivity().runOnUiThread(new Runnable() {
-//                                    public void run() {
-//                                        layoutProgress.setVisibility(View.GONE);
-//                                        mProgressDialog.dismiss();
-//                                    }
-//                                });
-//                            }
-//                        }
-//                    });
             HttpManagerMagento.Companion.getInstance(getContext()).getProductFromSearchNewAPI(
                     keyWord,
                     PER_PAGE,

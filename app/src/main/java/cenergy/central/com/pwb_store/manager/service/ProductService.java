@@ -89,8 +89,9 @@ public interface ProductService {
 
     // region new api
 
-    @GET("/rest/V1/headless/search-suggestion")
+    @GET("/{lang}/rest/V1/headless/search-suggestion")
     Call<ProductSearchResponse> getProductSearch(
+            @Path("lang") String language,
             @Query("q") String keyword,
             @Query("searchCriteria[pageSize]") int pageSize,
             @Query("searchCriteria[currentPage]") int currentPage,

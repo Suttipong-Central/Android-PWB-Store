@@ -8,7 +8,7 @@
     tools:context=".activity.ProductListActivity">
 
     <include
-        layout="@layout/app_bar_compare"/>
+        layout="@layout/app_bar_main"/>
 
         <FrameLayout
             android:id="@+id/container"
