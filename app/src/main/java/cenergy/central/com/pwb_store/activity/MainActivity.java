@@ -264,7 +264,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 Intent intent = new Intent(MainActivity.this, ProductDetailActivity2.class);
                 intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_ID, result.getContents());
                 intent.putExtra(ProductDetailActivity2.ARG_IS_BARCODE, true);
-                ActivityCompat.startActivity(MainActivity.this, intent,
+                ActivityCompat.startActivityForResult(MainActivity.this, intent, REQUEST_UPDATE_LANGUAGE,
                         ActivityOptionsCompat
                                 .makeScaleUpAnimation(toolbar, 0, 0, toolbar.getWidth(), toolbar.getHeight())
                                 .toBundle());
