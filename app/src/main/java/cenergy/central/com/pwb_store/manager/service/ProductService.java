@@ -163,8 +163,9 @@ public interface ProductService {
     Call<Product> getProductDetail(
             @Path("sku") String sku);
 
-    @GET("/rest/V1/products")
+    @GET("/{lang}/rest/V1/products")
     Call<ProductByBarcodeResponse> getProductFromBarcode(
+            @Path("lang") String language,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String barCodeName,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") String barCode,
             @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String eq,

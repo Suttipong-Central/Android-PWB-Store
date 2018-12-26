@@ -644,7 +644,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getProductFromBarcode(filterBarcode: String, barcode: String, eq: String, orderBy: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<Product?>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductFromBarcode(filterBarcode, barcode, eq, orderBy, pageSize, currentPage)
+        productService.getProductFromBarcode(getLanguage(), filterBarcode, barcode, eq, orderBy, pageSize, currentPage)
                 .enqueue(object : Callback<ProductByBarcodeResponse> {
                     override fun onResponse(call: Call<ProductByBarcodeResponse>?, response: Response<ProductByBarcodeResponse>?) {
                         if (response != null) {

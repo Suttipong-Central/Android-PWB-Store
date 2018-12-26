@@ -116,7 +116,7 @@ public class SearchActivity extends BaseActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-        
+
         if (resultCode == BaseActivity.RESULT_UPDATE_LANGUAGE) {
                 if (getSwitchButton() != null) {
                     getSwitchButton().setDefaultLanguage(preferenceManager.getDefaultLanguage());
