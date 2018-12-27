@@ -762,7 +762,7 @@ class HttpManagerMagento(context: Context) {
                                 callback: ApiResponseCallback<List<DeliveryOption>>) {
         val cartService = retrofit.create(CartService::class.java)
         val deliveryBody = DeliveryOptionsBody(shippingAddress)
-        cartService.getOrderDeliveryOptions(cartId, deliveryBody).enqueue(object : Callback<List<DeliveryOption>> {
+        cartService.getOrderDeliveryOptions(getLanguage(), cartId, deliveryBody).enqueue(object : Callback<List<DeliveryOption>> {
             override fun onResponse(call: Call<List<DeliveryOption>>, response: Response<List<DeliveryOption>>?) {
                 if (response != null && response.isSuccessful) {
                     val shippingInformation = response.body()

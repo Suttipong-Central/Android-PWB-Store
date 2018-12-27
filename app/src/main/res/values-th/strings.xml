@@ -264,4 +264,11 @@
     <!-- Language -->
     <string name="hint_th">TH</string>
     <string name="hint_en">EN</string>
+
+    <!-- Delivery option-->
+    <string name="express">ส่งด่วน</string>
+    <string name="standard">ส่งธรรมดา (โดย KERRY)</string>
+    <string name="home_delivery">กำหนดวันจัดส่ง (โดยรถพาวเวอร์บาย)</string>
+    <string name="collect">รับที่สาขา</string>
+    <string name="between15_20">ส่งถึงมือภายใน 15:00–20:00 น.</string>
 </resources>

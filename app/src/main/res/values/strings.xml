@@ -263,4 +263,11 @@
     <!-- Language -->
     <string name="hint_th">TH</string>
     <string name="hint_en">EN</string>
+
+    <!-- Delivery option-->
+    <string name="express">Express Delivery</string>
+    <string name="standard">Standard Delivery</string>
+    <string name="home_delivery">Home delivery</string>
+    <string name="collect">Collect at store</string>
+    <string name="between15_20">Reaches customer between 15:00–20:00</string>
 </resources>

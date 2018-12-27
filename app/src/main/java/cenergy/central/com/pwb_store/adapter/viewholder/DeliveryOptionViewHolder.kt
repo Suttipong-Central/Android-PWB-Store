@@ -27,23 +27,26 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         when (deliveryType) {
             DeliveryType.EXPRESS -> {
                 setImage(R.drawable.ic_fast_delivery_selected)
+                carrierTitle.text = itemView.context.getString(R.string.express)
             }
             DeliveryType.STANDARD -> {
                 setImage(R.drawable.ic_delivery_standard)
+                carrierTitle.text = itemView.context.getString(R.string.standard)
             }
             DeliveryType.STORE_PICK_UP -> {
                 setImage(R.drawable.ic_store)
+                carrierTitle.text = itemView.context.getString(R.string.collect)
             }
             DeliveryType.HOME -> {
                 setImage(R.drawable.ic_hdl)
+                carrierTitle.text = itemView.context.getString(R.string.home_delivery)
             }
         }
-        carrierTitle.text = deliveryType.toString()
         if (deliveryType == DeliveryType.EXPRESS) {
             val calendar = Calendar.getInstance()
 
             if (calendar.get(Calendar.HOUR_OF_DAY) < 12) {
-                methodTitle.text = "ส่งถึงมือภายใน 15:00-20:00 น."
+                methodTitle.text = itemView.context.getString(R.string.between15_20)
             } else {
                 methodTitle.text = deliveryOption.methodTitle
             }
