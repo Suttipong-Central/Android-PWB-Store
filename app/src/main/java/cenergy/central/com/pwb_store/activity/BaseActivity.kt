@@ -23,8 +23,6 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
             return
         }
 
-        Toast.makeText(this, "Change language to $language", Toast.LENGTH_SHORT).show()
-
         if (languageButton == null && getSwitchButton() != null) {
             languageButton = getSwitchButton()
             languageButton!!.setDefaultLanguage(language)
