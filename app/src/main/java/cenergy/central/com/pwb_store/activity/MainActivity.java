@@ -538,16 +538,15 @@ public class MainActivity extends AppCompatActivity implements MenuDrawerClickLi
     private void startCategoryFragment(){
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, CategoryFragment.newInstance(mCategoryDao), TAG_FRAGMENT_CATEGORY_DEFAULT)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private void startCategoryLvTwoFragment(){
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container,
+        fragmentTransaction.replace(R.id.container,
                         SubHeaderProductFragment.Companion.newInstance(productFilterHeaderBus.getProductFilterHeader()),
                         TAG_FRAGMENT_SUB_HEADER)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private void dismissProgressDialog() {
