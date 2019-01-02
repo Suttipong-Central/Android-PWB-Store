@@ -479,23 +479,21 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         currentFragment = CategoryFragment.newInstance(mCategoryDao);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_CATEGORY_DEFAULT)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private void startCategoryLvTwoFragment(ProductFilterHeader productFilterHeader) {
         currentFragment = SubHeaderProductFragment.Companion.newInstance(productFilterHeader);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container, currentFragment, TAG_FRAGMENT_SUB_HEADER)
-                .commit();
+        fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_SUB_HEADER)
+                .commitAllowingStateLoss();
     }
 
     private void startProductListFragment(ProductFilterSubHeader productFilterSubHeader) {
         currentFragment = ProductListFragment.newInstance(productFilterSubHeader, false, storeId, "");
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction
-                .replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
-                .commit();
+        fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
+                .commitAllowingStateLoss();
     }
 
     private void dismissProgressDialog() {
