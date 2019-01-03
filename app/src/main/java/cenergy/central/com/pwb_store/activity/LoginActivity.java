@@ -7,26 +7,28 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.LoginFragment;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
 import cenergy.central.com.pwb_store.manager.network.NetworkReceiver;
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
+import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
 
-public class LoginActivity extends AppCompatActivity implements NetworkReceiver.NetworkStateLister {
+public class LoginActivity extends BaseActivity implements NetworkReceiver.NetworkStateLister {
     private static final String TAG = LoginActivity.class.getSimpleName();
     public static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
 
     private NetworkReceiver onNetworkReceived = new NetworkReceiver(this);
     private NetworkStateView stateView;
+    private LanguageButton languageButton;
 
     @Subscribe
     public void onEvent(LoginSuccessBus loginSuccessBus) {
@@ -43,20 +45,18 @@ public class LoginActivity extends AppCompatActivity implements NetworkReceiver.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initFullScreen();
         setContentView(R.layout.activity_login);
-        initView(savedInstanceState);
+        languageButton = findViewById(R.id.switch_language_button);
+        handleChangeLanguage();
+        initView();
     }
 
-    private void initView(Bundle savedInstanceState) {
-        ButterKnife.bind(this);
+    private void initView() {
         stateView = findViewById(R.id.network_state_View);
-        if (savedInstanceState == null) {
-            //Load Fragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, LoginFragment.newInstance())
-                    .commit();
-        }
+        //Load Fragment
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, LoginFragment.newInstance())
+                .commit();
     }
 
     @Override
@@ -100,10 +100,17 @@ public class LoginActivity extends AppCompatActivity implements NetworkReceiver.
         }
     }
 
-    public void initFullScreen() {
-        //for new api versions.
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        decorView.setSystemUiVisibility(uiOptions);
+    @Nullable
+    @Override
+    public LanguageButton getSwitchButton() {
+        return languageButton;
+    }
+
+    @Override
+    public void onChangedLanguage(@NotNull AppLanguage lang) {
+        Log.d("Change Language", lang.toString());
+        super.onChangedLanguage(lang);
+        // recreate view
+        initView();
     }
 }

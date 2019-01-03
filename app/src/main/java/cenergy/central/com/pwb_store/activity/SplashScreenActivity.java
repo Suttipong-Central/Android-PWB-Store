@@ -89,7 +89,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         new SubDistrictSeeder(this, database, R.raw.seed_sub_district).seed();
         new PostcodeSeeder(this, database, R.raw.seed_postcode).seed();
 
-        preferenceManager.setAddessLoaded(true);
+        preferenceManager.setAddressLoaded(true);
 
         start();
     }

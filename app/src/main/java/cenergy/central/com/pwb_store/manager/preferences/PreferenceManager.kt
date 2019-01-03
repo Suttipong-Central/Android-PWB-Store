@@ -19,7 +19,7 @@ class PreferenceManager(private var context: Context) {
     val isAddressLoaded: Boolean
         get() = pref.getBoolean(PREF_ADDRESS_LOADED, false)
 
-    fun setAddessLoaded(loaded: Boolean) {
+    fun setAddressLoaded(loaded: Boolean) {
         val editor = pref.edit()
         editor.putBoolean(PREF_ADDRESS_LOADED, loaded)
         editor.apply()
@@ -42,7 +42,12 @@ class PreferenceManager(private var context: Context) {
     fun getDefaultLanguage(): String = pref.getString(PREF_LANGUAGE, AppLanguage.TH.key)
 
     private fun clearPreference() {
-        pref.edit().clear().apply()
+//        pref.edit().clear().apply()
+        clearCartId()
+    }
+
+    private fun clearDefaultLanguage() {
+        pref.edit().remove(PREF_LANGUAGE).apply()
     }
 
     companion object {
