@@ -28,7 +28,6 @@
     <string name="product_read">Read More >></string>
     <string name="product_promotion">โปรโมชั่น</string>
     <string name="product_spec">คุณลักษณะ</string>
-    <string name="product_delivery">Delivery / Warranty / Refund</string>
     <string name="product_stock">มีสินค้า</string>
     <string name="product_out_stock">สินค้าหมด</string>
     <string name="product_stock_more">จำนวนสินค้าในคลัง: มาก</string>
@@ -277,4 +276,9 @@
     <string name="high_to_low">ราคา : มากไปน้อย</string>
     <string name="a_to_z">แบรนด์ : ชื่อเริ่มต้นจาก A ไป Z</string>
     <string name="z_to_a">แบรนด์ : ชื่อเริ่มต้นจาก Z ไป A</string>
+
+    <!-- Custom calendar -->
+    <string name="product_delivery">การจัดส่ง / รับประกัน / คืนเงิน</string>
+    <string name="full">ไม่ว่าง</string>
+    <string name="free">ว่าง</string>
 </resources>

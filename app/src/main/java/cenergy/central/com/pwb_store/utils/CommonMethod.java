@@ -28,13 +28,13 @@ public class CommonMethod {
 
 	
 	
-	public static String convertWeekDaysMouth(String date)
+	public static String convertWeekDaysMouth(String date, Locale locale)
 	{
 		String formattedDate = null;
 		try
 			{
-				SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd" , Locale.ENGLISH);
-				SimpleDateFormat targetFormat = new SimpleDateFormat("MMM yyyy");
+				SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd" , locale);
+				SimpleDateFormat targetFormat = new SimpleDateFormat("MMM yyyy", locale);
 				Date date12 = originalFormat.parse(date);
 				formattedDate = targetFormat.format(date12);
 			} catch (Exception e)
