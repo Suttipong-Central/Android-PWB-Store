@@ -271,4 +271,10 @@
     <string name="home_delivery">กำหนดวันจัดส่ง (โดยรถพาวเวอร์บาย)</string>
     <string name="collect">รับที่สาขา</string>
     <string name="between15_20">ส่งถึงมือภายใน 15:00–20:00 น.</string>
+
+    <!-- Popup sort -->
+    <string name="low_to_high">ราคา : น้อยไปมาก</string>
+    <string name="high_to_low">ราคา : มากไปน้อย</string>
+    <string name="a_to_z">แบรนด์ : ชื่อเริ่มต้นจาก A ไป Z</string>
+    <string name="z_to_a">แบรนด์ : ชื่อเริ่มต้นจาก Z ไป A</string>
 </resources>
