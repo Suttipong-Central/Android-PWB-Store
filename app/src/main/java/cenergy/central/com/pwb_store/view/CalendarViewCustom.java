@@ -20,13 +20,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.ShippingCalendarAdapter;
 import cenergy.central.com.pwb_store.adapter.base.GridCellAdapter;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.ShippingItem;
 import cenergy.central.com.pwb_store.model.WeekSets;
 import cenergy.central.com.pwb_store.model.response.ShippingSlot;
@@ -71,6 +70,8 @@ public class CalendarViewCustom extends LinearLayout {
     PowerBuyTextView tvLength17;
     PowerBuyTextView tvLength18;
     PowerBuyTextView tvLength19;
+
+    PreferenceManager preferenceManager;
 
     private static final int MAX_CALENDAR_COLUMN = 42;
     private Context context;
@@ -158,6 +159,8 @@ public class CalendarViewCustom extends LinearLayout {
         firstDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[0]);
         lastDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[6]);
 
+        preferenceManager = new PreferenceManager(context);
+
 //        try
 //        {
 //            new LoadViewsInToWeekView().execute("");
@@ -222,15 +225,15 @@ public class CalendarViewCustom extends LinearLayout {
 //        calendarGridView.setAdapter(adapter);
 
         currentDate.setText(firstDayOfWeek + "-" + lastDayOfWeek + " "
-                + CommonMethod.convertWeekDaysMouth(nextPreWeekday[6]));
+                + CommonMethod.convertWeekDaysMouth(nextPreWeekday[6], new Locale(preferenceManager.getDefaultLanguage())));
 
-        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(nextPreWeekday[0]));
-        monday.setText("MON\n" + CommonMethod.convertWeekDays(nextPreWeekday[1]));
-        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(nextPreWeekday[2]));
-        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(nextPreWeekday[3]));
-        thursday.setText("THU\n" + CommonMethod.convertWeekDays(nextPreWeekday[4]));
-        friday.setText("FRI\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
-        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
+        sunday.setText(context.getString(R.string.sun) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[0]));
+        monday.setText(context.getString(R.string.mon) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[1]));
+        tuesday.setText(context.getString(R.string.tue) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[2]));
+        wednesday.setText(context.getString(R.string.wed) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[3]));
+        thursday.setText(context.getString(R.string.thu) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[4]));
+        friday.setText(context.getString(R.string.fri) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
+        saturday.setText(context.getString(R.string.sat) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
 
         setPreviousButtonClickEvent();
         setNextButtonClickEvent();
@@ -348,15 +351,15 @@ public class CalendarViewCustom extends LinearLayout {
         lastDayOfWeek = CommonMethod.convertWeekDays(nextPreWeekday[6]);
 
         currentDate.setText(firstDayOfWeek + "-" + lastDayOfWeek + " "
-                + CommonMethod.convertWeekDaysMouth(nextPreWeekday[6]));
+                + CommonMethod.convertWeekDaysMouth(nextPreWeekday[6], new Locale(preferenceManager.getDefaultLanguage())));
 
-        sunday.setText("SUN\n" + CommonMethod.convertWeekDays(nextPreWeekday[0]));
-        monday.setText("MON\n" + CommonMethod.convertWeekDays(nextPreWeekday[1]));
-        tuesday.setText("TUE\n" + CommonMethod.convertWeekDays(nextPreWeekday[2]));
-        wednesday.setText("WED\n" + CommonMethod.convertWeekDays(nextPreWeekday[3]));
-        thursday.setText("THU\n" + CommonMethod.convertWeekDays(nextPreWeekday[4]));
-        friday.setText("FRI\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
-        saturday.setText("SAT\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
+        sunday.setText(context.getString(R.string.sun) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[0]));
+        monday.setText(context.getString(R.string.mon) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[1]));
+        tuesday.setText(context.getString(R.string.tue) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[2]));
+        wednesday.setText(context.getString(R.string.wed) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[3]));
+        thursday.setText(context.getString(R.string.thu) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[4]));
+        friday.setText(context.getString(R.string.fri) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[5]));
+        saturday.setText(context.getString(R.string.sat) + "\n" + CommonMethod.convertWeekDays(nextPreWeekday[6]));
         checkWeekDays();
     }
 

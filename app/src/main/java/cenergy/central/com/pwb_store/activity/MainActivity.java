@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     @Subscribe
     public void onEvent(BarcodeBus barcodeBus) {
-        if (barcodeBus.isBarcode() == true) {
+        if (barcodeBus.isBarcode()) {
             IntentIntegrator integrator = new IntentIntegrator(MainActivity.this).setCaptureActivity(BarcodeScanActivity.class);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
             integrator.initiateScan();
@@ -174,18 +174,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
         handleChangeLanguage();
         initView();
-
-//        if (savedInstanceState == null) {
-//            retrieveCategories();
-//        } else {
-//            startCategoryFragment();
-//        }
         retrieveCategories();
     }
 
     private void initView() {
-        //initHeaderView();
-        // widget view
         toolbar = findViewById(R.id.toolbar);
         drawer = findViewById(R.id.drawer_layout);
         RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
@@ -227,9 +219,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_FILTER_CATEGORY_1, productFilterHeader);
         outState.putParcelable(ARG_FILTER_CATEGORY_2, productFilterSubHeader);
-//        outState.putParcelable(ARG_CATEGORY, mCategoryDao);
-//        outState.putParcelableArrayList(ARG_DRAWER_LIST, mDrawerItemList);
-//        outState.putString(ARG_STORE_ID, storeId);
     }
 
     @Override
@@ -237,9 +226,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         super.onRestoreInstanceState(savedInstanceState);
         productFilterHeader = savedInstanceState.getParcelable(ARG_FILTER_CATEGORY_1);
         productFilterSubHeader = savedInstanceState.getParcelable(ARG_FILTER_CATEGORY_2);
-//        mCategoryDao = savedInstanceState.getParcelable(ARG_CATEGORY);
-//        mDrawerItemList = savedInstanceState.getParcelableArrayList(ARG_DRAWER_LIST);
-//        storeId = savedInstanceState.getString(ARG_STORE_ID);
     }
 
     @Override
@@ -259,7 +245,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() != null) {
-//                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "barcode : " + result.getContents());
                 Intent intent = new Intent(MainActivity.this, ProductDetailActivity2.class);
                 intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_ID, result.getContents());
@@ -318,7 +303,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             mCategoryDao = new CategoryDao(category);
             createDrawerMenu(category);
             String log = this.productFilterHeader == null ? "null" : this.productFilterHeader.getId();
-
             if (currentFragment instanceof SubHeaderProductFragment) {
                 Log.d(TAG, "ProductFilterHeader 1 " + log + " /" + TAG_FRAGMENT_SUB_HEADER);
                 List<ProductFilterHeader> newProductFilterHeaders = category.getFilterHeaders();

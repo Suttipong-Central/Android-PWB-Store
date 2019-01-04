@@ -43,9 +43,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int VIEW_TYPE_ID_FULL_FILLER = 2;
     private static final int VIEW_TYPE_ID_SEARCH = 3;
     private static final int VIEW_TYPE_ID_LOADING = 4;
+    private static final int VIEW_TYPE_ID_SEARCH_NOT_BACK = 5;
 
     private static final ViewType VIEW_TYPE_FULL_FILLER = new ViewType(VIEW_TYPE_ID_FULL_FILLER);
     private static final ViewType VIEW_TYPE_SEARCH = new ViewType(VIEW_TYPE_ID_SEARCH);
+    private static final ViewType VIEW_TYPE_SEARCH_NOT_BACK = new ViewType(VIEW_TYPE_ID_SEARCH_NOT_BACK);
     private static final ViewType VIEW_TYPE_LOADING = new ViewType(VIEW_TYPE_ID_LOADING);
 
     //Data Members
@@ -63,6 +65,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     return 3;
                 case VIEW_TYPE_ID_SEARCH:
                     return 3;
+                case VIEW_TYPE_ID_SEARCH_NOT_BACK:
+                    return 3;
 //                case VIEW_TYPE_ID_LOADING:
 //                    return 4;
                 default:
@@ -71,9 +75,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     };
     private Boolean clicked = true;
-
-    private ProductFilterHeader categoryLv2;
-    private int positionLv2;
 
     public CategoryAdapter(Context mContext) {
         this.mContext = mContext;
@@ -101,10 +102,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 .inflate(R.layout.list_item_category_fullfiller, parent, false)
                 );
             case VIEW_TYPE_ID_SEARCH:
-                return new SearchProductViewHolder(
-                        LayoutInflater
+                return new SearchProductViewHolder(LayoutInflater
                                 .from(parent.getContext())
-                                .inflate(R.layout.list_item_search, parent, false)
+                                .inflate(R.layout.list_item_search, parent, false),
+                        true
+                );
+            case VIEW_TYPE_ID_SEARCH_NOT_BACK:
+                return new SearchProductViewHolder(LayoutInflater
+                                .from(parent.getContext())
+                                .inflate(R.layout.list_item_search, parent, false),
+                        false
                 );
         }
         return null;
@@ -119,8 +126,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case VIEW_TYPE_ID_CATEGORY:
                 if (viewType instanceof ProductFilterHeader && holder instanceof CategoryViewHolder) {
                     final ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
-                    this.categoryLv2 = categoryHeader;
-                    this.positionLv2 = position;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
                     categoryViewHolder.setViewHolder(categoryHeader);
                     categoryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -213,7 +218,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setCategory(Category category) {
         //mListViewType.clear();
-        mListViewType.add(VIEW_TYPE_SEARCH);
+        mListViewType.add(VIEW_TYPE_SEARCH_NOT_BACK);
         TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
         textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
         mListViewType.add(textBanner);

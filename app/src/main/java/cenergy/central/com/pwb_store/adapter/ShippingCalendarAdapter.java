@@ -55,14 +55,14 @@ public class ShippingCalendarAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        if (shippingItem.getDescription().equalsIgnoreCase("FULL")) {
+        if (shippingItem.getDescription().equalsIgnoreCase(mContext.getString(R.string.full))) {
             viewHolder.nameTextView.setText(shippingItem.getDescription());
             viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.dangerColor));
         } else if (shippingItem.getDescription().equalsIgnoreCase("-")){
             viewHolder.nameTextView.setText(shippingItem.getDescription());
             viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.grayTextColor));
         } else {
-            viewHolder.nameTextView.setText("FREE");
+            viewHolder.nameTextView.setText(mContext.getString(R.string.free));
             viewHolder.nameTextView.setTextColor(convertView.getResources().getColor(R.color.inStockColor));
         }
         return convertView;

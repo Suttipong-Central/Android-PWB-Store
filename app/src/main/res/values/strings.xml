@@ -28,7 +28,6 @@
     <string name="product_read">Read More >></string>
     <string name="product_promotion">Promotion</string>
     <string name="product_spec">Product Info</string>
-    <string name="product_delivery">Delivery / Warranty / Refund</string>
     <string name="product_stock">In-stock</string>
     <string name="product_out_stock">Temporary out of stock</string>
     <string name="product_stock_more">จำนวนสินค้าในคลัง: มาก</string>
@@ -270,4 +269,15 @@
     <string name="home_delivery">Home delivery</string>
     <string name="collect">Collect at store</string>
     <string name="between15_20">Reaches customer between 15:00–20:00</string>
+
+    <!-- Popup sort -->
+    <string name="low_to_high">Price : Low to High</string>
+    <string name="high_to_low">Price : High to Low</string>
+    <string name="a_to_z">Brand : Name(A-Z)</string>
+    <string name="z_to_a">Brand : Name(Z-A)</string>
+
+    <!-- Custom calendar -->
+    <string name="product_delivery">Delivery / Warranty / Refund</string>
+    <string name="full">FULL</string>
+    <string name="free">FREE</string>
 </resources>

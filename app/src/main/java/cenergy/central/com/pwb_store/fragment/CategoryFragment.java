@@ -31,12 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by napabhat on 7/6/2017 AD.
- */
-
 public class CategoryFragment extends Fragment {
-    private static final String TAG = CategoryFragment.class.getSimpleName();
 
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private ProgressDialog mProgressDialog;
@@ -62,39 +57,32 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(savedInstanceState);
+        init();
 
         if (savedInstanceState != null)
             onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         initInstances(rootView, savedInstanceState);
         return rootView;
     }
 
-    private void init(Bundle savedInstanceState) {
-        // Init Fragment level's variable(s) here
+    private void init() {
         if (getArguments() != null) {
             mCategoryDao = getArguments().getParcelable(ARG_CATEGORY);
         }
-
-        //mockData();
     }
 
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
-        // Init 'View' instance(s) with rootView.findViewById here
-
         mAdapter = new CategoryAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 3, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
 
         if (mCategoryDao == null) {
-//            HttpManager.getInstance().getCategoryService().getCategories().enqueue(CALLBACK_CATEGORY);
             retrieveCategories(); // force retrieve category
         } else {
             try {
@@ -125,39 +113,12 @@ public class CategoryFragment extends Fragment {
                 @Override
                 public void failure(@NotNull APIError error) {
                     dismissProgressDialog();
-                    showAlertDialog(error.getErrorMessage(), false);
+                    showAlertDialog(error.getErrorMessage());
                 }
             });
         }
     }
 
-//    private void mockData(){
-//        List<Category> mCategoryList = new ArrayList<>();
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_tv)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_app)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_cooling)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_small)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_kitchen)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_health)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_life)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_wearable)));
-//        mCategoryList.add(new Category("http://www.mx7.com/i/1dd/5bZkIN.png", getResources().getString(R.string.home_accessories)));
-//        mCategoryDao = new CategoryDao(mCategoryList);
-//    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    /*
-     * Save Instance State Here
-     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -174,18 +135,15 @@ public class CategoryFragment extends Fragment {
         mCategoryDao = savedInstanceState.getParcelable(ARG_CATEGORY);
     }
 
-    private void showAlertDialog(String message, final boolean shouldCloseActivity) {
+    private void showAlertDialog(String message) {
         if (getContext() != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
                     .setMessage(message)
                     .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            if (shouldCloseActivity)
-                                getActivity().finish();
                         }
                     });
-
             builder.show();
         }
     }

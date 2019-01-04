@@ -351,10 +351,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
         // sorting
         List<SortingItem> sortingItems = new ArrayList<>();
-        sortingItems.add(new SortingItem(1, "Price : Low to High", "price", "ASC", "1", false));
-        sortingItems.add(new SortingItem(2, "Price : High to Low", "price", "DESC", "2", false));
-        sortingItems.add(new SortingItem(3, "Brand : Name(A-Z)", "brand", "ASC", "3", false));
-        sortingItems.add(new SortingItem(4, "Brand : Name(Z-A)", "brand", "DESC", "4", false));
+        sortingItems.add(new SortingItem(1, getString(R.string.low_to_high), getString(R.string.price), "ASC", "1", false));
+        sortingItems.add(new SortingItem(2, getString(R.string.high_to_low), getString(R.string.price), "DESC", "2", false));
+        sortingItems.add(new SortingItem(3, getString(R.string.a_to_z), getString(R.string.brand), "ASC", "3", false));
+        sortingItems.add(new SortingItem(4, getString(R.string.z_to_a), getString(R.string.brand), "DESC", "4", false));
 //        sortingItems.add(new SortingItem(5, "Discount : Low to High", "ASC", "ASC", "5", false));
 //        sortingItems.add(new SortingItem(6, "Discount : High to Low", "DESC", "DESC", "6", false));
 
