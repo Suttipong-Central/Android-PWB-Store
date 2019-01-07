@@ -263,7 +263,7 @@ class HttpManagerMagento(context: Context) {
 
     fun retrieveProducts(categoryId: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductList(categoryId, "status", 1, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
+        productService.getProductList(getLanguage(), categoryId, "status", 1, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                 if (response != null) {
                     val product = response.body()
@@ -307,7 +307,7 @@ class HttpManagerMagento(context: Context) {
 
     fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductsFilterByBrand(categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
+        productService.getProductsFilterByBrand(getLanguage(), categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage).enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
                 if (response != null) {
                     val product = response.body()
