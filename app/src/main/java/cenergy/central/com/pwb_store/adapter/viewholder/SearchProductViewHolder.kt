@@ -44,7 +44,7 @@ class SearchProductViewHolder(itemView: View, canBack: Boolean) : RecyclerView.V
     }
 
     private inner class SearchOnEditorActionListener : TextView.OnEditorActionListener {
-        override fun onEditorAction(v: TextView, actionId: Int, event: KeyEvent): Boolean {
+        override fun onEditorAction(v: TextView, actionId: Int, event: KeyEvent?): Boolean {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
                 EventBus.getDefault().post(SearchEventBus(true, mSearchView.text.toString()))
             }
