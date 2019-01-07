@@ -281,22 +281,28 @@ class HttpManagerMagento(context: Context) {
     }
 
     fun retrieveProducts(categoryId: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
-        val productService = retrofit.create(ProductService::class.java)
-        productService.getProductList(getLanguage(), categoryId, "status", 1, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
-            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
-                if (response != null) {
-                    val product = response.body()
-                    callback.success(product)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+
+        if (orderName == "" && orderDir == "") {
+            retrieveProducts(categoryId, pageSize, currentPage, callback)
+            return
+        } else {
+            val productService = retrofit.create(ProductService::class.java)
+            productService.getProductList(getLanguage(), categoryId, "status", 1, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
+                override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                    if (response != null) {
+                        val product = response.body()
+                        callback.success(product)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
-                callback.failure(APIError(t))
+                override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                    callback.failure(APIError(t))
 
-            }
-        })
+                }
+            })
+        }
     }
 
     fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>) {
@@ -318,21 +324,25 @@ class HttpManagerMagento(context: Context) {
     }
 
     fun retrieveProductsFilterByBrand(categoryId: String, brandId: Long, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>) {
-        val productService = retrofit.create(ProductService::class.java)
-        productService.getProductsFilterByBrand(getLanguage(), categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
-            override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
-                if (response != null) {
-                    val product = response.body()
-                    callback.success(product)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+        if (orderName == "" && orderDir == "") {
+            retrieveProductsFilterByBrand(categoryId, brandId, pageSize, currentPage, callback)
+        } else {
+            val productService = retrofit.create(ProductService::class.java)
+            productService.getProductsFilterByBrand(getLanguage(), categoryId, "status", 1, "eq", "brand", brandId, "eq", pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductResponse> {
+                override fun onResponse(call: Call<ProductResponse>?, response: Response<ProductResponse>?) {
+                    if (response != null) {
+                        val product = response.body()
+                        callback.success(product)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
+                override fun onFailure(call: Call<ProductResponse>?, t: Throwable?) {
+                    callback.failure(APIError(t))
+                }
+            })
+        }
     }
 
     // TODO: Delete when get new api this case so hard for filter
@@ -454,8 +464,35 @@ class HttpManagerMagento(context: Context) {
     }
 
     fun getProductFromSearchNewAPI(keyword: String, pageSize: Int, currentPage: Int, orderName: String, orderDir: String, callback: ApiResponseCallback<ProductResponse?>){
+
+        if (orderName == "" && orderDir == "") {
+            getProductFromSearchNewAPI(keyword, pageSize, currentPage, callback)
+        } else {
+            val productService = retrofit.create(ProductService::class.java)
+            productService.getProductSearch(getLanguage(), keyword, pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductSearchResponse> {
+                override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
+                    if (response != null) {
+                        val productSearchResponse = response.body()
+                        if (productSearchResponse != null) {
+                            callback.success(ProductResponse.asProductResponse(keyword, productSearchResponse))
+                        } else {
+                            callback.failure(APIErrorUtils.setErrorMessage("ProductSearchResponse is null"))
+                        }
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                }
+
+                override fun onFailure(call: Call<ProductSearchResponse>, t: Throwable) {
+                    callback.failure(APIError(t))
+                }
+            })
+        }
+    }
+
+    fun getProductFromSearchNewAPI(keyword: String, pageSize: Int, currentPage: Int, callback: ApiResponseCallback<ProductResponse?>){
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductSearch(getLanguage(), keyword, pageSize, currentPage, orderName, orderDir).enqueue(object : Callback<ProductSearchResponse>{
+        productService.getProductSearch(getLanguage(), keyword, pageSize, currentPage).enqueue(object : Callback<ProductSearchResponse>{
             override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
                 if (response != null){
                     val productSearchResponse = response.body()

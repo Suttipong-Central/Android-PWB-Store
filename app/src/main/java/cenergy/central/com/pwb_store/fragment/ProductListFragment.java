@@ -476,8 +476,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         isLoadingMore = true;
         mPreviousTotal = 0;
         if (!isSorting) {
-            sortName = "name";
-            sortType = "ASC";
+            sortName = "";
+            sortType = "";
         }
         if (mProductDao != null) {
             mProductDao.getProductListList().clear();
