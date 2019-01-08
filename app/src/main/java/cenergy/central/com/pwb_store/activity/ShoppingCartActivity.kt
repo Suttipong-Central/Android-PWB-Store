@@ -206,17 +206,17 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
         updateTitle(sum)
 
-        var total = 0.0
+        var total = 0
         cartItemList.forEach {cartItem ->
             val item = database.getCacheCartItem(cartItem.id)
             if (item != null) {
-                total += cartItem.qty!! * cartItem.price!!
+                total += cartItem.qty!! * cartItem.price!!.roundToInt()
             }
         }
-        val vat = total * 0.07
+        val vat = (total * 0.07).roundToInt()
         val t1Points = ((total + vat) - ((total + vat) % 50)) / 50
-        totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
-        tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
+        totalPrice.text = getDisplayPrice(unit, (total + vat).toString())
+        tvT1.text = resources.getString(R.string.t1_points, t1Points)
         checkCanClickPayment()
     }
 
