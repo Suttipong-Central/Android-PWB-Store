@@ -294,6 +294,20 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             public void failure(@NotNull APIError error) {
                 Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
                 dismissProgressDialog();
+                if(error.getErrorCode() == null){
+                    showAlertDialog("", getString(R.string.not_connected_network));
+                } else {
+                    switch (error.getErrorCode()){
+                        case "401": showAlertDialog("", getString(R.string.user_not_found));
+                            break;
+                        case "408":
+                        case "404":
+                        case "500": showAlertDialog("", getString(R.string.server_not_found));
+                            break;
+                        default: showAlertDialog("", getString(R.string.some_thing_wrong));
+                            break;
+                    }
+                }
             }
         });
     }

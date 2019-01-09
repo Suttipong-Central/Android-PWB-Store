@@ -205,30 +205,33 @@ class HttpManagerMagento(context: Context) {
         Log.i("PBE", "retrieveCategories: calling endpoint ${getLanguage()}")
         val categoryService = retrofit.create(CategoryService::class.java)
         categoryService.getCategories(getLanguage(),categoryId, categoryLevel).enqueue(object : Callback<Category> {
-
             override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
                 if (response != null) {
-                    val category = response.body()
-                    val categoryHeaders = category?.filterHeaders
-                    if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
-                        val toRemove = arrayListOf<ProductFilterHeader>()
-                        for (header in categoryHeaders) {
-                            if (!header.IsIncludeInMenu()) {
-                                toRemove.add(header)
+                    if(response.isSuccessful){
+                        val category = response.body()
+                        val categoryHeaders = category?.filterHeaders
+                        if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
+                            val toRemove = arrayListOf<ProductFilterHeader>()
+                            for (header in categoryHeaders) {
+                                if (!header.IsIncludeInMenu()) {
+                                    toRemove.add(header)
+                                }
                             }
+                            category.filterHeaders.removeAll(toRemove)
                         }
-                        category.filterHeaders.removeAll(toRemove)
+
+                        if (category != null) {
+                            // Store to database
+                            database.saveCategory(category)
+
+                            // Update cached endpoint
+                            database.updateCachedEndpoint(endpointName)
+                        }
+
+                        callback.success(category)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
                     }
-
-                    if (category != null) {
-                        // Store to database
-                        database.saveCategory(category)
-
-                        // Update cached endpoint
-                        database.updateCachedEndpoint(endpointName)
-                    }
-
-                    callback.success(category)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }

@@ -113,7 +113,20 @@ public class CategoryFragment extends Fragment {
                 @Override
                 public void failure(@NotNull APIError error) {
                     dismissProgressDialog();
-                    showAlertDialog(error.getErrorMessage());
+                    if(error.getErrorCode() == null){
+                        showAlertDialog(getContext().getString(R.string.not_connected_network));
+                    } else {
+                        switch (error.getErrorCode()){
+                            case "401": showAlertDialog(getContext().getString(R.string.user_not_found));
+                                break;
+                            case "408":
+                            case "404":
+                            case "500": showAlertDialog(getContext().getString(R.string.server_not_found));
+                                break;
+                            default: showAlertDialog(getContext().getString(R.string.some_thing_wrong));
+                                break;
+                        }
+                    }
                 }
             });
         }
