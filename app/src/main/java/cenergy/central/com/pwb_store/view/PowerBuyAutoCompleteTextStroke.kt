@@ -1,6 +1,8 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
+import android.support.design.widget.TextInputLayout
+import android.support.v4.content.ContextCompat
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -16,10 +18,11 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     private var header: PowerBuyTextView? = null
     private var requiredField: PowerBuyTextView? = null
     private lateinit var inputText: AutoCompleteTextView
+    private lateinit var inputTextLayout: TextInputLayout
     private var required = false
     private var textHeader = ""
     private var textEditText = ""
-    private var enable : Boolean = true
+    private var enable: Boolean = true
 
     constructor(context: Context) : super(context) {
         prepareView()
@@ -38,6 +41,7 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         header = view.findViewById(R.id.txt_header)
         requiredField = view.findViewById(R.id.required_field)
         inputText = view.findViewById(R.id.inputText)
+        inputTextLayout = view.findViewById(R.id.inputTextLayout)
         inputText.setOnClickListener { inputText.showDropDown() }
         inputText.setOnFocusChangeListener { v, hasFocus ->
             if (v.id == R.id.inputText && hasFocus) {
@@ -63,6 +67,15 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     }
 
     private fun notifyAttributeChanged() {
+        if (!enable) {
+            this.textEditText = ""
+            this.inputText.isEnabled = false
+        } else {
+            this.inputText.isEnabled = true
+        }
+        this.inputTextLayout.background = ContextCompat.getDrawable(context,
+                if (enable) R.drawable.bg_input_enable else R.drawable.bg_input_disable)
+
         header?.text = textHeader
         if (required) {
             requiredField?.visibility = View.VISIBLE
@@ -83,6 +96,8 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     fun setTextChangeListener(watcher: TextWatcher) {
         this.inputText.addTextChangedListener(watcher)
     }
+
+    fun isEnable(): Boolean = this.enable
 
     fun setEnableInput(enable: Boolean) {
         this.enable = enable
