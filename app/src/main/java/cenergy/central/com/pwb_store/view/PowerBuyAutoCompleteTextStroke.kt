@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.widget.AutoCompleteTextView
+import android.widget.ImageView
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
@@ -15,10 +16,12 @@ import cenergy.central.com.pwb_store.adapter.AddressAdapter
 
 class PowerBuyAutoCompleteTextStroke : LinearLayout {
 
-    private var header: PowerBuyTextView? = null
-    private var requiredField: PowerBuyTextView? = null
+    private lateinit var layout: LinearLayout
+    private lateinit var header: PowerBuyTextView
+    private lateinit var requiredField: PowerBuyTextView
     private lateinit var inputText: AutoCompleteTextView
     private lateinit var inputTextLayout: TextInputLayout
+    private lateinit var icon: ImageView
     private var required = false
     private var textHeader = ""
     private var textEditText = ""
@@ -40,15 +43,10 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         val view = View.inflate(context, R.layout.view_auto_complete_text, this)
         header = view.findViewById(R.id.txt_header)
         requiredField = view.findViewById(R.id.required_field)
+        layout = view.findViewById(R.id.layout_auto_complete)
         inputText = view.findViewById(R.id.inputText)
         inputTextLayout = view.findViewById(R.id.inputTextLayout)
-        inputText.setOnClickListener { inputText.showDropDown() }
-        inputText.setOnFocusChangeListener { v, hasFocus ->
-            if (v.id == R.id.inputText && hasFocus) {
-//                inputText.error = null
-                inputText.showDropDown()
-            }
-        }
+        icon = view.findViewById(R.id.icon_down)
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
@@ -69,18 +67,22 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     private fun notifyAttributeChanged() {
         if (!enable) {
             this.textEditText = ""
-            this.inputText.isEnabled = false
+            layout.setOnClickListener(null)
+            inputText.setOnClickListener(null)
         } else {
-            this.inputText.isEnabled = true
+            layout.setOnClickListener { inputText.showDropDown() }
+            inputText.setOnClickListener { inputText.showDropDown() }
         }
-        this.inputTextLayout.background = ContextCompat.getDrawable(context,
+        this.inputTextLayout.background = ContextCompat.getDrawable(context, R.drawable.bg_input_enable)
+        this.layout.background = ContextCompat.getDrawable(context,
                 if (enable) R.drawable.bg_input_enable else R.drawable.bg_input_disable)
-
-        header?.text = textHeader
+        this.icon.setColorFilter(ContextCompat.getColor(context,
+                if (enable) R.color.blackText else R.color.lightGray2))
+        header.text = textHeader
         if (required) {
-            requiredField?.visibility = View.VISIBLE
+            requiredField.visibility = View.VISIBLE
         } else {
-            requiredField?.visibility = View.GONE
+            requiredField.visibility = View.GONE
         }
         inputText.setText(textEditText)
     }

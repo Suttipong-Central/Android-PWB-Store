@@ -21,12 +21,12 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
                      private var items: List<Pair<Long, String>>) : ArrayAdapter<Pair<Long, String>>(mContext, mLayoutResourceId, items) {
     private var listener: FilterClickListener? = null
     private var cacheItems: List<Pair<Long, String>> = arrayListOf()
-    private var listFilter = ListFilter()
+//    private var listFilter = ListFilter()
 
     fun setItems(items: List<Pair<Long, String>>) {
         this.items = items
         this.cacheItems = items
-        this.listFilter = ListFilter()
+//        this.listFilter = ListFilter()
         notifyDataSetChanged()
     }
 
@@ -66,54 +66,54 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
         return rootView
     }
 
-    override fun getFilter(): Filter {
-        return listFilter
-    }
+//    override fun getFilter(): Filter {
+//        return listFilter
+//    }
 
 
-    inner class ListFilter : Filter() {
-        private var filterItems: List<Pair<Long, String>>? = items
-
-        override fun performFiltering(prefix: CharSequence?): FilterResults {
-            val results = Filter.FilterResults()
-            if (filterItems == null) {
-                filterItems = ArrayList<Pair<Long, String>>(items)
-                items = ArrayList<Pair<Long, String>>(items)
-            }
-
-            if (prefix == null || prefix.isEmpty()) {
-                results.values = filterItems
-                results.count = filterItems!!.size
-            } else {
-                val searchStrLowerCase = prefix.toString().toLowerCase()
-                val matchValues = ArrayList<Pair<Long, String>>()
-                for (dataItem in items) {
-                    if (dataItem.second.toLowerCase().startsWith(searchStrLowerCase)) {
-                        matchValues.add(Pair(first = dataItem.first, second = dataItem.second))
-                    }
-                }
-
-                results.values = matchValues
-                results.count = matchValues.size
-            }
-
-            return results
-        }
-
-        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            items = if (results!!.values != null && results.count > 0) {
-                results.values as ArrayList<Pair<Long, String>>
-            } else {
-                cacheItems
-            }
-
-            if (results.values != null && results.count > 0) {
-                notifyDataSetChanged()
-            } else {
-                notifyDataSetInvalidated()
-            }
-        }
-    }
+//    inner class ListFilter : Filter() {
+//        private var filterItems: List<Pair<Long, String>>? = items
+//
+//        override fun performFiltering(prefix: CharSequence?): FilterResults {
+//            val results = Filter.FilterResults()
+//            if (filterItems == null) {
+//                filterItems = ArrayList<Pair<Long, String>>(items)
+//                items = ArrayList<Pair<Long, String>>(items)
+//            }
+//
+//            if (prefix == null || prefix.isEmpty()) {
+//                results.values = filterItems
+//                results.count = filterItems!!.size
+//            } else {
+//                val searchStrLowerCase = prefix.toString().toLowerCase()
+//                val matchValues = ArrayList<Pair<Long, String>>()
+//                for (dataItem in items) {
+//                    if (dataItem.second.toLowerCase().startsWith(searchStrLowerCase)) {
+//                        matchValues.add(Pair(first = dataItem.first, second = dataItem.second))
+//                    }
+//                }
+//
+//                results.values = matchValues
+//                results.count = matchValues.size
+//            }
+//
+//            return results
+//        }
+//
+//        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+//            items = if (results!!.values != null && results.count > 0) {
+//                results.values as ArrayList<Pair<Long, String>>
+//            } else {
+//                cacheItems
+//            }
+//
+//            if (results.values != null && results.count > 0) {
+//                notifyDataSetChanged()
+//            } else {
+//                notifyDataSetInvalidated()
+//            }
+//        }
+//    }
 
     interface FilterClickListener {
         fun onItemClickListener(item: Pair<Long, String>)

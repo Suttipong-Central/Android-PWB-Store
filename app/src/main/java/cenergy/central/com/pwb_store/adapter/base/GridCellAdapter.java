@@ -262,7 +262,7 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
         }
         if (day_color[1].equals("WHITE")) {
             gridcell.setTextColor(_context.getResources().getColor(
-                    R.color.lightgray02));
+                    R.color.lightGray2));
         }
         if (day_color[1].equals("BLUE")) {
             gridcell.setTextColor(_context.getResources().getColor(R.color.colorPrimary));

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
@@ -28,27 +29,39 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/inputTextLayout"
+    <LinearLayout
+        android:id="@+id/layout_auto_complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/border_grey"
         android:layout_marginTop="8dp"
-        android:theme="@style/Form.EditTextLayoutTheme"
-        android:background="@drawable/bg_input_enable"
-        android:focusableInTouchMode="true">
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/inputText"
-            android:layout_width="match_parent"
+        android:orientation="horizontal">
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/inputTextLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="16dp"
+            android:layout_weight="1" >
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/inputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:completionThreshold="1"
+                android:inputType="textNoSuggestions"
+                android:focusable="false"
+                android:maxLines="1"
+                android:textSize="18sp" />
+        </android.support.design.widget.TextInputLayout>
+        <ImageView
+            android:id="@+id/icon_down"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_marginStart="16dp"
-            android:background="@android:color/transparent"
-            android:completionThreshold="1"
-            android:inputType="textNoSuggestions"
-            android:maxLines="1"
-            android:textCursorDrawable="@drawable/cursor_orange"
-            android:textSize="18sp" />
-    </android.support.design.widget.TextInputLayout>
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_keyboard_arrow_down"
+            android:contentDescription="@string/app_name" />
+    </LinearLayout>
 </LinearLayout>
