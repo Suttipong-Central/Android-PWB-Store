@@ -36,7 +36,6 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_payment.*
 import org.joda.time.DateTime
 import java.util.*
 
@@ -50,6 +49,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var billingAddress: AddressInformation? = null
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
+    private lateinit var networkStateView: NetworkStateView
 
     // data
     private val database = RealmController.getInstance()
@@ -86,6 +86,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
         languageButton = findViewById(R.id.switch_language_button)
+        networkStateView = findViewById(R.id.networkStateView)
         languageButton.visibility = View.INVISIBLE
         handleChangeLanguage() // update language
 
