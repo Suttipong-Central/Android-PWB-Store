@@ -32,7 +32,6 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -40,6 +39,7 @@ import kotlin.math.roundToInt
 class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener, LanguageButton.LanguageListener {
 
     private lateinit var languageButton: LanguageButton
+    private lateinit var networkStateView: NetworkStateView
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
     private lateinit var backToShopButton: CardView
@@ -81,6 +81,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
         languageButton = findViewById(R.id.switch_language_button)
+        networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
 
         cartId = intent.getStringExtra(CART_ID)
