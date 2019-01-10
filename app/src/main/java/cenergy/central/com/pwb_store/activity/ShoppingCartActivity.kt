@@ -30,7 +30,9 @@ import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
+import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -158,6 +160,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     override fun getSwitchButton(): LanguageButton? = languageButton
     //end region
+
+    override fun getStateView(): NetworkStateView? = networkStateView
 
     private fun updateView() {
         // update shit! button using card view =[]='

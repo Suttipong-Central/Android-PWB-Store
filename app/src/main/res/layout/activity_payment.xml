@@ -9,6 +9,12 @@
 
     <include layout="@layout/app_bar_payment" />
 
+    <cenergy.central.com.pwb_store.view.NetworkStateView
+        android:id="@+id/networkStateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"

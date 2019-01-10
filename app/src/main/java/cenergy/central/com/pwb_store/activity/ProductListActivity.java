@@ -10,6 +10,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.view.LanguageButton;
+import cenergy.central.com.pwb_store.view.NetworkStateView;
 
 public class ProductListActivity extends BaseActivity {
 
@@ -19,6 +20,7 @@ public class ProductListActivity extends BaseActivity {
 
     private boolean isSearch;
     private LanguageButton languageButton;
+    private NetworkStateView networkStateView;
     private String keyWord;
 
     @Override
@@ -62,6 +64,7 @@ public class ProductListActivity extends BaseActivity {
     }
 
     private void initView() {
+        networkStateView = findViewById(R.id.network_state_View);
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -80,5 +83,11 @@ public class ProductListActivity extends BaseActivity {
     public void onBackPressed() {
         setResult(RESULT_UPDATE_LANGUAGE);
         finish();
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public NetworkStateView getStateView() {
+        return networkStateView;
     }
 }

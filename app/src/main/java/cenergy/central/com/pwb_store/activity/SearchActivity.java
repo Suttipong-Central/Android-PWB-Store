@@ -22,6 +22,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.view.LanguageButton;
+import cenergy.central.com.pwb_store.view.NetworkStateView;
 
 /**
  * Created by napabhat on 7/11/2017 AD.
@@ -32,6 +33,7 @@ public class SearchActivity extends BaseActivity {
 
     private LanguageButton languageButton;
     private PreferenceManager preferenceManager;
+    private NetworkStateView networkStateView;
 
     @Subscribe
     public void onEvent(BarcodeBus barcodeBus){
@@ -64,6 +66,8 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void initView() {
+        networkStateView = findViewById(R.id.network_state_View);
+
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -134,5 +138,11 @@ public class SearchActivity extends BaseActivity {
     @Override
     public LanguageButton getSwitchButton() {
         return languageButton;
+    }
+
+    @Nullable
+    @Override
+    public NetworkStateView getStateView() {
+        return networkStateView;
     }
 }

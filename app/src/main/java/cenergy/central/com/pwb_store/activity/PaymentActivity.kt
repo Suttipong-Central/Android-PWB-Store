@@ -34,7 +34,9 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
+import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_payment.*
 import org.joda.time.DateTime
 import java.util.*
 
@@ -103,6 +105,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             (currentFragment as PaymentSuccessFragment).retrieveOrder() // update content
         }
     }
+
+    override fun getStateView(): NetworkStateView? = networkStateView
 
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {

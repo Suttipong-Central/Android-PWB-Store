@@ -34,8 +34,10 @@ import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
+import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import kotlinx.android.synthetic.main.activity_product_detail2.*
 
 class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
@@ -133,12 +135,17 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         return true
     }
 
+    // region language
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
         retrieveProductDetail()
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
+    // endregion
+
+    override fun getStateView(): NetworkStateView? = networkStateView
+    // endregion
 
     // region product ProductDetailProtocol
     override fun getProduct(): Product? = product

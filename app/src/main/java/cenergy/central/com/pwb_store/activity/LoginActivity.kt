@@ -18,14 +18,10 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 
-class LoginActivity : BaseActivity(), NetworkReceiver.NetworkStateLister {
+class LoginActivity : BaseActivity() {
 
-    companion object {
-        const val CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE"
-    }
-
-    private val onNetworkReceived = NetworkReceiver(this)
-    private lateinit var stateView: NetworkStateView
+    // widget view
+    private lateinit var networkStateView: NetworkStateView
     private lateinit var languageButton: LanguageButton
 
     @Subscribe
@@ -49,7 +45,7 @@ class LoginActivity : BaseActivity(), NetworkReceiver.NetworkStateLister {
     }
 
     private fun initView() {
-        stateView = findViewById(R.id.network_state_View)
+        networkStateView = findViewById(R.id.network_state_View)
         //Load Fragment
         supportFragmentManager.beginTransaction()
                 .replace(R.id.container, LoginFragment.newInstance())
@@ -58,25 +54,15 @@ class LoginActivity : BaseActivity(), NetworkReceiver.NetworkStateLister {
 
     override fun onResume() {
         super.onResume()
-        registerReceiver(onNetworkReceived, IntentFilter(CONNECTIVITY_ACTION)) // register broadcast
         EventBus.getDefault().register(this)
     }
 
     override fun onPause() {
-        unregisterReceiver(onNetworkReceived) // unregister broadcast
         EventBus.getDefault().unregister(this)
         super.onPause()
     }
 
-    override fun onNetworkStateChange(state: NetworkInfo.State) {
-        when (state) {
-            NetworkInfo.State.CONNECTED -> stateView.onConnected()
-            NetworkInfo.State.UNKNOWN, NetworkInfo.State.CONNECTING -> stateView.onConnecting()
-            NetworkInfo.State.DISCONNECTED -> stateView.onDisconnected()
-            else -> stateView.onDisconnected()
-        }
-    }
-
+    // region language button
     override fun getSwitchButton(): LanguageButton? {
         return languageButton
     }
@@ -86,4 +72,9 @@ class LoginActivity : BaseActivity(), NetworkReceiver.NetworkStateLister {
         // recreate view
         initView()
     }
+    // endregion
+
+    // region network state
+    override fun getStateView(): NetworkStateView? = networkStateView
+    // end region
 }

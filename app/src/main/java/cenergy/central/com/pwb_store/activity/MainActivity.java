@@ -61,6 +61,7 @@ import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
+import cenergy.central.com.pwb_store.view.NetworkStateView;
 
 public class MainActivity extends BaseActivity implements MenuDrawerClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -90,6 +91,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private String storeId;
     private ProgressDialog mProgressDialog;
     private LanguageButton languageButton;
+    private NetworkStateView networkStateView;
 
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
@@ -178,6 +180,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     private void initView() {
+        networkStateView = findViewById(R.id.network_state_View);
         toolbar = findViewById(R.id.toolbar);
         drawer = findViewById(R.id.drawer_layout);
         RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
@@ -513,4 +516,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     public LanguageButton getSwitchButton() {
         return languageButton;
     }
+
+    @Nullable
+    @Override
+    public NetworkStateView getStateView() { return networkStateView; }
 }
