@@ -62,8 +62,8 @@ android {
             applicationIdSuffix ".staging"
             manifestPlaceholders = [applicationLabel: "PowerBuy Staging"]
             resValue 'string', 'app_name', '\"PoweBuy Staging\"'
-            versionCode 44
-            versionName "0.0.44"
+            versionCode 45
+            versionName "0.0.45"
         }
 
         develop {
