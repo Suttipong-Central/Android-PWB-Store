@@ -3,16 +3,18 @@ package cenergy.central.com.pwb_store.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentHistoryFragment
 import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.listeners.HistoryClickListener
+import cenergy.central.com.pwb_store.view.LanguageButton
+import cenergy.central.com.pwb_store.view.NetworkStateView
 
-class HistoryActivity : AppCompatActivity(), HistoryClickListener {
+class HistoryActivity : BaseActivity(), HistoryClickListener {
 
     private lateinit var mToolbar: Toolbar
+    private lateinit var networkStateView: NetworkStateView
 
     companion object {
         private const val TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default"
@@ -37,6 +39,7 @@ class HistoryActivity : AppCompatActivity(), HistoryClickListener {
 
     private fun initView() {
         mToolbar = findViewById(R.id.toolbar)
+        networkStateView = findViewById(R.id.networkStateView)
     }
 
     private fun setToolbar() {
@@ -53,4 +56,8 @@ class HistoryActivity : AppCompatActivity(), HistoryClickListener {
                 .replace(R.id.container, PaymentSuccessFragment.newInstanceByHistory(orderResponseId), TAG_FRAGMENT_CATEGORY_DEFAULT)
                 .commit()
     }
+
+    override fun getSwitchButton(): LanguageButton? = null
+
+    override fun getStateView(): NetworkStateView? = networkStateView
 }
