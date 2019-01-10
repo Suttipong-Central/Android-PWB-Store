@@ -11,6 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -19,12 +22,15 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.AvailableFragment;
 import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagentoOld;
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.AvailableStoreDao;
 import cenergy.central.com.pwb_store.model.StoreDao;
 import cenergy.central.com.pwb_store.model.StoreList;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
+import cenergy.central.com.pwb_store.view.LanguageButton;
+import cenergy.central.com.pwb_store.view.NetworkStateView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +39,7 @@ import retrofit2.Response;
  * Created by napabhat on 7/26/2017 AD.
  */
 
-public class AvaliableStoreActivity extends AppCompatActivity{
+public class AvaliableStoreActivity extends BaseActivity{
     private static final String TAG = AvaliableStoreActivity.class.getSimpleName();
 
     public static final String ARG_SKU = "ARG_SKU";
@@ -42,6 +48,8 @@ public class AvaliableStoreActivity extends AppCompatActivity{
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+//    private LanguageButton languageButton;
+    private NetworkStateView networkStateView;
     private String sku;
     private AvailableStoreDao mAvailableStoreDao;
     private StoreDao mStoreDao;
@@ -138,7 +146,7 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         if (savedInstanceState == null){
             showProgressDialog();
             //HttpManagerMagento.getInstance().getStoreService().getAvailableStock(sku).enqueue(CALLBACK_AVALIABLE);
-            HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
+            retrieveChangeLanguage();
         }else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction
@@ -146,6 +154,10 @@ public class AvaliableStoreActivity extends AppCompatActivity{
                     .commit();
         }
 
+    }
+
+    private void retrieveChangeLanguage() {
+        HttpManagerMagentoOld.getInstance().getStoreService().getStore().enqueue(CALLBACK_STORE_LIST);
     }
 
     private void initView() {
@@ -160,7 +172,8 @@ public class AvaliableStoreActivity extends AppCompatActivity{
                 finish();
             }
         });
-
+//        languageButton = findViewById(R.id.switch_language_button);
+        networkStateView = findViewById(R.id.networkStateView);
     }
 
     @Override
@@ -225,5 +238,15 @@ public class AvaliableStoreActivity extends AppCompatActivity{
         if (!isFinishing() && mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    @Nullable
+    @Override
+    public NetworkStateView getStateView() { return networkStateView; }
+
+    @Nullable
+    @Override
+    public LanguageButton getSwitchButton() {
+        return null;
     }
 }
