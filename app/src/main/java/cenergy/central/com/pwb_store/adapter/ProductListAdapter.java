@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,20 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
 import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductListViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailBus;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.Product;
-import cenergy.central.com.pwb_store.model.ProductDao;
-import cenergy.central.com.pwb_store.model.ProductList;
 import cenergy.central.com.pwb_store.model.ViewType;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 
@@ -143,7 +140,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         public void onClick(View view) {
                             if(clicked){
                                 clicked = false;
-                                EventBus.getDefault().post(new ProductDetailBus(String.valueOf(product.getSku()), view));
+                                Intent intent = new Intent(mContext, ProductDetailActivity2.class);
+                                intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, product.getSku());
+                                mContext.startActivity(intent);
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
