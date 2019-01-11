@@ -185,24 +185,24 @@ class HttpManagerMagento(context: Context) {
         // If already cached then do
         when (getLanguage()) {
             AppLanguage.EN.key -> {
-                val endpointName = "/th/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+                val endpointName = "${Constants.BASE_URL_MAGENTO}/th/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
                 database.clearCachedEndpoint(endpointName)
 
             }
             AppLanguage.TH.key -> {
-                val endpointName = "/en/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+                val endpointName = "${Constants.BASE_URL_MAGENTO}/en/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
                 database.clearCachedEndpoint(endpointName)
 
             }
         }
-        val endpointName = "/${getLanguage()}/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+        val endpointName = "${Constants.BASE_URL_MAGENTO}/${getLanguage()}/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
         if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
-            Log.i("PBE", "retrieveCategories: using cached ${getLanguage()}")
+            Log.i("API Manager", "retrieveCategories: using cached ${getLanguage()}")
             callback.success(database.category)
             return
         }
 
-        Log.i("PBE", "retrieveCategories: calling endpoint ${getLanguage()}")
+        Log.i("API Manager", "retrieveCategories: calling endpoint ${getLanguage()}")
         val categoryService = retrofit.create(CategoryService::class.java)
         categoryService.getCategories(getLanguage(),categoryId, categoryLevel).enqueue(object : Callback<Category> {
             override fun onResponse(call: Call<Category>?, response: Response<Category>?) {

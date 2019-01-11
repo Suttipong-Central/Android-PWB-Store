@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -301,8 +302,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                     showAlertDialog("", getString(R.string.not_connected_network));
                 } else {
                     switch (error.getErrorCode()){
-                        case "401": showAlertDialog("", getString(R.string.user_not_found));
-                            break;
                         case "408":
                         case "404":
                         case "500": showAlertDialog("", getString(R.string.server_not_found));
@@ -319,15 +318,12 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         if (category != null) {
             mCategoryDao = new CategoryDao(category);
             createDrawerMenu(category);
-            String log = this.productFilterHeader == null ? "null" : this.productFilterHeader.getId();
             if (currentFragment instanceof SubHeaderProductFragment) {
-                Log.d(TAG, "ProductFilterHeader 1 " + log + " /" + TAG_FRAGMENT_SUB_HEADER);
                 List<ProductFilterHeader> newProductFilterHeaders = category.getFilterHeaders();
                 for (ProductFilterHeader filterHeader : newProductFilterHeaders) {
                     if (filterHeader.getId().equals(this.productFilterHeader.getId())) {
                         this.productFilterHeader = filterHeader; // update product filter header
                         startCategoryLvTwoFragment(filterHeader);
-                        Log.d(TAG, "Found filterHeader" + filterHeader.getId() + TAG_FRAGMENT_SUB_HEADER);
                         dismissProgressDialog();
                         return;
                     }
@@ -503,12 +499,27 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         }
     }
 
-    // override method from BaseActivity
+    /*
+    *
+    * override method from BaseActivity
+    * on language change
+    * on network connection change
+    * */
     @Override
     public void onChangedLanguage(@NotNull AppLanguage lang) {
         drawer.closeDrawers();
         super.onChangedLanguage(lang);
         retrieveCategories();
+    }
+
+    @Override
+    public void onNetworkStateChange(@NotNull NetworkInfo.State state) {
+        drawer.closeDrawers();
+        super.onNetworkStateChange(state);
+        // isConnected?
+        if (getCurrentState() == NetworkInfo.State.CONNECTED) {
+            retrieveCategories();
+        }
     }
 
     @Nullable
