@@ -17,18 +17,28 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
         NetworkReceiver.NetworkStateLister {
 
     val preferenceManager by lazy { PreferenceManager(this) }
-    private val onNetworkReceived by lazy { NetworkReceiver(this) }
+    private var onNetworkReceived: NetworkReceiver? = null
     private var currentLanguage = ""
+    var currentState: NetworkInfo.State? = null
 
     private var languageButton: LanguageButton? = null
 
-    override fun onResume() {
+    override fun onStart() {
+        onNetworkReceived = NetworkReceiver(this)
         registerReceiver(onNetworkReceived, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)) // register broadcast
+        super.onStart()
+    }
+
+    override fun onResume() {
+        if(onNetworkReceived == null){
+            registerReceiver(onNetworkReceived, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)) // register broadcast
+        }
         super.onResume()
     }
 
     override fun onPause() {
         unregisterReceiver(onNetworkReceived) // unregister broadcast
+        onNetworkReceived = null
         super.onPause()
     }
 
@@ -68,6 +78,8 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     // region
 
     override fun onNetworkStateChange(state: NetworkInfo.State) {
+        currentState = state // update current state
+
         getStateView()?.let { stateView ->
             when (state) {
                 NetworkInfo.State.CONNECTED -> stateView.onConnected()
