@@ -272,18 +272,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         mPowerBuyPopupWindow.updateSingleSortingItem(sortingItemBus.getSortingItem());
     }
 
-    @Subscribe
-    public void onEvent(ProductDetailBus productDetailBus) {
-        if(getContext() != null){
-            Intent intent = new Intent(getContext(), ProductDetailActivity2.class);
-            intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, productDetailBus.getProductId());
-            ActivityCompat.startActivityForResult(getActivity(), intent, MainActivity.REQUEST_UPDATE_LANGUAGE,
-                    ActivityOptionsCompat
-                            .makeScaleUpAnimation(productDetailBus.getView(), 0, 0, productDetailBus.getView().getWidth(), productDetailBus.getView().getHeight())
-                            .toBundle());
-        }
-    }
-
     @SuppressWarnings("unused")
     public static ProductListFragment newInstance(String title, boolean search, String departmentId,
                                                   String storeId, Category category, String keyWord) {
