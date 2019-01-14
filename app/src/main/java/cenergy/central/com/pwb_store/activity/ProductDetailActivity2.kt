@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.activity
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
@@ -21,6 +22,7 @@ import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
 import cenergy.central.com.pwb_store.fragment.WebViewFragment
+import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -144,6 +146,13 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
     override fun getSwitchButton(): LanguageButton? = languageButton
     // endregion
 
+    override fun onNetworkStateChange(state: NetworkInfo.State) {
+        super.onNetworkStateChange(state)
+        // isConnected?
+        if (currentState == NetworkInfo.State.CONNECTED && forceRefresh) {
+            retrieveProductDetail()
+        }
+    }
     override fun getStateView(): NetworkStateView? = networkStateView
     // endregion
 
@@ -214,8 +223,10 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
             override fun failure(error: APIError) {
                 Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
-                    showAlertDialog(error.errorUserMessage, false)
+                    // dismiss loading dialog
                     dismissProgressDialog()
+                    // show error message
+                    DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
                 }
             }
         })
@@ -242,8 +253,10 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
             override fun failure(error: APIError) {
                 Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
-                    showAlertDialog(error.errorUserMessage, false)
+                    // dismiss loading dialog
                     dismissProgressDialog()
+                    // show error message
+                    DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
                 }
             }
         })
@@ -266,7 +279,6 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
             }
         }
         mBuyShoppingCartView.setBadgeCart(count)
-        Log.d("ProductDetail", "count shopping badge$count")
     }
 
     private fun updateCompareBadge() {
