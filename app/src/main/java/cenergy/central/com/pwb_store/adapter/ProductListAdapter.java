@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.activity.BaseActivity;
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
 import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductListViewHolder;
@@ -142,7 +144,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 clicked = false;
                                 Intent intent = new Intent(mContext, ProductDetailActivity2.class);
                                 intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, product.getSku());
-                                mContext.startActivity(intent);
+                                ((Activity) mContext).startActivityForResult(intent, BaseActivity.REQUEST_UPDATE_LANGUAGE);
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {

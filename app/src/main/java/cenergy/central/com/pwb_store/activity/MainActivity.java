@@ -39,6 +39,7 @@ import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
+import cenergy.central.com.pwb_store.helpers.DialogHelper;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -214,7 +215,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             mProgressDialog = DialogUtils.createProgressDialog(this);
             mProgressDialog.show();
         } else {
-            mProgressDialog.show();
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
         }
     }
 
@@ -297,19 +300,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             @Override
             public void failure(@NotNull APIError error) {
                 Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                // dismiss loading dialog
                 dismissProgressDialog();
-                if(error.getErrorCode() == null){
-                    showAlertDialog("", getString(R.string.not_connected_network));
-                } else {
-                    switch (error.getErrorCode()){
-                        case "408":
-                        case "404":
-                        case "500": showAlertDialog("", getString(R.string.server_not_found));
-                            break;
-                        default: showAlertDialog("", getString(R.string.some_thing_wrong));
-                            break;
-                    }
-                }
+                // show error message
+                new DialogHelper(MainActivity.this).showErrorDialog(error);
             }
         });
     }
@@ -517,8 +511,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         drawer.closeDrawers();
         super.onNetworkStateChange(state);
         // isConnected?
-        if (getCurrentState() == NetworkInfo.State.CONNECTED) {
+        if (getCurrentState() == NetworkInfo.State.CONNECTED && getForceRefresh()) {
             retrieveCategories();
+            setForceRefresh(false);
         }
     }
 

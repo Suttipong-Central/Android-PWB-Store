@@ -20,6 +20,7 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     private var onNetworkReceived: NetworkReceiver? = null
     private var currentLanguage = ""
     var currentState: NetworkInfo.State? = null
+    var forceRefresh: Boolean = false // default
 
     private var languageButton: LanguageButton? = null
 
@@ -30,7 +31,7 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     }
 
     override fun onResume() {
-        if(onNetworkReceived == null){
+        if (onNetworkReceived == null) {
             registerReceiver(onNetworkReceived, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)) // register broadcast
         }
         super.onResume()
@@ -73,7 +74,6 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     override fun onChangedLanguage(lang: AppLanguage) {
         preferenceManager.setDefaultLanguage(lang) // save language
         handleChangeLanguage()
-        //        recreate();
     }
     // region
 
@@ -82,10 +82,19 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
         getStateView()?.let { stateView ->
             when (state) {
-                NetworkInfo.State.CONNECTED -> stateView.onConnected()
-                NetworkInfo.State.UNKNOWN, NetworkInfo.State.CONNECTING -> stateView.onConnecting()
-                NetworkInfo.State.DISCONNECTED -> stateView.onDisconnected()
-                else -> stateView.onDisconnected()
+                NetworkInfo.State.CONNECTED -> {
+                    stateView.onConnected()
+                }
+                NetworkInfo.State.UNKNOWN, NetworkInfo.State.CONNECTING -> {
+                    stateView.onConnecting()
+                }
+                NetworkInfo.State.DISCONNECTED -> {
+                    forceRefresh = true
+                    stateView.onDisconnected()
+                }
+                else -> {
+                    stateView.onDisconnected()
+                }
             }
         }
     }
