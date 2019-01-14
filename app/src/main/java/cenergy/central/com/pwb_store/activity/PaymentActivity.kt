@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
+import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL
@@ -89,12 +90,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         networkStateView = findViewById(R.id.networkStateView)
         languageButton.visibility = View.INVISIBLE
         handleChangeLanguage() // update language
+        initView()
 
         showProgressDialog()
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
-        initView()
+        startCheckOut() // default page
         getCartItems()
     }
 
@@ -192,7 +194,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
             }
         })
     }
@@ -285,12 +287,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     mProgressDialog?.dismiss()
                     if (response != null) {
                         cartItemList = response
-                        startCheckOut()
                     }
                 }
 
                 override fun failure(error: APIError) {
                     mProgressDialog?.dismiss()
+                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
                 }
             })
         }
@@ -361,7 +363,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
                             override fun failure(error: APIError) {
                                 mProgressDialog?.dismiss()
-                                showAlertDialog("", error.errorMessage)
+                                DialogHelper(this@PaymentActivity).showErrorDialog(error)
                             }
                         })
             } else {
@@ -379,7 +381,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
                     override fun failure(error: APIError) {
                         mProgressDialog?.dismiss()
-                        showAlertDialog("", error.errorMessage)
+                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
                     }
                 })
             }
@@ -403,7 +405,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 runOnUiThread {
-                    getMembersT1C(mobile)
+                    mProgressDialog?.dismiss()
+                    if (error.errorCode == null) {
+                        showAlertDialog("", getString(R.string.not_connected_network))
+                    } else {
+                        getMembersT1C(mobile)
+                    }
                 }
                 Log.d("Payment", error.errorCode ?: "")
             }
@@ -425,7 +432,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                if (error.errorCode == null) {
+                    showAlertDialog("", getString(R.string.not_connected_network))
+                } else {
+                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                }
             }
         })
     }
@@ -444,7 +455,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                if (error.errorCode == null) {
+                    showAlertDialog("", getString(R.string.not_connected_network))
+                } else {
+                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                }
             }
         })
     }
@@ -465,7 +480,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
                         override fun failure(error: APIError) {
                             mProgressDialog?.dismiss()
-                            showAlertDialog("", error.errorMessage)
+                            DialogHelper(this@PaymentActivity).showErrorDialog(error)
                         }
                     })
         }
@@ -492,7 +507,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
             }
         })
     }
@@ -551,7 +566,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
             }
         })
     }
@@ -586,7 +601,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
             }
         })
     }
@@ -613,7 +628,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", error.errorMessage)
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
             }
         })
     }
