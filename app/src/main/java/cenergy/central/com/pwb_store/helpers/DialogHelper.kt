@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v7.app.AlertDialog
 import android.text.TextUtils
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.model.APIError
 
 class DialogHelper(var context: Context) {
 
@@ -16,5 +17,16 @@ class DialogHelper(var context: Context) {
             builder.setTitle(title)
         }
         builder.show()
+    }
+
+    fun showErrorDialog(error: APIError) {
+        if (error.errorCode == null) {
+            showAlertDialog("", context.getString(R.string.not_connected_network))
+        } else {
+            when (error.getErrorCode()) {
+                "408", "404", "500" -> showAlertDialog("", context.getString(R.string.server_not_found))
+                else -> showAlertDialog("", context.getString(R.string.some_thing_wrong))
+            }
+        }
     }
 }
