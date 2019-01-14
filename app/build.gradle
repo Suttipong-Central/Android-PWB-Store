@@ -54,7 +54,7 @@ android {
         production {
             manifestPlaceholders = [applicationLabel: "PowerBuy Store"]
             resValue 'string', 'app_name', '\"PoweBuy Store\"'
-            versionCode 13
+            versionCode 15
             versionName "1.0.0-dev"
         }
 
@@ -62,8 +62,8 @@ android {
             applicationIdSuffix ".staging"
             manifestPlaceholders = [applicationLabel: "PowerBuy Staging"]
             resValue 'string', 'app_name', '\"PoweBuy Staging\"'
-            versionCode 45
-            versionName "0.0.45"
+            versionCode 46
+            versionName "0.0.46"
         }
 
         develop {
