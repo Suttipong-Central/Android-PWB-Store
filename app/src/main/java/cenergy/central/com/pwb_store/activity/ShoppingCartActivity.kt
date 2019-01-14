@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
@@ -36,7 +37,7 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
 
-class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener, LanguageButton.LanguageListener {
+class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener{
 
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
@@ -49,6 +50,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var title: PowerBuyTextView
     private lateinit var tvT1: PowerBuyTextView
     private lateinit var cartItemList: List<CartItem>
+    private lateinit var titleBackButton: TextView
+    private lateinit var titlePaymentButton: TextView
     private var mProgressDialog: ProgressDialog? = null
     // data
     private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
@@ -122,6 +125,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
+        titleBackButton = backToShopButton.findViewById(R.id.back_title_text_view)
+        titlePaymentButton = paymentButton.findViewById(R.id.title_text_view)
 
         updateTitle(0) // default title
 
@@ -154,20 +159,34 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     //region {@link implement LanguageButton.LanguageListener  }
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
-        showProgressDialog()
-        updateView()
-        getCartItem()
+        refreshShoppingCart()
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
     //end region
 
+    // region state network
     override fun getStateView(): NetworkStateView? = networkStateView
 
-    private fun updateView() {
+    override fun onNetworkStateChange(state: NetworkInfo.State) {
+        super.onNetworkStateChange(state)
+        if (currentState == NetworkInfo.State.CONNECTED && forceRefresh) {
+            refreshShoppingCart()
+        }
+    }
+    // end region
+
+
+    private fun refreshShoppingCart() {
+        showProgressDialog()
+        forceUpdateView()
+        getCartItem()
+    }
+
+    private fun forceUpdateView() {
         // update shit! button using card view =[]='
-        backToShopButton.findViewById<TextView>(R.id.back_title_text_view).setText(R.string.shopping)
-        paymentButton.findViewById<TextView>(R.id.title_text_view).setText(R.string.payment_header)
+        titleBackButton.setText(R.string.shopping)
+        titlePaymentButton.setText(R.string.payment_header)
 
         // update text label
         findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
