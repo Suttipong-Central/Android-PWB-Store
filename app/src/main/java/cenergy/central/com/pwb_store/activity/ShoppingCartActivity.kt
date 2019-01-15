@@ -162,7 +162,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun updateView() {
         // update shit! button using card view =[]='
         backToShopButton.findViewById<TextView>(R.id.back_title_text_view).setText(R.string.shopping)
-        paymentButton.findViewById<TextView>(R.id.title_text_view).setText(R.string.payment_header)
+        paymentButton.findViewById<TextView>(R.id.title_text_view).setText(R.string.check_out)
 
         // update text label
         findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
