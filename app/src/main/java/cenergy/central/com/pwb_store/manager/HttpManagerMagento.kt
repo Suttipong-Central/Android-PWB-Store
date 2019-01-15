@@ -727,7 +727,7 @@ class HttpManagerMagento(context: Context) {
 
     fun addProductToCart(cartId: String, cartItemBody: CartItemBody, callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.addProduct(cartId, cartItemBody).enqueue(object : Callback<CartItem> {
+        cartService.addProduct(getLanguage(),cartId, cartItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -782,7 +782,7 @@ class HttpManagerMagento(context: Context) {
         val cartService = retrofit.create(CartService::class.java)
         val item = ItemBody(cartId = cartId, itemId = itemId, qty = qty)
         val updateItemBody = UpdateItemBody(cartItem = item)
-        cartService.updateItem(cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
+        cartService.updateItem(getLanguage() ,cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -824,7 +824,7 @@ class HttpManagerMagento(context: Context) {
         val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, deliveryOption.methodCode,
                 deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
-        cartService.createShippingInformation(cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
+        cartService.createShippingInformation(getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
             override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val shippingInformation = response.body()
@@ -842,9 +842,9 @@ class HttpManagerMagento(context: Context) {
 
     fun updateOder(cartId: String, email: String, staffId: String, storeId: String, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
-        val method = MethodBody("payatstore")
+        val method = MethodBody("payatstore") // will change soon
         val paymentMethodBody = PaymentInformationBody(cartId, method, email, staffId, storeId)
-        cartService.updateOrder(cartId, paymentMethodBody).enqueue(object : Callback<String> {
+        cartService.updateOrder(getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {
                     callback.success(response.body())
@@ -861,7 +861,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getOrder(orderId).enqueue(object : Callback<OrderResponse> {
+        cartService.getOrder(getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
             override fun onResponse(call: Call<OrderResponse>?, response: Response<OrderResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val orderResponse = response.body()
@@ -881,7 +881,7 @@ class HttpManagerMagento(context: Context) {
     // region store
     fun getBranches(pageSize: Int, currentPage: Int, callback: ApiResponseCallback<BranchResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches("storepickup_id", "ASC", pageSize, currentPage).enqueue(object : Callback<BranchResponse> {
+        cartService.getBranches(getLanguage(), "storepickup_id", "ASC", pageSize, currentPage).enqueue(object : Callback<BranchResponse> {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()
@@ -899,7 +899,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getBranches(callback: ApiResponseCallback<BranchResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches("storepickup_id", "ASC", 13, 1).enqueue(object : Callback<BranchResponse> {
+        cartService.getBranches(getLanguage(),"storepickup_id", "ASC", 13, 1).enqueue(object : Callback<BranchResponse> {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()

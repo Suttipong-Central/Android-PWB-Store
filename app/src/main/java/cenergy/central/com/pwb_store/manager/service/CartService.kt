@@ -14,8 +14,9 @@ internal interface CartService {
     @POST("/rest/V1/guest-carts")
     fun createCart(): Call<String>
 
-    @POST("/rest/V1/guest-carts/{cartId}/items")
-    fun addProduct(@Path("cartId") cartId: String,
+    @POST("/{lang}/rest/V1/guest-carts/{cartId}/items")
+    fun addProduct(@Path("lang") language: String,
+                   @Path("cartId") cartId: String,
                    @Body cartItemBody: CartItemBody): Call<CartItem>
 
     @GET("/{lang}/rest/V1/guest-carts/{quoteId}/items")
@@ -26,31 +27,36 @@ internal interface CartService {
     fun deleteItem(@Path("cartId") cartId: String,
                    @Path("itemId") itemId: Long): Call<Boolean>
 
-    @PUT("/rest/V1/guest-carts/{cartId}/items/{itemId}")
-    fun updateItem(@Path("cartId") cartId: String,
+    @PUT("/{lang}/rest/V1/guest-carts/{cartId}/items/{itemId}")
+    fun updateItem(@Path("lang") language: String,
+                   @Path("cartId") cartId: String,
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-//    @POST("/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
+    //    @POST("/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
     @POST("/{lang}/rest/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
     fun getOrderDeliveryOptions(@Path("lang") language: String,
                                 @Path("cartId") cartId: String,
                                 @Body deliveryBody: DeliveryOptionsBody): Call<List<DeliveryOption>>
 
-    @POST("/rest/V1/guest-carts/{cartId}/shipping-information")
-    fun createShippingInformation(@Path("cartId") cartId: String,
+    @POST("/{lang}/rest/V1/guest-carts/{cartId}/shipping-information")
+    fun createShippingInformation(@Path("lang") language: String,
+                                  @Path("cartId") cartId: String,
                                   @Body shippingBody: ShippingBody): Call<ShippingInformationResponse>
 
     //    @PUT("/rest/V1/guest-carts/{cartId}/order")
-    @POST("/rest/V1/headless/guest-carts/{cartId}/payment-information")
-    fun updateOrder(@Path("cartId") cartId: String,
+    @POST("/{lang}/rest/V1/headless/guest-carts/{cartId}/payment-information")
+    fun updateOrder(@Path("lang") language: String,
+                    @Path("cartId") cartId: String,
                     @Body paymentInformation: PaymentInformationBody): Call<String>
 
-    @GET("/rest/V1/orders/{orderId}")
-    fun getOrder(@Path("orderId") cartId: String): Call<OrderResponse>
+    @GET("/{lang}/rest/V1/orders/{orderId}")
+    fun getOrder(@Path("lang") language: String,
+                 @Path("orderId") orderId: String): Call<OrderResponse>
 
-    @GET("/rest/all/V1/headless/storepickup")
-    fun getBranches(@Query("searchCriteria[sortOrders][0][field]") orderBy: String,
+    @GET("/{lang}/rest/all/V1/headless/storepickup")
+    fun getBranches(@Path("lang") language: String,
+                    @Query("searchCriteria[sortOrders][0][field]") orderBy: String,
                     @Query("searchCriteria[sortOrders][0][direction]") direction: String,
                     @Query("searchCriteria[pageSize]") pageSize: Int,
                     @Query("searchCriteria[currentPage]") currentPage: Int): Call<BranchResponse>
