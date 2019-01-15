@@ -30,9 +30,9 @@ open class Order(
     companion object {
         const val FIELD_ORDER_ID = "orderId"
 
-        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?) : Order {
+        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, language: String) : Order {
             return Order(orderId = orderResponse.orderId!!,
-                    createdAt = orderResponse.createdAt.toDate().formatterUTC(),
+                    createdAt = orderResponse.createdAt.toDate().formatterUTC(language),
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
                     shippingType = orderResponse.shippingType!!,
                     items = Order.asItems(orderResponse.items),
