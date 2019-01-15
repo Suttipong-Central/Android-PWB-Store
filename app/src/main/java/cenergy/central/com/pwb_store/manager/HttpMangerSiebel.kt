@@ -97,7 +97,6 @@ class HttpMangerSiebel(context: Context) {
 
             override fun onFailure(call: Call<Member>?, t: Throwable?) {
                 callback.failure(APIError(t))
-
             }
         })
     }
