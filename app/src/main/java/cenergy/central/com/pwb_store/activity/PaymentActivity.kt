@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -37,6 +38,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
+import io.fabric.sdk.android.services.network.NetworkUtils
 import org.joda.time.DateTime
 import java.util.*
 
@@ -115,8 +117,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun startCheckout(contactNo: String?) {
         // skip?
         if (contactNo == null) {
-            membersList = listOf() // clear membersList
-            startBilling()
+            if(currentState == NetworkInfo.State.CONNECTED){
+                membersList = listOf() // clear membersList
+                startBilling()
+            } else {
+                showAlertDialog("", getString(R.string.not_connected_network))
+            }
         } else {
             memberContact = contactNo
             getCustomerPWB(contactNo)
