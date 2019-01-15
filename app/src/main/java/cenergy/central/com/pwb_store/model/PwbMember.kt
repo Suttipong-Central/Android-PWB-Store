@@ -73,35 +73,3 @@ class MemberSubAddress(
         var subDistrictId: String? = "",
         var postcodeId: String? = ""
 )
-//
-//class PwbMemberDeserializer : JsonDeserializer<MemberSubAddress> {
-//    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?): MemberSubAddress {
-//        var houseNo: String? = ""
-//        var district: String? = ""
-//        var districtId: String? = ""
-//        var subDistrict: String? = ""
-//        var subDistrictId: String? = ""
-//        var postcodeId: String? = ""
-//
-//        val jsonObject = json.asJsonObject
-//        when (jsonObject.get("attribute_code").asString) {
-//            "house_no" -> {
-//                houseNo = jsonObject.get("value").asString
-//            }
-//        }
-//        return MemberSubAddress(houseNo, district, districtId, subDistrict, subDistrictId, postcodeId)
-//    }
-//}
-//
-//class PwbMemberSerializer : JsonSerializer<MemberSubAddress> {
-//    override fun serialize(src: MemberSubAddress, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
-//        val jsonObject = JsonObject()
-//        when (jsonObject.get("attribute_code").asString) {
-//            "house_no" -> {
-//                jsonObject.addProperty("house_no", src.houseNo)
-//            }
-//        }
-//
-//        return jsonObject
-//    }
-//}

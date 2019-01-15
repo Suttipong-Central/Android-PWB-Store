@@ -265,11 +265,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = DialogUtils.createProgressDialog(this)
-            mProgressDialog?.show()
-        } else {
-            mProgressDialog?.show()
+        if (!isFinishing) {
+            if (mProgressDialog == null) {
+                mProgressDialog = DialogUtils.createProgressDialog(this)
+                mProgressDialog?.show()
+            } else {
+                mProgressDialog?.show()
+            }
         }
     }
 
@@ -386,7 +388,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         HttpManagerMagento.getInstance(this).getPWBCustomer(mobile, object : ApiResponseCallback<List<PwbMember>> {
             override fun success(response: List<PwbMember>?) {
                 runOnUiThread {
-                    if (response?.isNotEmpty() == true) { // it can be null
+                    if (response != null && response.isNotEmpty()) { // it can be null
                         this@PaymentActivity.pwbMembersList = response
                         mProgressDialog?.dismiss()
                         startMembersFragment()
