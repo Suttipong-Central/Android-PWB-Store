@@ -406,11 +406,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun failure(error: APIError) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
-                    if (error.errorCode == null) {
-                        showAlertDialog("", getString(R.string.not_connected_network))
-                    } else {
-                        getMembersT1C(mobile)
-                    }
+                    getMembersT1C(mobile)
                 }
                 Log.d("Payment", error.errorCode ?: "")
             }
@@ -573,7 +569,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     fun getNextMonthShippingSlot() {
         val period = PeriodBody()
-        if(month == 12){
+        if (month == 12) {
             month = 1
             PeriodBody.createPeriod(year + 1, month)
         } else {
