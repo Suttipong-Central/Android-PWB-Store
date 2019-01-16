@@ -708,7 +708,7 @@ class HttpManagerMagento(context: Context) {
     // region Cart
     fun getCart(callback: ApiResponseCallback<String?>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.createCart().enqueue(object : Callback<String> {
+        cartService.createCart(getLanguage()).enqueue(object : Callback<String> {
 
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {

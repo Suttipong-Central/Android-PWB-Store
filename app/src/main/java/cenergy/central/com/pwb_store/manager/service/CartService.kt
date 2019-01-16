@@ -11,8 +11,8 @@ import retrofit2.http.*
 
 internal interface CartService {
 
-    @POST("/rest/V1/guest-carts")
-    fun createCart(): Call<String>
+    @POST("/{lang}/rest/V1/guest-carts")
+    fun createCart(@Path("lang") language: String): Call<String>
 
     @POST("/{lang}/rest/V1/guest-carts/{cartId}/items")
     fun addProduct(@Path("lang") language: String,
