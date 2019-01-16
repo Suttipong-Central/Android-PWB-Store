@@ -344,8 +344,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 billingAddress?.sameBilling = 0
                 shippingAddress?.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress
-                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -595,8 +594,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
-        val storeId = branch?.storeId
-                ?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
+        val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
 
         HttpManagerMagento.getInstance(this).updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
@@ -655,13 +653,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     // region {@link StorePickUpListener}
     override fun onUpdateStoreDetail(branch: Branch) {
-        this.branch = branch
         if (currentFragment is DeliveryStorePickUpFragment) {
             (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(branch)
         }
     }
 
     override fun onSelectedStore(branch: Branch) {
+        this.branch = branch
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
