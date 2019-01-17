@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+
 import org.jetbrains.annotations.NotNull;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
@@ -28,7 +31,6 @@ public class ProductListActivity extends BaseActivity {
         languageButton = findViewById(R.id.switch_language_button);
 
         handleChangeLanguage();
-        initView();
 
         Intent mIntent = getIntent();
         Bundle extras = mIntent.getExtras();
@@ -36,6 +38,8 @@ public class ProductListActivity extends BaseActivity {
             isSearch = extras.getBoolean(ARG_SEARCH);
             keyWord = extras.getString(ARG_KEY_WORD);
         }
+
+        initView();
         startProductListFragment(keyWord, isSearch);
     }
 
@@ -66,6 +70,15 @@ public class ProductListActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        if (isSearch){
+            mToolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white));
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
         }
     }
 
