@@ -39,7 +39,6 @@ import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
-import kotlinx.android.synthetic.main.activity_product_detail2.*
 
 class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
@@ -52,6 +51,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
     lateinit var tvNotFound: TextView
     lateinit var containerGroupView: LinearLayout
     private lateinit var languageButton: LanguageButton
+    private lateinit var networkStateView: NetworkStateView
 
     // data
     private val database = RealmController.getInstance()
@@ -64,6 +64,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_detail2)
         languageButton = findViewById(R.id.switch_language_button)
+        networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
 
         // get intent
