@@ -206,15 +206,19 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
-                    clearCart()
-                    finish()
+                if (error.errorCode == null) {
+                    showAlertDialog("", getString(R.string.not_connected_network))
                 } else {
-                    showAlertDialog(resources.getString(R.string.cannot_get_cart_item),
-                            DialogInterface.OnClickListener { dialog, which ->
-                                dialog.dismiss()
-                                finish()
-                            })
+                    when (error.errorCode) {
+                        "408", "404" -> {
+                            showAlertDialog("", getString(R.string.server_not_found))
+                        }
+                        APIError.INTERNAL_SERVER_ERROR.toString() -> {
+                            clearCart()
+                            finish()
+                        }
+                        else -> showAlertDialog("", getString(R.string.some_thing_wrong))
+                    }
                 }
             }
         })
