@@ -708,7 +708,7 @@ class HttpManagerMagento(context: Context) {
     // region Cart
     fun getCart(callback: ApiResponseCallback<String?>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.createCart().enqueue(object : Callback<String> {
+        cartService.createCart(getLanguage()).enqueue(object : Callback<String> {
 
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {
@@ -727,7 +727,7 @@ class HttpManagerMagento(context: Context) {
 
     fun addProductToCart(cartId: String, cartItemBody: CartItemBody, callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.addProduct(cartId, cartItemBody).enqueue(object : Callback<CartItem> {
+        cartService.addProduct(getLanguage(),cartId, cartItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -782,7 +782,7 @@ class HttpManagerMagento(context: Context) {
         val cartService = retrofit.create(CartService::class.java)
         val item = ItemBody(cartId = cartId, itemId = itemId, qty = qty)
         val updateItemBody = UpdateItemBody(cartItem = item)
-        cartService.updateItem(cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
+        cartService.updateItem(getLanguage() ,cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -824,7 +824,7 @@ class HttpManagerMagento(context: Context) {
         val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, deliveryOption.methodCode,
                 deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
-        cartService.createShippingInformation(cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
+        cartService.createShippingInformation(getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
             override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val shippingInformation = response.body()
@@ -842,9 +842,9 @@ class HttpManagerMagento(context: Context) {
 
     fun updateOder(cartId: String, email: String, staffId: String, storeId: String, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
-        val method = MethodBody("payatstore")
+        val method = MethodBody("payatstore") // will change soon
         val paymentMethodBody = PaymentInformationBody(cartId, method, email, staffId, storeId)
-        cartService.updateOrder(cartId, paymentMethodBody).enqueue(object : Callback<String> {
+        cartService.updateOrder(getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {
                     callback.success(response.body())
@@ -861,7 +861,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getOrder(orderId).enqueue(object : Callback<OrderResponse> {
+        cartService.getOrder(getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
             override fun onResponse(call: Call<OrderResponse>?, response: Response<OrderResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val orderResponse = response.body()
@@ -881,7 +881,7 @@ class HttpManagerMagento(context: Context) {
     // region store
     fun getBranches(pageSize: Int, currentPage: Int, callback: ApiResponseCallback<BranchResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches("storepickup_id", "ASC", pageSize, currentPage).enqueue(object : Callback<BranchResponse> {
+        cartService.getBranches(getLanguage(), "storepickup_id", "ASC", pageSize, currentPage).enqueue(object : Callback<BranchResponse> {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()
@@ -899,7 +899,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getBranches(callback: ApiResponseCallback<BranchResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches("storepickup_id", "ASC", 13, 1).enqueue(object : Callback<BranchResponse> {
+        cartService.getBranches(getLanguage(),"storepickup_id", "ASC", 13, 1).enqueue(object : Callback<BranchResponse> {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()
@@ -921,10 +921,11 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegment("rest")
-                .addPathSegment("V1")
-                .addPathSegment("headless")
-                .addPathSegment("customers")
+                .addPathSegment(getLanguage())
+                .addPathSegment(POWERBUY.MEMBER.PATH_REST)
+                .addPathSegment(POWERBUY.MEMBER.PATH_V1)
+                .addPathSegment(POWERBUY.MEMBER.PATH_HEADLESS)
+                .addPathSegment(POWERBUY.MEMBER.PATH_CUSTOMERS)
                 .addPathSegment(telephone)
                 .build()
 
@@ -942,96 +943,135 @@ class HttpManagerMagento(context: Context) {
                         val items = dataObject.getJSONArray("items")
                         val memberList: ArrayList<PwbMember> = arrayListOf()
 
-                        if (items.length() <= 0) {
+                        if (items.length() < 1) {
                             callback.success(arrayListOf())
                             return
                         }
 
                         for (i in 0 until items.length()) {
-                            val id = items.getJSONObject(i).getLong("id")
-                            val firstname = items.getJSONObject(i).getString("firstname")
-                            val lastname = items.getJSONObject(i).getString("lastname")
-                            val email = items.getJSONObject(i).getString("email")
-                            val t1cNo = items.getJSONObject(i).getString("the_one_card_no")
-                                    ?: ""
+                            val memberDetail = items.getJSONObject(i)
+                            val id = if (memberDetail.has(POWERBUY.MEMBER.ID)) memberDetail.getLong(POWERBUY.MEMBER.ID) else 0L
+                            val firstname = if (memberDetail.has(POWERBUY.MEMBER.FIRST_NAME)) {
+                                memberDetail.getString(POWERBUY.MEMBER.FIRST_NAME) ?: ""
+                            } else ""
+                            val lastname = if (memberDetail.has(POWERBUY.MEMBER.LAST_NAME)) {
+                                memberDetail.getString(POWERBUY.MEMBER.LAST_NAME) ?: ""
+                            } else ""
+                            val email = if (memberDetail.has(POWERBUY.MEMBER.EMAIL)) {
+                                memberDetail.getString(POWERBUY.MEMBER.EMAIL) ?: ""
+                            } else ""
+                            val t1cNo = if (memberDetail.has(POWERBUY.MEMBER.THE_1_CARD_NUMNER)) {
+                                memberDetail.getString(POWERBUY.MEMBER.THE_1_CARD_NUMNER) ?: ""
+                            } else ""
 
                             val memberAddressList: ArrayList<MemberAddress> = arrayListOf()
-                            val addresses = items.getJSONObject(i).getJSONArray("addresses")
-                            for (k in 0 until addresses.length()) {
-                                val memberAddress = MemberAddress()
-                                memberAddress.id = addresses.getJSONObject(k).getLong("id")
-                                memberAddress.customerId = addresses.getJSONObject(k).getLong("customer_id")
-                                memberAddress.regionId = addresses.getJSONObject(k).getInt("region_id")
-                                memberAddress.countryId = addresses.getJSONObject(k).getString("country_id") ?: ""
-
-                                val streetArrayObject = addresses.getJSONObject(k).getJSONArray("street")
-                                val streets = arrayListOf<String>()
-
-                                for (j in 0 until streetArrayObject.length()) {
-                                    streets.add(streetArrayObject.getString(j))
-                                }
-
-                                memberAddress.street = streets
-                                memberAddress.telephone = addresses.getJSONObject(k).getString("telephone")
-                                memberAddress.postcode = addresses.getJSONObject(k).getString("postcode")
-                                memberAddress.city = addresses.getJSONObject(k).getString("city")
-                                memberAddress.firstname = addresses.getJSONObject(k).getString("firstname")
-                                memberAddress.lastname = addresses.getJSONObject(k).getString("lastname")
-
-                                if (addresses.getJSONObject(k).has("default_shipping")) {
-                                    memberAddress.defaultShipping = addresses.getJSONObject(k).getBoolean("default_shipping")
-                                }
-
-                                if (addresses.getJSONObject(k).has("default_billing")) {
-                                    memberAddress.defaultShipping = addresses.getJSONObject(k).getBoolean("default_billing")
-                                }
-
-                                val customAttributes = addresses.getJSONObject(k).getJSONArray("custom_attributes")
-                                val memberSubAddress = MemberSubAddress()
-                                for (m in 0 until customAttributes.length()) {
-                                    val attrName = customAttributes.getJSONObject(m).getString("name")
-
-                                    when (attrName) {
-                                        "house_no" -> {
-                                            val houseNo = customAttributes.getJSONObject(m).getString("value")
-                                                    ?: ""
-                                            memberSubAddress.houseNo = houseNo
-                                        }
-
-                                        "district" -> {
-                                            val district = customAttributes.getJSONObject(m).getString("value")
-                                                    ?: ""
-                                            memberSubAddress.district = district
-                                        }
-
-                                        "district_id" -> {
-                                            val districtId = customAttributes.getJSONObject(m).getString("value")
-                                                    ?: ""
-                                            memberSubAddress.districtId = districtId
-                                        }
-
-                                        "subdistrict" -> {
-                                            val subdistrict = customAttributes.getJSONObject(m).getString("value")
-                                                    ?: ""
-                                            memberSubAddress.subDistrict = subdistrict
-                                        }
-
-                                        "subdistrict_id" -> {
-                                            val subDistrictId = customAttributes.getJSONObject(m).getString("value")
-                                                    ?: ""
-                                            memberSubAddress.subDistrictId = subDistrictId
-                                        }
-
-                                        "postcode_id" -> {
-                                            val postcodeId = customAttributes.getJSONObject(m).getString("value")
-                                                    ?: ""
-                                            memberSubAddress.postcodeId = postcodeId
-                                        }
+                            if (memberDetail.has(POWERBUY.MEMBER.ADDRESSES)) {
+                                val addresses = memberDetail.getJSONArray(POWERBUY.MEMBER.ADDRESSES)
+                                for (k in 0 until addresses.length()) {
+                                    val addressDetail = addresses.getJSONObject(k)
+                                    val memberAddress = MemberAddress()
+                                    if (addressDetail.has("id")) {
+                                        memberAddress.id = addressDetail.getLong("id")
                                     }
-                                }
-                                memberAddress.subAddress = memberSubAddress
 
-                                memberAddressList.add(memberAddress)
+                                    if (addressDetail.has("customer_id")) {
+                                        memberAddress.customerId = addressDetail.getLong("customer_id")
+                                    }
+
+                                    if (addressDetail.has("region_id")) {
+                                        memberAddress.regionId = addressDetail.getInt("region_id")
+                                    }
+
+                                    if (addressDetail.has("country_id")) {
+                                        memberAddress.countryId = addressDetail.getString("country_id")
+                                    }
+
+                                    if (addressDetail.has("street")) {
+                                        val streets = arrayListOf<String>()
+                                        val streetArrayObject = addressDetail.getJSONArray("street")
+                                        for (j in 0 until streetArrayObject.length()) {
+                                            streets.add(streetArrayObject.getString(j))
+                                        }
+                                        memberAddress.street = streets
+                                    }
+
+                                    if (addressDetail.has("telephone")) {
+                                        memberAddress.telephone = addressDetail.getString("telephone")
+                                    }
+
+                                    if (addressDetail.has("postcode")) {
+                                        memberAddress.postcode = addressDetail.getString("postcode")
+                                    }
+
+                                    if (addressDetail.has("city")) {
+                                        memberAddress.city = addressDetail.getString("city")
+                                    }
+
+                                    if (addressDetail.has("firstname")) {
+                                        memberAddress.firstname = addressDetail.getString("firstname")
+                                    }
+
+                                    if (addressDetail.has("lastname")) {
+                                        memberAddress.lastname = addressDetail.getString("lastname")
+                                    }
+
+                                    if (addressDetail.has("default_shipping")) {
+                                        memberAddress.defaultShipping = addressDetail.getBoolean("default_shipping")
+                                    }
+
+                                    if (addressDetail.has("default_billing")) {
+                                        memberAddress.defaultShipping = addressDetail.getBoolean("default_billing")
+                                    }
+
+                                    if (addressDetail.has("custom_attributes")) {
+                                        val memberSubAddress = MemberSubAddress()
+                                        val customAttributes = addressDetail.getJSONArray("custom_attributes")
+                                        for (m in 0 until customAttributes.length()) {
+                                            val ctmAttr = customAttributes.getJSONObject(m)
+                                            val attrName = ctmAttr.getString("name")
+
+                                            when (attrName) {
+                                                "house_no" -> {
+                                                    val houseNo = ctmAttr.getString("value")
+                                                            ?: ""
+                                                    memberSubAddress.houseNo = houseNo
+                                                }
+
+                                                "district" -> {
+                                                    val district = ctmAttr.getString("value")
+                                                            ?: ""
+                                                    memberSubAddress.district = district
+                                                }
+
+                                                "district_id" -> {
+                                                    val districtId = ctmAttr.getString("value")
+                                                            ?: ""
+                                                    memberSubAddress.districtId = districtId
+                                                }
+
+                                                "subdistrict" -> {
+                                                    val subdistrict = ctmAttr.getString("value")
+                                                            ?: ""
+                                                    memberSubAddress.subDistrict = subdistrict
+                                                }
+
+                                                "subdistrict_id" -> {
+                                                    val subDistrictId = ctmAttr.getString("value")
+                                                            ?: ""
+                                                    memberSubAddress.subDistrictId = subDistrictId
+                                                }
+
+                                                "postcode_id" -> {
+                                                    val postcodeId = ctmAttr.getString("value")
+                                                            ?: ""
+                                                    memberSubAddress.postcodeId = postcodeId
+                                                }
+                                            }
+                                        }
+                                        memberAddress.subAddress = memberSubAddress
+                                    }
+                                    memberAddressList.add(memberAddress)
+                                }
                             }
 
                             memberList.add(PwbMember(id, firstname, lastname, email, t1cNo, memberAddressList))

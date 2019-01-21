@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -25,8 +24,6 @@ import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
-import cenergy.central.com.pwb_store.extensions.formatterUTC
-import cenergy.central.com.pwb_store.extensions.toDate
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
@@ -93,7 +90,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private val shippingInfo by lazy { paymentListener.getShippingAddress() }
     private val billingInfo by lazy { paymentListener.getBillingAddress() }
     private val branchAddress by lazy { paymentListener.getSelectedBranch() }
-
 
     companion object {
         private const val ARG_ORDER_ID = "ARG_ORDER_ID"
@@ -373,7 +369,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             }
 
             // save order to local database
-            val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress)
+            val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress, language = preferenceManager?.getDefaultLanguage()?: "TH")
 
             database.saveOrder(order, object : DatabaseListener{
                 override fun onSuccessfully() {
