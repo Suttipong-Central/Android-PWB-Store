@@ -22,6 +22,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -275,8 +276,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             }
 
             override fun failure(error: APIError) {
-                Log.d("DeleteItem", "error ${error.errorMessage}")
                 mProgressDialog?.dismiss()
+                DialogHelper(this@ShoppingCartActivity).showErrorDialog(error)
             }
 
         })
@@ -291,8 +292,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             }
 
             override fun failure(error: APIError) {
-                Log.d("UpdateItem", "update fail.")
                 mProgressDialog?.dismiss()
+                DialogHelper(this@ShoppingCartActivity).showErrorDialog(error)
             }
         })
     }
