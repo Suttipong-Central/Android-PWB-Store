@@ -39,6 +39,7 @@ import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
+import cenergy.central.com.pwb_store.helpers.DialogHelper;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
@@ -612,9 +613,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
                         @Override
                         public void failure(@NotNull APIError error) {
-                            Log.d("productResponse", error.toString());
                             layoutProgress.setVisibility(View.GONE);
                             mProgressDialog.dismiss();
+                            // show error dialog
+                            if (getContext() != null) {
+                                new DialogHelper(getContext()).showErrorDialog(error);
+                            }
                         }
                     }
             );

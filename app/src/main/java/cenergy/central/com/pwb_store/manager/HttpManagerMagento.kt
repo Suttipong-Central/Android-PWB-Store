@@ -674,6 +674,7 @@ class HttpManagerMagento(context: Context) {
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
+                response?.close()
             }
 
             override fun onFailure(call: okhttp3.Call?, e: IOException?) {
@@ -1085,6 +1086,7 @@ class HttpManagerMagento(context: Context) {
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
+                response?.close()
             }
 
             override fun onFailure(call: okhttp3.Call?, e: IOException?) {

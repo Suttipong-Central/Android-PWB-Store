@@ -391,7 +391,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
 
             override fun failure(error: APIError) {
                 dismissProgressDialog()
-                showAlertDialog("", error.errorUserMessage)
+                DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
             }
         })
     }
@@ -409,12 +409,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
                     showClearCartDialog()
                 } else {
-                    // We found some crash in fabric but we didn't know why errorMessage is null
-                    if(error.errorMessage != null || error.error != null || error.errorUserMessage != null){
-                        showAlertDialog("", error.errorMessage?: error.error?: error.errorUserMessage)
-                    } else {
-                        throw IllegalArgumentException("Some error message is null, Error code is ${error.errorCode}")
-                    }
+                    DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
                 }
             }
         })

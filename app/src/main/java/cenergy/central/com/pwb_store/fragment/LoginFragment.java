@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.helpers.DialogHelper;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
@@ -54,8 +55,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_login, container, false);
         initInstances(rootView, savedInstanceState);
         return rootView;
@@ -160,19 +160,8 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                         @Override
                         public void failure(@NotNull APIError error) {
                             dismissDialog();
-                            if(error.getErrorCode() == null){
-                                showAlertDialog("", getString(R.string.not_connected_network));
-                            } else {
-                                switch (error.getErrorCode()){
-                                    case "401": showAlertDialog("", getString(R.string.user_not_found));
-                                        break;
-                                    case "408":
-                                    case "404":
-                                    case "500": showAlertDialog("", getString(R.string.server_not_found));
-                                        break;
-                                    default: showAlertDialog("", getString(R.string.some_thing_wrong));
-                                        break;
-                                }
+                            if(getContext() != null){
+                                new DialogHelper(getContext()).showErrorLoginDialog(error);
                             }
                         }
                     });
