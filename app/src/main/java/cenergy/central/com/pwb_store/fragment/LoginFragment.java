@@ -161,7 +161,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                         public void failure(@NotNull APIError error) {
                             dismissDialog();
                             if(getContext() != null){
-                                new DialogHelper(getContext()).showErrorDialog(error);
+                                new DialogHelper(getContext()).showErrorLoginDialog(error);
                             }
                         }
                     });
