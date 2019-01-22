@@ -29,4 +29,16 @@ class DialogHelper(var context: Context) {
             }
         }
     }
+
+    fun showErrorLoginDialog(error: APIError){
+        if (error.errorCode == null) {
+            showAlertDialog("", context.getString(R.string.not_connected_network))
+        } else {
+            when (error.errorCode) {
+                "401" -> showAlertDialog("", context.getString(R.string.user_not_found))
+                "408", "404", "500" -> showAlertDialog("", context.getString(R.string.server_not_found))
+                else -> showAlertDialog("", context.getString(R.string.some_thing_wrong))
+            }
+        }
+    }
 }
