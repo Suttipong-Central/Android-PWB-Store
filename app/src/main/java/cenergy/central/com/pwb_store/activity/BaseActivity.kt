@@ -38,8 +38,10 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     }
 
     override fun onPause() {
-        unregisterReceiver(onNetworkReceived) // unregister broadcast
-        onNetworkReceived = null
+        onNetworkReceived?.let {
+            unregisterReceiver(it) // unregister broadcast
+            this@BaseActivity.onNetworkReceived = null
+        }
         super.onPause()
     }
 
