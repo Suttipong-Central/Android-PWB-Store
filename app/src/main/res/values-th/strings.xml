@@ -127,7 +127,7 @@
     <string name="password">รหัสผ่าน</string>
     <string name="login">เข้าสู่ระบบ</string>
     <string name="loading">กำลังโหลด...</string>
-    <string name="user_not_found">รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+    <string name="user_not_found">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
     <string name="not_connected_network">ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</string>
     <string name="server_not_found">ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง</string>
 
@@ -138,7 +138,7 @@
     <string name="first_name">ชื่อ</string>
     <string name="last_name">นามสกุล</string>
     <string name="tell">เบอร์ติดต่อ</string>
-    <string name="email">อีเมลล์</string>
+    <string name="email">อีเมล</string>
     <string name="house_no">บ้านเลขที่</string>
     <string name="place_or_building">สถานที่/อาคาร</string>
     <string name="soi">ซอย</string>
