@@ -214,7 +214,7 @@
     <string name="title_free_item">Free items</string>
     <string name="shopping_delete"><u>Delete</u></string>
     <string name="t1_points">Earn %d points with your The 1</string>
-    <string name="check_out">Check out</string>
+    <string name="check_out">Checkout</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>

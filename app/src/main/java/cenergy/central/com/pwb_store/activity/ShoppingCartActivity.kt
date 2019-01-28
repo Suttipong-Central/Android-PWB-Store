@@ -187,7 +187,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun forceUpdateView() {
         // update shit! button using card view =[]='
         titleBackButton.setText(R.string.shopping)
-        titlePaymentButton.setText(R.string.payment_header)
+        titlePaymentButton.setText(R.string.check_out)
 
         // update text label
         findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
