@@ -76,12 +76,21 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     override fun onChangedLanguage(lang: AppLanguage) {
         preferenceManager.setDefaultLanguage(lang) // save language
         handleChangeLanguage()
+        if (currentState != null && currentState != NetworkInfo.State.CONNECTED) {
+            updateNetworkStateView(currentState!!)
+        }
     }
-    // region
+    // endregion
 
     override fun onNetworkStateChange(state: NetworkInfo.State) {
         currentState = state // update current state
 
+        if (currentState != null) {
+            updateNetworkStateView(currentState!!)
+        }
+    }
+
+    private fun updateNetworkStateView(state: NetworkInfo.State) {
         getStateView()?.let { stateView ->
             when (state) {
                 NetworkInfo.State.CONNECTED -> {

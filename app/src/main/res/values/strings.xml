@@ -259,7 +259,7 @@
     <string name="network_connect_error">No internet</string>
     <string name="network_state_connected">Connected</string>
     <string name="network_state_connecting">Connecting</string>
-    <string name="network_disconnected">Disconnected</string>
+    <string name="network_disconnected">Cannot connect to the Internet</string>
     <!-- Language -->
     <string name="hint_th">TH</string>
     <string name="hint_en">EN</string>

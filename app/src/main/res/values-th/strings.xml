@@ -260,7 +260,7 @@
     <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>
     <string name="network_state_connected">เชื่อมต่อแล้ว</string>
     <string name="network_state_connecting">กำลังเชื่อมต่ออินเทอร์เน็ต</string>
-    <string name="network_disconnected">ไม่ได้เชื่อมต่ออินเทอร์เน็ต</string>
+    <string name="network_disconnected">ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</string>
 
     <!-- Language -->
     <string name="hint_th">TH</string>
