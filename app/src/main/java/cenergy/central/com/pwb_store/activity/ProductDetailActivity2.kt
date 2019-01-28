@@ -190,6 +190,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductFromBarcode("barcode", barcode, "eq", "name", 10, 1, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
+                dismissProgressDialog()
                 if (response != null) {
                     tvNotFound.visibility = View.INVISIBLE
                     containerGroupView.visibility = View.VISIBLE
@@ -201,14 +202,13 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
                     tvNotFound.visibility = View.VISIBLE
                     containerGroupView.visibility = View.INVISIBLE
                 }
-                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
                 Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
-                    showAlertDialog(error.errorUserMessage, false)
                     dismissProgressDialog()
+                    showAlertDialog(error.errorUserMessage, false)
                 }
             }
         })
@@ -218,6 +218,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductDetail(sku, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
+                dismissProgressDialog()
                 if (response != null) {
                     tvNotFound.visibility = View.INVISIBLE
                     containerGroupView.visibility = View.VISIBLE
@@ -229,14 +230,13 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
                     tvNotFound.visibility = View.VISIBLE
                     containerGroupView.visibility = View.INVISIBLE
                 }
-                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
                 Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
-                    showAlertDialog(error.errorUserMessage, false)
                     dismissProgressDialog()
+                    showAlertDialog(error.errorUserMessage, false)
                 }
             }
         })
