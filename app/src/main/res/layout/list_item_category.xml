@@ -5,9 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:clickable="true"
-    android:elevation="0dp">
+    android:background="@android:color/white">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -29,20 +27,22 @@
                 android:layout_width="122dp"
                 android:layout_height="122dp"
                 android:layout_marginBottom="12dp"
-                tools:src="@drawable/ic_question_mark"/>
+                tools:src="@drawable/ic_question_mark"
+                tools:ignore="ContentDescription" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_view"
                 style="@style/textSize18Sp"
-                android:layout_width="122dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
                 android:gravity="center"
-                android:maxLines="2"
                 android:inputType="textMultiLine"
                 android:textColor="@color/contentTextColor"
                 app:typeFaceAsset="RobotoLight.ttf"
-                tools:text="@string/home_tv"/>
+                tools:text="@string/home_tv" />
         </LinearLayout>
     </FrameLayout>
 </FrameLayout>
