@@ -273,6 +273,10 @@
     <string name="collect">รับที่สาขา</string>
     <string name="between15_20">ส่งถึงมือภายใน 15:00–20:00 น.</string>
 
+    <string name="express_delivery_desc">ส่งด่วน - ประมาณ 1-2 วันทำการ</string>
+    <string name="standard_delivery_desc">จัดส่งแบบปกติ – ประมาณ 2-7 วันทำการ</string>
+    <string name="home_delivery_desc">กำหนดวันจัดส่งสินค้า – ประมาณ 2-5 วันทำงาน</string>
+
     <!-- Popup sort -->
     <string name="low_to_high">ราคา : น้อยไปมาก</string>
     <string name="high_to_low">ราคา : มากไปน้อย</string>

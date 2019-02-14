@@ -271,6 +271,10 @@
     <string name="collect">Collect at store</string>
     <string name="between15_20">Reaches customer between 15:00–20:00</string>
 
+    <string name="express_delivery_desc">Express Delivery - Average 1-2 Business days</string>
+    <string name="standard_delivery_desc">Standard Delivery - Average 2-7 Business days</string>
+    <string name="home_delivery_desc">Home delivery - Average 2-5 Business days</string>
+
     <!-- Popup sort -->
     <string name="low_to_high">Price : Low to High</string>
     <string name="high_to_low">Price : High to Low</string>

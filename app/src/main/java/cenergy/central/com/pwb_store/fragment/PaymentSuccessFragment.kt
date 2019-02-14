@@ -219,7 +219,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         // setup shipping address or pickup at store
-        if (order.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
+        if (order.shippingType != DeliveryType.STORE_PICK_UP.methodCode) {
             deliveryLayout.visibility = View.VISIBLE
             billingAddressLayout.visibility = View.VISIBLE
             deliveryInfoLayout.visibility = View.VISIBLE
@@ -228,10 +228,23 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             customerNameLayout.visibility = View.GONE
 
             tvShippingHeader.text = getString(R.string.delivery_detail)
-            tvDeliveryType.text = order.shippingType
+            tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
+                DeliveryType.EXPRESS -> getString(R.string.express)
+                DeliveryType.STANDARD -> getString(R.string.standard)
+                DeliveryType.STORE_PICK_UP -> getString(R.string.collect)
+                DeliveryType.HOME -> getString(R.string.home_delivery)
+                else -> ""
+            }
+
             tvReceiverName.text = shippingAddress.getDisplayName()
             tvDeliveryAddress.text = getAddress(shippingAddress)
-            tvDeliveryInfo.text = order.shippingDescription
+            tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
+                DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
+                DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
+                DeliveryType.HOME -> getString(R.string.home_delivery_desc)
+                else -> ""
+            }
+
             tvBillingName.text = billingAddress.getDisplayName()
             tvBillingAddress.text = getAddress(billingAddress)
             if(billingAddress.sameBilling == SAME_BILLING){
@@ -356,12 +369,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             }
 
             // add shipping type
-            response.shippingType = deliveryType?.toString() ?: ""
+            response.shippingType = deliveryType?.methodCode ?: DeliveryType.STORE_PICK_UP.methodCode
 
             response.items?.forEach { item ->
                 val isCacheItem = cacheCartItems?.firstOrNull { it.sku == item.sku }
                 if (isCacheItem != null){
-                    Log.d("TESTIMAGE","Image url ${isCacheItem.imageUrl}")
                     item.imageUrl = isCacheItem.imageUrl
                 } else {
                     item.isFreebie = true
