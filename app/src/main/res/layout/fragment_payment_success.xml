@@ -483,7 +483,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="10"
                     android:orientation="horizontal">
 
@@ -508,7 +508,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="10"
                     android:orientation="horizontal">
 
@@ -533,7 +533,7 @@
                 <LinearLayout
                     android:id="@+id/billingEmailLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="10"
                     android:orientation="horizontal">
 
@@ -558,7 +558,7 @@
                 <LinearLayout
                     android:id="@+id/billingTelephoneLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="10"
                     android:orientation="horizontal">
 
