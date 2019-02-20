@@ -177,10 +177,14 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     fun getNextMonthShippingSlot() {
         val period: PeriodBody
         if(month == 12){
+            // next year
+            year += 1
             month = 1
-            period = PeriodBody.createPeriod(year + 1, month)
+            period = PeriodBody.createPeriod(year, month)
         } else {
-            period = PeriodBody.createPeriod(year, month + 1)
+            // next month
+            month + 1
+            period = PeriodBody.createPeriod(year, month)
         }
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
                 district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
