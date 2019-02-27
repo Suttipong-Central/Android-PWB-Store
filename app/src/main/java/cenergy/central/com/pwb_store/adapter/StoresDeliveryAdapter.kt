@@ -14,17 +14,17 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
 
     var selectedIndex: Int? = null
     var branches = listOf<Branch?>()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == VIEW_ITEM) {
             StoresViewHolder(LayoutInflater.from(parent.context)
                     .inflate(R.layout.list_item_stores, parent, false))
-        } else{
-            ProgrssViewHolder(LayoutInflater.from(parent.context)
+        } else {
+            ProgressViewHolder(LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_progress, parent, false))
         }
     }
@@ -34,7 +34,7 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (branches[position] != null) VIEW_ITEM else VIEW_PROG
+        return if (branches[position] != null) VIEW_ITEM else VIEW_LOADING
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -48,17 +48,19 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
                 listener.onItemClicked(branch)
             }
             if (selectedIndex == position) {
-                holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.powerBuyPurple))
+                holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context,
+                        R.color.powerBuyPurple))
             } else {
-                holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grayTextColor))
+                holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context,
+                        R.color.grayTextColor))
             }
         }
     }
 
     companion object {
         const val VIEW_ITEM = 1
-        const val VIEW_PROG = 2
+        const val VIEW_LOADING = 2
     }
 
-    inner class ProgrssViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView)
+    inner class ProgressViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView)
 }

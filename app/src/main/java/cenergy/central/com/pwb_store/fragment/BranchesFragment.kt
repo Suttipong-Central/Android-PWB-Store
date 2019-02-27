@@ -27,11 +27,6 @@ class BranchesFragment : Fragment(), StoreClickListener {
     private lateinit var storesRecycler: RecyclerView
     private var listener: StorePickUpListener? = null
 
-    private var currentPage: Int = 1
-    private lateinit var layoutManager: LinearLayoutManager
-    private var isLoadingMore: Boolean = false
-    private var previousTotal: Int = 0
-    private var totalPage: Int = 0
 
     companion object {
         private const val PER_PAGE = 13
@@ -57,16 +52,13 @@ class BranchesFragment : Fragment(), StoreClickListener {
 
     private fun setupView(rootView: View) {
         storesRecycler = rootView.findViewById(R.id.recycler_view_list_stores)
-        storesRecycler.addOnScrollListener(getCustomScrolling())
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        storesRecycler.layoutManager = layoutManager
+        storesRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         storesRecycler.adapter = storesAdapter
         storesAdapter.branches = branches
     }
 
     fun updateBranches(branches: ArrayList<Branch?>, totalBranch: Int) {
         this.branches = branches
-        this.totalPage = totalPageCal(totalBranch)
         storesAdapter.branches = branches
     }
 
@@ -81,81 +73,5 @@ class BranchesFragment : Fragment(), StoreClickListener {
         val x = total.toFloat() / PER_PAGE
         num = Math.ceil(x.toDouble()).toInt()
         return num
-    }
-
-    private fun getCustomScrolling(): RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-            val totalItemCount = layoutManager.itemCount
-            val visibleItemCount = layoutManager.childCount
-            val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-
-            if (isLoadingMore && totalItemCount > previousTotal) {
-                isLoadingMore = false
-                previousTotal = totalItemCount
-            }
-
-            val visibleThreshold = 10
-            if (!isLoadingMore
-                    && totalItemCount <= firstVisibleItem + visibleItemCount + visibleThreshold
-                    && isStillHavePages()) {
-
-                if (this@BranchesFragment.branches[this@BranchesFragment.branches.lastIndex] != null) {
-                    this@BranchesFragment.branches.add(null)
-                }
-
-                storesAdapter.branches = this@BranchesFragment.branches
-                getStoresDelivery()
-                isLoadingMore = true
-
-            }
-        }
-    }
-
-    private fun isStillHavePages(): Boolean {
-        return currentPage < totalPage
-    }
-
-    private fun getStoresDelivery() {
-        context?.let {
-            HttpManagerMagento.getInstance(it).getBranches(PER_PAGE, getNextPage(), object : ApiResponseCallback<BranchResponse> {
-                override fun success(response: BranchResponse?) {
-                    if (response != null) {
-                        if (response.items.isNotEmpty() && isAdded) {
-                            currentPage = getNextPage()
-                            this@BranchesFragment.branches.remove(null)
-                            this@BranchesFragment.branches.addAll(response.items)
-                            storesAdapter.branches = this@BranchesFragment.branches
-                            if (storesAdapter.branches.size >= response.totalBranch) {
-                                storesRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {}) // clear scroll
-                            }
-                        }
-                    }
-                }
-
-                override fun failure(error: APIError) {
-                    if (isAdded) {
-                        showAlertDialog("", error.errorMessage)
-                    }
-                }
-            })
-        }
-    }
-
-    private fun showAlertDialog(title: String, message: String) {
-        if (context != null) {
-            val builder = AlertDialog.Builder(context!!, R.style.AlertDialogTheme)
-                    .setMessage(message)
-                    .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
-
-            if (!TextUtils.isEmpty(title)) {
-                builder.setTitle(title)
-            }
-            builder.show()
-        }
-    }
-
-    private fun getNextPage(): Int {
-        return currentPage + 1
     }
 }

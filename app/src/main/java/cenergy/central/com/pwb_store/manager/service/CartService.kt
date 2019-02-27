@@ -57,7 +57,5 @@ internal interface CartService {
     @GET("/{lang}/rest/all/V1/headless/storepickup")
     fun getBranches(@Path("lang") language: String,
                     @Query("searchCriteria[sortOrders][0][field]") orderBy: String,
-                    @Query("searchCriteria[sortOrders][0][direction]") direction: String,
-                    @Query("searchCriteria[pageSize]") pageSize: Int,
-                    @Query("searchCriteria[currentPage]") currentPage: Int): Call<BranchResponse>
+                    @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
 }

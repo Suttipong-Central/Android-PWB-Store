@@ -880,27 +880,9 @@ class HttpManagerMagento(context: Context) {
     // endregion
 
     // region store
-    fun getBranches(pageSize: Int, currentPage: Int, callback: ApiResponseCallback<BranchResponse>) {
-        val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches(getLanguage(), "storepickup_id", "ASC", pageSize, currentPage).enqueue(object : Callback<BranchResponse> {
-            override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
-                if (response != null && response.isSuccessful) {
-                    val branchResponse = response.body()
-                    callback.success(branchResponse)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
-
-            override fun onFailure(call: Call<BranchResponse>, t: Throwable) {
-                callback.failure(APIError(t))
-            }
-        })
-    }
-
     fun getBranches(callback: ApiResponseCallback<BranchResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches(getLanguage(),"storepickup_id", "ASC", 13, 1).enqueue(object : Callback<BranchResponse> {
+        cartService.getBranches(getLanguage(),"storepickup_id", "ASC").enqueue(object : Callback<BranchResponse> {
             override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val branchResponse = response.body()

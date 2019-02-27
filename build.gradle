@@ -17,9 +17,9 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
         maven { url 'https://maven.google.com' }
-        google()
     }
 
     tasks.withType(JavaCompile) {
