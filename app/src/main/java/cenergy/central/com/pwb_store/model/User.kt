@@ -10,7 +10,7 @@ open class User(
         @SerializedName("staff_id")
         var staffId: String? = "",
         @SerializedName("store_id")
-        var storeId: Long = 0,
+        var storeId: Long? = 0,
         var email: String? = "",
         var username: String = "",
         @SerializedName("created_at")

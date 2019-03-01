@@ -146,7 +146,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
                             if (response != null) {
-                                if (response.getStore() != null && response.getStore().getPostalCode() != null) {
+                                if (checkUserLogin(response)) {
                                     dismissDialog();
                                     EventBus.getDefault().post(new LoginSuccessBus(true));
                                 } else {
@@ -166,6 +166,14 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                         }
                     });
         }
+    }
+
+    private Boolean checkUserLogin(UserResponse userResponse){
+        return  userResponse.getUser().getStaffId() != null && !userResponse.getUser().getStaffId().equals("")
+                && !userResponse.getUser().getStaffId().equals("0") && userResponse.getUser().getStoreId() != null
+                && userResponse.getUser().getStoreId() != 0 && userResponse.getStore() != null
+                && userResponse.getStore().getPostalCode() != null && userResponse.getStore().getStoreId() != null
+                && userResponse.getStore().getStoreId() != 0;
     }
 
     private void clearData() {
