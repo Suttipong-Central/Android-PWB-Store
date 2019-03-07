@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
@@ -288,6 +289,19 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return fragment;
     }
 
+    public static ProductListFragment newInstance(ProductFilterHeader productFilterHeader,
+                                                  boolean search, String storeId, String keyWord) {
+        ProductListFragment fragment = new ProductListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_TITLE, productFilterHeader.getName());
+        args.putBoolean(ARG_SEARCH, search);
+        args.putString(ARG_DEPARTMENT_ID, productFilterHeader.getId());
+        args.putString(ARG_STORE_ID, storeId);
+        args.putString(ARG_KEY_WORD, keyWord);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public static ProductListFragment newInstance(ProductFilterSubHeader productFilterSubHeader,
                                                   boolean search, String storeId, String keyWord) {
         ProductListFragment fragment = new ProductListFragment();
@@ -405,7 +419,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
         // setup widget view
         PowerBuyTextView productTitle = rootView.findViewById(R.id.txt_title_product);
-        RelativeLayout layoutFilter = rootView.findViewById(R.id.layout_filter);
+        ConstraintLayout layoutFilter = rootView.findViewById(R.id.layout_filter);
         productCount = rootView.findViewById(R.id.txt_product_count);
         mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
         layoutProgress = rootView.findViewById(R.id.layout_progress);
@@ -426,6 +440,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
         if (isSearch) {
             layoutFilter.setVisibility(View.GONE);
+        }
+
+        if (mProductFilterList == null) {
+            productLayout.setVisibility(View.GONE);
+        } else {
+            productLayout.setVisibility(View.VISIBLE);
         }
 
         popUpShow();
@@ -699,7 +719,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     private void getBrands(String departmentId) {
         if (getContext() != null) {
-            Log.d("Start getBrands", "here we go!");
             HttpManagerMagento.Companion.getInstance(getContext()).getBrands(departmentId, new ApiResponseCallback<List<Brand>>() {
                 @Override
                 public void success(@org.jetbrains.annotations.Nullable List<Brand> response) {
@@ -724,7 +743,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if (response != null) {
             totalItem = response.getTotalCount();
             totalPage = totalPageCal(totalItem);
-            Log.d(TAG, " totalPage :" + totalPage);
             currentPage = getNextPage();
             response.setCurrentPage(currentPage);
             mProductListAdapter.setProduct(response);

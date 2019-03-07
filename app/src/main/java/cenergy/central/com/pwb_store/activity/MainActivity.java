@@ -105,9 +105,12 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
-        Toast.makeText(this, "" + drawItemBus.getDrawerItem().getTitle(), Toast.LENGTH_SHORT).show();
         this.productFilterHeader = drawerItem.getProductFilterHeader();
-        startCategoryLvTwoFragment(this.productFilterHeader);
+        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+            startProductListFragment(this.productFilterHeader);
+        } else {
+            startCategoryLvTwoFragment(this.productFilterHeader);
+        }
     }
 
     @Subscribe
@@ -118,15 +121,22 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // Event from onClick back button in product list
     @Subscribe
     public void onEvent(CategoryTwoBus categoryTwoBus) {
-        startCategoryLvTwoFragment(this.productFilterHeader);
+        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+            startCategoryFragment();
+        } else {
+            startCategoryLvTwoFragment(this.productFilterHeader);
+        }
     }
 
     // Event from onClick category item
     @Subscribe
     public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
         this.productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
-        Log.d(TAG, "onEvent " + productFilterHeader.getId());
-        startCategoryLvTwoFragment(this.productFilterHeader);
+        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+            startProductListFragment(this.productFilterHeader);
+        } else {
+            startCategoryLvTwoFragment(this.productFilterHeader);
+        }
     }
 
     // Event from onClick product filter sub header item
@@ -280,7 +290,11 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SUB_HEADER) != null) {
                 startCategoryFragment();
             } else if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_PRODUCT_LIST) != null) {
-                startCategoryLvTwoFragment(this.productFilterHeader);
+                if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+                    startCategoryFragment();
+                } else {
+                    startCategoryLvTwoFragment(this.productFilterHeader);
+                }
             } else {
                 supportFinishAfterTransition();
             }
@@ -482,6 +496,13 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     private void startProductListFragment(ProductFilterSubHeader productFilterSubHeader) {
         currentFragment = ProductListFragment.newInstance(productFilterSubHeader, false, storeId, "");
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
+                .commitAllowingStateLoss();
+    }
+
+    private void startProductListFragment(ProductFilterHeader productFilterHeader) {
+        currentFragment = ProductListFragment.newInstance(productFilterHeader, false, storeId, "");
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
                 .commitAllowingStateLoss();

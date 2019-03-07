@@ -64,6 +64,10 @@ class HttpManagerMagento(context: Context) {
         //Specific Header
         private const val HEADER_AUTHORIZATION = "Authorization"
 
+        //Special Promotion Category ID
+        private const val PROMOTION_CATEGORY_ID = "130639"
+
+
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
 
@@ -213,7 +217,7 @@ class HttpManagerMagento(context: Context) {
                         if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
                             val toRemove = arrayListOf<ProductFilterHeader>()
                             for (header in categoryHeaders) {
-                                if (!header.IsIncludeInMenu()) {
+                                if (!header.IsIncludeInMenu() && header.id != PROMOTION_CATEGORY_ID) {
                                     toRemove.add(header)
                                 }
                             }
