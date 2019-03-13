@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatDelegate;
 import com.crashlytics.android.Crashlytics;
 
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.realm.MigrationDatabase;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -45,8 +46,8 @@ public class PowerBuyStoreApplication extends Application {
         Realm.init(this);  // add this line
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("power_buy.realm")
-                .schemaVersion(0)
-                .deleteRealmIfMigrationNeeded()
+                .migration(new MigrationDatabase())
+                .schemaVersion(MigrationDatabase.SCHEMA_VERSION)
                 .build();
         Realm.setDefaultConfiguration(config);
     }
