@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#542D87</color>
+    <color name="colorPrimaryDark">#44246E</color>
+    <color name="colorAccent">#F4F4F4</color>
+
+    <color name="powerBuyPurple">#542D87</color>
+    <color name="powerBuyOrange">#F4893F</color>
+    <color name="powerBuyWhite">#FFFFFF</color>
+
+    <color name="contentTextColor">#282828</color>
+    <color name="categoryColor">#F4893F</color>
+
+    <!-- Search Bar-->
+    <color name="hintColor">#FFA1A1A1</color>
+
+    <color name="headerTextColor">#FF444444</color>
+    <color name="grayTextColor">#9B9B9B</color>
+    <color name="nameProductColor">#282828</color>
+    <color name="inStockColor">#5DA807</color>
+    <color name="freeColor">#62a910</color>
+    <color name="salePriceColor">#D0021B</color>
+    <color name="dangerColor">#D0021B</color>
+    <color name="viewColor">#E0E0E0</color>
+
+    <!-- Compare -->
+    <color name="headDetail">#f2f2f2</color>
+
+    <!-- Product Detail -->
+    <color name="graySelect">#909090</color>
+    <color name="blackText">#000000</color>
+    <color name="divider">#FFECECEC</color>
+    <color name="disableButton">#f2f2f2</color>
+
+    <color name="disableInput">#40e7e7e7</color>
+    <color name="white80">#b9ffffff</color>
+    <color name="gray">#e0e0e0</color>
+    <color name="lightGray">#e7e7e7</color>
+    <color name="lightGray2">#bfbfbf</color>
+    <color name="passwordIconColor">#FF9A9A9A</color>
+
+    <!-- Network state-->
+    <color name="network_disconnected">#D0021B</color>
+    <color name="network_connecting">#F4893F</color>
+    <color name="network_connected">#5DA807</color>
+
+    <!-- Language toggle-->
+    <color name="transparent">#00ffffff</color>
+    <color name="color_toggle">#bd8bff</color>
+    <color name="color_toggle_selected">#895fc1</color>
+</resources>

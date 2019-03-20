@@ -74,6 +74,13 @@ android {
             versionCode 8
             versionName "0.0.4"
         }
+
+        department {
+            manifestPlaceholders = [applicationLabel: "Central Department Store"]
+            resValue 'string', 'app_name', '\"Central Department Store\"'
+            versionCode 1
+            versionName "0.0.1"
+        }
     }
 
     dexOptions {
