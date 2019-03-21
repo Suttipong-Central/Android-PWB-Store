@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#542D87</color>
-    <color name="colorPrimaryDark">#44246E</color>
+    <color name="colorPrimary">#333333</color>
+    <color name="colorPrimaryDark">	#333333</color>
     <color name="colorAccent">#F4F4F4</color>
 
-    <color name="powerBuyPurple">#542D87</color>
-    <color name="powerBuyOrange">#F4893F</color>
+    <color name="powerBuyPurple">#AE132A</color>
+    <color name="powerBuyOrange">#AE132A</color>
     <color name="powerBuyWhite">#FFFFFF</color>
 
     <color name="contentTextColor">#282828</color>
-    <color name="categoryColor">#F4893F</color>
+    <color name="categoryColor">#AE132A</color>
 
     <!-- Search Bar-->
     <color name="hintColor">#FFA1A1A1</color>
@@ -47,6 +47,4 @@
 
     <!-- Language toggle-->
     <color name="transparent">#00ffffff</color>
-    <color name="color_toggle">#bd8bff</color>
-    <color name="color_toggle_selected">#895fc1</color>
 </resources>
