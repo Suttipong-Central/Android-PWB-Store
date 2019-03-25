@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.extensions.setupForDescription
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.utils.WebViewGetScaleManager
 
@@ -37,7 +38,6 @@ class ProductOverviewFragment : Fragment() {
     private lateinit var line2: View
     private var overviewVisible = false
     private var specVisible = false
-    private var getScaleManager: WebViewGetScaleManager? = null
     private var scale: Int = 0
 
     companion object {
@@ -48,10 +48,7 @@ class ProductOverviewFragment : Fragment() {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
         product = productDetailListener?.getProduct()
-        getScaleManager = WebViewGetScaleManager(context)
-        if(getScaleManager != null){
-            scale = getScaleManager!!.getScale()
-        }
+        scale = WebViewGetScaleManager(context).getScale()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -68,7 +65,7 @@ class ProductOverviewFragment : Fragment() {
             val html = style + product?.extension?.shortDescription
             overview.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
             overview.setInitialScale(scale)
-            overviewLayout.setOnClickListener { _ ->
+            overviewLayout.setOnClickListener {
                 if (overviewVisible) {
                     overviewWebLayout.visibility = View.GONE
                     context?.let { overviewArrowIcon.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
@@ -89,7 +86,7 @@ class ProductOverviewFragment : Fragment() {
             val html = style + product?.extension?.description
             spec.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
             spec.setInitialScale(scale)
-            specLayout.setOnClickListener { _ ->
+            specLayout.setOnClickListener {
                 if (specVisible) {
                     specWebLayout.visibility = View.GONE
                     context?.let { specArrowIcon.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
@@ -117,5 +114,8 @@ class ProductOverviewFragment : Fragment() {
         spec = rootView.findViewById(R.id.specWeb)
         specArrowIcon = rootView.findViewById(R.id.specArrowIcon)
         line2 = rootView.findViewById(R.id.line2)
+
+        overview.setupForDescription()
+        spec.setupForDescription()
     }
 }
