@@ -66,6 +66,7 @@ class HttpManagerMagento(context: Context) {
 
         //Special Promotion Category ID
         private const val PROMOTION_CATEGORY_ID = "130639"
+        private const val FIVE_STAR_CATEGORY_ID = "130704"
 
 
         @SuppressLint("StaticFieldLeak")
@@ -217,7 +218,8 @@ class HttpManagerMagento(context: Context) {
                         if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
                             val toRemove = arrayListOf<ProductFilterHeader>()
                             for (header in categoryHeaders) {
-                                if (!header.IsIncludeInMenu() && header.id != PROMOTION_CATEGORY_ID) {
+                                if (!header.IsIncludeInMenu() && header.id != PROMOTION_CATEGORY_ID &&
+                                        header.id != FIVE_STAR_CATEGORY_ID) {
                                     toRemove.add(header)
                                 }
                             }
