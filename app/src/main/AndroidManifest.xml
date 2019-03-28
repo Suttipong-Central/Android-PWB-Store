@@ -13,7 +13,7 @@
     <application
         android:name=".PowerBuyStoreApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="${applicationLabel}"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"

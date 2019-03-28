@@ -14,13 +14,17 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs {
         config {
-            keyAlias 'powerbuystore'
-            keyPassword 'powerbuy'
-            storeFile file('/Users/napabhat/Documents/Alias_PWB/powerbuy.jks')
-            storePassword 'powerbuy'
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
     compileSdkVersion 27
@@ -30,14 +34,30 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        flavorDimensions "mode"
+        flavorDimensions "version"
         multiDexEnabled true
     }
     buildTypes {
         debug {
-            versionNameSuffix "-DEBUG"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-Dev"
             ext.alwaysUpdateBuildId = false
         }
+
+        staging {
+            applicationIdSuffix ".staging"
+            versionNameSuffix "-Staing"
+            signingConfig signingConfigs.config
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+            jniDebuggable false
+            renderscriptDebuggable false
+            renderscriptOptimLevel 3
+            zipAlignEnabled true
+        }
+
         release {
             signingConfig signingConfigs.config
             minifyEnabled true
@@ -52,32 +72,15 @@ android {
     }
 
     productFlavors {
-        production {
-            manifestPlaceholders = [applicationLabel: "PowerBuy Store"]
-            resValue 'string', 'app_name', '\"PoweBuy Store\"'
-            versionCode 22
-            versionName "1.0.0-dev"
-        }
-
-        staging {
-            applicationIdSuffix ".staging"
-            manifestPlaceholders = [applicationLabel: "PowerBuy Staging"]
-            resValue 'string', 'app_name', '\"PoweBuy Staging\"'
+        pwb {
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 57
             versionName "0.0.57"
         }
 
-        develop {
-            applicationIdSuffix ".dev"
-            manifestPlaceholders = [applicationLabel: "PowerBuy Dev"]
-            resValue 'string', 'app_name', '\"PoweBuy Dev\"'
-            versionCode 8
-            versionName "0.0.4"
-        }
-
-        department {
-            manifestPlaceholders = [applicationLabel: "Central Department Store"]
-            resValue 'string', 'app_name', '\"Central Department Store\"'
+        cds {
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
+            applicationIdSuffix ".centraldepartmentstore"
             versionCode 1
             versionName "0.0.1"
         }

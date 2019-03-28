@@ -32,7 +32,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:contentDescription="@string/app_name"
-                android:src="@mipmap/ic_logo" />
+                android:src="@mipmap/ic_launcher" />
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
