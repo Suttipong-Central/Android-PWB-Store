@@ -57,7 +57,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true // Set false when singed new apk
+            debuggable false // Set false when singed new apk
             jniDebuggable false
             renderscriptDebuggable false
             renderscriptOptimLevel 3
@@ -80,8 +80,8 @@ android {
     productFlavors {
         pwb {
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 57
-            versionName "0.0.57"
+            versionCode 58
+            versionName "0.0.58"
         }
 
         cds {
