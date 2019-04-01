@@ -287,4 +287,5 @@
     <string name="product_delivery">การจัดส่ง / รับประกัน / คืนเงิน</string>
     <string name="full">ไม่ว่าง</string>
     <string name="free">ว่าง</string>
+    <string name="select_payment_types">เลือกวิธีการจ่ายเงิน</string>
 </resources>

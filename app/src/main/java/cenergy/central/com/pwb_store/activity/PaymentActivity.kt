@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
@@ -15,6 +16,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.dialogs.PaymentTypesDialogFragment
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypesClickListener
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -38,13 +41,12 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
-import io.fabric.sdk.android.services.network.NetworkUtils
 import org.joda.time.DateTime
 import java.util.*
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener {
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypesClickListener {
 
     var mToolbar: Toolbar? = null
 
@@ -53,6 +55,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
+
+    private var paymentTypesDialogFragment = PaymentTypesDialogFragment
+    private var paymentTypesDialog = DialogFragment()
 
     // data
     private val database = RealmController.getInstance()
@@ -172,6 +177,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
+    // region {@link PaymentTypesClickListener}
+    override fun onPaymentTypesClickListener(paymentMethods: PaymentMethod) {
+        paymentTypesDialog.dismiss()
+        updateOrder(paymentMethods)
+    }
     // endregion
 
     // region {@link HomeDeliveryListener}
@@ -275,6 +285,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mToolbar?.setNavigationOnClickListener {
             backPressed()
         }
+        paymentTypesDialogFragment.setPaymentTypesListener(this)
     }
 
     private fun showProgressDialog() {
@@ -310,10 +321,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
         if (checkSkip) {
-            builder.setPositiveButton(android.R.string.ok) { dialog, which -> startBilling() }
-            builder.setNegativeButton(android.R.string.cancel) { dialog, which -> startCheckOut() }
+            builder.setPositiveButton(android.R.string.ok) { _, _ -> startBilling() }
+            builder.setNegativeButton(android.R.string.cancel) { _, _ -> startCheckOut() }
         } else {
-            builder.setPositiveButton(android.R.string.ok) { dialog, which -> startCheckOut() }
+            builder.setPositiveButton(android.R.string.ok) { _, _ -> startCheckOut() }
         }
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -324,7 +335,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -336,10 +347,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                       subscribeCheckOut: SubscribeCheckOut) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which ->
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
                     createShippingInformation(storeAddress, subscribeCheckOut)
                 }
-                .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, which ->
+                .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
                     mProgressDialog?.dismiss()
                 }
@@ -361,7 +372,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
-                                    updateOrder()
+                                    selectPaymentTypes(response)
                                 } else {
                                     mProgressDialog?.dismiss()
                                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -379,7 +390,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
                         if (response != null) {
-                            updateOrder()
+                            selectPaymentTypes(response)
                         } else {
                             mProgressDialog?.dismiss()
                             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -393,6 +404,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 })
             }
         }
+    }
+
+    private fun selectPaymentTypes(shippingInformationResponse: ShippingInformationResponse) {
+        mProgressDialog?.dismiss()
+        paymentTypesDialog = paymentTypesDialogFragment.newInstance(shippingInformationResponse.paymentMethods)
+        paymentTypesDialog.show(supportFragmentManager, "paymentTypesDialog")
     }
 
     private fun getCustomerPWB(mobile: String) {
@@ -613,16 +630,17 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    private fun updateOrder() {
+    private fun updateOrder(paymentMethod: PaymentMethod) {
         if (cartId == null) {
             return
         }
+        showProgressDialog()
 
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
         val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
 
-        HttpManagerMagento.getInstance(this).updateOder(cartId!!, email, staffId, storeId, object : ApiResponseCallback<String> {
+        HttpManagerMagento.getInstance(this).updateOder(cartId!!, paymentMethod, email, staffId, storeId, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 if (response != null) {
                     getOrder(response)

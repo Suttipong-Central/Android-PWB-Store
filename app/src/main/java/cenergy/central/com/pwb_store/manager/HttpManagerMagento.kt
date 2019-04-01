@@ -847,9 +847,9 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun updateOder(cartId: String, email: String, staffId: String, storeId: String, callback: ApiResponseCallback<String>) {
+    fun updateOder(cartId: String, paymentMethod: PaymentMethod, email: String, staffId: String, storeId: String, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
-        val method = MethodBody("payatstore") // will change soon
+        val method = MethodBody(paymentMethod.code!!) // will change soon
         val paymentMethodBody = PaymentInformationBody(cartId, method, email, staffId, storeId)
         cartService.updateOrder(getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {

@@ -9,7 +9,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class TimeSlotViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-    var tvTimeSlot: PowerBuyTextView = itemView.findViewById(R.id.tv_time_slot)
+    private var tvTimeSlot: PowerBuyTextView = itemView.findViewById(R.id.tv_time_slot)
 
     fun bindView(slot: Slot, timeSlotClickListener: TimeSlotClickListener?) {
         tvTimeSlot.text = slot.description

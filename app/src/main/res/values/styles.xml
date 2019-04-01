@@ -93,6 +93,15 @@
         <item name="android:textSize">19sp</item>
     </style>
 
+    <style name="textTitleSelectPaymentTypes">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/powerBuyWhite</item>
+        <item name="android:background">@color/powerBuyPurple</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
     <style name="AppBarStyle" />
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

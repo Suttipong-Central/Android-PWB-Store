@@ -285,4 +285,5 @@
     <string name="product_delivery">Delivery / Warranty / Refund</string>
     <string name="full">FULL</string>
     <string name="free">FREE</string>
+    <string name="select_payment_types">Select a payment method</string>
 </resources>

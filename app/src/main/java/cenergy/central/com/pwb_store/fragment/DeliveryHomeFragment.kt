@@ -52,7 +52,6 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     private var deliveryHomeListener: DeliveryHomeListener? = null
     // end region listener
 
-    //    private var datePickerDialogFragment = DatePickerDialogFragment
     private var timeSlotDialogFragment = TimeSlotDialogFragment
     private var timeSlotDialog = DialogFragment()
 
@@ -69,7 +68,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         super.onAttach(context)
         listener = context as PaymentProtocol
         deliveryHomeListener = context as DeliveryHomeListener
-        listener?.getEnableDateShipping()?.let { it ->
+        listener?.getEnableDateShipping()?.let {
             shippingSlot = it
             shippingSlot.forEach {
                 val enableDate = formatter.parse(it.shippingDate)
