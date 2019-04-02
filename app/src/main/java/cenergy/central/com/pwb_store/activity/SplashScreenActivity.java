@@ -29,10 +29,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void forward() {
-        Boolean hasProvinces = database.getProvinces() != null;
-        Boolean hasDistricts = database.getDistricts() != null;
-        Boolean hasSubDistricts = database.getSubDistricts() != null;
-        Boolean hasPostcode = database.getSubDistricts() != null;
+        boolean hasProvinces = database.getProvinces() != null;
+        boolean hasDistricts = database.getDistricts() != null;
+        boolean hasSubDistricts = database.getSubDistricts() != null;
+        boolean hasPostcode = database.getSubDistricts() != null;
         if (preferenceManager.isAddressLoaded() && hasProvinces && hasDistricts && hasSubDistricts && hasPostcode) {
             start();
         } else {

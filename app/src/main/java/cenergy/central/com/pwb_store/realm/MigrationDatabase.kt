@@ -6,13 +6,10 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 1
+        const val SCHEMA_VERSION = 0
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
-        if (oldVersion < 1L) {
-            val personSchema = realm.schema.get("User")
-            personSchema?.setNullable("storeId", true)
-        }
+
     }
 }
