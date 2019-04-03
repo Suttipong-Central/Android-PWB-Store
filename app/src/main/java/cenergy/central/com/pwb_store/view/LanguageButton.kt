@@ -34,12 +34,12 @@ class LanguageButton : RadioGroup {
     fun setDefaultLanguage(lang: String) {
         when (lang) {
             AppLanguage.TH.key -> {
-                thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
+                thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
                 thaiToggle.isChecked = true
             }
             AppLanguage.EN.key -> {
-                engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
+                engToggle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
                 engToggle.isChecked = true
             }
@@ -55,13 +55,13 @@ class LanguageButton : RadioGroup {
         languageToggleGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.lang_th -> {
-                    thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
+                    thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
                     engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
 
                     listener?.onChangedLanguage(AppLanguage.TH) // callback
                 }
                 R.id.lang_en -> {
-                    engToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyPurple))
+                    engToggle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
                     thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
 
                     listener?.onChangedLanguage(AppLanguage.EN) // callback

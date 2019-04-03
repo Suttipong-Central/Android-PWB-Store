@@ -6,10 +6,14 @@ import java.util.*
 class Constants {
     companion object {
         // TODO: update environment from CDS
-        const val BASE_URL_MAGENTO = "https://central.dev.bybluecomgroup.com"
-        const val PWB_HOST_NAME = "central.dev.bybluecomgroup.com"
-        const val CLIENT_MAGENTO = "Bearer pak63fnfvh8cna93jvouxk0lrbuc9exq"
+//        const val BASE_URL_MAGENTO = "https://central.dev.bybluecomgroup.com"
+//        const val PWB_HOST_NAME = "central.dev.bybluecomgroup.com"
+//        const val CLIENT_MAGENTO = "Bearer pak63fnfvh8cna93jvouxk0lrbuc9exq"
         // endregion
+
+        const val BASE_URL_MAGENTO = "https://staging.powerbuy.co.th"
+        const val CLIENT_MAGENTO = "Bearer js6rsdr0anv25ubgcqixh5m5mckbbwth"
+        const val PWB_HOST_NAME = "staging.powerbuy.co.th"
 
         // region central
         const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"

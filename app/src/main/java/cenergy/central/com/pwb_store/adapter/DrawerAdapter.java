@@ -89,7 +89,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return new DrawerUserNewViewHolder(
                         LayoutInflater
                                 .from(parent.getContext())
-                                .inflate(R.layout.drawer_user_new, parent, false)
+                                .inflate(R.layout.drawer_user, parent, false)
                 );
 
             case VIEW_TYPE_ID_DELIVERY:

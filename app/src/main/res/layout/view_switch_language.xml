@@ -17,7 +17,7 @@
         android:gravity="center"
         android:padding="8dp"
         android:text="@string/hint_th"
-        android:textColor="@color/powerBuyPurple" />
+        android:textColor="@color/colorPrimary" />
 
     <RadioButton
         android:id="@+id/lang_en"
