@@ -343,6 +343,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
+    private fun showFinishActivityDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert)) {
+                    dialog, _ -> dialog.dismiss()
+                    finish()
+                }
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title)
+        }
+        builder.show()
+    }
+
     private fun showAlertCheckPayment(title: String, message: String, storeAddress: AddressInformation?,
                                       subscribeCheckOut: SubscribeCheckOut) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
@@ -408,8 +421,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun selectPaymentTypes(shippingInformationResponse: ShippingInformationResponse) {
         mProgressDialog?.dismiss()
-        paymentTypesDialog = paymentTypesDialogFragment.newInstance(shippingInformationResponse.paymentMethods)
-        paymentTypesDialog.show(supportFragmentManager, "paymentTypesDialog")
+        if(shippingInformationResponse.paymentMethods.isEmpty()){
+            showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
+        } else {
+            paymentTypesDialog = paymentTypesDialogFragment.newInstance(shippingInformationResponse.paymentMethods)
+            paymentTypesDialog.show(supportFragmentManager, "paymentTypesDialog")
+        }
     }
 
     private fun getCustomerPWB(mobile: String) {
