@@ -5,11 +5,6 @@ import io.realm.annotations.PrimaryKey
 import java.text.NumberFormat
 import java.util.*
 
-/**
- * Created by Anuphap Suwannamas on 10/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 open class CompareProduct(@PrimaryKey var sku: String = "",
                           var name: String? = "",
                           var price: Double? = 0.0,

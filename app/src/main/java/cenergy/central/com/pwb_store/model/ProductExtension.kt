@@ -4,11 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
-/**
- * Created by Anuphap Suwannamas on 24/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 data class ProductExtension(@SerializedName("description")
                             var description: String? = "",
                             @SerializedName("short_description")

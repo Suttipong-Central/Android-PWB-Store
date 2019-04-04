@@ -5,10 +5,6 @@ import android.os.Parcelable
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
-/**
- * Created by Anuphap Suwannamas on 24/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 open class CacheCartItem(
         @PrimaryKey
         var itemId: Long? = 0,
@@ -20,7 +16,8 @@ open class CacheCartItem(
         var cartId: String? = "",
         var imageUrl: String = "",
         var maxQTY: Int? = 0,
-        var qtyInStock: Int? = 0) : RealmObject(), Parcelable {
+        var qtyInStock: Int? = 0,
+        var paymentMethod: String = "") : RealmObject(), Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readValue(Long::class.java.classLoader) as? Long,
@@ -32,7 +29,8 @@ open class CacheCartItem(
             parcel.readString(),
             parcel.readString(),
             parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readValue(Int::class.java.classLoader) as? Int)
+            parcel.readValue(Int::class.java.classLoader) as? Int,
+            parcel.readString())
 
     fun updateItem(cartItem: CartItem) {
         this.itemId = cartItem.id
@@ -55,6 +53,7 @@ open class CacheCartItem(
         parcel.writeString(imageUrl)
         parcel.writeValue(maxQTY)
         parcel.writeValue(qtyInStock)
+        parcel.writeValue(paymentMethod)
     }
 
     override fun describeContents(): Int {
@@ -76,7 +75,8 @@ open class CacheCartItem(
                     cartId = cartItem.cartId,
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
                     qtyInStock = product.extension?.stokeItem?.qty ?: 0,
-                    imageUrl = product.getImageUrl())
+                    imageUrl = product.getImageUrl(),
+                    paymentMethod = product.paymentMethod) // cache payment_method
         }
 
         @JvmStatic

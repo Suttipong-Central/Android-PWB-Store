@@ -4,11 +4,6 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
-/**
- * Created by Anuphap Suwannamas on 22/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 data class CartItem(
         @PrimaryKey
         @SerializedName("item_id")
