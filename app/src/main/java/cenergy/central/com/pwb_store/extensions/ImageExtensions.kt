@@ -6,11 +6,6 @@ import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import com.bumptech.glide.Glide
 
-/**
- * Created by Anuphap Suwannamas on 30/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 fun ImageView.setImage(@DrawableRes res: Int) {
     this.setImageResource(res)
 }
@@ -23,7 +18,7 @@ fun ImageView.setImageUrl(url: String) {
             .into(this)
 }
 
-fun ImageView.setImageUrl(context:Context ,url: String) {
+fun ImageView.setImageUrl(context: Context, url: String) {
     Glide.with(context)
             .load(url)
             .placeholder(R.drawable.ic_pwb_logo_detail)

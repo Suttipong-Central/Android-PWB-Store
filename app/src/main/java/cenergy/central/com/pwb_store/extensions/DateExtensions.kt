@@ -1,13 +1,7 @@
 package cenergy.central.com.pwb_store.extensions
 
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import java.text.SimpleDateFormat
 import java.util.*
-
-/**
- * Created by Anuphap Suwannamas on 31/10/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
 fun Date.formatter(): String {
     val dateFormatter = SimpleDateFormat("dd mm yyyy, HH:mm:ss", Locale("TH"))

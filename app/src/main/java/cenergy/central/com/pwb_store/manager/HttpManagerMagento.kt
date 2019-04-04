@@ -669,13 +669,17 @@ class HttpManagerMagento(context: Context) {
                                 "barcode" -> {
                                     productExtension.barcode = attrArray.getJSONObject(i).getString("value")
                                 }
+
+                                "payment_method" -> {
+                                    product.paymentMethod = attrArray.getJSONObject(i).getString("value")
+                                }
                             }
                         }
                         product.extension = productExtension // add product extension to product
                         callback.success(product)
                     } catch (e: Exception) {
                         callback.failure(APIError(e))
-                        Log.e("JSON Parser", "Error parsing data " + e.toString())
+                        Log.e("JSON Parser", "Error parsing data $e")
                     }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))

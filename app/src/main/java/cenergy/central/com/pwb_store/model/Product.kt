@@ -5,6 +5,7 @@ import android.os.Parcelable
 
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.model.response.ProductSearch
 import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat
@@ -31,6 +32,7 @@ class Product(
         var viewTypeID: Int = 0,
         var attributeID: Int = 0,
         var status: Int = 1,
+        var paymentMethod: String = "",
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null) : IViewType, Parcelable {
@@ -50,6 +52,7 @@ class Product(
         viewTypeID = parcel.readInt()
         attributeID = parcel.readInt()
         status = parcel.readInt()
+        paymentMethod = parcel.readString()
         extension = parcel.readParcelable(ProductExtension::class.java.classLoader)
         productImageList = parcel.readParcelable(ProductDetailImage::class.java.classLoader)
     }
@@ -146,6 +149,7 @@ class Product(
         parcel.writeInt(viewTypeID)
         parcel.writeInt(attributeID)
         parcel.writeInt(status)
+        parcel.writeString(paymentMethod)
         parcel.writeParcelable(extension, flags)
         parcel.writeParcelable(productImageList, flags)
     }

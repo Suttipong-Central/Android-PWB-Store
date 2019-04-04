@@ -223,7 +223,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun startSuccessfullyFragment(orderId: String) {
         languageButton.visibility = View.VISIBLE
         val cacheCartItem = arrayListOf<CacheCartItem>()
-        cacheCartItem.addAll(RealmController.getInstance().cacheCartItems ?: arrayListOf())
+        cacheCartItem.addAll(database.cacheCartItems ?: arrayListOf())
         startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItem))
         clearCachedCart() // clear cache item
     }
