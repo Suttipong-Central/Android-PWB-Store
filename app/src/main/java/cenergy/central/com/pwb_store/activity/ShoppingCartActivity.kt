@@ -20,8 +20,10 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
@@ -226,6 +228,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun updateViewShoppingCart(response: List<CartItem>) {
+
+        //TODO - TBD: remove (example get payment method)
+        val cacheCartItems = database.cacheCartItems
+        val paymentMethods = cacheCartItems.getPaymentType().joinToString(", ")
+        Toast.makeText(this, paymentMethods, Toast.LENGTH_LONG).show()
+
         cartItemList = response
         shoppingCartAdapter.cartItemList = cartItemList
 
