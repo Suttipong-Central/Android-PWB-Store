@@ -15,7 +15,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypesClickListener
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
+import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -40,11 +41,11 @@ import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
 import org.joda.time.DateTime
-import java.util.*
+import kotlin.collections.ArrayList
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypesClickListener {
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypeClickListener {
 
     var mToolbar: Toolbar? = null
 
@@ -72,6 +73,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var deliveryType: DeliveryType? = null
     private val enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private var specialSKUList: List<Long>? = null
+    private var cacheCartItems = listOf<CacheCartItem>()
+    private var paymentMethods = listOf<PaymentMethod>()
 
     // date
     private val dateTime = DateTime.now()
@@ -98,6 +101,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
+        cacheCartItems = database.cacheCartItems
+        paymentMethods = cacheCartItems.getPaymentType(this)
         startCheckOut() // default page
         getCartItems()
     }
@@ -173,7 +178,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentTypesClickListener}
-    override fun onPaymentTypesClickListener(paymentMethods: PaymentMethod) {
+    override fun onPaymentTypeClickListener(paymentMethods: PaymentMethod) {
         updateOrder(paymentMethods)
     }
     // endregion
@@ -216,9 +221,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startSuccessfullyFragment(orderId: String) {
         languageButton.visibility = View.VISIBLE
-        val cacheCartItem = arrayListOf<CacheCartItem>()
-        cacheCartItem.addAll(database.cacheCartItems ?: arrayListOf())
-        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCartItem))
+        val cacheCart = ArrayList<CacheCartItem>()
+        cacheCart.addAll(cacheCartItems)
+        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart))
         clearCachedCart() // clear cache item
     }
 
@@ -249,6 +254,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startBilling(pwbMemberIndex: Int) {
         val fragment = PaymentBillingFragment.newInstance(pwbMemberIndex)
+        startFragment(fragment)
+    }
+
+    private fun startSelectMethod() {
+        val fragment = PaymentSelectMethodFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -377,10 +387,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
+                                mProgressDialog?.dismiss()
                                 if (response != null) {
-                                    selectPaymentTypes(response)
+                                    selectPaymentTypes()
                                 } else {
-                                    mProgressDialog?.dismiss()
                                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                                 }
                             }
@@ -395,10 +405,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         billingAddress ?: shippingAddress!!, subscribeCheckOut,
                         deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
+                        mProgressDialog?.dismiss()
                         if (response != null) {
-                            selectPaymentTypes(response)
+                            selectPaymentTypes()
                         } else {
-                            mProgressDialog?.dismiss()
                             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                         }
                     }
@@ -412,13 +422,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun selectPaymentTypes(shippingInformationResponse: ShippingInformationResponse) {
-        mProgressDialog?.dismiss()
-        if(shippingInformationResponse.paymentMethods.isEmpty()){
+    private fun selectPaymentTypes() {
+        if(paymentMethods.isEmpty()){
             showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
         } else {
-            //TODO CREATE NEW FRAGMENT FOR SELECT PAYMENT TYPE
-
+            startSelectMethod()
         }
     }
 
@@ -703,6 +711,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getBranches(): ArrayList<Branch?> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
+
+    override fun getPaymentMethods(): List<PaymentMethod> = this.paymentMethods
     // endregion
 
     // region {@link StorePickUpListener}
@@ -754,6 +764,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             } else {
                 startCheckOut()
             }
+            return
+        }
+
+        if (currentFragment is PaymentSelectMethodFragment) {
+            startDeliveryOptions()
             return
         }
 

@@ -231,7 +231,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
         //TODO - TBD: remove (example get payment method)
         val cacheCartItems = database.cacheCartItems
-        val paymentMethods = cacheCartItems.getPaymentType().joinToString(", ")
+        val paymentMethods = cacheCartItems.getPaymentType(this).joinToString(", ")
         Toast.makeText(this, paymentMethods, Toast.LENGTH_LONG).show()
 
         cartItemList = response

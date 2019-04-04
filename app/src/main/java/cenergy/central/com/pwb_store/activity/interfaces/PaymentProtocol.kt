@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.activity.interfaces
 
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.model.response.ShippingSlot
 import java.util.*
 
@@ -22,4 +23,5 @@ interface PaymentProtocol {
     fun getBranches(): ArrayList<Branch?>
     fun getSelectedBranch(): Branch?
     fun getPWBMemberByIndex(index: Int): PwbMember?
+    fun getPaymentMethods(): List<PaymentMethod>
 }
