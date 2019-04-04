@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
@@ -16,7 +15,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
-import cenergy.central.com.pwb_store.dialogs.PaymentTypesDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypesClickListener
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
@@ -55,9 +53,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
-
-    private var paymentTypesDialogFragment = PaymentTypesDialogFragment
-    private var paymentTypesDialog = DialogFragment()
 
     // data
     private val database = RealmController.getInstance()
@@ -179,7 +174,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     // region {@link PaymentTypesClickListener}
     override fun onPaymentTypesClickListener(paymentMethods: PaymentMethod) {
-        paymentTypesDialog.dismiss()
         updateOrder(paymentMethods)
     }
     // endregion
@@ -285,7 +279,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mToolbar?.setNavigationOnClickListener {
             backPressed()
         }
-        paymentTypesDialogFragment.setPaymentTypesListener(this)
     }
 
     private fun showProgressDialog() {
@@ -424,8 +417,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if(shippingInformationResponse.paymentMethods.isEmpty()){
             showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
         } else {
-            paymentTypesDialog = paymentTypesDialogFragment.newInstance(shippingInformationResponse.paymentMethods)
-            paymentTypesDialog.show(supportFragmentManager, "paymentTypesDialog")
+            //TODO CREATE NEW FRAGMENT FOR SELECT PAYMENT TYPE
+
         }
     }
 
