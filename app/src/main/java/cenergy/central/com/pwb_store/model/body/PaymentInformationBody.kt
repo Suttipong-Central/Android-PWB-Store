@@ -10,6 +10,7 @@ data class PaymentInformationBody(
         var paymentMethod: MethodBody,
         var email: String = "",
         var staffId: String = "",
-        var storeId: String = "")
+        var storeId: String = "",
+        var theOneCardNo: String = "")
 
 data class MethodBody(var method: String)
