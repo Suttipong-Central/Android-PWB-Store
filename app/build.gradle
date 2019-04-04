@@ -46,18 +46,33 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".dev"
-            versionNameSuffix "-Dev"
+            versionNameSuffix "-dev"
             ext.alwaysUpdateBuildId = false
+            testCoverageEnabled true
         }
 
         staging {
             applicationIdSuffix ".staging"
-            versionNameSuffix "-Staing"
+            versionNameSuffix "-staing"
             signingConfig signingConfigs.config
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true // Set false when singed new apk
+            debuggable false // Set false when singed new apk
+            jniDebuggable false
+            renderscriptDebuggable false
+            renderscriptOptimLevel 3
+            zipAlignEnabled true
+        }
+
+        uat {
+            applicationIdSuffix ".uat"
+            versionNameSuffix "-uat"
+            signingConfig signingConfigs.config
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable false // Set false when singed new apk
             jniDebuggable false
             renderscriptDebuggable false
             renderscriptOptimLevel 3
