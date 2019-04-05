@@ -22,4 +22,10 @@ fun List<CacheCartItem>.getPaymentType(context: Context) : List<PaymentMethod> {
         }
     }
     return paymentMethodFilter
+fun List<PaymentMethod>.getMethodTitle(): List<String> {
+    val methods = arrayListOf<String>()
+    forEach { paymentMethod ->
+        paymentMethod.title?.let { methods.add(it) }
+    }
+    return methods
 }
