@@ -36,7 +36,6 @@ android {
     compileSdkVersion 27
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId "cenergy.central.com.powerbuy_store"
         minSdkVersion 19
         targetSdkVersion 26
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -53,7 +52,7 @@ android {
 
         staging {
             applicationIdSuffix ".staging"
-            versionNameSuffix "-staing"
+            versionNameSuffix "-staging"
             signingConfig signingConfigs.config
             minifyEnabled true
             shrinkResources true
@@ -94,14 +93,15 @@ android {
 
     productFlavors {
         pwb {
+            applicationId "cenergy.central.com.powerbuy_store"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 58
             versionName "0.0.58"
         }
 
         cds {
+            applicationId "cenergy.central.com.eordering"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            applicationIdSuffix ".centraldepartmentstore"
             versionCode 1
             versionName "0.0.1"
         }
