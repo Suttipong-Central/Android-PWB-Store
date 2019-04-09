@@ -164,7 +164,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
                         "", "", "")
-                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), null, subscribeCheckOut)
+                createShippingInformation(null, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -179,7 +179,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     // region {@link PaymentTypesClickListener}
     override fun onPaymentTypeClickListener(paymentMethods: PaymentMethod) {
-        updateOrder(paymentMethods)
+        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethods)
     }
     // endregion
 
@@ -199,8 +199,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 if (response != null) {
                     val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
                             shippingDate, slot.id.toString(), slot.description)
-                    showAlertCheckPayment("", resources.getString(R.string.confirm_oder), null, subscribeCheckOut)
-
+                    createShippingInformation(null, subscribeCheckOut)
                 } else {
                     mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -359,12 +358,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertCheckPayment(title: String, message: String, storeAddress: AddressInformation?,
-                                      subscribeCheckOut: SubscribeCheckOut) {
+    private fun showAlertCheckPayment(title: String, message: String, paymentMethods: PaymentMethod) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
-                    createShippingInformation(storeAddress, subscribeCheckOut)
+                    updateOrder(paymentMethods)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
@@ -729,7 +727,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email, "", "", "")
                 // store shipping this case can be anything
-                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), shippingAddress, subscribeCheckOut)
+                createShippingInformation(shippingAddress, subscribeCheckOut)
             }
         }
     }
