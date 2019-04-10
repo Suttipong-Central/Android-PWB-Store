@@ -75,6 +75,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
+    private val paymentMethod = PaymentMethod("payatstore",  "Pay at store")
 
     // date
     private val dateTime = DateTime.now()
@@ -174,6 +175,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 showProgressDialog()
                 getShippingHomeDelivery()
             }
+        }
+    }
+
+    private fun isUserChatAndShop() : Boolean {
+        return if(userInformation?.user != null) {
+            userInformation?.user!!.isChatAndShopUser()
+        } else {
+            false
         }
     }
 
@@ -387,7 +396,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             override fun success(response: ShippingInformationResponse?) {
                                 mProgressDialog?.dismiss()
                                 if (response != null) {
-                                    selectPaymentTypes()
+                                    if (isUserChatAndShop()){
+                                        selectPaymentTypes()
+                                    } else {
+                                        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+                                    }
                                 } else {
                                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                                 }
@@ -405,7 +418,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     override fun success(response: ShippingInformationResponse?) {
                         mProgressDialog?.dismiss()
                         if (response != null) {
-                            selectPaymentTypes()
+                            if (isUserChatAndShop()){
+                                selectPaymentTypes()
+                            } else {
+                                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+                            }
                         } else {
                             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                         }

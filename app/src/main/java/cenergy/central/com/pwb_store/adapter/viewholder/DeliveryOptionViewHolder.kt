@@ -7,12 +7,11 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.DeliveryType
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import java.util.*
+
 
 class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -72,12 +71,5 @@ class DeliveryOptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
 
     private fun setImage(imageDrawable: Int) {
         icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, imageDrawable))
-    }
-
-    fun bindView(paymentMethod: PaymentMethod, listener: PaymentTypeClickListener) {
-        carrierTitle.text = paymentMethod.title
-        itemView.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
-        button.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
-        amount.visibility = View.GONE
     }
 }

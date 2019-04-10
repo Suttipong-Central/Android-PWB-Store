@@ -5,7 +5,8 @@
     android:id="@+id/activity_cart"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.ShoppingCartActivity">
+    tools:context=".activity.ShoppingCartActivity"
+    android:background="@color/powerBuyWhite">
 
     <include
         android:id="@+id/actionbar"
