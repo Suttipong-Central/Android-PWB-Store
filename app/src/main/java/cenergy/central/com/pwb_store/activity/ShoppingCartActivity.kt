@@ -230,11 +230,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun updateViewShoppingCart(response: List<CartItem>) {
-
-        val cacheCartItems = database.cacheCartItems
-        val paymentMethods = cacheCartItems.getPaymentType(this).getMethodTitle().joinToString(", ")
-        Toast.makeText(this, paymentMethods, Toast.LENGTH_LONG).show()
-
         cartItemList = response
         shoppingCartAdapter.cartItemList = cartItemList
 
@@ -335,14 +330,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }
-        builder.show()
-    }
-
-    private fun showAlertDialog(message: String, onClick: DialogInterface.OnClickListener) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(R.string.ok, onClick)
-
         builder.show()
     }
 
