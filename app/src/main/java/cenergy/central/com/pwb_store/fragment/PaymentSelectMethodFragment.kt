@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ class PaymentSelectMethodFragment : Fragment() {
     private val paymentListener by lazy { context as PaymentProtocol }
     private val paymentMethods by lazy{ paymentListener.getPaymentMethods()}
     private lateinit var recycler: RecyclerView
+    private lateinit var paymentTypeClickListener: PaymentTypeClickListener
 
     companion object {
         fun newInstance(): PaymentSelectMethodFragment {
@@ -27,6 +29,11 @@ class PaymentSelectMethodFragment : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        paymentTypeClickListener = context as PaymentTypeClickListener
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_payment_select_methods, container, false)
         setupView(rootView)
@@ -35,11 +42,10 @@ class PaymentSelectMethodFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         recycler = rootView.findViewById(R.id.recycler_select_methods)
-        val selectMethodAdapter = PaymentMethodAdapter()
-        selectMethodAdapter.paymentMethods = paymentMethods
-        selectMethodAdapter.setPaymentTypeClickListener(context as PaymentTypeClickListener)
-        recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
+        recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
+        selectMethodAdapter.paymentMethods = paymentMethods
     }
 
 }
