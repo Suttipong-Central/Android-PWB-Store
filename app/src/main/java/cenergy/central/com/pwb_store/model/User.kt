@@ -15,5 +15,7 @@ open class User(
         var username: String = "",
         @SerializedName("created_at")
         var createdAt: String = "",
+        @SerializedName("is_chat_shop_user")
+        var isChatAndShopUser: Boolean = false,
         @SerializedName("updated_at")
         var updatedAt: String = ""):RealmObject()
