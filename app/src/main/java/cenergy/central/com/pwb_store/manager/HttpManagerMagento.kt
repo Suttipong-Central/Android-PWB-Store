@@ -45,9 +45,7 @@ class HttpManagerMagento(context: Context) {
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
-                    val request = chain.request().newBuilder()
-                            .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
-                            .build()
+                    val request = chain.request().newBuilder().build()
                     chain.proceed(request)
                 }
                 .addInterceptor(interceptor)
@@ -587,6 +585,7 @@ class HttpManagerMagento(context: Context) {
 
         val request = Request.Builder()
                 .url(httpUrl)
+                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
                 .build()
 
         defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
@@ -608,10 +607,14 @@ class HttpManagerMagento(context: Context) {
 
                         val extensionObject = productObject.getJSONObject("extension_attributes")
                         val stockObject = extensionObject.getJSONObject("stock_item")
-                        stockItem.itemId = stockObject.getLong("item_id")
+//                        stockItem.itemId = stockObject.getLong("item_id")
                         stockItem.productId = stockObject.getLong("product_id")
                         stockItem.stockId = stockObject.getLong("stock_id")
-                        stockItem.qty = stockObject.getInt("qty")
+
+                        if (!stockObject.isNull("qty")) {
+                            stockItem.qty = stockObject.getInt("qty")
+                        }
+
                         stockItem.isInStock = stockObject.getBoolean("is_in_stock")
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
 

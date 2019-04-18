@@ -28,6 +28,9 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.Store;
+import cenergy.central.com.pwb_store.model.User;
+import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.response.UserResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
@@ -141,30 +144,45 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
     private void login() {
         if (getContext() != null) {
-            HttpManagerMagento.Companion.getInstance(getContext()).userLogin(username, password,
-                    new ApiResponseCallback<UserResponse>() {
-                        @Override
-                        public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
-                            if (response != null) {
-                                if (checkUserLogin(response)) {
-                                    dismissDialog();
-                                    EventBus.getDefault().post(new LoginSuccessBus(true));
-                                } else {
-                                    dismissDialog();
-                                    showAlertDialog("", getString(R.string.some_thing_wrong));
-                                    userLogout();
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void failure(@NotNull APIError error) {
-                            dismissDialog();
-                            if(getContext() != null){
-                                new DialogHelper(getContext()).showErrorLoginDialog(error);
-                            }
-                        }
-                    });
+            // TODO: TDB - For instigate "Guest Cart"
+            // for create userInformation
+            // force user be is_chat_and_shop_user = 0 (e-ordering)
+
+            User user = new User(778, "apptiude testing", "12345678", 223L, "anuphap@apptitude.co.th", "apptitude", "", 0, "");
+            Store store = new Store();
+            store.setStoreId(223L);
+            store.setStoreCode("00010");
+            store.setStoreName("Central Chidlom");
+            RealmController.getInstance().saveUserInformation(new UserInformation(user.getUserId(), user, store));
+            EventBus.getDefault().post(new LoginSuccessBus(true));
+            dismissDialog();
+            // --> end
+
+//            HttpManagerMagento.Companion.getInstance(getContext()).userLogin(username, password,
+//                    new ApiResponseCallback<UserResponse>() {
+//                        @Override
+//                        public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
+//                            if (response != null) {
+//                                if (checkUserLogin(response)) {
+//                                    dismissDialog();
+//                                    EventBus.getDefault().post(new LoginSuccessBus(true));
+//                                } else {
+//                                    dismissDialog();
+//                                    showAlertDialog("", getString(R.string.some_thing_wrong));
+//                                    userLogout();
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void failure(@NotNull APIError error) {
+//                            dismissDialog();
+//                            if(getContext() != null){
+//                                new DialogHelper(getContext()).showErrorLoginDialog(error);
+//                            }
+//                        }
+//                    });
         }
     }
 

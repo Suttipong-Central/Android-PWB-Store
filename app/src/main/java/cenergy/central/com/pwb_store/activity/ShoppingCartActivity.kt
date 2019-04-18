@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.activity
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -20,11 +19,8 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
-import cenergy.central.com.pwb_store.extensions.getMethodTitle
-import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
@@ -32,7 +28,6 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
@@ -42,7 +37,7 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
 
-class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener{
+class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
@@ -113,9 +108,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun setUpToolbar() {
         setSupportActionBar(mToolbar)
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayShowTitleEnabled(false)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         mToolbar.setNavigationOnClickListener { finish() }
         searchImageView.visibility = View.GONE
     }
@@ -240,7 +233,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         updateTitle(sum)
 
         var totalOfItems = 0.0
-        cartItemList.forEach {cartItem ->
+        cartItemList.forEach { cartItem ->
             val item = database.getCacheCartItem(cartItem.id)
             if (item != null) {
                 totalOfItems += cartItem.qty!! * cartItem.price!!
