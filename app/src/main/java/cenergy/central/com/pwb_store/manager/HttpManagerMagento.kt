@@ -873,9 +873,30 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
+    // TODO: TDB - For instigate "Guest Cart": Change to use paymentMethodBodyNew
+    fun updateOderNew(cartId: String, paymentMethod: PaymentMethod, email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>) {
+        val cartService = retrofit.create(CartService::class.java)
+        val method = MethodBody(paymentMethod.code!!) // will change soon
+        val paymentMethodBodyNew = PaymentInformationBodyNew(cartId, method, email, billingAddress)
+        cartService.updateOrder(getLanguage(), cartId, paymentMethodBodyNew).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                if (response != null && response.isSuccessful) {
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    // TODO: TDB - For instigate "Guest Cart": Add header authenticate
     fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getOrder(getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
+        cartService.getOrder(Constants.CLIENT_MAGENTO, getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
             override fun onResponse(call: Call<OrderResponse>?, response: Response<OrderResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val orderResponse = response.body()

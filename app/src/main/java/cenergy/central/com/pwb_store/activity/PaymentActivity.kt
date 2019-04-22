@@ -187,8 +187,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentTypesClickListener}
-    override fun onPaymentTypeClickListener(paymentMethods: PaymentMethod) {
-        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethods)
+    override fun onPaymentTypeClickListener(paymentMethod: PaymentMethod) {
+        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
     }
     // endregion
 
@@ -670,10 +670,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         showProgressDialog()
 
         val email = shippingAddress?.email ?: ""
-        val staffId = userInformation?.user?.staffId ?: ""
-        val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
+//        val staffId = userInformation?.user?.staffId ?: ""
+//        val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
 
-        HttpManagerMagento.getInstance(this).updateOder(cartId!!, paymentMethod, email, staffId, storeId, object : ApiResponseCallback<String> {
+        HttpManagerMagento.getInstance(this).updateOderNew(cartId!!, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 if (response != null) {
                     getOrder(response)

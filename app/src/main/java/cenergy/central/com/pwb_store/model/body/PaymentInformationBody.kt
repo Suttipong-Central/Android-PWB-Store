@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.model.body
 
+import cenergy.central.com.pwb_store.model.AddressInformation
+
 /**
  * Created by Anuphap Suwannamas on 26/8/2018 AD.
  * Email: Anupharpae@gmail.com
@@ -14,3 +16,9 @@ data class PaymentInformationBody(
         var theOneCardNo: String = "")
 
 data class MethodBody(var method: String)
+
+data class PaymentInformationBodyNew(
+        var cartId: String = "",
+        var paymentMethod: MethodBody,
+        var email: String = "",
+        var billingAddress: AddressInformation)

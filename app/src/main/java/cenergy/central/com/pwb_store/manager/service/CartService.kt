@@ -33,8 +33,9 @@ internal interface CartService {
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-    //    @POST("/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
-    @POST("/{lang}/rest/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
+    // TODO: TDB - For instigate "Guest Cart"
+//    @POST("/{lang}/rest/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
+    @POST("/{lang}/rest/V1/guest-carts/{cartId}/estimate-shipping-methods")
     fun getOrderDeliveryOptions(@Path("lang") language: String,
                                 @Path("cartId") cartId: String,
                                 @Body deliveryBody: DeliveryOptionsBody): Call<List<DeliveryOption>>
@@ -50,9 +51,19 @@ internal interface CartService {
                     @Path("cartId") cartId: String,
                     @Body paymentInformation: PaymentInformationBody): Call<String>
 
+    // TODO: TDB - For instigate "Guest Cart"
+    //    @PUT("/rest/V1/guest-carts/{cartId}/order")
+    @POST("/{lang}/rest/V1/guest-carts/{cartId}/payment-information")
+    fun updateOrder(@Path("lang") language: String,
+                    @Path("cartId") cartId: String,
+                    @Body paymentInformation: PaymentInformationBodyNew): Call<String>
+
+    // TODO: TDB - For instigate "Guest Cart"
     @GET("/{lang}/rest/V1/orders/{orderId}")
-    fun getOrder(@Path("lang") language: String,
-                 @Path("orderId") orderId: String): Call<OrderResponse>
+    fun getOrder(
+            @Header("Authorization") token: String,
+            @Path("lang") language: String,
+            @Path("orderId") orderId: String): Call<OrderResponse>
 
     @GET("/{lang}/rest/all/V1/headless/storepickup")
     fun getBranches(@Path("lang") language: String,

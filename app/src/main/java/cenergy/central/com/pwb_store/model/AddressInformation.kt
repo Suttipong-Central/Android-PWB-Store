@@ -10,6 +10,7 @@ import io.realm.RealmObject
  */
 
 open class AddressInformation(
+        var city: String = "",
         var region: String = "",
         @SerializedName("region_id")
         var regionId: String = "",
@@ -52,6 +53,7 @@ open class AddressInformation(
                     subDistrictId = subDistrictId,
                     postcodeId = postcodeId)
             return AddressInformation(
+                    city = homeCity,
                     region = homeCity,
                     regionId = provinceId,
                     regionCode = provinceCode,
