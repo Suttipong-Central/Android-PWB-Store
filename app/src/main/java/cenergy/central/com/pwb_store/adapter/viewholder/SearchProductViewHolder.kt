@@ -14,23 +14,12 @@ import cenergy.central.com.pwb_store.manager.bus.event.HomeBus
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
 
-class SearchProductViewHolder(itemView: View, canBack: Boolean) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class SearchProductViewHolder(itemView: View, private val canBack: Boolean)
+    : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val mSearchView: PowerBuyEditText = itemView.findViewById(R.id.edit_text_search)
     private val mBarCode: ImageView = itemView.findViewById(R.id.image_view_barcode)
     private val backButton: ImageView = itemView.findViewById(R.id.image_back_button)
-
-    init {
-        if (canBack){
-            backButton.visibility = View.VISIBLE
-            backButton.setOnClickListener(this)
-        } else {
-            backButton.visibility = View.GONE
-            backButton.setOnClickListener(null)
-        }
-        mBarCode.setOnClickListener(this)
-        mSearchView.setOnEditorActionListener(SearchOnEditorActionListener())
-    }
 
     override fun onClick(v: View) {
         when (v) {
@@ -41,6 +30,19 @@ class SearchProductViewHolder(itemView: View, canBack: Boolean) : RecyclerView.V
                 EventBus.getDefault().post(HomeBus(true))
             }
         }
+    }
+
+    fun bind() {
+        if (canBack){
+            backButton.visibility = View.VISIBLE
+            backButton.setOnClickListener(this)
+        } else {
+            backButton.visibility = View.GONE
+            backButton.setOnClickListener(null)
+        }
+        mBarCode.setOnClickListener(this)
+        mSearchView.hint = itemView.context.getString(R.string.search_hint)
+        mSearchView.setOnEditorActionListener(SearchOnEditorActionListener())
     }
 
     private inner class SearchOnEditorActionListener : TextView.OnEditorActionListener {

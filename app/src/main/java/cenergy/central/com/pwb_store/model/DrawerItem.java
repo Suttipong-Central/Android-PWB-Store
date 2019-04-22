@@ -19,7 +19,7 @@ public class DrawerItem implements IViewType, Parcelable{
     @SerializedName("entity_id")
     @Expose
     private String id;
-    private ProductFilterHeader productFilterHeader;
+    private Category category;
 
 
 //    public DrawerItem(String title, int departmentId, int parentId, int rootDeptId, String departmentNameEN) {
@@ -32,10 +32,10 @@ public class DrawerItem implements IViewType, Parcelable{
 //        //this.mStoreLists = storeLists;
 //    }
 
-        public DrawerItem(String title, String id, ProductFilterHeader productFilterHeader) {
+        public DrawerItem(String title, String id, Category category) {
         this.title = title;
         this.id = id;
-        this.productFilterHeader = productFilterHeader;
+        this.category = category;
     }
 
 //    public int getIcon() {
@@ -50,7 +50,7 @@ public class DrawerItem implements IViewType, Parcelable{
         viewTypeId = in.readInt();
         title = in.readString();
         id = in.readString();
-        productFilterHeader = in.readParcelable(ProductFilterHeader.class.getClassLoader());
+        category = in.readParcelable(Category.class.getClassLoader());
     }
 
     public static final Creator<DrawerItem> CREATOR = new Creator<DrawerItem>() {
@@ -91,12 +91,12 @@ public class DrawerItem implements IViewType, Parcelable{
         this.id = id;
     }
 
-    public ProductFilterHeader getProductFilterHeader() {
-        return productFilterHeader;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setProductFilterHeader(ProductFilterHeader productFilterHeader) {
-        this.productFilterHeader = productFilterHeader;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Override
@@ -109,6 +109,6 @@ public class DrawerItem implements IViewType, Parcelable{
         dest.writeInt(viewTypeId);
         dest.writeString(title);
         dest.writeString(id);
-        dest.writeParcelable(productFilterHeader, flags);
+        dest.writeParcelable(category, flags);
     }
 }

@@ -31,6 +31,7 @@ import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Store;
 import cenergy.central.com.pwb_store.model.User;
 import cenergy.central.com.pwb_store.model.UserInformation;
+import cenergy.central.com.pwb_store.model.UserToken;
 import cenergy.central.com.pwb_store.model.response.UserResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.APIErrorUtils;
@@ -154,7 +155,9 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
             store.setStoreId(223L);
             store.setStoreCode("00010");
             store.setStoreName("Central Chidlom");
-            RealmController.getInstance().saveUserInformation(new UserInformation(user.getUserId(), user, store));
+            RealmController database = RealmController.getInstance();
+            database.saveUserToken(new UserToken("xxxxxx"));
+            database.saveUserInformation(new UserInformation(user.getUserId(), user, store));
             EventBus.getDefault().post(new LoginSuccessBus(true));
             dismissDialog();
             // --> end

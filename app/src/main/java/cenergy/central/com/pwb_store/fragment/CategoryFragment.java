@@ -25,20 +25,15 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
-import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CategoryFragment extends Fragment {
 
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
+    private static final String TAG = "CategoryFragment";
     private ProgressDialog mProgressDialog;
 
-    //Data Members
     private CategoryAdapter mAdapter;
-    private GridLayoutManager mLayoutManager;
     private CategoryDao mCategoryDao;
 
     public CategoryFragment() {
@@ -78,58 +73,89 @@ public class CategoryFragment extends Fragment {
 
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
+        //Data Members
         mAdapter = new CategoryAdapter(getContext());
-        mLayoutManager = new GridLayoutManager(getContext(), 3, LinearLayoutManager.VERTICAL, false);
-        mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3, LinearLayoutManager.VERTICAL, false);
+        layoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
 
         if (mCategoryDao == null) {
             retrieveCategories(); // force retrieve category
         } else {
             try {
-                mAdapter.setCategory(mCategoryDao);
+                mAdapter.setCategory(mCategoryDao.getCategoryList());
             } catch (Exception e) {
                 retrieveCategories();
             }
         }
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
     }
 
     private void retrieveCategories() {
-        if (getContext() != null) {
-            showProgressDialog();
-            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
-                @Override
-                public void success(@Nullable Category category) {
-                    if (category != null) {
-                        if (isAdded()) {
-                            mAdapter.setCategory(category);
-                        }
-                        dismissProgressDialog();
-                    }
-                }
+//        if (getContext() != null) {
+//            showProgressDialog();
+//            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
+//                @Override
+//                public void success(@Nullable Category category) {
+//                    if (category != null) {
+//                        if (isAdded()) {
+//                            mAdapter.setCategory(category);
+//                        }
+//                        dismissProgressDialog();
+//                    }
+//                }
+//
+//                @Override
+//                public void failure(@NotNull APIError error) {
+//                    dismissProgressDialog();
+//                    if(error.getErrorCode() == null){
+//                        showAlertDialog(getContext().getString(R.string.not_connected_network));
+//                    } else {
+//                        switch (error.getErrorCode()){
+//                            case "401": showAlertDialog(getContext().getString(R.string.user_not_found));
+//                                break;
+//                            case "408":
+//                            case "404":
+//                            case "500": showAlertDialog(getContext().getString(R.string.server_not_found));
+//                                break;
+//                            default: showAlertDialog(getContext().getString(R.string.some_thing_wrong));
+//                                break;
+//                        }
+//                    }
+//                }
+//            });
+//        }
+    }
 
-                @Override
-                public void failure(@NotNull APIError error) {
-                    dismissProgressDialog();
-                    if(error.getErrorCode() == null){
-                        showAlertDialog(getContext().getString(R.string.not_connected_network));
-                    } else {
-                        switch (error.getErrorCode()){
-                            case "401": showAlertDialog(getContext().getString(R.string.user_not_found));
-                                break;
-                            case "408":
-                            case "404":
-                            case "500": showAlertDialog(getContext().getString(R.string.server_not_found));
-                                break;
-                            default: showAlertDialog(getContext().getString(R.string.some_thing_wrong));
-                                break;
+    public void foreRefresh() {
+        // do anything
+        loadCategories();
+    }
+
+    private void loadCategories() {
+        HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory("2",
+                new ApiResponseCallback<List<Category>>() {
+            @Override
+            public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isAdded()) {
+                                mAdapter.setCategory(categories);
+                            }
                         }
-                    }
+                    });
                 }
-            });
-        }
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                dismissProgressDialog();
+            }
+        });
     }
 
     @Override

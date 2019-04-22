@@ -5,9 +5,7 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.CartService
-import cenergy.central.com.pwb_store.manager.service.CategoryService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.manager.service.UserService
 import cenergy.central.com.pwb_store.model.*
@@ -138,114 +136,192 @@ class HttpManagerMagento(context: Context) {
     }
     // endregion
 
-    fun retrieveCategories(force: Boolean, callback: ApiResponseCallback<Category?>) {
-        // If already cached then do
-        val endpointName = "/rest/V1/categories"
-        if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
-            Log.i("PBE", "retrieveCategories: using cached")
-            callback.success(database.category)
-            return
-        }
 
-        Log.i("PBE", "retrieveCategories: calling endpoint")
-        val categoryService = retrofit.create(CategoryService::class.java)
-        categoryService.categories.enqueue(object : Callback<Category> {
+    // region category
+//    fun retrieveCategories(force: Boolean, callback: ApiResponseCallback<Category?>) {
+//        // If already cached then do
+//        val endpointName = "/rest/V1/categories"
+//        if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
+//            Log.i("PBE", "retrieveCategories: using cached")
+//            callback.success(database.category)
+//            return
+//        }
+//
+//        Log.i("PBE", "retrieveCategories: calling endpoint")
+//        val categoryService = retrofit.create(CategoryService::class.java)
+//        categoryService.categories.enqueue(object : Callback<Category> {
+//
+//            override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
+//                if (response != null) {
+//                    //TODO: keep just position less than 15
+//                    val category = response.body()
+//                    val categoryHeader = category?.filterHeaders
+//                    if (categoryHeader != null) {
+//                        val toRemove = arrayListOf<ProductFilterHeader>()
+//                        for (header in categoryHeader) {
+//                            if (header.position > 15) {
+//                                toRemove.add(header)
+//                            }
+//                        }
+//                        category.filterHeaders.removeAll(toRemove)
+//                    }
+//
+//                    // Store to database
+//                    database.saveCategory(category)
+//
+//                    // Update cached endpoint
+//                    database.updateCachedEndpoint(endpointName)
+//
+//                    callback.success(category)
+//                } else {
+//                    callback.failure(APIErrorUtils.parseError(response))
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<Category>?, t: Throwable?) {
+//                callback.failure(APIError(t))
+//            }
+//        })
+//    }
 
-            override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                if (response != null) {
-                    //TODO: keep just position less than 15
-                    val category = response.body()
-                    val categoryHeader = category?.filterHeaders
-                    if (categoryHeader != null) {
-                        val toRemove = arrayListOf<ProductFilterHeader>()
-                        for (header in categoryHeader) {
-                            if (header.position > 15) {
-                                toRemove.add(header)
-                            }
-                        }
-                        category.filterHeaders.removeAll(toRemove)
-                    }
+    /**
+     * @param parentId is categoryId
+     *
+     * Endpoint
+     * @query include_in_menu 1 meant true
+     * @query parent_id
+     * */
+    fun retrieveCategory(parentId: String, callback: ApiResponseCallback<List<Category>>) {
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments("/rest/${getLanguage()}/V1/categories/list")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "include_in_menu")
+                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
+                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
+                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                .build()
 
-                    // Store to database
-                    database.saveCategory(category)
+        val request = Request.Builder()
+                .url(httpUrl)
+                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .build()
 
-                    // Update cached endpoint
-                    database.updateCachedEndpoint(endpointName)
-
-                    callback.success(category)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback{
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                val body = response.body()
+                if (body == null) {
+                    APIErrorUtils.parseError(response)?.let { callback.failure(it) }
+                    return
                 }
-            }
 
-            override fun onFailure(call: Call<Category>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
-    }
+                try {
+                    val categoryList = arrayListOf<Category>()
+                    val data = JSONObject(body.string())
+                    val items = data.getJSONArray("items")
+                    for (i in 0 until items.length()) {
+                        val category = Category()
+                        val categoryObj = items.getJSONObject(i)
+                        category.id = categoryObj.getString("id")
+                        category.parentId = categoryObj.getString("parent_id")
+                        category.departmentName = categoryObj.getString("name")
+                        category.isActive = categoryObj.getBoolean("is_active")
+                        category.position = categoryObj.getInt("position")
+                        category.level = categoryObj.getString("level")
+                        category.children = categoryObj.getString("children")
+                        category.createdAt = categoryObj.getString("created_at")
+                        category.updatedAt = categoryObj.getString("updated_at")
+                        category.path = categoryObj.getString("path")
+                        category.includeInMenu = if (categoryObj.getBoolean("include_in_menu")) 1 else 0
 
-    fun retrieveCategories(force: Boolean, categoryId: Int, categoryLevel: Int, callback: ApiResponseCallback<Category?>) {
-        // If already cached then do
-        when (getLanguage()) {
-            AppLanguage.EN.key -> {
-                val endpointName = "${Constants.BASE_URL_MAGENTO}/th/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
-                database.clearCachedEndpoint(endpointName)
-
-            }
-            AppLanguage.TH.key -> {
-                val endpointName = "${Constants.BASE_URL_MAGENTO}/en/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
-                database.clearCachedEndpoint(endpointName)
-
-            }
-        }
-        val endpointName = "${Constants.BASE_URL_MAGENTO}/${getLanguage()}/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
-        if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
-            Log.i("API Manager", "retrieveCategories: using cached ${getLanguage()}")
-            callback.success(database.category)
-            return
-        }
-
-        Log.i("API Manager", "retrieveCategories: calling endpoint ${getLanguage()}")
-        val categoryService = retrofit.create(CategoryService::class.java)
-        categoryService.getCategories(getLanguage(),categoryId, categoryLevel).enqueue(object : Callback<Category> {
-            override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
-                if (response != null) {
-                    if(response.isSuccessful){
-                        val category = response.body()
-                        val categoryHeaders = category?.filterHeaders
-                        if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
-                            val toRemove = arrayListOf<ProductFilterHeader>()
-                            for (header in categoryHeaders) {
-                                if (!header.IsIncludeInMenu() && header.id != PROMOTION_CATEGORY_ID &&
-                                        header.id != FIVE_STAR_CATEGORY_ID) {
-                                    toRemove.add(header)
+                        val customAttributes = categoryObj.getJSONArray("custom_attributes")
+                        for (k in 0 until customAttributes.length()) {
+                            val attrName = customAttributes.getJSONObject(k).getString("name")
+                            // hard code get icon for tablet :(
+                            when (attrName) {
+                                "image" -> {
+                                    category.imageURL = customAttributes.getJSONObject(k).getString("value")
                                 }
                             }
-                            category.filterHeaders.removeAll(toRemove)
                         }
-
-                        if (category != null) {
-                            // Store to database
-                            database.saveCategory(category)
-
-                            // Update cached endpoint
-                            database.updateCachedEndpoint(endpointName)
-                        }
-
-                        callback.success(category)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
+                        categoryList.add(category)
                     }
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+                    callback.success(categoryList) // return
+                } catch (e: Exception) {
+                    callback.failure(APIError(e))
+                    Log.e("JSON Parser", "Error parsing data $e")
                 }
             }
 
-            override fun onFailure(call: Call<Category>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                callback.failure(APIError(e))
             }
         })
     }
+
+//    fun retrieveCategories(force: Boolean, categoryId: Int, categoryLevel: Int, callback: ApiResponseCallback<Category?>) {
+//        // If already cached then do
+//        when (getLanguage()) {
+//            AppLanguage.EN.key -> {
+//                val endpointName = "${Constants.BASE_URL_MAGENTO}/th/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+//                database.clearCachedEndpoint(endpointName)
+//
+//            }
+//            AppLanguage.TH.key -> {
+//                val endpointName = "${Constants.BASE_URL_MAGENTO}/en/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+//                database.clearCachedEndpoint(endpointName)
+//
+//            }
+//        }
+//        val endpointName = "${Constants.BASE_URL_MAGENTO}/${getLanguage()}/rest/V1/headless/categories?categoryId=$categoryId&categoryLevel$categoryLevel"
+//        if (!force && database.hasFreshlyCachedEndpoint(endpointName)) {
+//            Log.i("API Manager", "retrieveCategories: using cached ${getLanguage()}")
+//            callback.success(database.category)
+//            return
+//        }
+//
+//        Log.i("API Manager", "retrieveCategories: calling endpoint ${getLanguage()}")
+//        val categoryService = retrofit.create(CategoryService::class.java)
+//        categoryService.getCategories(getLanguage(),categoryId, categoryLevel).enqueue(object : Callback<Category> {
+//            override fun onResponse(call: Call<Category>?, response: Response<Category>?) {
+//                if (response != null) {
+//                    if(response.isSuccessful){
+//                        val category = response.body()
+//                        val categoryHeaders = category?.filterHeaders
+//                        if (category != null && category.IsIncludeInMenu() && categoryHeaders != null) {
+//                            val toRemove = arrayListOf<ProductFilterHeader>()
+//                            for (header in categoryHeaders) {
+//                                if (!header.IsIncludeInMenu() && header.id != PROMOTION_CATEGORY_ID &&
+//                                        header.id != FIVE_STAR_CATEGORY_ID) {
+//                                    toRemove.add(header)
+//                                }
+//                            }
+//                            category.filterHeaders.removeAll(toRemove)
+//                        }
+//
+//                        if (category != null) {
+//                            // Store to database
+//                            database.saveCategory(category)
+//
+//                            // Update cached endpoint
+//                            database.updateCachedEndpoint(endpointName)
+//                        }
+//
+//                        callback.success(category)
+//                    } else {
+//                        callback.failure(APIErrorUtils.parseError(response))
+//                    }
+//                } else {
+//                    callback.failure(APIErrorUtils.parseError(response))
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<Category>?, t: Throwable?) {
+//                callback.failure(APIError(t))
+//            }
+//        })
+//    }
+    // endregion
 
     fun retrieveProducts(category: String, categoryId: String, conditionType: String,
                          pageSize: Int, currentPage: Int, typeSearch: String, fields: String,

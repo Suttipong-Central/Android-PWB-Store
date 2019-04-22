@@ -2,11 +2,13 @@ package cenergy.central.com.pwb_store.adapter.viewholder;
 
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -24,6 +26,23 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mImageView = itemView.findViewById(R.id.image_view);
         mTextView = itemView.findViewById(R.id.txt_view);
+    }
+
+    public void setViewHolder(Category category) {
+        if (!category.getImageURL().isEmpty()) {
+            Log.d("CategoryViewHolder", category.getImageURL());
+            Glide.with(itemView.getContext())
+                    .load(category.getImageURL())
+                    .error(R.drawable.ic_category_placeholder)
+                    .crossFade()
+                    .fitCenter()
+                    .into(mImageView);
+        } else {
+            mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));
+        }
+
+        mTextView.setText(category.getDepartmentName());
+        itemView.setTag(category);
     }
 
     public void setViewHolder(ProductFilterHeader categoryHeader) {

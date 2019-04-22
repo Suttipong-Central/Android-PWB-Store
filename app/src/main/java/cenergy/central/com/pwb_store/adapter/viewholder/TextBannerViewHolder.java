@@ -1,14 +1,10 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -28,7 +24,6 @@ public class TextBannerViewHolder extends RecyclerView.ViewHolder{
         mCardView = itemView.findViewById(R.id.card_view);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void setViewHolder(String bannerTitle, boolean enableMargin){
         mTextView.setText(bannerTitle);
         if (enableMargin){

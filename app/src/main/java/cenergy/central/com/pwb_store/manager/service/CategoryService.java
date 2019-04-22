@@ -4,7 +4,7 @@ import java.util.List;
 
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.response.BrandResponse;
+import cenergy.central.com.pwb_store.model.response.CategoryResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -31,4 +31,12 @@ public interface CategoryService {
             @Path("lang") String lang,
             @Query("categoryId") int categoryId,
             @Query("categoryLevel") int categoryLevel);
+
+    @GET("/rest/{lang}/V1/categories/list")
+    Call<CategoryResponse> getCategories(
+            @Path("lang") String lang,
+            @Query("searchCriteria[filter_groups][0][filters][0][field]") String filterIncludeInMenu,
+            @Query("searchCriteria[filter_groups][0][filters][0][value]") int inMenu,
+            @Query("searchCriteria[filter_groups][1][filters][0][field]") String filterParent,
+            @Query("searchCriteria[filter_groups][1][filters][0][value]") String parentId);
 }

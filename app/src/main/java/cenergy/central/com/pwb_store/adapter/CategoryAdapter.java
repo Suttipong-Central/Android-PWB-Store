@@ -1,16 +1,12 @@
 package cenergy.central.com.pwb_store.adapter;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +16,8 @@ import cenergy.central.com.pwb_store.adapter.viewholder.CategoryFullFillerViewHo
 import cenergy.central.com.pwb_store.adapter.viewholder.CategoryViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchProductViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.TextBannerViewHolder;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.model.Category;
-import cenergy.central.com.pwb_store.model.CategoryDao;
-import cenergy.central.com.pwb_store.model.Event;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.TextBanner;
 import cenergy.central.com.pwb_store.model.ViewType;
 
@@ -75,9 +65,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     };
     private Boolean clicked = true;
+    private CategoryAdapterListener listener = null;
 
     public CategoryAdapter(Context mContext) {
         this.mContext = mContext;
+        this.listener = ((CategoryAdapterListener) mContext);
+    }
+
+    public void setListener(CategoryAdapterListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -117,42 +113,67 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return null;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         int viewTypeId = getItemViewType(position);
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_CATEGORY:
-                if (viewType instanceof ProductFilterHeader && holder instanceof CategoryViewHolder) {
-                    final ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
+//                if (viewType instanceof Category && holder instanceof CategoryViewHolder) {
+//                    final ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
+//                    CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
+//                    categoryViewHolder.setViewHolder(categoryHeader);
+//                    categoryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            if(clicked){
+//                                clicked = false;
+//                                EventBus.getDefault().post(new ProductFilterHeaderBus(categoryHeader, position));
+//                                new Handler().postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        clicked = true;
+//                                    }
+//                                },1000);
+//                            }
+//                        }
+//                    });
+//                } else if (viewType instanceof Category && holder instanceof CategoryViewHolder){
+//                    final ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) viewType;
+//                    CategoryViewHolder categoryFilterViewHolder = (CategoryViewHolder) holder;
+//                    categoryFilterViewHolder.setViewHolder(categorySubHeader);
+//                    categoryFilterViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            if (clicked){
+//                                clicked = false;
+//                                EventBus.getDefault().post(new ProductFilterSubHeaderBus(categorySubHeader, position));
+//                                new Handler().postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        clicked = true;
+//                                    }
+//                                },1000);
+//                            }
+//                        }
+//                    });
+//                }
+                if (viewType instanceof Category && holder instanceof CategoryViewHolder) {
+                    final Category category = (Category) viewType;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
-                    categoryViewHolder.setViewHolder(categoryHeader);
+                    categoryViewHolder.setViewHolder(category);
                     categoryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(clicked){
+                            if(clicked && listener != null){
                                 clicked = false;
-                                EventBus.getDefault().post(new ProductFilterHeaderBus(categoryHeader, position));
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        clicked = true;
-                                    }
-                                },1000);
-                            }
-                        }
-                    });
-                } else if (viewType instanceof ProductFilterSubHeader && holder instanceof CategoryViewHolder){
-                    final ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) viewType;
-                    CategoryViewHolder categoryFilterViewHolder = (CategoryViewHolder) holder;
-                    categoryFilterViewHolder.setViewHolder(categorySubHeader);
-                    categoryFilterViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (clicked){
-                                clicked = false;
-                                EventBus.getDefault().post(new ProductFilterSubHeaderBus(categorySubHeader, position));
+
+                                if (category.getLevel().equals("2")) {
+                                    listener.onClickedCategoryLv1(category);
+                                } else  {
+                                    listener.onClickedCategoryLv2(category);
+                                }
+
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -171,6 +192,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     textBannerViewHolder.setViewHolder(textBanner.getTitle(), false);
                 }
                 break;
+            case VIEW_TYPE_ID_SEARCH:
+            case VIEW_TYPE_ID_SEARCH_NOT_BACK: {
+                if (holder instanceof SearchProductViewHolder) {
+                    ((SearchProductViewHolder)holder).bind();
+                }
+            }
         }
     }
 
@@ -184,61 +211,61 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return mListViewType.get(position).getViewTypeId();
     }
 
-    public void setCategory(CategoryDao categoryDao) {
+    public void setCategory(List<Category> categoryList) {
+//
+//        if (categoryDao.getCategoryList() != null &&
+//                categoryDao.getCategoryList().size() == 1 &&
+//                categoryDao.getCategoryList().get(0).getDepartmentName().equals("Default Category")) {
+//
+//            setCategory(categoryDao.getCategoryList().get(0));
+//            return;
+//        }
 
-        if (categoryDao.getCategoryList() != null &&
-                categoryDao.getCategoryList().size() == 1 &&
-                categoryDao.getCategoryList().get(0).getDepartmentName().equals("Default Category")) {
-
-            setCategory(categoryDao.getCategoryList().get(0));
-            return;
-        }
-
-        //mListViewType.clear();
-        mListViewType.add(VIEW_TYPE_SEARCH);
-        TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
-        textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
-        mListViewType.add(textBanner);
-
-        //int startPosition = mListViewType.size();
-        for (Category category : categoryDao.getCategoryList()) {
-            category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
-            mListViewType.add(category);
-        }
-
-        if (categoryDao.getCategoryList().size() % 3 != 0) {
-            int fullFillerNo = 3 - categoryDao.getCategoryList().size() % 3;
-            for (int i = 0; i < fullFillerNo; i++) {
-                mListViewType.add(VIEW_TYPE_FULL_FILLER);
-            }
-        }
-
-        notifyDataSetChanged();
-    }
-
-    public void setCategory(Category category) {
-        //mListViewType.clear();
+        mListViewType.clear();
         mListViewType.add(VIEW_TYPE_SEARCH_NOT_BACK);
         TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
         textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
         mListViewType.add(textBanner);
+
         //int startPosition = mListViewType.size();
-        for (ProductFilterHeader header : category.getFilterHeaders()) {
+        for (Category category : categoryList) {
             category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
-            mListViewType.add(header);
+            mListViewType.add(category);
         }
+//
+//        if (categoryDao.getCategoryList().size() % 3 != 0) {
+//            int fullFillerNo = 3 - categoryDao.getCategoryList().size() % 3;
+//            for (int i = 0; i < fullFillerNo; i++) {
+//                mListViewType.add(VIEW_TYPE_FULL_FILLER);
+//            }
+//        }
+
         notifyDataSetChanged();
     }
 
-    public void setCategoryHeader(ProductFilterHeader productFilterHeader) {
-        //mListViewType.clear();
+//    public void setCategory(Category category) {
+//        //mListViewType.clear();
+//        mListViewType.add(VIEW_TYPE_SEARCH_NOT_BACK);
+//        TextBanner textBanner = new TextBanner(mContext.getResources().getString(R.string.category));
+//        textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
+//        mListViewType.add(textBanner);
+//        //int startPosition = mListViewType.size();
+//        for (ProductFilterHeader header : category.getFilterHeaders()) {
+//            category.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
+//            mListViewType.add(header);
+//        }
+//        notifyDataSetChanged();
+//    }
+
+    public void setCategoryHeader(String parentName,List<Category> categoryList) {
+        mListViewType.clear();
         mListViewType.add(VIEW_TYPE_SEARCH);
-        TextBanner textBanner = new TextBanner(productFilterHeader.getName());
+        TextBanner textBanner = new TextBanner(parentName);
         textBanner.setViewTypeId(VIEW_TYPE_ID_TEXT_BANNER);
         mListViewType.add(textBanner);
         //int startPosition = mListViewType.size();
-        for (ProductFilterSubHeader subHeader : productFilterHeader.getProductFilterSubHeaders()) {
-            productFilterHeader.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
+        for (Category subHeader : categoryList) {
+            subHeader.setViewTypeId(VIEW_TYPE_ID_CATEGORY);
             mListViewType.add(subHeader);
         }
         notifyDataSetChanged();
@@ -246,5 +273,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public GridLayoutManager.SpanSizeLookup getSpanSize() {
         return mSpanSize;
+    }
+
+    public interface CategoryAdapterListener {
+        void onClickedCategoryLv1(Category category);
+        void onClickedCategoryLv2(Category category);
     }
 }

@@ -11,15 +11,19 @@ import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter
-import cenergy.central.com.pwb_store.model.ProductFilterHeader
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.Category
 
 class SubHeaderProductFragment : Fragment() {
 
-    private var productFilterHeader: ProductFilterHeader? = null
+    private var category: Category? = null
+    private val adapter = CategoryAdapter(context)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        productFilterHeader = arguments?.getParcelable(ARG_CATEGORY_HEADER)
+        category = arguments?.getParcelable(ARG_CATEGORY_HEADER)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -30,22 +34,49 @@ class SubHeaderProductFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         val subHeaderRecycler = rootView.findViewById<RecyclerView>(R.id.sub_header_recycler)
-        val adapter = CategoryAdapter(context)
-        Log.d("productFilterHeader", "${productFilterHeader?.productFilterSubHeaders?.size}")
-        adapter.setCategoryHeader(productFilterHeader)
         val gridLayoutManager = GridLayoutManager(rootView.context, 3, LinearLayoutManager.VERTICAL, false)
         gridLayoutManager.spanSizeLookup = adapter.spanSize
         subHeaderRecycler.layoutManager = gridLayoutManager
         subHeaderRecycler.adapter = adapter
+        adapter.setCategoryHeader(category?.departmentName, arrayListOf()) // default
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        category?.id?.let { loadCategories(it) }
+    }
+
+    fun foreRefresh(category: Category) {
+        this.category = category
+        loadCategories(category.id)
+    }
+
+    private fun loadCategories(parentId: String) {
+        activity?.let {
+            HttpManagerMagento.getInstance(it).retrieveCategory(parentId,
+                    object : ApiResponseCallback<List<Category>> {
+                        override fun success(response: List<Category>?) {
+                            it.runOnUiThread {
+                                adapter.setCategoryHeader(category?.departmentName, response)
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            Log.e(TAG, "onFailure: " + error.errorUserMessage)
+                        }
+                    })
+        }
+
     }
 
     companion object {
         private const val ARG_CATEGORY_HEADER = "category_header"
+        private const val TAG = "CategoryLv2Fragment"
 
-        fun newInstance(productFilterHeader: ProductFilterHeader): SubHeaderProductFragment {
+        fun newInstance(category: Category): SubHeaderProductFragment {
             val fragment = SubHeaderProductFragment()
             val args = Bundle()
-            args.putParcelable(ARG_CATEGORY_HEADER, productFilterHeader)
+            args.putParcelable(ARG_CATEGORY_HEADER, category)
             fragment.arguments = args
             return fragment
         }

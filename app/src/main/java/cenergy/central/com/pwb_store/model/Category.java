@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import cenergy.central.com.pwb_store.Constants;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -26,15 +27,34 @@ public class Category extends RealmObject implements IViewType, Parcelable {
     @SerializedName("name")
     @Expose
     private String departmentName;
-    @SerializedName("category_tablet_icon")
     @Expose
     private String imageURL;
     @SerializedName("include_in_menu")
     @Expose
     private int includeInMenu;
+    @SerializedName("parent_id")
+    @Expose
+    private String parentId;
+    @SerializedName("is_active")
+    @Expose
+    private boolean isActive;
+    @Expose
+    private int position;
+    @Expose
+    private String children;
+    @SerializedName("created_at")
+    @Expose
+    private String createdAt;
+    @SerializedName("updated_at")
+    @Expose
+    private String updatedAt;
+    @Expose
+    private String path;
+
     @SerializedName("children_data")
     @Expose
     private RealmList<ProductFilterHeader> mFilterHeaders;
+
 
     public Category () {
 
@@ -90,7 +110,7 @@ public class Category extends RealmObject implements IViewType, Parcelable {
     }
 
     public String getImageURL() {
-        return imageURL;
+        return Constants.BASE_URL_MAGENTO + "/media/catalog/category/" + imageURL;
     }
 
     public void setImageURL(String imageURL) {
@@ -139,5 +159,61 @@ public class Category extends RealmObject implements IViewType, Parcelable {
 
     public void setIncludeInMenu(int includeInMenu) {
         this.includeInMenu = includeInMenu;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

@@ -20,7 +20,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -34,12 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
-import cenergy.central.com.pwb_store.helpers.DialogHelper;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
@@ -65,7 +64,8 @@ import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
 
-public class MainActivity extends BaseActivity implements MenuDrawerClickListener {
+public class MainActivity extends BaseActivity implements MenuDrawerClickListener,
+        CategoryAdapter.CategoryAdapterListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
@@ -99,18 +99,21 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private RealmController database = RealmController.getInstance();
 
     private ProductFilterHeader productFilterHeader;
+    private Category categoryLv1;
     private ProductFilterSubHeader productFilterSubHeader;
     private Fragment currentFragment;
 
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
-        this.productFilterHeader = drawerItem.getProductFilterHeader();
-        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
-            startProductListFragment(this.productFilterHeader);
-        } else {
-            startCategoryLvTwoFragment(this.productFilterHeader);
-        }
+        this.categoryLv1 = drawerItem.getCategory();
+        startCategoryLvTwoFragment(this.categoryLv1);
+
+//        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+//            startProductListFragment(this.productFilterHeader);
+//        } else {
+//            startCategoryLvTwoFragment(this.productFilterHeader);
+//        }
     }
 
     @Subscribe
@@ -121,35 +124,36 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // Event from onClick back button in product list
     @Subscribe
     public void onEvent(CategoryTwoBus categoryTwoBus) {
-        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
-            startCategoryFragment();
-        } else {
-            startCategoryLvTwoFragment(this.productFilterHeader);
-        }
+        startCategoryLvTwoFragment(this.categoryLv1);
+//        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+//            startCategoryFragment();
+//        } else {
+//            startCategoryLvTwoFragment(this.productFilterHeader);
+//        }
     }
 
     // Event from onClick category item
     @Subscribe
     public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
-        this.productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
-        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
-            startProductListFragment(this.productFilterHeader);
-        } else {
-            startCategoryLvTwoFragment(this.productFilterHeader);
-        }
+//        this.productFilterHeader = productFilterHeaderBus.getProductFilterHeader();
+//        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+//            startProductListFragment(this.productFilterHeader);
+//        } else {
+//            startCategoryLvTwoFragment(this.productFilterHeader);
+//        }
     }
 
     // Event from onClick product filter sub header item
     @Subscribe
     public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {
-        if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Change Language to Thai")) {
-            startCategoryFragment();
-        } else if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Compare")) {
-            startCategoryFragment();
-        } else {
-            this.productFilterSubHeader = productFilterSubHeaderBus.getProductFilterSubHeader();
-            startProductListFragment(this.productFilterSubHeader);
-        }
+//        if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Change Language to Thai")) {
+//            startCategoryFragment();
+//        } else if (productFilterSubHeaderBus.getProductFilterSubHeader().getName().equalsIgnoreCase("Compare")) {
+//            startCategoryFragment();
+//        } else {
+//            this.productFilterSubHeader = productFilterSubHeaderBus.getProductFilterSubHeader();
+//            startProductListFragment(this.productFilterSubHeader);
+//        }
     }
 
     @Subscribe
@@ -293,7 +297,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
                     startCategoryFragment();
                 } else {
-                    startCategoryLvTwoFragment(this.productFilterHeader);
+                    startCategoryLvTwoFragment(this.categoryLv1);
                 }
             } else {
                 supportFinishAfterTransition();
@@ -302,76 +306,59 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     private void retrieveCategories() {
+        // currentFragment null?
         showProgressDialog();
-        HttpManagerMagento.Companion.getInstance(this).retrieveCategories(false, 2, 4, new ApiResponseCallback<Category>() {
+        HttpManagerMagento.Companion.getInstance(this).retrieveCategory("2", new ApiResponseCallback<List<Category>>() {
             @Override
-            public void success(@Nullable Category category) {
-                if (!isFinishing()) {
-                    handleRetrieveCateSuccess(category);
-                }
+            public void success(@Nullable final List<Category> categories) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handleCategories(categories);
+                    }
+                });
             }
 
             @Override
             public void failure(@NotNull APIError error) {
                 Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                // dismiss loading dialog
                 dismissProgressDialog();
-                // show error message
-                new DialogHelper(MainActivity.this).showErrorDialog(error);
             }
         });
     }
 
-    private void handleRetrieveCateSuccess(Category category) {
-        if (category != null) {
-            mCategoryDao = new CategoryDao(category);
-            createDrawerMenu(category);
-            if (currentFragment instanceof SubHeaderProductFragment) {
-                List<ProductFilterHeader> newProductFilterHeaders = category.getFilterHeaders();
-                for (ProductFilterHeader filterHeader : newProductFilterHeaders) {
-                    if (filterHeader.getId().equals(this.productFilterHeader.getId())) {
-                        this.productFilterHeader = filterHeader; // update product filter header
-                        startCategoryLvTwoFragment(filterHeader);
-                        dismissProgressDialog();
-                        return;
-                    }
+    private void handleCategories(List<Category> categories) {
+        mCategoryDao = new CategoryDao(categories);
+        createDrawerMenu(categories);
+
+        if (currentFragment instanceof CategoryFragment) {
+            ((CategoryFragment) currentFragment).foreRefresh();
+        } else if (currentFragment instanceof SubHeaderProductFragment){
+            for (Category category : categories) {
+                if (category.getId().equals(categoryLv1.getId())) {
+                    categoryLv1 = category; // force be new data th/en
                 }
-
-            } else if (currentFragment instanceof ProductListFragment) {
-                List<ProductFilterHeader> newProductFilterHeaders = category.getFilterHeaders();
-                for (ProductFilterHeader filterHeader : newProductFilterHeaders) {
-                    if (filterHeader.getId().equals(this.productFilterHeader.getId())) {
-                        this.productFilterHeader = filterHeader; // update product filter header
-
-                        // find sub header
-                        for (ProductFilterSubHeader filterSubHeader : filterHeader.getProductFilterSubHeaders()) {
-                            if (filterSubHeader.getId().equals(this.productFilterSubHeader.getId())) {
-                                startProductListFragment(filterSubHeader);
-                                Log.d(TAG, "Found filterSubHeader " + filterSubHeader.getId() + TAG_FRAGMENT_SUB_HEADER);
-                                dismissProgressDialog();
-                                return;
-                            }
-                        }
-                    }
-                }
-
             }
+            ((SubHeaderProductFragment) currentFragment).foreRefresh(categoryLv1);
 
+        } else if (currentFragment instanceof ProductListFragment) {
+            // TODO: fore refresh product list
+        } else {
             startCategoryFragment();
         }
 
         dismissProgressDialog();
     }
 
-    private void createDrawerMenu(Category category) {
+    private void createDrawerMenu(List<Category> categories) {
         mAdapter.clearItems();
         mDrawerItemList.clear(); // clear drawer
         mDrawerDao = new DrawerDao(mDrawerItemList);
         // TODO: ignore getStores
-        if (mDrawerItemList.size() == 0 && category != null) {
-            for (ProductFilterHeader item : category.getFilterHeaders()) {
-                mDrawerItemList.add(new DrawerItem(item.getName(), item.getId(), item));
-//                Log.d(TAG, "Detail : " + mDrawerItemList.toString());
+        if (mDrawerItemList.size() == 0 && categories != null) {
+            for (Category category : categories) {
+                mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), category.getId(), category));
+                Log.i(TAG, "Menu : " + mDrawerItemList.toString());
             }
             mAdapter.setDrawItem(mDrawerDao);
         } else {
@@ -487,8 +474,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 .commitAllowingStateLoss();
     }
 
-    private void startCategoryLvTwoFragment(ProductFilterHeader productFilterHeader) {
-        currentFragment = SubHeaderProductFragment.Companion.newInstance(productFilterHeader);
+    private void startCategoryLvTwoFragment(Category categoryLv1) {
+        currentFragment = SubHeaderProductFragment.Companion.newInstance(categoryLv1);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_SUB_HEADER)
                 .commitAllowingStateLoss();
@@ -547,4 +534,17 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     @Nullable
     @Override
     public NetworkStateView getStateView() { return networkStateView; }
+
+    // region {@link implement CategoryAdapter.CategoryAdapterListener}
+    @Override
+    public void onClickedCategoryLv1(Category category) {
+        this.categoryLv1 = category;
+        startCategoryLvTwoFragment(categoryLv1);
+    }
+
+    @Override
+    public void onClickedCategoryLv2(Category category) {
+        // TODO: start PLP / category will be category_lv2
+    }
+    // endregion
 }
