@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -19,7 +20,12 @@ import cenergy.central.com.pwb_store.model.Category
 class SubHeaderProductFragment : Fragment() {
 
     private var category: Category? = null
-    private val adapter = CategoryAdapter(context)
+    private lateinit var adapter: CategoryAdapter
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        adapter = CategoryAdapter(context)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
