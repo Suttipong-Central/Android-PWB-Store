@@ -13,9 +13,8 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import com.google.gson.Gson
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import retrofit2.Call
@@ -639,6 +638,135 @@ class HttpManagerMagento(context: Context) {
                         callback.failure(APIError(t))
                     }
                 })
+    }
+
+    //TODO: TDB for instigate "Product list"
+    /*
+        Hardcode for get custom_attributes
+    */
+    fun retrieveProducts(currentPage: Int, filterGroups: ArrayList<FilterGroups>,
+                         sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
+        val body = ProductListBody.createBody(10, currentPage, filterGroups, sortOrders)
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegment("rest")
+                .addPathSegment("catalog-service")
+                .addPathSegment(getLanguage())
+                .addPathSegment("V1")
+                .addPathSegment("products")
+                .addPathSegment("search")
+                .build()
+
+        val json = Gson().toJson(body)
+        val requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json)
+
+        val request = Request.Builder()
+                .url(httpUrl)
+                .post(requestBody)
+                .build()
+
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
+                if (response != null) {
+                    val data = response.body()
+                    val productResponse = ProductResponse()
+                    val products = arrayListOf<Product>()
+                    val filters = arrayListOf<ProductFilter>()
+
+                    try {
+                        val productResponseObject = JSONObject(data?.string())
+                        productResponse.totalCount = productResponseObject.getInt("total_count")
+                        val productArray = productResponseObject.getJSONArray("products")
+                        for (i in 0 until productArray.length()) {
+                            val product = Product()
+                            val productFilter = ProductFilter()
+
+                            product.id = productArray.getJSONObject(i).getInt("id")
+                            product.sku = productArray.getJSONObject(i).getString("sku")
+                            product.name = productArray.getJSONObject(i).getString("name")
+                            product.price = productArray.getJSONObject(i).getDouble("price")
+                            product.status = productArray.getJSONObject(i).getInt("status")
+
+                            if (!productArray.getJSONObject(i).isNull("image")) {
+                                product.image = productArray.getJSONObject(i).getString("image")
+                            }
+
+                            val attrArray = productArray.getJSONObject(i).getJSONArray("custom_attributes")
+                            for (j in 0 until attrArray.length()) {
+                                val attrName = attrArray.getJSONObject(j).getString("attribute_code")
+                                when (attrName) {
+                                    "special_price" -> {
+                                        if (!attrArray.getJSONObject(j).isNull("value")) {
+                                            val specialPrice = attrArray.getJSONObject(j).getString("value")
+                                            product.specialPrice = if (specialPrice.trim() == "") 0.0 else specialPrice.toDouble()
+                                        }
+                                    }
+
+                                    "special_from_date" -> {
+                                        if (!attrArray.getJSONObject(j).isNull("value")) {
+                                            product.specialFromDate = attrArray.getJSONObject(j).getString("value")
+                                        }
+                                    }
+
+                                    "special_to_date" -> {
+                                        if (!attrArray.getJSONObject(j).isNull("value")) {
+                                            product.specialToDate = attrArray.getJSONObject(j).getString("value")
+                                        }
+                                    }
+                                }
+                            }
+
+                            val filterArray = productResponseObject.getJSONArray("filters")
+                            for (j in 0 until filterArray.length()) {
+                                val filterItem = arrayListOf<FilterItem>()
+                                if(!attrArray.getJSONObject(j).isNull("name")){
+                                    val attrName = attrArray.getJSONObject(j).getString("name")
+                                    when (attrName) {
+                                        "Brand" -> {
+                                            if(!filterArray.getJSONObject(j).isNull("name")){
+                                                productFilter.name = filterArray.getJSONObject(j).getString("name")
+                                            }
+                                            if(!filterArray.getJSONObject(j).isNull("attribute_code")) {
+                                                productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
+                                            }
+                                            if(!filterArray.getJSONObject(j).isNull("position")) {
+                                                productFilter.position = filterArray.getJSONObject(j).getInt("position")
+                                            }
+                                            if(!filterArray.getJSONObject(j).isNull("items")){
+                                                val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
+                                                for (k in 0 until itemArray.length()){
+                                                    val value = itemArray.getJSONObject(k).getString("value")
+                                                    val label = itemArray.getJSONObject(k).getString("label")
+                                                    val count = itemArray.getJSONObject(k).getInt("count")
+                                                    filterItem.add(FilterItem(label, value, count))
+                                                }
+                                                productFilter.items = filterItem
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            filters.add(productFilter)
+                            products.add(product)
+                        }
+                        productResponse.products = products
+
+                        callback.success(productResponse)
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
+                        Log.e("JSON Parser", "Error parsing data $e")
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+                response?.close()
+            }
+
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                callback.failure(APIError(e))
+            }
+        })
     }
 
     /*

@@ -481,8 +481,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 .commitAllowingStateLoss();
     }
 
-    private void startProductListFragment(ProductFilterSubHeader productFilterSubHeader) {
-        currentFragment = ProductListFragment.newInstance(productFilterSubHeader, false, storeId, "");
+    private void startProductListFragment(Category category) {
+        currentFragment = ProductListFragment.newInstance(category, false, storeId, "");
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
                 .commitAllowingStateLoss();
@@ -544,7 +544,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     @Override
     public void onClickedCategoryLv2(Category category) {
-        // TODO: start PLP / category will be category_lv2
+        startProductListFragment(category);
     }
     // endregion
 }
