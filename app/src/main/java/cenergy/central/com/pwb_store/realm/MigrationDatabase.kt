@@ -10,25 +10,39 @@ class MigrationDatabase : RealmMigration {
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
-        // Update Product model
         if (oldVersion < 1) {
+            // Update Product model
             realm.schema.get("CacheCartItem")?.apply {
                 // add field paymentMethod
                 addField("paymentMethod", String::class.java).setNullable("paymentMethod", false)
             }
         }
-        // Update User model
+
         if (oldVersion < 2) {
+            // Update User model
             realm.schema.get("User")?.apply {
                 // add field isChatAndShopUser
                 addField("isChatAndShopUser", Int::class.java)
             }
         }
-        // Update AddressInformation model
+
         if (oldVersion < 3) {
+            // Update AddressInformation model
             realm.schema.get("AddressInformation")?.apply {
                 // add field city
                 addField("city", String::class.java).setNullable("city", false)
+            }
+
+            // Update Category model
+            realm.schema.get("Category")?.apply {
+                removeField("mFilterHeaders")
+                addField("parentId", String::class.java)
+                addField("isActive", Boolean::class.java)
+                addField("position", Int::class.java)
+                addField("children", String::class.java)
+                addField("createdAt", String::class.java)
+                addField("updatedAt", String::class.java)
+                addField("path", String::class.java)
             }
         }
     }

@@ -119,45 +119,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         IViewType viewType = mListViewType.get(position);
         switch (viewTypeId) {
             case VIEW_TYPE_ID_CATEGORY:
-//                if (viewType instanceof Category && holder instanceof CategoryViewHolder) {
-//                    final ProductFilterHeader categoryHeader = (ProductFilterHeader) viewType;
-//                    CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
-//                    categoryViewHolder.setViewHolder(categoryHeader);
-//                    categoryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if(clicked){
-//                                clicked = false;
-//                                EventBus.getDefault().post(new ProductFilterHeaderBus(categoryHeader, position));
-//                                new Handler().postDelayed(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        clicked = true;
-//                                    }
-//                                },1000);
-//                            }
-//                        }
-//                    });
-//                } else if (viewType instanceof Category && holder instanceof CategoryViewHolder){
-//                    final ProductFilterSubHeader categorySubHeader = (ProductFilterSubHeader) viewType;
-//                    CategoryViewHolder categoryFilterViewHolder = (CategoryViewHolder) holder;
-//                    categoryFilterViewHolder.setViewHolder(categorySubHeader);
-//                    categoryFilterViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if (clicked){
-//                                clicked = false;
-//                                EventBus.getDefault().post(new ProductFilterSubHeaderBus(categorySubHeader, position));
-//                                new Handler().postDelayed(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        clicked = true;
-//                                    }
-//                                },1000);
-//                            }
-//                        }
-//                    });
-//                }
                 if (viewType instanceof Category && holder instanceof CategoryViewHolder) {
                     final Category category = (Category) viewType;
                     CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
@@ -168,6 +129,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             if(clicked && listener != null){
                                 clicked = false;
 
+                                // isLevel2
                                 if (category.getLevel().equals("2")) {
                                     listener.onClickedCategoryLv1(category);
                                 } else  {

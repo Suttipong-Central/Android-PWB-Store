@@ -6,10 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
 
 import cenergy.central.com.pwb_store.Constants;
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 
@@ -51,11 +49,6 @@ public class Category extends RealmObject implements IViewType, Parcelable {
     @Expose
     private String path;
 
-    @SerializedName("children_data")
-    @Expose
-    private RealmList<ProductFilterHeader> mFilterHeaders;
-
-
     public Category () {
 
     }
@@ -67,8 +60,13 @@ public class Category extends RealmObject implements IViewType, Parcelable {
         departmentName = in.readString();
         imageURL = in.readString();
         includeInMenu = in.readInt();
-        this.mFilterHeaders = new RealmList<>();
-        this.mFilterHeaders.addAll(in.createTypedArrayList(ProductFilterHeader.CREATOR));
+        parentId = in.readString();
+        isActive = in.readInt() == 1;
+        position = in.readInt();
+        children = in.readString();
+        createdAt = in.readString();
+        updatedAt = in.readString();
+        path = in.readString();
     }
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {
@@ -96,7 +94,13 @@ public class Category extends RealmObject implements IViewType, Parcelable {
         dest.writeString(departmentName);
         dest.writeString(imageURL);
         dest.writeInt(includeInMenu);
-        dest.writeTypedList(mFilterHeaders);
+        dest.writeString(parentId);
+        dest.writeInt(isActive ? 1 : 0);
+        dest.writeInt(position);
+        dest.writeString(children);
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+        dest.writeString(path);
     }
 
     @Override
@@ -139,14 +143,6 @@ public class Category extends RealmObject implements IViewType, Parcelable {
 
     public void setLevel(String level) {
         this.level = level;
-    }
-
-    public List<ProductFilterHeader> getFilterHeaders() {
-        return mFilterHeaders;
-    }
-
-    public void setFilterHeaders(RealmList<ProductFilterHeader> filterHeaders) {
-        mFilterHeaders = filterHeaders;
     }
 
     public int getIncludeInMenu() {
