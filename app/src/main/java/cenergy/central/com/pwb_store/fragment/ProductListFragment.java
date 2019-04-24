@@ -547,6 +547,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             sortOrders.add(sortOrder);
 
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
+                    PER_PAGE,
                     getNextPage(),
                     filterGroupsList,
                     sortOrders,
@@ -611,6 +612,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             sortOrders.add(sortOrder);
 
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
+                    PER_PAGE,
                     getNextPage(),
                     filterGroupsList,
                     sortOrders,
@@ -668,6 +670,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             sortOrders.add(sortOrder);
 
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
+                    PER_PAGE,
                     getNextPage(),
                     filterGroupsList,
                     sortOrders,
