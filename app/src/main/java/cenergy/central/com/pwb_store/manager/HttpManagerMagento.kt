@@ -646,7 +646,7 @@ class HttpManagerMagento(context: Context) {
     */
     fun retrieveProducts(currentPage: Int, filterGroups: ArrayList<FilterGroups>,
                          sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
-        val body = ProductListBody.createBody(10, currentPage, filterGroups, sortOrders)
+        val body = ProductListBody.createBody(20, currentPage, filterGroups, sortOrders)
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
