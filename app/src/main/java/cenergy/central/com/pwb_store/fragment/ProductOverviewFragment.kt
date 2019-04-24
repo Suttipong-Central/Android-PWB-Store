@@ -15,11 +15,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.extensions.setupForDescription
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.utils.WebViewGetScaleManager
-
-/**
- * Created by Anuphap Suwannamas on 24/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
+import kotlinx.android.synthetic.main.fragment_product_overview.view.*
 
 class ProductOverviewFragment : Fragment() {
     private var productDetailListener: ProductDetailListener? = null
@@ -59,6 +55,10 @@ class ProductOverviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.tvOverviewHeader.text = getString(R.string.product_overview)
+        view.tvSpecHeader.text = getString(R.string.product_spec)
+
         if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.trim().isNotBlank()) {
             overviewLayout.visibility = View.VISIBLE
             line1.visibility = View.VISIBLE

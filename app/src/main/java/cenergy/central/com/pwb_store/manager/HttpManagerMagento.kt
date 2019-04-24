@@ -766,11 +766,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegment(getLanguage())
-                .addPathSegment("rest")
-                .addPathSegment("V1")
-                .addPathSegment("products")
-                .addPathSegment(sku)
+                .addPathSegments("/rest/${getLanguage()}/V1/products/$sku")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "status")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][conditionType]", "eq")
@@ -812,7 +808,6 @@ class HttpManagerMagento(context: Context) {
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
 
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
-//                    product.extension = productExtension // add product extension to product
                         val galleryArray = productObject.getJSONArray("media_gallery_entries")
                         for (i in 0 until galleryArray.length()) {
                             val id = galleryArray.getJSONObject(i).getString("id")

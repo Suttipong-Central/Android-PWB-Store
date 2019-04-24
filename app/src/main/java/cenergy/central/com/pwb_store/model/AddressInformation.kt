@@ -4,19 +4,14 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
 
-/**
- * Created by Anuphap Suwannamas on 25/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 open class AddressInformation(
         var city: String = "",
         var region: String = "",
-        @SerializedName("region_id")
+        @SerializedName("regionId")
         var regionId: String = "",
-        @SerializedName("region_code")
+        @SerializedName("regionCode")
         var regionCode: String = "",
-        @SerializedName("country_id")
+        @SerializedName("countryId")
         var countryId: String? = "",
         var street: RealmList<String>? = null,
         var postcode: String? = "",

@@ -97,7 +97,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == BaseActivity.REQUEST_UPDATE_LANGUAGE) {
+        if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
@@ -298,19 +298,6 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         builder.show()
     }
 
-    private fun showAlertDialog(message: String, shouldCloseActivity: Boolean) {
-        if (!isFinishing) {
-            val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                    .setMessage(message)
-                    .setPositiveButton(getString(R.string.ok)) { dialog, which ->
-                        dialog.dismiss()
-                        if (shouldCloseActivity) finish()
-                    }
-
-            builder.show()
-        }
-    }
-
     private fun showAlertDialog(message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
@@ -318,7 +305,6 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
 
         builder.show()
     }
-
 
     private fun showProgressDialog() {
         if (progressDialog == null) {

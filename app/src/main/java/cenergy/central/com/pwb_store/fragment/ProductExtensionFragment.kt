@@ -15,12 +15,6 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.extensions.setImage
 import cenergy.central.com.pwb_store.model.Product
 
-
-/**
- * Created by Anuphap Suwannamas on 24/9/2018 AD.
- * Email: Anupharpae@gmail.com¬
- */
-
 class ProductExtensionFragment : Fragment() {
     private var productDetailListener: ProductDetailListener? = null
     private var product: Product? = null

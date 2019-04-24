@@ -3,11 +3,6 @@ package cenergy.central.com.pwb_store.model
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 
-/**
- * Created by Anuphap Suwannamas on 26/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 open class SubAddress(
         @SerializedName("tel_mobile")
         var mobile: String = "",
