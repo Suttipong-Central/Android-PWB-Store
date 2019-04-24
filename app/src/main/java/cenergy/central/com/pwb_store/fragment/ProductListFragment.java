@@ -44,6 +44,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.Category;
+import cenergy.central.com.pwb_store.model.FilterItem;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
@@ -93,8 +94,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private GridLayoutManager mLayoutManger;
     private ProductDao mProductDao;
     private ProductFilterList mProductFilterList;
-    //    private ProductFilterList mTempProductFilterList;
-    private List<Brand> brands = new ArrayList<>();
+    private List<FilterItem> brands = new ArrayList<>();
     private SortingList mSortingList;
     private String title;
     private PowerBuyPopupWindow mPowerBuyPopupWindow;
@@ -102,7 +102,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private boolean isDoneFilter;
     private boolean isSearch;
     private String categoryId;
-    private Long brandId;
+    private String brandName;
     private String sortName;
 
     //Pagination
@@ -152,8 +152,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 if (isSearch) {
                     getProductsFromSearch(keyWord);
                 } else {
-                    if (brandId != null) {
-                        retrieveProductList(categoryId, brandId);
+                    if (brandName != null) {
+                        retrieveProductList(categoryId, brandName);
                     } else {
 //                    getProductList(categoryId);
                         retrieveProductList(categoryId);
@@ -310,13 +310,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return fragment;
     }
 
-    public static ProductListFragment newInstance(Category category, boolean search, String storeId, String keyWord) {
+    public static ProductListFragment newInstance(Category category, boolean search, String keyWord) {
         ProductListFragment fragment = new ProductListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TITLE, category.getDepartmentName());
         args.putBoolean(ARG_SEARCH, search);
         args.putString(ARG_DEPARTMENT_ID, category.getId());
-        args.putString(ARG_STORE_ID, storeId);
         args.putString(ARG_KEY_WORD, keyWord);
         fragment.setArguments(args);
         return fragment;
@@ -406,6 +405,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 }
                 break;
             case R.id.layout_brand:
+                Log.d("ARRAY BRANDS", brands.toString());
                 if (brands.isEmpty()) {
                     mPowerBuyPopupWindow.dismiss();
                 } else {
@@ -587,8 +587,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if(isSearch){
             getProductsFromSearch(keyWord);
         } else {
-            if (brandId != null) {
-                retrieveProductList(categoryId, brandId);
+            if (brandName != null) {
+                retrieveProductList(categoryId, brandName);
             } else {
                 retrieveProductList(categoryId);
             }
@@ -626,7 +626,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private void retrieveProductList(final String categoryId) {
         if (getContext() != null) {
 
-            new Filter();
             Filter filter = Filter.Companion.createFilter("category_id", categoryId, "eq");
             ArrayList<Filter> filters = new ArrayList<>();
             filters.add(filter);
@@ -634,8 +633,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
             filterGroupsList.add(filterGroups);
 
-
-            new SortOrder();
             SortOrder sortOrder = SortOrder.Companion.createSortOrder("view_count", "DESC");
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
             sortOrders.add(sortOrder);
@@ -663,12 +660,19 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         }
 
                         @Override
-                        public void failure(@NotNull APIError error) {
-                            layoutProgress.setVisibility(View.GONE);
-                            mProgressDialog.dismiss();
-                            // show error dialog
-                            if (getContext() != null) {
-                                new DialogHelper(getContext()).showErrorDialog(error);
+                        public void failure(@NotNull final APIError error) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(
+                                        new Runnable() {
+                                            public void run() {
+                                                layoutProgress.setVisibility(View.GONE);
+                                                mProgressDialog.dismiss();
+                                                // show error dialog
+                                                if (getContext() != null) {
+                                                    new DialogHelper(getContext()).showErrorDialog(error);
+                                                }
+                                            }
+                                        });
                             }
                         }
                     }
@@ -676,19 +680,18 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
     }
 
-    private void retrieveProductList(String categoryId, Long brandId) {
+    private void retrieveProductList(String categoryId, String brandName) {
         if (getContext() != null) {
 
-            new Filter();
-            Filter filter = Filter.Companion.createFilter("category_id", categoryId, "eq");
+            Filter filterCategory = Filter.Companion.createFilter("category_id", categoryId, "eq");
+            Filter filterBrand = Filter.Companion.createFilter("brand", brandName, "eq");
             ArrayList<Filter> filters = new ArrayList<>();
-            filters.add(filter);
+            filters.add(filterCategory);
+            filters.add(filterBrand);
             FilterGroups filterGroups = new FilterGroups(filters);
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
             filterGroupsList.add(filterGroups);
 
-
-            new SortOrder();
             SortOrder sortOrder = SortOrder.Companion.createSortOrder("view_count", "DESC");
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
             sortOrders.add(sortOrder);
@@ -716,12 +719,19 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         }
 
                         @Override
-                        public void failure(@NotNull APIError error) {
-                            layoutProgress.setVisibility(View.GONE);
-                            mProgressDialog.dismiss();
-                            // show error dialog
-                            if (getContext() != null) {
-                                new DialogHelper(getContext()).showErrorDialog(error);
+                        public void failure(@NotNull final APIError error) {
+                            if(getActivity() != null){
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layoutProgress.setVisibility(View.GONE);
+                                        mProgressDialog.dismiss();
+                                        // show error dialog
+                                        if (getContext() != null) {
+                                            new DialogHelper(getContext()).showErrorDialog(error);
+                                        }
+                                    }
+                                });
                             }
                         }
                     }
@@ -732,7 +742,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
     private void getProductsFromSearch(String keyWord) {
         if (getContext() != null) {
-            new Filter();
             Filter filter = Filter.Companion.createFilter("search_term", keyWord, "eq");
             ArrayList<Filter> filters = new ArrayList<>();
             filters.add(filter);
@@ -740,8 +749,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
             filterGroupsList.add(filterGroups);
 
-
-            new SortOrder();
             SortOrder sortOrder = SortOrder.Companion.createSortOrder("view_count", "DESC");
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
             sortOrders.add(sortOrder);
@@ -769,12 +776,19 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         }
 
                         @Override
-                        public void failure(@NotNull APIError error) {
-                            layoutProgress.setVisibility(View.GONE);
-                            mProgressDialog.dismiss();
-                            // show error dialog
-                            if (getContext() != null) {
-                                new DialogHelper(getContext()).showErrorDialog(error);
+                        public void failure(@NotNull final APIError error) {
+                            if (getActivity() != null){
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layoutProgress.setVisibility(View.GONE);
+                                        mProgressDialog.dismiss();
+                                        // show error dialog
+                                        if (getContext() != null) {
+                                            new DialogHelper(getContext()).showErrorDialog(error);
+                                        }
+                                    }
+                                });
                             }
                         }
                     }
@@ -782,31 +796,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
     }
 
-
-    private void getBrands(String departmentId) {
-        if (getContext() != null) {
-            HttpManagerMagento.Companion.getInstance(getContext()).getBrands(departmentId, new ApiResponseCallback<List<Brand>>() {
-                @Override
-                public void success(@org.jetbrains.annotations.Nullable List<Brand> response) {
-                    if (response != null) {
-                        ProductListFragment.this.brands = response;
-                    }
-                    layoutProgress.setVisibility(View.GONE);
-                    mProgressDialog.dismiss();
-                }
-
-                @Override
-                public void failure(@NotNull APIError error) {
-                    Log.d("getBrands", error.toString());
-                    layoutProgress.setVisibility(View.GONE);
-                    mProgressDialog.dismiss();
-                }
-            });
-        }
-    }
-
     private void updateProductList(ProductResponse response) {
         if (response != null) {
+            if (!response.getFilters().isEmpty()){
+                brands = response.getFilters().get(0).getItems();
+            }
             totalItem = response.getTotalCount();
             totalPage = totalPageCal(totalItem);
             currentPage = getNextPage();
@@ -820,20 +814,23 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             setTextHeader(totalItem, title);
         }
 
-        if (!isSearch) {
-            getBrands(categoryId);
-        } else {
-            layoutProgress.setVisibility(View.GONE);
-            mProgressDialog.dismiss();
-        }
+//        if (!isSearch) {
+//            getBrands(categoryId);
+//        } else {
+//            layoutProgress.setVisibility(View.GONE);
+//            mProgressDialog.dismiss();
+//        }
+
+        layoutProgress.setVisibility(View.GONE);
+        mProgressDialog.dismiss();
     }
 
     // region {@link OnBrandFilterClickListener}
     @Override
-    public void onClickedItem(@NotNull Brand brand) {
+    public void onClickedItem(@NotNull FilterItem filterItem) {
         isDoneFilter = true;
         isSorting = false;
-        brandId = brand.getBrandId();
+        brandName = filterItem.getValue(); // brand name
         currentPage = 0; // clear current page
         if (mProgressDialog != null && !mProgressDialog.isShowing()) {
             showProgressDialog();
@@ -841,7 +838,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if (mPowerBuyPopupWindow.isShowing()) {
             mPowerBuyPopupWindow.dismiss();
         }
-        retrieveProductList(categoryId, brandId);
+        retrieveProductList(categoryId, brandName);
     }
     // endregion
 }

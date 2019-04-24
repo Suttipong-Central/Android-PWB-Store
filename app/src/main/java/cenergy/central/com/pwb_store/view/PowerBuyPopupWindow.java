@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import cenergy.central.com.pwb_store.adapter.FilterByBrandAdapter;
 import cenergy.central.com.pwb_store.adapter.ProductFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.SortingAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
-import cenergy.central.com.pwb_store.model.Brand;
+import cenergy.central.com.pwb_store.model.FilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -51,15 +51,13 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     private AvaliableStoreFilterAdapter mAvaliableStoreFilterAdapter;
     private LinearLayoutManager mLayoutManager;
     private ProductFilterList mProductFilterList;
-    private SortingList mSortingList;
-    private List<Brand> brands;
     private StoreFilterList mStoreFilterList;
     private Context mContext;
-    private int index;
-    private int top;
 
+    @SuppressLint("InflateParams")
     public PowerBuyPopupWindow(Context context, LayoutInflater layoutInflater) {
-        super(layoutInflater.inflate(R.layout.popup_filter, null, false), ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        super(layoutInflater.inflate(R.layout.popup_filter, null, false),
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         ButterKnife.bind(this, getContentView());
 //        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 //                ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -81,7 +79,6 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     }
 
     public void setRecyclerViewSorting(SortingList sorting) {
-        this.mSortingList = sorting;
         mSortingAdapter = new SortingAdapter(mContext);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         mSortingAdapter.setSorting(sorting);
@@ -100,14 +97,6 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mAvaliableStoreFilterAdapter);
     }
-
-//    public void setFilterItem(ProductFilterHeader productFilterHeader) {
-//        if (productFilterHeader.isExpanded()) {
-//            mProductFilterAdapter.addProductFilterItem(productFilterHeader);
-//        } else {
-//            mProductFilterAdapter.removeProductFilterItem(productFilterHeader);
-//        }
-//    }
 
     public void setFilterItem(ProductFilterSubHeader productFilterSubHeader) {
         if (productFilterSubHeader.isExpanded()) {
@@ -152,11 +141,8 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
         p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         p.dimAmount = 0.1f;
+        assert wm != null;
         wm.updateViewLayout(container, p);
-    }
-
-    public void setLayoutParams(RelativeLayout.LayoutParams layoutParams) {
-
     }
 
     public void updateSingleSortingItem(SortingItem sortingItem) {
@@ -172,15 +158,13 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         Log.d(TAG, "Popup Click");
     }
 
-    public void setRecyclerViewFilterByBrand(List<Brand> brands, OnBrandFilterClickListener listener) {
-        this.brands = brands;
+    public void setRecyclerViewFilterByBrand(List<FilterItem> filterItems, OnBrandFilterClickListener listener) {
         FilterByBrandAdapter mFilterByBrandAdapter = new FilterByBrandAdapter(listener);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mFilterByBrandAdapter.setBrandForFilter(brands);
+        mFilterByBrandAdapter.setBrandForFilter(filterItems);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
     }
-
     private Rect locateView(View v) {
         int[] loc_int = new int[2];
         if (v == null) return null;

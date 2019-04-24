@@ -16,7 +16,7 @@ public class FilterByBrandViewHolder extends RecyclerView.ViewHolder {
         txtHeader = itemView.findViewById(R.id.txt_header_filter);
     }
 
-    public void setViewHolder(Brand brand) {
-        txtHeader.setText(brand.getName());
+    public void setViewHolder(String brand) {
+        txtHeader.setText(brand);
     }
 }

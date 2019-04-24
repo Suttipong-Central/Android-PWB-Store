@@ -482,7 +482,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     private void startProductListFragment(Category category) {
-        currentFragment = ProductListFragment.newInstance(category, false, storeId, "");
+        currentFragment = ProductListFragment.newInstance(category, false, "");
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
                 .commitAllowingStateLoss();
@@ -544,6 +544,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     @Override
     public void onClickedCategoryLv2(Category category) {
+        Log.d("CategoryID: ", category.getId());
         startProductListFragment(category);
     }
     // endregion

@@ -11,18 +11,19 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.FilterByBrandViewHolder;
 import cenergy.central.com.pwb_store.model.Brand;
+import cenergy.central.com.pwb_store.model.FilterItem;
 
 public class FilterByBrandAdapter extends RecyclerView.Adapter<FilterByBrandViewHolder> {
 
     private OnBrandFilterClickListener listener;
-    private List<Brand> brands;
+    private List<FilterItem> filterItems;
 
     public FilterByBrandAdapter(OnBrandFilterClickListener listener) {
         this.listener = listener;
     }
 
-    public void setBrandForFilter(List<Brand> brands) {
-        this.brands = brands;
+    public void setBrandForFilter(List<FilterItem> filterItems) {
+        this.filterItems = filterItems;
         notifyDataSetChanged();
     }
 
@@ -37,18 +38,18 @@ public class FilterByBrandAdapter extends RecyclerView.Adapter<FilterByBrandView
 
     @Override
     public void onBindViewHolder(FilterByBrandViewHolder holder, int position) {
-        final Brand brand = brands.get(position);
-        holder.setViewHolder(brand);
+        final FilterItem filterItem = filterItems.get(position);
+        holder.setViewHolder(filterItem.getValue());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onClickedItem(brand);
+                listener.onClickedItem(filterItem);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return brands.size();
+        return filterItems.size();
     }
 }

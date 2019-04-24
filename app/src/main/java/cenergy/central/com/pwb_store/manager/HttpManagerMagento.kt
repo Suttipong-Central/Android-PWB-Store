@@ -681,6 +681,7 @@ class HttpManagerMagento(context: Context) {
                         for (i in 0 until productArray.length()) {
                             val product = Product()
                             val productFilter = ProductFilter()
+                            val filterItem = arrayListOf<FilterItem>()
 
                             product.id = productArray.getJSONObject(i).getInt("id")
                             product.sku = productArray.getJSONObject(i).getString("sku")
@@ -694,8 +695,7 @@ class HttpManagerMagento(context: Context) {
 
                             val attrArray = productArray.getJSONObject(i).getJSONArray("custom_attributes")
                             for (j in 0 until attrArray.length()) {
-                                val attrName = attrArray.getJSONObject(j).getString("attribute_code")
-                                when (attrName) {
+                                when (attrArray.getJSONObject(j).getString("attribute_code")) {
                                     "special_price" -> {
                                         if (!attrArray.getJSONObject(j).isNull("value")) {
                                             val specialPrice = attrArray.getJSONObject(j).getString("value")
@@ -719,31 +719,19 @@ class HttpManagerMagento(context: Context) {
 
                             val filterArray = productResponseObject.getJSONArray("filters")
                             for (j in 0 until filterArray.length()) {
-                                val filterItem = arrayListOf<FilterItem>()
-                                if(!attrArray.getJSONObject(j).isNull("name")){
-                                    val attrName = attrArray.getJSONObject(j).getString("name")
-                                    when (attrName) {
-                                        "Brand" -> {
-                                            if(!filterArray.getJSONObject(j).isNull("name")){
-                                                productFilter.name = filterArray.getJSONObject(j).getString("name")
-                                            }
-                                            if(!filterArray.getJSONObject(j).isNull("attribute_code")) {
-                                                productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
-                                            }
-                                            if(!filterArray.getJSONObject(j).isNull("position")) {
-                                                productFilter.position = filterArray.getJSONObject(j).getInt("position")
-                                            }
-                                            if(!filterArray.getJSONObject(j).isNull("items")){
-                                                val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
-                                                for (k in 0 until itemArray.length()){
-                                                    val value = itemArray.getJSONObject(k).getString("value")
-                                                    val label = itemArray.getJSONObject(k).getString("label")
-                                                    val count = itemArray.getJSONObject(k).getInt("count")
-                                                    filterItem.add(FilterItem(label, value, count))
-                                                }
-                                                productFilter.items = filterItem
-                                            }
+                                when (filterArray.getJSONObject(j).getString("attribute_code")) {
+                                    "brand" -> {
+                                        productFilter.name = filterArray.getJSONObject(j).getString("name")
+                                        productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
+                                        productFilter.position = filterArray.getJSONObject(j).getInt("position")
+                                        val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
+                                        for (k in 0 until itemArray.length()){
+                                            val label = itemArray.getJSONObject(k).getString("label")
+                                            val value = itemArray.getJSONObject(k).getString("value")
+                                            val count = itemArray.getJSONObject(k).getInt("count")
+                                            filterItem.add(FilterItem(label, value, count))
                                         }
+                                        productFilter.items = filterItem
                                     }
                                 }
                             }
@@ -751,6 +739,7 @@ class HttpManagerMagento(context: Context) {
                             products.add(product)
                         }
                         productResponse.products = products
+                        productResponse.filters = filters
 
                         callback.success(productResponse)
                     } catch (e: Exception) {
