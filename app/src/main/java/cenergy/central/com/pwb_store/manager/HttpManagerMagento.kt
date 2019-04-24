@@ -194,7 +194,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("/rest/${getLanguage()}/V1/categories/list")
+                .addPathSegments("rest/${getLanguage()}/V1/categories/list")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "include_in_menu")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
                 .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
@@ -650,12 +650,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegment("rest")
-                .addPathSegment("catalog-service")
-                .addPathSegment(getLanguage())
-                .addPathSegment("V1")
-                .addPathSegment("products")
-                .addPathSegment("search")
+                .addPathSegments("rest/catalog-service/${getLanguage()}/V1/products/search")
                 .build()
 
         val json = Gson().toJson(body)
@@ -679,21 +674,23 @@ class HttpManagerMagento(context: Context) {
                         productResponse.totalCount = productResponseObject.getInt("total_count")
                         val productArray = productResponseObject.getJSONArray("products")
                         for (i in 0 until productArray.length()) {
+                            val productObj = productArray.getJSONObject(i)
                             val product = Product()
                             val productFilter = ProductFilter()
                             val filterItem = arrayListOf<FilterItem>()
 
-                            product.id = productArray.getJSONObject(i).getInt("id")
-                            product.sku = productArray.getJSONObject(i).getString("sku")
-                            product.name = productArray.getJSONObject(i).getString("name")
-                            product.price = productArray.getJSONObject(i).getDouble("price")
-                            product.status = productArray.getJSONObject(i).getInt("status")
+                            product.id = productObj.getInt("id")
+                            product.sku = productObj.getString("sku")
+                            product.name = productObj.getString("name")
+                            product.price = productObj.getDouble("price")
+                            product.status = productObj.getInt("status")
+                            product.brand = productObj.getString("brand")
 
-                            if (!productArray.getJSONObject(i).isNull("image")) {
-                                product.image = productArray.getJSONObject(i).getString("image")
+                            if (!productObj.isNull("image")) {
+                                product.image = productObj.getString("image")
                             }
 
-                            val attrArray = productArray.getJSONObject(i).getJSONArray("custom_attributes")
+                            val attrArray = productObj.getJSONArray("custom_attributes")
                             for (j in 0 until attrArray.length()) {
                                 when (attrArray.getJSONObject(j).getString("attribute_code")) {
                                     "special_price" -> {
@@ -766,7 +763,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("/rest/${getLanguage()}/V1/products/$sku")
+                .addPathSegments("rest/${getLanguage()}/V1/products/$sku")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "status")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
                 .addQueryParameter("searchCriteria[filterGroups][0][filters][0][conditionType]", "eq")
