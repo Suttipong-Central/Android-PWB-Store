@@ -59,11 +59,6 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         super(layoutInflater.inflate(R.layout.popup_filter, null, false),
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         ButterKnife.bind(this, getContentView());
-//        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT);
-//        lp.alignWithParent = true;
-//        lp.setMargins(0, 0, 20, 0);
-//        getContentView().setLayoutParams(lp);
         this.mContext = context;
         setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.background_popup_window));
         setOutsideTouchable(true);
@@ -123,10 +118,6 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     }
 
     public void showAsDropDown(View anchor) {
-        Rect location = locateView(anchor);
-//        showAtLocation(anchor, Gravity.TOP| Gravity.END, location.right - location.left + 45, location.bottom + 25);
-        //super.showAsDropDown(anchor, 25, 25, Gravity.BOTTOM);
-//        this.showAtLocation(anchor, Gravity.TOP| Gravity.END, 45, 0);
         super.showAsDropDown(anchor, 0, 25, Gravity.BOTTOM|Gravity.END);
 
         // setup shadow
@@ -164,21 +155,5 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mFilterByBrandAdapter.setBrandForFilter(filterItems);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
-    }
-    private Rect locateView(View v) {
-        int[] loc_int = new int[2];
-        if (v == null) return null;
-        try {
-            v.getLocationOnScreen(loc_int);
-        } catch (NullPointerException npe) {
-            //Happens when the view doesn't exist on screen anymore.
-            return null;
-        }
-        Rect location = new Rect();
-        location.left = loc_int[0];
-        location.top = loc_int[1];
-        location.right = location.left + v.getWidth();
-        location.bottom = location.top + v.getHeight();
-        return location;
     }
 }

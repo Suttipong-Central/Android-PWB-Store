@@ -30,7 +30,6 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
     public void setViewHolder(Category category) {
         if (!category.getImageURL().isEmpty()) {
-            Log.d("CategoryViewHolder", category.getImageURL());
             Glide.with(itemView.getContext())
                     .load(category.getImageURL())
                     .error(R.drawable.ic_category_placeholder)
