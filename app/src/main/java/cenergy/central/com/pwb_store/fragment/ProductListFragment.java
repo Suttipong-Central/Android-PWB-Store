@@ -684,13 +684,18 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if (getContext() != null) {
 
             Filter filterCategory = Filter.Companion.createFilter("category_id", categoryId, "eq");
+            ArrayList<Filter> filterByCategory = new ArrayList<>();
+            filterByCategory.add(filterCategory);
+            FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
+
             Filter filterBrand = Filter.Companion.createFilter("brand", brandName, "eq");
-            ArrayList<Filter> filters = new ArrayList<>();
-            filters.add(filterCategory);
-            filters.add(filterBrand);
-            FilterGroups filterGroups = new FilterGroups(filters);
+            ArrayList<Filter> filterByBrand = new ArrayList<>();
+            filterByBrand.add(filterBrand);
+            FilterGroups filterGroupBrand = new FilterGroups(filterByBrand);
+
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
-            filterGroupsList.add(filterGroups);
+            filterGroupsList.add(filterGroupCategory);
+            filterGroupsList.add(filterGroupBrand);
 
             SortOrder sortOrder = SortOrder.Companion.createSortOrder("view_count", "DESC");
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
