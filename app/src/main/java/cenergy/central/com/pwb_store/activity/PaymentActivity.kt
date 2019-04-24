@@ -178,9 +178,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun isUserChatAndShop() : Boolean {
-        return if(userInformation?.user != null) {
-            userInformation?.user!!.isChatAndShopUser()
+    private fun isUserChatAndShop(): Boolean {
+        return if (userInformation != null) {
+            if (userInformation!!.user != null) {
+                userInformation!!.user!!.getChatAndShopUser()
+            } else {
+                false
+            }
         } else {
             false
         }

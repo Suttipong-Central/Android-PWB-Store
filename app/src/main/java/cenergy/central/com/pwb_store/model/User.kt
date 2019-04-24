@@ -20,7 +20,7 @@ open class User(
         @SerializedName("updated_at")
         var updatedAt: String = "") : RealmObject(){
 
-    fun isChatAndShopUser() : Boolean {
+    fun getChatAndShopUser() : Boolean {
         return  isChatAndShopUser == 1
     }
 }
