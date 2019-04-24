@@ -44,7 +44,6 @@ import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.FilterItem;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -104,6 +103,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     //Sort
     private String sortName = "view_count";
     private String sortType = "DESC";
+    private Category category;
 
     //Pagination
     private static final int PER_PAGE = 20;
@@ -220,33 +220,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return fragment;
     }
 
-    public static ProductListFragment newInstance(ProductFilterHeader productFilterHeader,
-                                                  boolean search, String storeId, String keyWord) {
-        ProductListFragment fragment = new ProductListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_TITLE, productFilterHeader.getName());
-        args.putBoolean(ARG_SEARCH, search);
-        args.putString(ARG_DEPARTMENT_ID, productFilterHeader.getId());
-        args.putString(ARG_STORE_ID, storeId);
-        args.putString(ARG_KEY_WORD, keyWord);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static ProductListFragment newInstance(ProductFilterSubHeader productFilterSubHeader,
-                                                  boolean search, String storeId, String keyWord) {
-        ProductListFragment fragment = new ProductListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_TITLE, productFilterSubHeader.getName());
-        args.putBoolean(ARG_SEARCH, search);
-        args.putString(ARG_DEPARTMENT_ID, productFilterSubHeader.getId());
-        args.putString(ARG_STORE_ID, storeId);
-        args.putParcelable(ARG_PRODUCT_FILTER_SUB_HEADER, productFilterSubHeader);
-        args.putString(ARG_KEY_WORD, keyWord);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public static ProductListFragment newInstance(Category category, boolean search, String keyWord) {
         ProductListFragment fragment = new ProductListFragment();
         Bundle args = new Bundle();
@@ -254,6 +227,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         args.putBoolean(ARG_SEARCH, search);
         args.putString(ARG_DEPARTMENT_ID, category.getId());
         args.putString(ARG_KEY_WORD, keyWord);
+        args.putParcelable(ARG_CATEGORY, category);
         fragment.setArguments(args);
         return fragment;
     }
@@ -281,14 +255,15 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             title = getArguments().getString(ARG_TITLE);
             isSearch = getArguments().getBoolean(ARG_SEARCH);
             categoryId = getArguments().getString(ARG_DEPARTMENT_ID);
-            ProductFilterSubHeader mProductFilterSubHeader = getArguments().getParcelable(ARG_PRODUCT_FILTER_SUB_HEADER);
+            category = getArguments().getParcelable(ARG_CATEGORY);
+            keyWord = getArguments().getString(ARG_KEY_WORD);
+
 
             // setup filter list
-            if (mProductFilterSubHeader != null) {
-                mProductFilterList = new ProductFilterList(mProductFilterSubHeader.getProductFilterItemList());
-            }
-
-            keyWord = getArguments().getString(ARG_KEY_WORD);
+            // TODO: DOWNLOAD CATEGORY LV3
+//            if (mProductFilterSubHeader != null) {
+//                mProductFilterList = new ProductFilterList(mProductFilterSubHeader.getProductFilterItemList());
+//            }
         }
         resetPage();
 
@@ -471,6 +446,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
+        outState.putParcelable(ARG_CATEGORY, category);
         outState.putParcelable(ARG_PRODUCT_FILTER, mProductFilterList);
 //        outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
         outState.putString(ARG_DEPARTMENT_ID, categoryId);
@@ -490,6 +466,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     @SuppressWarnings("UnusedParameters")
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         // Restore Instance State here
+        category = savedInstanceState.getParcelable(ARG_CATEGORY);
         mProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER);
 //        mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
         categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID);

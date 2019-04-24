@@ -101,6 +101,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private ProductFilterHeader productFilterHeader;
     private Category categoryLv1;
     private ProductFilterSubHeader productFilterSubHeader;
+    private Category categoryLv2;
     private Fragment currentFragment;
 
     @Subscribe
@@ -294,15 +295,45 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SUB_HEADER) != null) {
                 startCategoryFragment();
             } else if (getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_PRODUCT_LIST) != null) {
-                if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
-                    startCategoryFragment();
-                } else {
-                    startCategoryLvTwoFragment(this.categoryLv1);
-                }
+//                if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
+//                    startCategoryFragment();
+//                } else {
+//                    startCategoryLvTwoFragment(this.categoryLv1);
+//                }
+                startCategoryLvTwoFragment(this.categoryLv1);
             } else {
                 supportFinishAfterTransition();
             }
         }
+    }
+
+    private void updatePLP(String parentId) {
+        HttpManagerMagento.Companion.getInstance(this).retrieveCategory(parentId,
+                new ApiResponseCallback<List<Category>>() {
+            @Override
+            public void success(@Nullable final List<Category> categories) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentFragment instanceof ProductListFragment && categories != null) {
+                                for (Category category : categories) {
+                                    if (category.getId().equals(categoryLv2.getId())) {
+                                        categoryLv2 = category; // force be new data th/en
+                                    }
+                                }
+                            startProductListFragment(categoryLv2); // force reopen PLP
+                            dismissProgressDialog();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void failure(@NotNull APIError error) {
+                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                dismissProgressDialog();
+            }
+        });
     }
 
     private void retrieveCategories() {
@@ -331,23 +362,30 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         mCategoryDao = new CategoryDao(categories);
         createDrawerMenu(categories);
 
-        if (currentFragment instanceof CategoryFragment) {
-            ((CategoryFragment) currentFragment).foreRefresh();
-        } else if (currentFragment instanceof SubHeaderProductFragment){
+        if (categoryLv1 != null) {
             for (Category category : categories) {
                 if (category.getId().equals(categoryLv1.getId())) {
                     categoryLv1 = category; // force be new data th/en
                 }
             }
-            ((SubHeaderProductFragment) currentFragment).foreRefresh(categoryLv1);
-
-        } else if (currentFragment instanceof ProductListFragment) {
-            // TODO: fore refresh product list
-        } else {
-            startCategoryFragment();
         }
 
-        dismissProgressDialog();
+        // check current page
+        if (currentFragment instanceof CategoryFragment) {
+            ((CategoryFragment) currentFragment).foreRefresh();
+            dismissProgressDialog();
+        } else if (currentFragment instanceof SubHeaderProductFragment){
+            if (categoryLv1 != null) {
+                ((SubHeaderProductFragment) currentFragment).foreRefresh(categoryLv1);
+            }
+            dismissProgressDialog();
+        } else if (currentFragment instanceof ProductListFragment) {
+            // TODO: fore refresh product list
+            updatePLP(categoryLv2.getParentId()); // update categoryLv2 and update PLP
+        } else {
+            startCategoryFragment();
+            dismissProgressDialog();
+        }
     }
 
     private void createDrawerMenu(List<Category> categories) {
@@ -488,13 +526,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 .commitAllowingStateLoss();
     }
 
-    private void startProductListFragment(ProductFilterHeader productFilterHeader) {
-        currentFragment = ProductListFragment.newInstance(productFilterHeader, false, storeId, "");
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_PRODUCT_LIST)
-                .commitAllowingStateLoss();
-    }
-
     private void dismissProgressDialog() {
         if (!isFinishing() && mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
@@ -544,8 +575,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     @Override
     public void onClickedCategoryLv2(Category category) {
-        Log.d("CategoryID: ", category.getId());
-        startProductListFragment(category);
+        this.categoryLv2 = category;
+        startProductListFragment(categoryLv2);
     }
     // endregion
 }
