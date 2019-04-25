@@ -12,6 +12,7 @@ import cenergy.central.com.pwb_store.model.response.ProductSearchResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -174,15 +175,13 @@ public interface ProductService {
     Call<Product> getProductDetail(
             @Path("sku") String sku);
 
-    @GET("/{lang}/rest/V1/products")
+    @GET("/rest/{lang}/V1/products")
     Call<ProductByBarcodeResponse> getProductFromBarcode(
+            @Header("Authorization") String token,
             @Path("lang") String language,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") String barCodeName,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") String barCode,
-            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String eq,
-            @Query("searchCriteria[sortOrders][0][field]") String name,
-            @Query("searchCriteria[pageSize]") int pageSize,
-            @Query("searchCriteria[currentPage]") int currentPage);
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String eq);
 
     // TODO: Delete when get new api this case so hard for filter
     @GET("/rest/V1/products")

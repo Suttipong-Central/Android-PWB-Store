@@ -205,7 +205,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
     // region retrieve product
     private fun retrieveProductFromBarcode(barcode: String) {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getProductFromBarcode("barcode", barcode, "eq", "name", 10, 1, object : ApiResponseCallback<Product?> {
+        HttpManagerMagento.getInstance(this).getProductFromBarcode(barcode, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
                 dismissProgressDialog()
                 if (response != null) {
