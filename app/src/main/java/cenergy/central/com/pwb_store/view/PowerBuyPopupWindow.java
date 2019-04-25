@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,6 +26,7 @@ import cenergy.central.com.pwb_store.adapter.FilterByBrandAdapter;
 import cenergy.central.com.pwb_store.adapter.ProductFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.SortingAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
+import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.FilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.ProductFilterList;
@@ -50,7 +52,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     private SortingAdapter mSortingAdapter;
     private AvaliableStoreFilterAdapter mAvaliableStoreFilterAdapter;
     private LinearLayoutManager mLayoutManager;
-    private ProductFilterList mProductFilterList;
+    private ArrayList<Category>  mProductFilterList;
     private StoreFilterList mStoreFilterList;
     private Context mContext;
 
@@ -64,11 +66,11 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         setOutsideTouchable(true);
     }
 
-    public void setRecyclerViewFilter(ProductFilterList productFilterList) {
-        this.mProductFilterList = productFilterList;
+    public void setRecyclerViewFilter(ArrayList<Category> categoriesLv3) {
+        this.mProductFilterList = categoriesLv3;
         mProductFilterAdapter = new ProductFilterAdapter(mContext);
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mProductFilterAdapter.setProductFilter(productFilterList);
+        mProductFilterAdapter.setProductFilter(categoriesLv3);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mProductFilterAdapter);
     }
@@ -91,14 +93,6 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mAvaliableStoreFilterAdapter.setStoreFilter(storeFilterList);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
         mRecyclerViewFilter.setAdapter(mAvaliableStoreFilterAdapter);
-    }
-
-    public void setFilterItem(ProductFilterSubHeader productFilterSubHeader) {
-        if (productFilterSubHeader.isExpanded()) {
-            mProductFilterAdapter.addProductLevel2(productFilterSubHeader);
-        } else {
-            mProductFilterAdapter.removeProductLevel3(mProductFilterList);
-        }
     }
 
     public void setSortingItem(SortingHeader sortingHeader) {
@@ -140,8 +134,8 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mSortingAdapter.updateSingleProductFilterItem(sortingItem);
     }
 
-    public void updateSingleProductFilterItem(ProductFilterItem productFilterItem) {
-        mProductFilterAdapter.updateSingleProductFilterItem(productFilterItem);
+    public void updateSingleProductFilterItem(Category category) {
+        mProductFilterAdapter.updateSingleProductFilterItem(category);
     }
 
     @Override

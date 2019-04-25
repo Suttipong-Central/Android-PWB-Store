@@ -42,6 +42,6 @@ public class ProductFilterItemViewHolder extends RecyclerView.ViewHolder impleme
         ProductFilterItem productFilterItem = (ProductFilterItem) itemView.getTag();
         productFilterItem.setSelected(!productFilterItem.isSelected());
         mTxtItem.setTextAppearance(Contextor.getInstance().getContext(),productFilterItem.isSelected() ? R.style.textSubCheck : R.style.textSub);
-        EventBus.getDefault().post(new ProductFilterItemBus(productFilterItem, getAdapterPosition()));
+//        EventBus.getDefault().post(new ProductFilterItemBus(productFilterItem, getAdapterPosition()));
     }
 }
