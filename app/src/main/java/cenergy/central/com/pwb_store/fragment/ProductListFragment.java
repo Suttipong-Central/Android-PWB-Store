@@ -735,25 +735,25 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private void loadCategoryLv3(Category categoryLv2) {
         if (getContext() == null) return;
         HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(categoryLv2.getId(),
-                new ApiResponseCallback<List<Category>>() {
-            @Override
-            public void success(final List<Category> categories) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            categoriesLv3 = new ArrayList<>(); // clear category lv3 list
-                            categoriesLv3.addAll(categories);
-                            mProductLayout.setVisibility(View.VISIBLE); // show product layout
+                true, new ApiResponseCallback<List<Category>>() {
+                    @Override
+                    public void success(final List<Category> categories) {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    categoriesLv3 = new ArrayList<>(); // clear category lv3 list
+                                    categoriesLv3.addAll(categories);
+                                    mProductLayout.setVisibility(View.VISIBLE); // show product layout
+                                }
+                            });
                         }
-                    });
-                }
-            }
+                    }
 
-            @Override
-            public void failure(@NotNull APIError error) {
-                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-            }
-        });
+                    @Override
+                    public void failure(@NotNull APIError error) {
+                        Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                    }
+                });
     }
 }

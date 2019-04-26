@@ -63,6 +63,7 @@ class HttpManagerMagento(context: Context) {
         private const val PROMOTION_CATEGORY_ID = "130639"
         private const val FIVE_STAR_CATEGORY_ID = "130704"
 
+        private val SPECIAL_CATEGORY_IDS = arrayListOf("130108","130107")
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
@@ -190,8 +191,8 @@ class HttpManagerMagento(context: Context) {
      * @query include_in_menu 1 meant true
      * @query parent_id
      * */
-    fun retrieveCategory(parentId: String, callback: ApiResponseCallback<List<Category>>) {
-        val httpUrl = HttpUrl.Builder()
+    fun retrieveCategory(parentId: String, includeInMenu :Boolean, callback: ApiResponseCallback<List<Category>>) {
+        val httpUrlInclude = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
                 .addPathSegments("rest/${getLanguage()}/V1/categories/list")
@@ -201,8 +202,16 @@ class HttpManagerMagento(context: Context) {
                 .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
                 .build()
 
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments("rest/${getLanguage()}/V1/categories/list")
+                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
+                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                .build()
+
         val request = Request.Builder()
-                .url(httpUrl)
+                .url(if (includeInMenu) httpUrlInclude else httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
                 .build()
 
@@ -216,6 +225,7 @@ class HttpManagerMagento(context: Context) {
 
                 try {
                     val categoryList = arrayListOf<Category>()
+                    val toRemove = arrayListOf<Category>()
                     val data = JSONObject(body.string())
                     val items = data.getJSONArray("items")
                     for (i in 0 until items.length()) {
@@ -235,9 +245,8 @@ class HttpManagerMagento(context: Context) {
 
                         val customAttributes = categoryObj.getJSONArray("custom_attributes")
                         for (k in 0 until customAttributes.length()) {
-                            val attrName = customAttributes.getJSONObject(k).getString("name")
                             // hard code get icon for tablet :(
-                            when (attrName) {
+                            when (customAttributes.getJSONObject(k).getString("name")) {
                                 "image" -> {
                                     category.imageURL = customAttributes.getJSONObject(k).getString("value")
                                 }
@@ -245,6 +254,12 @@ class HttpManagerMagento(context: Context) {
                         }
                         categoryList.add(category)
                     }
+                    categoryList.forEach { category ->
+                        if(!category.IsIncludeInMenu() && !SPECIAL_CATEGORY_IDS.contains(category.id)){
+                            toRemove.add(category)
+                        }
+                    }
+                    categoryList.removeAll(toRemove)
                     callback.success(categoryList) // return
                 } catch (e: Exception) {
                     callback.failure(APIError(e))

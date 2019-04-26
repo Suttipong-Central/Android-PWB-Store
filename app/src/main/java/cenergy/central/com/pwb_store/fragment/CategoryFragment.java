@@ -134,28 +134,30 @@ public class CategoryFragment extends Fragment {
     }
 
     private void loadCategories() {
-        HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory("2",
-                new ApiResponseCallback<List<Category>>() {
-            @Override
-            public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
+        if(getContext() != null){
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory("2", false,
+                    new ApiResponseCallback<List<Category>>() {
                         @Override
-                        public void run() {
-                            if (isAdded()) {
-                                mAdapter.setCategory(categories);
+                        public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (isAdded()) {
+                                            mAdapter.setCategory(categories);
+                                        }
+                                    }
+                                });
                             }
                         }
-                    });
-                }
-            }
 
-            @Override
-            public void failure(@NotNull APIError error) {
-                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                dismissProgressDialog();
-            }
-        });
+                        @Override
+                        public void failure(@NotNull APIError error) {
+                            Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                            dismissProgressDialog();
+                        }
+                    });
+        }
     }
 
     @Override

@@ -308,7 +308,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     private void updatePLP(String parentId) {
-        HttpManagerMagento.Companion.getInstance(this).retrieveCategory(parentId,
+        HttpManagerMagento.Companion.getInstance(this).retrieveCategory(parentId, true,
                 new ApiResponseCallback<List<Category>>() {
             @Override
             public void success(@Nullable final List<Category> categories) {
@@ -339,23 +339,24 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void retrieveCategories() {
         // currentFragment null?
         showProgressDialog();
-        HttpManagerMagento.Companion.getInstance(this).retrieveCategory("2", new ApiResponseCallback<List<Category>>() {
-            @Override
-            public void success(@Nullable final List<Category> categories) {
-                runOnUiThread(new Runnable() {
+        HttpManagerMagento.Companion.getInstance(this).retrieveCategory("2", false
+                , new ApiResponseCallback<List<Category>>() {
                     @Override
-                    public void run() {
-                        handleCategories(categories);
+                    public void success(@Nullable final List<Category> categories) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                handleCategories(categories);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failure(@NotNull APIError error) {
+                        Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                        dismissProgressDialog();
                     }
                 });
-            }
-
-            @Override
-            public void failure(@NotNull APIError error) {
-                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                dismissProgressDialog();
-            }
-        });
     }
 
     private void handleCategories(List<Category> categories) {

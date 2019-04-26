@@ -59,7 +59,7 @@ class SubHeaderProductFragment : Fragment() {
 
     private fun loadCategories(parentId: String) {
         activity?.let {
-            HttpManagerMagento.getInstance(it).retrieveCategory(parentId,
+            HttpManagerMagento.getInstance(it).retrieveCategory(parentId, true,
                     object : ApiResponseCallback<List<Category>> {
                         override fun success(response: List<Category>?) {
                             it.runOnUiThread {
