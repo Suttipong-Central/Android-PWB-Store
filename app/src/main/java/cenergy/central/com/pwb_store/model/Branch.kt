@@ -3,11 +3,6 @@ package cenergy.central.com.pwb_store.model
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 
-/**
- * Created by Anuphap Suwannamas on 26/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 open class Branch(
         @SerializedName("storepickup_id")
         var storeId: String = "",
@@ -29,4 +24,10 @@ open class Branch(
         var latitude: String = "",
         var longitude: String = "",
         @SerializedName("lead_time")
-        var leadTime: String = ""): RealmObject()
+        var leadTime: String = "",
+        var isActive: Int = 0,
+        var sellerCode: String = "",
+        var attrSetName: String = "",
+        var createdAt: String = "",
+        var updatedAt: String = "",
+        var fax: String = ""): RealmObject()

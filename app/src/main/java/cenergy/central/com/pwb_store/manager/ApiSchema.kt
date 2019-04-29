@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.manager
 
-object POWERBUY {
+object PowerBuy {
     object MEMBER {
         // getPWBCustomer()
         // rest/V1/headless/customers/:telephone
@@ -10,6 +10,7 @@ object POWERBUY {
         const val PATH_V1 = "V1"
         const val PATH_HEADLESS = "headless"
         const val PATH_CUSTOMERS = "customers"
+        const val FULL_PATH = "$PATH_REST/$PATH_V1/$PATH_HEADLESS/$PATH_CUSTOMERS"
 
         // fields
         const val ID = "id"

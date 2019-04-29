@@ -41,7 +41,6 @@ import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
 import org.joda.time.DateTime
-import kotlin.collections.ArrayList
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -488,11 +487,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             }
 
             override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                if (error.errorCode == null) {
-                    showAlertDialog("", getString(R.string.not_connected_network))
-                } else {
-                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                if (!isFinishing) {
+                    mProgressDialog?.dismiss()
+                    if (error.errorCode == null) {
+                        showAlertDialog("", getString(R.string.not_connected_network))
+                    } else {
+                        showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                    }
                 }
             }
         })
@@ -545,26 +546,30 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun getStoresDelivery() {
         this.branches = arrayListOf()
-        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<BranchResponse> {
-            override fun success(response: BranchResponse?) {
-                mProgressDialog?.dismiss()
-                if (response != null && userInformation != null) {
-                    val branch = response.items.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
-                    if (branch != null) {
-                        branches.add(branch)
-                        response.items.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
+        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
+            override fun success(response: List<Branch>?) {
+                runOnUiThread {
+                    mProgressDialog?.dismiss()
+                    if (response != null && userInformation != null) {
+                        val branch = response.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
+                        if (branch != null) {
+                            branches.add(branch)
+                            response.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
+                        } else {
+                            response.sortedBy { it.storeId }.forEach { branches.add(it) }
+                        }
+                        startStorePickupFragment(response.size)
                     } else {
-                        response.items.sortedBy { it.storeId }.forEach { branches.add(it) }
+                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                     }
-                    startStorePickupFragment(response.totalBranch)
-                } else {
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                 }
             }
 
             override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                runOnUiThread {
+                    mProgressDialog?.dismiss()
+                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                }
             }
         })
     }

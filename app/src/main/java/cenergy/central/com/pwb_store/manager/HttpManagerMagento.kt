@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -1113,20 +1114,116 @@ class HttpManagerMagento(context: Context) {
     // endregion
 
     // region store
-    fun getBranches(callback: ApiResponseCallback<BranchResponse>) {
-        val cartService = retrofit.create(CartService::class.java)
-        cartService.getBranches(getLanguage(),"storepickup_id", "ASC").enqueue(object : Callback<BranchResponse> {
-            override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
-                if (response != null && response.isSuccessful) {
-                    val branchResponse = response.body()
-                    callback.success(branchResponse)
+//    fun getBranches(callback: ApiResponseCallback<BranchResponse>) {
+//        val cartService = retrofit.create(CartService::class.java)
+//        cartService.getBranches(getLanguage(),"storepickup_id", "ASC").enqueue(object : Callback<BranchResponse> {
+//            override fun onResponse(call: Call<BranchResponse>, response: Response<BranchResponse>?) {
+//                if (response != null && response.isSuccessful) {
+//                    val branchResponse = response.body()
+//                    callback.success(branchResponse)
+//                } else {
+//                    callback.failure(APIErrorUtils.parseError(response))
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<BranchResponse>, t: Throwable) {
+//                callback.failure(APIError(t))
+//            }
+//        })
+//    }
+
+    fun getBranches(callback: ApiResponseCallback<List<Branch>>) {
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments("rest/${getLanguage()}/V1/storepickup/stores/sts")
+                .build()
+        val request = Request.Builder()
+                .url(httpUrl)
+                .build()
+
+        defaultHttpClient.newCall(request).enqueue(object: okhttp3.Callback{
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
+                if (response != null) {
+                    val data = response.body()
+                    val branches = arrayListOf<Branch>()
+                    try {
+                        val arrayObj = JSONArray(data?.string())
+                        for (i in 0 until arrayObj.length()) {
+                            val itemObj = arrayObj.getJSONObject(i)
+                            if (itemObj.has("store")) {
+                                val storeObj = itemObj.getJSONObject("store")
+                                val branch = Branch() // new Branch
+                                branch.storeId = storeObj.getString("id")
+                                branch.storeName = storeObj.getString("name")
+                                branch.isActive = if(storeObj.getBoolean("is_active")) 1  else 0
+                                branch.sellerCode = storeObj.getString("seller_code")
+                                branch.createdAt = storeObj.getString("created_at")
+                                branch.updatedAt = storeObj.getString("updated_at")
+                                branch.attrSetName = storeObj.getString("attribute_set_name")
+
+                                // field extension_attributes
+                                if (storeObj.has("extension_attributes")) {
+                                    val extensionObj = storeObj.getJSONObject("extension_attributes")
+                                    if (extensionObj.has("address")) {
+                                        val addressObj = extensionObj.getJSONObject("address")
+                                        branch.city =  addressObj.getString("city")
+                                        branch.postcode = addressObj.getString("postcode")
+                                        val street = addressObj.getJSONArray("street")
+                                        var txtStreet = ""
+                                        for (s in 0 until street.length()) {
+                                            txtStreet += street.getString(s)
+                                        }
+                                        branch.address = "$txtStreet, ${branch.city}, ${branch.postcode}"
+                                        val coordinatesObj = addressObj.getJSONObject("coordinates")
+                                        branch.latitude = coordinatesObj.getString("latitude")
+                                        branch.longitude = coordinatesObj.getString("longitude")
+                                    }
+
+                                    if (extensionObj.has("opening_hours")) {
+                                        val openingArray = extensionObj.getJSONArray("opening_hours")
+                                        if (openingArray.length() > 0) {
+                                            val openItemArray = openingArray.getJSONArray(openingArray.length() - 1)
+                                            val startTime = openItemArray.getJSONObject(0).getString("start_time")
+                                            val endTime = openItemArray.getJSONObject(0).getString("end_time")
+                                            branch.description = "$startTime - $endTime"
+                                        }
+                                    }
+                                }
+
+                                // field custom_attributes
+                                if (storeObj.has("custom_attributes")) {
+                                    val customAttrArray = storeObj.getJSONArray("custom_attributes")
+                                    for (m in 0 until customAttrArray.length()) {
+                                        val ctmAttr = customAttrArray.getJSONObject(m)
+                                        if (ctmAttr.has("name")) {
+                                            when (ctmAttr.getString("name")) {
+                                                "contact_phone" -> {
+                                                    branch.phone = ctmAttr.getString("value") ?: ""
+                                                }
+                                                "contact_fax" -> {
+                                                    branch.fax = ctmAttr.getString("value") ?: ""
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                branches.add(branch) // add branch
+                            }
+                        }
+                        callback.success(branches)
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
+                        Log.e("JSON Parser", "Error parsing data $e")
+                    }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
+                response?.close()
             }
 
-            override fun onFailure(call: Call<BranchResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                callback.failure(APIError(e))
             }
         })
     }
@@ -1137,11 +1234,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegment(getLanguage())
-                .addPathSegment(POWERBUY.MEMBER.PATH_REST)
-                .addPathSegment(POWERBUY.MEMBER.PATH_V1)
-                .addPathSegment(POWERBUY.MEMBER.PATH_HEADLESS)
-                .addPathSegment(POWERBUY.MEMBER.PATH_CUSTOMERS)
+                .addPathSegments("${getLanguage()}/${PowerBuy.MEMBER.FULL_PATH}")
                 .addPathSegment(telephone)
                 .build()
 
@@ -1166,23 +1259,23 @@ class HttpManagerMagento(context: Context) {
 
                         for (i in 0 until items.length()) {
                             val memberDetail = items.getJSONObject(i)
-                            val id = if (memberDetail.has(POWERBUY.MEMBER.ID)) memberDetail.getLong(POWERBUY.MEMBER.ID) else 0L
-                            val firstname = if (memberDetail.has(POWERBUY.MEMBER.FIRST_NAME)) {
-                                memberDetail.getString(POWERBUY.MEMBER.FIRST_NAME) ?: ""
+                            val id = if (memberDetail.has(PowerBuy.MEMBER.ID)) memberDetail.getLong(PowerBuy.MEMBER.ID) else 0L
+                            val firstname = if (memberDetail.has(PowerBuy.MEMBER.FIRST_NAME)) {
+                                memberDetail.getString(PowerBuy.MEMBER.FIRST_NAME) ?: ""
                             } else ""
-                            val lastname = if (memberDetail.has(POWERBUY.MEMBER.LAST_NAME)) {
-                                memberDetail.getString(POWERBUY.MEMBER.LAST_NAME) ?: ""
+                            val lastname = if (memberDetail.has(PowerBuy.MEMBER.LAST_NAME)) {
+                                memberDetail.getString(PowerBuy.MEMBER.LAST_NAME) ?: ""
                             } else ""
-                            val email = if (memberDetail.has(POWERBUY.MEMBER.EMAIL)) {
-                                memberDetail.getString(POWERBUY.MEMBER.EMAIL) ?: ""
+                            val email = if (memberDetail.has(PowerBuy.MEMBER.EMAIL)) {
+                                memberDetail.getString(PowerBuy.MEMBER.EMAIL) ?: ""
                             } else ""
-                            val t1cNo = if (memberDetail.has(POWERBUY.MEMBER.THE_1_CARD_NUMNER)) {
-                                memberDetail.getString(POWERBUY.MEMBER.THE_1_CARD_NUMNER) ?: ""
+                            val t1cNo = if (memberDetail.has(PowerBuy.MEMBER.THE_1_CARD_NUMNER)) {
+                                memberDetail.getString(PowerBuy.MEMBER.THE_1_CARD_NUMNER) ?: ""
                             } else ""
 
                             val memberAddressList: ArrayList<MemberAddress> = arrayListOf()
-                            if (memberDetail.has(POWERBUY.MEMBER.ADDRESSES)) {
-                                val addresses = memberDetail.getJSONArray(POWERBUY.MEMBER.ADDRESSES)
+                            if (memberDetail.has(PowerBuy.MEMBER.ADDRESSES)) {
+                                val addresses = memberDetail.getJSONArray(PowerBuy.MEMBER.ADDRESSES)
                                 for (k in 0 until addresses.length()) {
                                     val addressDetail = addresses.getJSONObject(k)
                                     val memberAddress = MemberAddress()
