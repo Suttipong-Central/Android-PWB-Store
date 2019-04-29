@@ -554,9 +554,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         val branch = response.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
                         if (branch != null) {
                             branches.add(branch)
-                            response.sortedBy { it.storeId }.forEach { if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
+                            response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
+                                if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
                         } else {
-                            response.sortedBy { it.storeId }.forEach { branches.add(it) }
+                            response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
+                                branches.add(it)
+                            }
                         }
                         startStorePickupFragment(response.size)
                     } else {
