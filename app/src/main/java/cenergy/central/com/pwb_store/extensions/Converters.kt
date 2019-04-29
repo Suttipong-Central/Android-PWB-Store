@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.extensions
 import android.content.Context
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CacheCartItem
+import cenergy.central.com.pwb_store.model.Category
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 
 fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
@@ -36,4 +37,9 @@ fun List<PaymentMethod>.getMethodTitle(): List<String> {
         paymentMethod.title?.let { methods.add(it) }
     }
     return methods
+}
+
+fun Category.isSpecial(): Boolean {
+    val specialIDs = arrayListOf("130108", "130107")
+    return specialIDs.contains(this.id)
 }

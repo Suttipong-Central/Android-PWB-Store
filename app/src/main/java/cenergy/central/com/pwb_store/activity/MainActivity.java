@@ -36,6 +36,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
+import cenergy.central.com.pwb_store.extensions.ConvertersKt;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
@@ -108,7 +109,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     public void onEvent(DrawItemBus drawItemBus) {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
         this.categoryLv1 = drawerItem.getCategory();
-        startCategoryLvTwoFragment(this.categoryLv1);
+        handleStartCategoryLv1();
 
 //        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
 //            startProductListFragment(this.productFilterHeader);
@@ -125,12 +126,13 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // Event from onClick back button in product list
     @Subscribe
     public void onEvent(CategoryTwoBus categoryTwoBus) {
-        startCategoryLvTwoFragment(this.categoryLv1);
+//        startCategoryLvTwoFragment(this.categoryLv1);
 //        if (this.productFilterHeader.getProductFilterSubHeaders().isEmpty()){
 //            startCategoryFragment();
 //        } else {
 //            startCategoryLvTwoFragment(this.productFilterHeader);
 //        }
+        onBackPressed();
     }
 
     // Event from onClick category item
@@ -300,10 +302,18 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 //                } else {
 //                    startCategoryLvTwoFragment(this.categoryLv1);
 //                }
-                startCategoryLvTwoFragment(this.categoryLv1);
+                handlePLPBackPress();
             } else {
                 supportFinishAfterTransition();
             }
+        }
+    }
+
+    private void handlePLPBackPress() {
+        if(categoryLv2 == null){
+            startCategoryFragment();
+        } else {
+            startCategoryLvTwoFragment(this.categoryLv1);
         }
     }
 
@@ -382,7 +392,12 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             dismissProgressDialog();
         } else if (currentFragment instanceof ProductListFragment) {
             // TODO: fore refresh product list
-            updatePLP(categoryLv2.getParentId()); // update categoryLv2 and update PLP
+            if(categoryLv2 != null){
+                updatePLP(categoryLv2.getParentId()); // update categoryLv2 and update PLP
+            } else {
+                startProductListFragment(categoryLv1); // force reopen PLP with special category
+                dismissProgressDialog();
+            }
         } else {
             startCategoryFragment();
             dismissProgressDialog();
@@ -571,7 +586,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     @Override
     public void onClickedCategoryLv1(Category category) {
         this.categoryLv1 = category;
-        startCategoryLvTwoFragment(categoryLv1);
+        handleStartCategoryLv1();
     }
 
     @Override
@@ -580,4 +595,14 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         startProductListFragment(categoryLv2);
     }
     // endregion
+
+
+    private void handleStartCategoryLv1() {
+        if(ConvertersKt.isSpecial(categoryLv1)){
+            this.categoryLv2 = null; //Clear categoryLv2
+            startProductListFragment(categoryLv1);
+        } else {
+            startCategoryLvTwoFragment(categoryLv1);
+        }
+    }
 }

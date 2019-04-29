@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.manager.service.UserService
@@ -62,8 +63,6 @@ class HttpManagerMagento(context: Context) {
         //Special Promotion Category ID
         private const val PROMOTION_CATEGORY_ID = "130639"
         private const val FIVE_STAR_CATEGORY_ID = "130704"
-
-        private val SPECIAL_CATEGORY_IDS = arrayListOf("130108","130107")
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
@@ -255,7 +254,7 @@ class HttpManagerMagento(context: Context) {
                         categoryList.add(category)
                     }
                     categoryList.forEach { category ->
-                        if(!category.IsIncludeInMenu() && !SPECIAL_CATEGORY_IDS.contains(category.id)){
+                        if(!category.IsIncludeInMenu() && !category.isSpecial()){
                             toRemove.add(category)
                         }
                     }

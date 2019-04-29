@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-
 import cenergy.central.com.pwb_store.Constants;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -16,6 +15,7 @@ import io.realm.annotations.Ignore;
  */
 
 public class Category extends RealmObject implements IViewType, Parcelable {
+
     @Ignore
     private int viewTypeId;
     private String id;
