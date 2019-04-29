@@ -12,14 +12,14 @@ enum class DeliveryType(val methodCode: String) {
     STANDARD("standard") {
         override fun toString(): String = "ส่งธรรมดา (โดย KERRY)"
     },
-    STORE_PICK_UP("storepickup") {
+    STORE_PICK_UP("sts") {
         override fun toString(): String = "รับที่สาขา"
     },
-    HOME("homedelivery") {
+    HOME("hdl") {
         override fun toString(): String = "กำหนดวันจัดส่ง (โดยรถพาวเวอร์บาย)"
     };
     companion object {
-        private val map = DeliveryType.values().associateBy(DeliveryType::methodCode)
+        private val map = values().associateBy(DeliveryType::methodCode)
         fun fromString(value: String) = map[value]
     }
 }

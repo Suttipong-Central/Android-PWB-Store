@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.DeliveryOptionsAdapter
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.model.DeliveryOption
+import cenergy.central.com.pwb_store.model.DeliveryType
 
 class DeliveryOptionsFragment : Fragment() {
 
@@ -48,6 +49,17 @@ class DeliveryOptionsFragment : Fragment() {
         val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsListener)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = deliveryOptionsAdapter
-        deliveryOptionsAdapter.deliveryOptionList = deliveryOptions
+        deliveryOptionsAdapter.deliveryOptionList = getDeliveryOptionList()
+
+    }
+
+    private fun getDeliveryOptionList(): List<DeliveryOption> {
+        val deliveryMethods = arrayListOf<DeliveryOption>()
+        deliveryOptions.forEach {
+            if(DeliveryType.fromString(it.methodCode) != null){
+                deliveryMethods.add(it)
+            }
+        }
+        return deliveryMethods
     }
 }
