@@ -242,9 +242,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             categoryLv2 = getArguments().getParcelable(ARG_CATEGORY);
             keyWord = getArguments().getString(ARG_KEY_WORD);
 
-
-            // setup product filter list
-            loadCategoryLv3(categoryLv2);
+            // no search
+            if (!isSearch) {
+                // setup product filter list
+                loadCategoryLv3(categoryLv2);
+            }
         }
         resetPage();
 
