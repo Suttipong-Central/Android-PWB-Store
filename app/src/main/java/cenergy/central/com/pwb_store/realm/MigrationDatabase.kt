@@ -44,6 +44,16 @@ class MigrationDatabase : RealmMigration {
                 addField("updatedAt", String::class.java)
                 addField("path", String::class.java)
             }
+
+            // Update Branch
+            realm.schema.get("Branch")?.apply {
+                addField("isActive", Int::class.java)
+                addField("sellerCode", String::class.java).setNullable("sellerCode", false)
+                addField("attrSetName", String::class.java).setNullable("attrSetName", false)
+                addField("createdAt", String::class.java).setNullable("createdAt", false)
+                addField("updatedAt", String::class.java).setNullable("updatedAt", false)
+                addField("fax", String::class.java).setNullable("fax", false)
+            }
         }
     }
 }
