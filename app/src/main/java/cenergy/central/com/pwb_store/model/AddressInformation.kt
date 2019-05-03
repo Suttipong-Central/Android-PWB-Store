@@ -29,7 +29,10 @@ open class AddressInformation(
         var sameBilling: Int = 0,
         @SerializedName("save_in_address_book")
         var saveInAddress: Int = 0,
-        var saveInAddressBook: String? = null
+        var saveInAddressBook: String? = null,
+        var company: String = "",
+        @SerializedName("vat_id")
+        var vatId: String = ""
 ) : RealmObject() {
 
     companion object {
@@ -37,7 +40,8 @@ open class AddressInformation(
                           homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
                           homeSubDistrict: String, homeCity: String, homeRoad: String, homePostalCode: String,
                           homePhone: String, provinceId: String, provinceCode: String, countryId: String,
-                          districtId: String, subDistrictId: String, postcodeId: String, sameBilling: Int): AddressInformation {
+                          districtId: String, subDistrictId: String, postcodeId: String, sameBilling: Int,
+                          company: String, vatId: String): AddressInformation {
 
             val subAddress = SubAddress(
                     mobile = homePhone,
@@ -63,6 +67,8 @@ open class AddressInformation(
                     email = email,
                     telephone = contactNo,
                     subAddress = subAddress,
+                    company = company,
+                    vatId = vatId,
                     sameBilling = sameBilling)
         }
     }

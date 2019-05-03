@@ -6,7 +6,7 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 2
+        const val SCHEMA_VERSION = 3
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -22,6 +22,14 @@ class MigrationDatabase : RealmMigration {
             realm.schema.get("User")?.apply {
                 // add field isChatAndShopUser
                 addField("isChatAndShopUser", Int::class.java)
+            }
+        }
+        // Update AddressInformation model
+        if (oldVersion < 3) {
+            realm.schema.get("AddressInformation")?.apply {
+                // add field isChatAndShopUser
+                addField("company", String::class.java).setNullable("company", false)
+                addField("vatId", String::class.java).setNullable("vatId", false)
             }
         }
     }

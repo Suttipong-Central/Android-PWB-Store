@@ -8,10 +8,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,15 +44,17 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
     private lateinit var contactNumberEdt: PowerBuyEditTextBorder
     private lateinit var emailEdt: PowerBuyEditTextBorder
-    private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
-    private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
-    private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
-    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
     private lateinit var homeNoEdt: PowerBuyEditTextBorder
     private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var homeSoiEdt: PowerBuyEditTextBorder
     private lateinit var homeRoadEdt: PowerBuyEditTextBorder
     private lateinit var homePhoneEdt: PowerBuyEditTextBorder
+    private lateinit var companyEdt: PowerBuyEditTextBorder
+    private lateinit var taxIdEdt: PowerBuyEditTextBorder
+    private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
+    private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
+    private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
+    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeNoEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var billingHomeSoiEdt: PowerBuyEditTextBorder
@@ -63,6 +63,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: CardView
     private lateinit var radioGroup: RadioGroup
+    private lateinit var radioTaxGroup: RadioGroup
 
     private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
     private lateinit var districtInput: PowerBuyAutoCompleteTextStroke
@@ -75,6 +76,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingPostcodeInput: PowerBuyAutoCompleteTextStroke
 
     private lateinit var billingLayout: LinearLayout
+    private lateinit var taxInvoiceLayout: LinearLayout
 
     private var mProgressDialog: ProgressDialog? = null
 
@@ -109,7 +111,10 @@ class PaymentBillingFragment : Fragment() {
     private var homePostalCodeId: String = ""
     private var homePostalCode: String = ""
     private var homePhone: String = ""
+    private var company: String = ""
+    private var vatId: String = ""
     private var isSameBilling = true
+    private var isRequireTaxInvoice = false
     private val provinces = database.provinces
     private var districts = emptyList<District>()
     private var subDistricts = emptyList<SubDistrict>()
@@ -453,35 +458,39 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
-        //User
+        // Shipping address
         firstNameEdt = rootView.findViewById(R.id.first_name_payment)
         lastNameEdt = rootView.findViewById(R.id.last_name_payment)
         contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
         emailEdt = rootView.findViewById(R.id.email_payment)
-        //shipping address
         homeNoEdt = rootView.findViewById(R.id.house_no_payment)
         homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         homeSoiEdt = rootView.findViewById(R.id.soi_payment)
         homeRoadEdt = rootView.findViewById(R.id.street_payment)
         homePhoneEdt = rootView.findViewById(R.id.tell_payment)
-        // setup view input address
+        // Setup view input address
         provinceInput = rootView.findViewById(R.id.input_province)
         districtInput = rootView.findViewById(R.id.input_district)
         subDistrictInput = rootView.findViewById(R.id.input_sub_district)
         postcodeInput = rootView.findViewById(R.id.input_postcode)
 
-        //Billing address
+        // Tax invoice layout
+        taxInvoiceLayout = rootView.findViewById(R.id.tax_invoice_layout)
+        companyEdt = rootView.findViewById(R.id.input_company)
+        taxIdEdt = rootView.findViewById(R.id.input_tax_id)
+
+        // Billing address
+        billingLayout = rootView.findViewById(R.id.billing_address_layout_payment)
         billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
         billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
         billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
         billingEmailEdt = rootView.findViewById(R.id.email_billing)
-        billingLayout = rootView.findViewById(R.id.billing_address_layout_payment)
         billingHomeNoEdt = rootView.findViewById(R.id.billing_house_no_payment)
         billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
         billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
         billingHomeRoadEdt = rootView.findViewById(R.id.billing_street_payment)
         billingHomePhoneEdt = rootView.findViewById(R.id.billing_tell_payment)
-        // setup view input billing address
+        // Setup view input billing address
         billingProvinceInput = rootView.findViewById(R.id.billing_input_province)
         billingDistrictInput = rootView.findViewById(R.id.billing_input_district)
         billingSubDistrictInput = rootView.findViewById(R.id.billing_input_sub_district)
@@ -491,7 +500,7 @@ class PaymentBillingFragment : Fragment() {
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
 
-        //Set Input type
+        // Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         contactNumberEdt.setTextLength(10)
         billingContactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
@@ -502,11 +511,27 @@ class PaymentBillingFragment : Fragment() {
         billingHomePhoneEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+        taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
 
         radioGroup = rootView.findViewById(R.id.radio_group)
+        radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
+
+        checkRequireTaxInvoice()
+        radioTaxGroup.setOnCheckedChangeListener{ radioTaxGroup, _ ->
+            when (radioTaxGroup.checkedRadioButtonId) {
+                R.id.radio_tax_no -> {
+                    isRequireTaxInvoice = false
+                    checkRequireTaxInvoice()
+                }
+                R.id.radio_tax_yes -> {
+                    isRequireTaxInvoice = true
+                    checkRequireTaxInvoice()
+                }
+            }
+        }
 
         checkSameBilling()
-        radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+        radioGroup.setOnCheckedChangeListener { radioGroup, _ ->
             when (radioGroup.checkedRadioButtonId) {
                 R.id.radio_no -> {
                     isSameBilling = false
@@ -525,6 +550,14 @@ class PaymentBillingFragment : Fragment() {
             billingLayout.visibility = View.GONE
         } else {
             billingLayout.visibility = View.VISIBLE
+        }
+    }
+
+    private fun checkRequireTaxInvoice() {
+        if (!isRequireTaxInvoice) {
+            taxInvoiceLayout.visibility = View.GONE
+        } else {
+            taxInvoiceLayout.visibility = View.VISIBLE
         }
     }
 
@@ -757,6 +790,8 @@ class PaymentBillingFragment : Fragment() {
         homePostalCodeId = postcode?.id?.toString() ?: ""
         homePostalCode = postcode?.postcode?.toString() ?: ""
         homePhone = homePhoneEdt.getText()
+        company = companyEdt.getText()
+        vatId = taxIdEdt.getText()
 
         return AddressInformation.createAddress(
                 firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
@@ -764,7 +799,8 @@ class PaymentBillingFragment : Fragment() {
                 homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
-                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)
+                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling,
+                company = company, vatId = vatId)
     }
 
     private fun setupBilling(sameBilling: Int): AddressInformation {
@@ -794,7 +830,8 @@ class PaymentBillingFragment : Fragment() {
                 homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
-                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)
+                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling,
+                company = company, vatId = vatId)
     }
 
     private fun hasEmptyInput(): Boolean {
@@ -818,7 +855,7 @@ class PaymentBillingFragment : Fragment() {
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null)
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice())
     }
 
     private fun hasBillingEmptyInput(): Boolean {
@@ -845,6 +882,16 @@ class PaymentBillingFragment : Fragment() {
                 || billingHomeRoadEdt.getError() != null)
     }
 
+    private fun hasRequireTaxInvoice(): Boolean{
+        val validator = ValidationHelper.getInstance(context!!)
+        taxIdEdt.setError(validator.validText(taxIdEdt.getText()))
+         return if (isRequireTaxInvoice){
+            taxIdEdt.getError() != null
+        } else {
+            false
+        }
+    }
+
     private fun getDisplayPrice(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
@@ -853,7 +900,7 @@ class PaymentBillingFragment : Fragment() {
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
