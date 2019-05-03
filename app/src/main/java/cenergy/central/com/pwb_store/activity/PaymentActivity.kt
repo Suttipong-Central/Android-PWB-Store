@@ -273,8 +273,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         startFragment(fragment)
     }
 
-    private fun startBilling(response: Member?) {
-        val fragment = if (response != null) PaymentBillingFragment.newInstance(response) else
+    private fun startBilling(member: Member?) {
+        val fragment = if (member != null) PaymentBillingFragment.newInstance(member) else
             PaymentBillingFragment.newInstance()
         startFragment(fragment)
     }
@@ -465,7 +465,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun failure(error: APIError) {
                 runOnUiThread {
-                    mProgressDialog?.dismiss()
                     getMembersT1C(mobile)
                 }
                 Log.d("Payment", error.errorCode ?: "")

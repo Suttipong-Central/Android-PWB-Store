@@ -8,9 +8,11 @@ object PowerBuy {
         // paths
         const val PATH_REST = "rest"
         const val PATH_V1 = "V1"
-        const val PATH_HEADLESS = "headless"
+//        const val PATH_HEADLESS = "headless"
         const val PATH_CUSTOMERS = "customers"
-        const val FULL_PATH = "$PATH_REST/$PATH_V1/$PATH_HEADLESS/$PATH_CUSTOMERS"
+        const val PATH_ADDRESSES = "addresses"
+        const val PATH_SEARCH = "search"
+        const val FULL_PATH = "$PATH_REST/$PATH_V1/$PATH_CUSTOMERS/$PATH_ADDRESSES/$PATH_SEARCH"
 
         // fields
         const val ID = "id"

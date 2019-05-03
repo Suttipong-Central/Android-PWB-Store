@@ -275,16 +275,16 @@ class PaymentBillingFragment : Fragment() {
                 hasPwbMember() -> pwbMember?.let { pwbMember ->
                     firstNameEdt.setText(pwbMember.firstname ?: "")
                     lastNameEdt.setText(pwbMember.lastname ?: "")
-                    contactNumberEdt.setText(pwbMember.getShipping().telephone!!)
-                    emailEdt.setText(pwbMember.email!!)
-                    homeNoEdt.setText(pwbMember.getShipping().subAddress!!.houseNo!!)
+                    contactNumberEdt.setText(pwbMember.telephone!!)
+                    emailEdt.setText(pwbMember.email ?: "")
+                    homeNoEdt.setText(pwbMember.subAddress!!.houseNo!!)
                     homeBuildingEdit.setText("")
                     homeSoiEdt.setText("")
-                    homeRoadEdt.setText(pwbMember.getShipping().street!![0])
-                    homePhoneEdt.setText(pwbMember.getShipping().telephone!!)
+                    homeRoadEdt.setText(pwbMember.street!![0])
+                    homePhoneEdt.setText(pwbMember.telephone!!)
 
                     // validate province with local db
-                    val provinceId = pwbMember.getShipping().regionId
+                    val provinceId = pwbMember.regionId
                     if (provinceId != null) {
                         val province = database.getProvince(provinceId.toLong())
                         if (province != null) {
@@ -306,7 +306,7 @@ class PaymentBillingFragment : Fragment() {
                         return@let
                     }
 
-                    val subAddress = pwbMember.getShipping().subAddress
+                    val subAddress = pwbMember.subAddress
                     // validate district with local db
                     val districtId = subAddress?.districtId
                     if (districtId != null && districtId != "") {
@@ -354,6 +354,14 @@ class PaymentBillingFragment : Fragment() {
                         if (postcode != null) {
                             postcodeInput.setText(postcode.postcode.toString())
                             this.postcode = postcode
+                        }
+                    } else {
+                        if(pwbMember.postcode != null && pwbMember.postcode != ""){
+                            val postcode = database.getPostcodeByCode(pwbMember.postcode)
+                            if (postcode != null) {
+                                postcodeInput.setText(postcode.postcode.toString())
+                                this.postcode = postcode
+                            }
                         }
                     }
                 }

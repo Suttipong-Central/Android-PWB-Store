@@ -1229,17 +1229,204 @@ class HttpManagerMagento(context: Context) {
     }
     // endregion
 
+//    // region get PWB Customer
+//    fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<PwbMember>>) {
+//        val httpUrl = HttpUrl.Builder()
+//                .scheme("https")
+//                .host(Constants.PWB_HOST_NAME)
+//                .addPathSegments("${getLanguage()}/${PowerBuy.MEMBER.FULL_PATH}")
+//                .addQueryParameter("searchCriteria[filter_groups][0][filters][0][field]", "telephone")
+//                .addQueryParameter("searchCriteria[filter_groups][0][filters][0][value]", telephone)
+//                .addQueryParameter("searchCriteria[filter_groups][0][filters][0][condition_type]", "eq")
+////                .addPathSegment(telephone)
+//                .build()
+//
+//
+//
+//        val request = Request.Builder()
+//                .url(httpUrl)
+//                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+//                .build()
+//
+//        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+//            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
+//                if (response != null) {
+//                    val data = response.body()
+//
+//                    try {
+//                        val dataObject = JSONObject(data?.string())
+//                        val items = dataObject.getJSONArray("items")
+//                        val memberList: ArrayList<PwbMember> = arrayListOf()
+//
+//                        if (items.length() < 1) {
+//                            callback.success(arrayListOf())
+//                            return
+//                        }
+//
+//                        for (i in 0 until items.length()) {
+//                            val memberDetail = items.getJSONObject(i)
+//                            val id = if (memberDetail.has(PowerBuy.MEMBER.ID)) memberDetail.getLong(PowerBuy.MEMBER.ID) else 0L
+//                            val firstname = if (memberDetail.has(PowerBuy.MEMBER.FIRST_NAME)) {
+//                                memberDetail.getString(PowerBuy.MEMBER.FIRST_NAME) ?: ""
+//                            } else ""
+//                            val lastname = if (memberDetail.has(PowerBuy.MEMBER.LAST_NAME)) {
+//                                memberDetail.getString(PowerBuy.MEMBER.LAST_NAME) ?: ""
+//                            } else ""
+//                            val email = if (memberDetail.has(PowerBuy.MEMBER.EMAIL)) {
+//                                memberDetail.getString(PowerBuy.MEMBER.EMAIL) ?: ""
+//                            } else ""
+//                            val t1cNo = if (memberDetail.has(PowerBuy.MEMBER.THE_1_CARD_NUMNER)) {
+//                                memberDetail.getString(PowerBuy.MEMBER.THE_1_CARD_NUMNER) ?: ""
+//                            } else ""
+//
+//                            val memberAddressList: ArrayList<MemberAddress> = arrayListOf()
+//                            if (memberDetail.has(PowerBuy.MEMBER.ADDRESSES)) {
+//                                val addresses = memberDetail.getJSONArray(PowerBuy.MEMBER.ADDRESSES)
+//                                for (k in 0 until addresses.length()) {
+//                                    val addressDetail = addresses.getJSONObject(k)
+//                                    val memberAddress = MemberAddress()
+//                                    if (addressDetail.has("id")) {
+//                                        memberAddress.id = addressDetail.getLong("id")
+//                                    }
+//
+//                                    if (addressDetail.has("customer_id")) {
+//                                        memberAddress.customerId = addressDetail.getLong("customer_id")
+//                                    }
+//
+//                                    if (addressDetail.has("region_id")) {
+//                                        memberAddress.regionId = addressDetail.getInt("region_id")
+//                                    }
+//
+//                                    if (addressDetail.has("country_id")) {
+//                                        memberAddress.countryId = addressDetail.getString("country_id")
+//                                    }
+//
+//                                    if (addressDetail.has("street")) {
+//                                        val streets = arrayListOf<String>()
+//                                        val streetArrayObject = addressDetail.getJSONArray("street")
+//                                        for (j in 0 until streetArrayObject.length()) {
+//                                            streets.add(streetArrayObject.getString(j))
+//                                        }
+//                                        memberAddress.street = streets
+//                                    }
+//
+//                                    if (addressDetail.has("telephone")) {
+//                                        memberAddress.telephone = addressDetail.getString("telephone")
+//                                    }
+//
+//                                    if (addressDetail.has("postcode")) {
+//                                        memberAddress.postcode = addressDetail.getString("postcode")
+//                                    }
+//
+//                                    if (addressDetail.has("city")) {
+//                                        memberAddress.city = addressDetail.getString("city")
+//                                    }
+//
+//                                    if (addressDetail.has("firstname")) {
+//                                        memberAddress.firstname = addressDetail.getString("firstname")
+//                                    }
+//
+//                                    if (addressDetail.has("lastname")) {
+//                                        memberAddress.lastname = addressDetail.getString("lastname")
+//                                    }
+//
+//                                    if (addressDetail.has("default_shipping")) {
+//                                        memberAddress.defaultShipping = addressDetail.getBoolean("default_shipping")
+//                                    }
+//
+//                                    if (addressDetail.has("default_billing")) {
+//                                        memberAddress.defaultShipping = addressDetail.getBoolean("default_billing")
+//                                    }
+//
+//                                    if (addressDetail.has("custom_attributes")) {
+//                                        val memberSubAddress = MemberSubAddress()
+//                                        val customAttributes = addressDetail.getJSONArray("custom_attributes")
+//                                        for (m in 0 until customAttributes.length()) {
+//                                            val ctmAttr = customAttributes.getJSONObject(m)
+//                                            val attrName = ctmAttr.getString("name")
+//
+//                                            when (attrName) {
+//                                                "house_no" -> {
+//                                                    val houseNo = ctmAttr.getString("value")
+//                                                            ?: ""
+//                                                    memberSubAddress.houseNo = houseNo
+//                                                }
+//
+//                                                "district" -> {
+//                                                    val district = ctmAttr.getString("value")
+//                                                            ?: ""
+//                                                    memberSubAddress.district = district
+//                                                }
+//
+//                                                "district_id" -> {
+//                                                    val districtId = ctmAttr.getString("value")
+//                                                            ?: ""
+//                                                    memberSubAddress.districtId = districtId
+//                                                }
+//
+//                                                "subdistrict" -> {
+//                                                    val subdistrict = ctmAttr.getString("value")
+//                                                            ?: ""
+//                                                    memberSubAddress.subDistrict = subdistrict
+//                                                }
+//
+//                                                "subdistrict_id" -> {
+//                                                    val subDistrictId = ctmAttr.getString("value")
+//                                                            ?: ""
+//                                                    memberSubAddress.subDistrictId = subDistrictId
+//                                                }
+//
+//                                                "postcode_id" -> {
+//                                                    val postcodeId = ctmAttr.getString("value")
+//                                                            ?: ""
+//                                                    memberSubAddress.postcodeId = postcodeId
+//                                                }
+//                                            }
+//                                        }
+//                                        memberAddress.subAddress = memberSubAddress
+//                                    }
+//                                    memberAddressList.add(memberAddress)
+//                                }
+//                            }
+//
+//                            memberList.add(PwbMember(id, firstname, lastname, email, t1cNo, memberAddressList))
+//                        }
+//
+//                        callback.success(memberList)
+//                    } catch (e: Exception) {
+//                        callback.failure(APIError(e))
+//                        Log.e("JSON Parser", "Error parsing data " + e.toString())
+//                    }
+//                } else {
+//                    callback.failure(APIErrorUtils.parseError(response))
+//                }
+//                response?.close()
+//            }
+//
+//            override fun onFailure(call: okhttp3.Call?, e: IOException?) {
+//                callback.failure(APIError(e))
+//            }
+//        })
+//    }
+//    // endregion
+
     // region get PWB Customer
     fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<PwbMember>>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
                 .addPathSegments("${getLanguage()}/${PowerBuy.MEMBER.FULL_PATH}")
-                .addPathSegment(telephone)
+                .addQueryParameter("searchCriteria[filter_groups][0][filters][0][field]", "telephone")
+                .addQueryParameter("searchCriteria[filter_groups][0][filters][0][value]", telephone)
+                .addQueryParameter("searchCriteria[filter_groups][0][filters][0][condition_type]", "eq")
+//                .addPathSegment(telephone)
                 .build()
+
+
 
         val request = Request.Builder()
                 .url(httpUrl)
+                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
                 .build()
 
         defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
@@ -1259,137 +1446,112 @@ class HttpManagerMagento(context: Context) {
 
                         for (i in 0 until items.length()) {
                             val memberDetail = items.getJSONObject(i)
-                            val id = if (memberDetail.has(PowerBuy.MEMBER.ID)) memberDetail.getLong(PowerBuy.MEMBER.ID) else 0L
-                            val firstname = if (memberDetail.has(PowerBuy.MEMBER.FIRST_NAME)) {
-                                memberDetail.getString(PowerBuy.MEMBER.FIRST_NAME) ?: ""
-                            } else ""
-                            val lastname = if (memberDetail.has(PowerBuy.MEMBER.LAST_NAME)) {
-                                memberDetail.getString(PowerBuy.MEMBER.LAST_NAME) ?: ""
-                            } else ""
-                            val email = if (memberDetail.has(PowerBuy.MEMBER.EMAIL)) {
-                                memberDetail.getString(PowerBuy.MEMBER.EMAIL) ?: ""
-                            } else ""
-                            val t1cNo = if (memberDetail.has(PowerBuy.MEMBER.THE_1_CARD_NUMNER)) {
-                                memberDetail.getString(PowerBuy.MEMBER.THE_1_CARD_NUMNER) ?: ""
-                            } else ""
+                            val pwbMember = PwbMember()
 
-                            val memberAddressList: ArrayList<MemberAddress> = arrayListOf()
-                            if (memberDetail.has(PowerBuy.MEMBER.ADDRESSES)) {
-                                val addresses = memberDetail.getJSONArray(PowerBuy.MEMBER.ADDRESSES)
-                                for (k in 0 until addresses.length()) {
-                                    val addressDetail = addresses.getJSONObject(k)
-                                    val memberAddress = MemberAddress()
-                                    if (addressDetail.has("id")) {
-                                        memberAddress.id = addressDetail.getLong("id")
-                                    }
-
-                                    if (addressDetail.has("customer_id")) {
-                                        memberAddress.customerId = addressDetail.getLong("customer_id")
-                                    }
-
-                                    if (addressDetail.has("region_id")) {
-                                        memberAddress.regionId = addressDetail.getInt("region_id")
-                                    }
-
-                                    if (addressDetail.has("country_id")) {
-                                        memberAddress.countryId = addressDetail.getString("country_id")
-                                    }
-
-                                    if (addressDetail.has("street")) {
-                                        val streets = arrayListOf<String>()
-                                        val streetArrayObject = addressDetail.getJSONArray("street")
-                                        for (j in 0 until streetArrayObject.length()) {
-                                            streets.add(streetArrayObject.getString(j))
-                                        }
-                                        memberAddress.street = streets
-                                    }
-
-                                    if (addressDetail.has("telephone")) {
-                                        memberAddress.telephone = addressDetail.getString("telephone")
-                                    }
-
-                                    if (addressDetail.has("postcode")) {
-                                        memberAddress.postcode = addressDetail.getString("postcode")
-                                    }
-
-                                    if (addressDetail.has("city")) {
-                                        memberAddress.city = addressDetail.getString("city")
-                                    }
-
-                                    if (addressDetail.has("firstname")) {
-                                        memberAddress.firstname = addressDetail.getString("firstname")
-                                    }
-
-                                    if (addressDetail.has("lastname")) {
-                                        memberAddress.lastname = addressDetail.getString("lastname")
-                                    }
-
-                                    if (addressDetail.has("default_shipping")) {
-                                        memberAddress.defaultShipping = addressDetail.getBoolean("default_shipping")
-                                    }
-
-                                    if (addressDetail.has("default_billing")) {
-                                        memberAddress.defaultShipping = addressDetail.getBoolean("default_billing")
-                                    }
-
-                                    if (addressDetail.has("custom_attributes")) {
-                                        val memberSubAddress = MemberSubAddress()
-                                        val customAttributes = addressDetail.getJSONArray("custom_attributes")
-                                        for (m in 0 until customAttributes.length()) {
-                                            val ctmAttr = customAttributes.getJSONObject(m)
-                                            val attrName = ctmAttr.getString("name")
-
-                                            when (attrName) {
-                                                "house_no" -> {
-                                                    val houseNo = ctmAttr.getString("value")
-                                                            ?: ""
-                                                    memberSubAddress.houseNo = houseNo
-                                                }
-
-                                                "district" -> {
-                                                    val district = ctmAttr.getString("value")
-                                                            ?: ""
-                                                    memberSubAddress.district = district
-                                                }
-
-                                                "district_id" -> {
-                                                    val districtId = ctmAttr.getString("value")
-                                                            ?: ""
-                                                    memberSubAddress.districtId = districtId
-                                                }
-
-                                                "subdistrict" -> {
-                                                    val subdistrict = ctmAttr.getString("value")
-                                                            ?: ""
-                                                    memberSubAddress.subDistrict = subdistrict
-                                                }
-
-                                                "subdistrict_id" -> {
-                                                    val subDistrictId = ctmAttr.getString("value")
-                                                            ?: ""
-                                                    memberSubAddress.subDistrictId = subDistrictId
-                                                }
-
-                                                "postcode_id" -> {
-                                                    val postcodeId = ctmAttr.getString("value")
-                                                            ?: ""
-                                                    memberSubAddress.postcodeId = postcodeId
-                                                }
-                                            }
-                                        }
-                                        memberAddress.subAddress = memberSubAddress
-                                    }
-                                    memberAddressList.add(memberAddress)
-                                }
+                            if (memberDetail.has("id")) {
+                                pwbMember.id = memberDetail.getLong("id")
                             }
 
-                            memberList.add(PwbMember(id, firstname, lastname, email, t1cNo, memberAddressList))
-                        }
+                            if (memberDetail.has("customer_id")) {
+                                pwbMember.customerId = memberDetail.getLong("customer_id")
+                            }
 
+                            if (memberDetail.has("region_id")) {
+                                pwbMember.regionId = memberDetail.getInt("region_id")
+                            }
+
+                            if (memberDetail.has("country_id")) {
+                                pwbMember.countryId = memberDetail.getString("country_id")
+                            }
+
+                            if (memberDetail.has("street")) {
+                                val streets = arrayListOf<String>()
+                                val streetArrayObject = memberDetail.getJSONArray("street")
+                                for (j in 0 until streetArrayObject.length()) {
+                                    streets.add(streetArrayObject.getString(j))
+                                }
+                                pwbMember.street = streets
+                            }
+
+                            if (memberDetail.has("telephone")) {
+                                pwbMember.telephone = memberDetail.getString("telephone")
+                            }
+
+                            if (memberDetail.has("postcode")) {
+                                pwbMember.postcode = memberDetail.getString("postcode")
+                            }
+
+                            if (memberDetail.has("city")) {
+                                pwbMember.city = memberDetail.getString("city")
+                            }
+
+                            if (memberDetail.has("firstname")) {
+                                pwbMember.firstname = memberDetail.getString("firstname")
+                            }
+
+                            if (memberDetail.has("lastname")) {
+                                pwbMember.lastname = memberDetail.getString("lastname")
+                            }
+
+                            if (memberDetail.has("default_shipping")) {
+                                pwbMember.defaultShipping = memberDetail.getBoolean("default_shipping")
+                            }
+
+                            if (memberDetail.has("default_billing")) {
+                                pwbMember.defaultShipping = memberDetail.getBoolean("default_billing")
+                            }
+
+                            if (memberDetail.has("custom_attributes")) {
+                                val memberSubAddress = MemberSubAddress()
+                                val customAttributes = memberDetail.getJSONArray("custom_attributes")
+                                for (m in 0 until customAttributes.length()) {
+                                    val ctmAttr = customAttributes.getJSONObject(m)
+                                    when (ctmAttr.getString("name")) {
+                                        "house_no" -> {
+                                            val houseNo = ctmAttr.getString("value")
+                                                    ?: ""
+                                            memberSubAddress.houseNo = houseNo
+                                        }
+
+                                        "district" -> {
+                                            val district = ctmAttr.getString("value")
+                                                    ?: ""
+                                            memberSubAddress.district = district
+                                        }
+
+                                        "district_id" -> {
+                                            val districtId = ctmAttr.getString("value")
+                                                    ?: ""
+                                            memberSubAddress.districtId = districtId
+                                        }
+
+                                        "subdistrict" -> {
+                                            val subDistrict = ctmAttr.getString("value")
+                                                    ?: ""
+                                            memberSubAddress.subDistrict = subDistrict
+                                        }
+
+                                        "subdistrict_id" -> {
+                                            val subDistrictId = ctmAttr.getString("value")
+                                                    ?: ""
+                                            memberSubAddress.subDistrictId = subDistrictId
+                                        }
+
+                                        "postcode_id" -> {
+                                            val postcodeId = ctmAttr.getString("value")
+                                                    ?: ""
+                                            memberSubAddress.postcodeId = postcodeId
+                                        }
+                                    }
+                                }
+                                pwbMember.subAddress = memberSubAddress
+                            }
+                            memberList.add(pwbMember)
+                        }
                         callback.success(memberList)
                     } catch (e: Exception) {
                         callback.failure(APIError(e))
-                        Log.e("JSON Parser", "Error parsing data " + e.toString())
+                        Log.e("JSON Parser", "Error parsing data $e")
                     }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
