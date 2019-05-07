@@ -230,7 +230,10 @@ class PaymentBillingFragment : Fragment() {
     private fun verifyMember() {
         //Setup Member
         when {
-            (shippingAddress != null) -> handleCacheMember()
+            (shippingAddress != null) -> {
+                handleCacheMember()
+                dismissProgressDialog()
+            }
             hasPwbMember() -> handlePwbMember()
             hasMember() -> handleT1CMember()
             else -> dismissProgressDialog()
@@ -325,9 +328,6 @@ class PaymentBillingFragment : Fragment() {
             val province = database.getProvince(provinceId.toString())
             if (province != null) {
                 this.province = province
-//                            this.districts = database.getDistrictsByProvinceId(province.provinceId)
-//                            this.districtNameList = getDistrictNameList()
-//                            this.districtAdapter?.setItems(this.districtNameList)
                 provinceInput.setText(province.name)
                 districtInput.setText("")
                 subDistrictInput.setText("")
@@ -335,136 +335,75 @@ class PaymentBillingFragment : Fragment() {
                 districtInput.setEnableInput(true)
                 subDistrictInput.setEnableInput(false)
                 postcodeInput.setEnableInput(false)
-            }
-        }
 
-        val subAddress = member.subAddress ?: return
-        // validate district with local db
-        val districtId = subAddress.districtId
-        if (districtId.isNotBlank()) {
-            val district = database.getDistrict(districtId)
-            if (district != null) {
-                this.district = district
-//                            this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
-//                            this.subDistrictNameList = getSubDistrictNameList()
-//                            this.subDistrictAdapter?.setItems(this.subDistrictNameList)
-                districtInput.setText(district.name)
-                subDistrictInput.setText("")
-                postcodeInput.setText("")
-                subDistrictInput.setEnableInput(true)
-                postcodeInput.setEnableInput(false)
-            }
-        }
+                val subAddress = member.subAddress ?: return
 
-        // validate sub district with local db
-        val subDistrictId = subAddress.subDistrictId
-        if (subDistrictId.isNotBlank()) {
-            val subDistrict = database.getSubDistrict(subDistrictId)
-            if (subDistrict != null) {
-                this.subDistrict = subDistrict
-//                            this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
-//                            this.postcodeList = getPostcodeList()
-//                            this.postcodeAdapter?.setItems(this.postcodeList)
-                subDistrictInput.setText(subDistrict.name)
-                postcodeInput.setText("")
-                postcodeInput.setEnableInput(true)
+                // load district and verify customer address
+                val districtId = subAddress.districtId
+                val subDistrictId = subAddress.subDistrictId
+                if (districtId.isNotBlank()) {
+                    if (subDistrictId.isNotBlank()) {
+                        memberLoadDistrict(province.provinceId, districtId, subDistrictId)
+                    } else {
+                        memberLoadDistrict(province.provinceId, districtId)
+                    }
+                }
             }
+            dismissProgressDialog()
+        } else {
+            dismissProgressDialog()
         }
-
-        // validate postcode with local db
-        val postcodeId = subAddress.postcodeId
-        postcodeInput.setText(postcodeId)
-//                    val postcode = pwbMember.postcode
-//                    if (postcodeId != null && postcodeId != "") {
-//                        val postcode = database.getPostcode(postcodeId.toLong())
-//                        if (postcode != null) {
-//                            postcodeInput.setText(postcode.postcode.toString())
-//                            this.postcode = postcode
-//                        }
-//                    } else {
-//                        if(pwbMember.postcode != null && pwbMember.postcode != ""){
-//                            val postcode = database.getPostcodeByCode(pwbMember.postcode)
-//                            if (postcode != null) {
-//                                postcodeInput.setText(postcode.postcode.toString())
-//                                this.postcode = postcode
-//                            }
-//                        }
-//                    }
     }
 
     private fun handleT1CMember() {
-        member?.let { member ->
-            firstNameEdt.setText(member.getFirstName())
-            lastNameEdt.setText(member.getLastName())
-            contactNumberEdt.setText(member.mobilePhone)
-            emailEdt.setText(member.email)
-            homePhoneEdt.setText(member.homePhone)
-
-            // has address?
-            if (member.addresses != null && member.addresses!!.isNotEmpty()) {
-                val memberAddress = member.addresses!![0]
-                homeNoEdt.setText(memberAddress.homeNo ?: "")
-                homeBuildingEdit.setText(memberAddress.building ?: "")
-                homeSoiEdt.setText(memberAddress.soi ?: "")
-                homeRoadEdt.setText(memberAddress.road ?: "")
-
-                // validate province with local db
-                val province = database.getProvinceByName(memberAddress.province)
-                if (province != null) {
-                    this.province = province
-//                            this.districts = database.getDistrictsByProvinceId(province.provinceId)
-//                            this.districtNameList = getDistrictNameList()
-//                            this.districtAdapter?.setItems(this.districtNameList)
-                    provinceInput.setText(province.name)
-                    districtInput.setText("")
-                    subDistrictInput.setText("")
-                    postcodeInput.setText("")
-                    districtInput.setEnableInput(true)
-                    subDistrictInput.setEnableInput(false)
-                    postcodeInput.setEnableInput(false)
-                } else {
-                    return@let
-                }
-
-                // validate district with local db
-                val district = database.getDistrictByName(memberAddress.district)
-                if (district != null) {
-                    this.district = district
-//                            this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
-//                            this.subDistrictNameList = getSubDistrictNameList()
-//                            this.subDistrictAdapter?.setItems(this.subDistrictNameList)
-                    districtInput.setText(district.name)
-                    subDistrictInput.setText("")
-                    postcodeInput.setText("")
-                    subDistrictInput.setEnableInput(true)
-                    postcodeInput.setEnableInput(false)
-                } else {
-                    return@let
-                }
-
-                // validate sub district with local db
-                val subDistrict = database.getSubDistrictByName(memberAddress.subDistrict)
-                if (subDistrict != null) {
-                    this.subDistrict = subDistrict
-//                            this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
-//                            this.postcodeList = getPostcodeList()
-//                            this.postcodeAdapter?.setItems(this.postcodeList)
-                    subDistrictInput.setText(subDistrict.name)
-                    postcodeInput.setText("")
-                    postcodeInput.setEnableInput(true)
-                } else {
-                    return@let
-                }
-
-                // validate postcode with local db
-                postcodeInput.setText(memberAddress.postcode ?: "")
-//                        val postcode = database.getPostcodeByCode(memberAddress.postcode)
-//                        if (postcode != null) {
-//                            postcodeInput.setText(postcode.postcode.toString())
-//                            this.postcode = postcode
-//                        }
-            }
+        if (member == null) {
+            return
         }
+
+        val t1cMember = member!!
+        firstNameEdt.setText(t1cMember.getFirstName())
+        lastNameEdt.setText(t1cMember.getLastName())
+        contactNumberEdt.setText(t1cMember.mobilePhone)
+        emailEdt.setText(t1cMember.email)
+        homePhoneEdt.setText(t1cMember.homePhone)
+
+        // has address?
+        if (t1cMember.addresses != null && t1cMember.addresses!!.isNotEmpty()) {
+            val memberAddress = t1cMember.addresses!![0]
+            homeNoEdt.setText(memberAddress.homeNo ?: "")
+            homeBuildingEdit.setText(memberAddress.building ?: "")
+            homeSoiEdt.setText(memberAddress.soi ?: "")
+            homeRoadEdt.setText(memberAddress.road ?: "")
+
+            // validate province with local db
+            Log.d("Member", "province ${memberAddress.province}")
+            val province = database.getProvinceByName(memberAddress.province)
+            if (province != null) {
+                this.province = province
+                provinceInput.setText(province.name)
+                districtInput.setText("")
+                subDistrictInput.setText("")
+                postcodeInput.setText("")
+                districtInput.setEnableInput(true)
+                subDistrictInput.setEnableInput(false)
+                postcodeInput.setEnableInput(false)
+
+                // load district and verify customer address
+                val districtName = memberAddress.district ?: ""
+                val subDistrictName = memberAddress.subDistrict ?: ""
+                if (districtName.isNotBlank()) {
+                    if (subDistrictName.isNotBlank()) {
+                        memberLoadDistrict(province.provinceId, districtName, subDistrictName, false)
+                    } else {
+                        memberLoadDistrict(province.provinceId, districtName)
+                    }
+                }
+            }
+            dismissProgressDialog()
+        } else {
+            dismissProgressDialog()
+        }
+
     }
 
     private fun setupView(rootView: View) {
@@ -521,7 +460,7 @@ class PaymentBillingFragment : Fragment() {
         radioGroup = rootView.findViewById(R.id.radio_group)
 
         checkSameBilling()
-        radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+        radioGroup.setOnCheckedChangeListener { radioGroup, _ ->
             when (radioGroup.checkedRadioButtonId) {
                 R.id.radio_no -> {
                     isSameBilling = false
@@ -737,7 +676,7 @@ class PaymentBillingFragment : Fragment() {
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -750,9 +689,9 @@ class PaymentBillingFragment : Fragment() {
             mProgressDialog = DialogUtils.createProgressDialog(context)
             mProgressDialog?.show()
         } else {
-            if (!mProgressDialog!!.isShowing) {
-                mProgressDialog?.show()
-            }
+            if (mProgressDialog!!.isShowing) return
+
+            mProgressDialog?.show()
         }
     }
 
@@ -797,7 +736,7 @@ class PaymentBillingFragment : Fragment() {
     private fun loadDistrictList(province: Province, isShipping: Boolean = true) {
         context?.let {
             showProgressDialog()
-            HttpManagerMagento.getInstance(it).getDistrict(province.provinceId, object : ApiResponseCallback<List<District>> {
+            HttpManagerMagento.getInstance(it).getDistricts(province.provinceId, object : ApiResponseCallback<List<District>> {
                 override fun success(response: List<District>?) {
                     response?.let { districtList ->
                         if (isShipping) {
@@ -822,7 +761,7 @@ class PaymentBillingFragment : Fragment() {
     private fun loadSubDistrictList(district: District, isShipping: Boolean = true) {
         context?.let {
             showProgressDialog()
-            HttpManagerMagento.getInstance(it).getSubDistrict(district.provinceId, district.districtId,
+            HttpManagerMagento.getInstance(it).getSubDistricts(district.provinceId, district.districtId,
                     object : ApiResponseCallback<List<SubDistrict>> {
                         override fun success(response: List<SubDistrict>?) {
                             response?.let { subDistrictList ->
@@ -860,9 +799,6 @@ class PaymentBillingFragment : Fragment() {
                 districtInput.setEnableInput(true)
                 subDistrictInput.setEnableInput(false)
                 postcodeInput.setEnableInput(false)
-//                districts = database.getDistrictsByProvinceId(item.first)
-//                districtNameList = getDistrictNameList()
-//                districtAdapter?.setItems(districtNameList)
                 loadDistrictList(selectedProvince) // load district
                 hideKeyboard()
             }
@@ -884,9 +820,6 @@ class PaymentBillingFragment : Fragment() {
                 billingDistrictInput.setEnableInput(true)
                 billingSubDistrictInput.setEnableInput(false)
                 billingPostcodeInput.setEnableInput(false)
-//                districts = database.getDistrictsByProvinceId(item.first)
-//                billingDistrictNameList = getDistrictNameList()
-//                billingDistrictAdapter?.setItems(billingDistrictNameList)
                 loadDistrictList(selectedProvince, false) // load district
                 hideKeyboard()
             }
@@ -905,9 +838,6 @@ class PaymentBillingFragment : Fragment() {
                 subDistrictInput.setText("")
                 subDistrictInput.setEnableInput(true)
                 postcodeInput.setEnableInput(false)
-//                subDistricts = database.getSubDistrictsByDistrictId(item.first)
-//                subDistrictNameList = getSubDistrictNameList()
-//                subDistrictAdapter?.setItems(subDistrictNameList)
                 loadSubDistrictList(selectedDistrict)
                 hideKeyboard()
             }
@@ -928,9 +858,6 @@ class PaymentBillingFragment : Fragment() {
                 billingSubDistrictInput.setText("")
                 billingSubDistrictInput.setEnableInput(true)
                 billingPostcodeInput.setEnableInput(false)
-//                subDistricts = database.getSubDistrictsByDistrictId(item.first)
-//                billingSubDistrictNameList = getSubDistrictNameList()
-//                billingSubDistrictAdapter?.setItems(billingSubDistrictNameList)
                 loadSubDistrictList(selectedDistrict, false)
                 hideKeyboard()
             }
@@ -1012,4 +939,94 @@ class PaymentBillingFragment : Fragment() {
         return postcodes
     }
 
+    // region member find address
+    private fun memberLoadDistrict(provinceId: String, districtStr: String,
+                                   subDistrictStr: String = "", isPwbMember: Boolean = true) {
+        context?.let {
+            showProgressDialog()
+            HttpManagerMagento.getInstance(it).getDistricts(provinceId, object : ApiResponseCallback<List<District>> {
+                override fun success(response: List<District>?) {
+                    response?.let { districtList ->
+                        this@PaymentBillingFragment.districtList = districtList
+                        this@PaymentBillingFragment.districtAdapter.setItems(districtList)
+
+                        val district = if (isPwbMember) {
+                            districtList.find { district -> district.districtId == districtStr } //by districtId
+                        } else {
+                            districtList.find { district -> district.name == districtStr } //by district.name
+                        }
+                        memberSetDistrict(provinceId, district, subDistrictStr, isPwbMember) // set district
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    Log.e("PaymentBillingFragment", "member can't get district list")
+                    dismissProgressDialog()
+                }
+            })
+        }
+    }
+
+    private fun memberSetDistrict(provinceId: String, district: District?, subDistrictStr: String, isPwbMember: Boolean) {
+        // found district?
+        if (district != null) {
+            this@PaymentBillingFragment.district = district
+            districtInput.setText(district.name)
+            subDistrictInput.setText("")
+            postcodeInput.setText("")
+            subDistrictInput.setEnableInput(true)
+            postcodeInput.setEnableInput(false)
+
+            if (subDistrictStr.isNotBlank()) {
+                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, isPwbMember)
+            } else {
+                dismissProgressDialog()
+            }
+        } else {
+            dismissProgressDialog()
+        }
+    }
+
+    private fun memberLoadSubDistrict(provinceId: String, districtId: String, subDistrictStr: String = "", isPwbMember: Boolean) {
+        context?.let{
+            showProgressDialog()
+            HttpManagerMagento.getInstance(it).getSubDistricts(provinceId, districtId, object : ApiResponseCallback<List<SubDistrict>> {
+                override fun success(response: List<SubDistrict>?) {
+                    response?.let { subDistrictList ->
+                        this@PaymentBillingFragment.subDistrictList = subDistrictList
+                        this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList)
+
+                        val subDistrict = if (isPwbMember) {
+                            subDistrictList.find { subDistrict -> subDistrict.subDistrictId == subDistrictStr } // by districtId
+                        } else {
+                            subDistrictList.find { subDistrict -> subDistrict.name == subDistrictStr } // by district.name
+                        }
+                        memberSetSubDistrict(subDistrict) // set subDistrict
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    Log.e("PaymentBillingFragment", "member can't get district list")
+                    dismissProgressDialog()
+                }
+            })
+        }
+    }
+
+    private fun memberSetSubDistrict(subDistrict: SubDistrict?) {
+        if (subDistrict != null) {
+            Log.d("Member", "set subdistrict")
+            this.subDistrict = subDistrict
+            subDistrictInput.setText(subDistrict.name)
+
+            this.postcodeList = subDistrict.getPostcodeList()
+            this.postcodeAdapter.setItems(this.postcodeList)
+
+            this.postcode = Postcode.asPostcode(subDistrict)
+            postcodeInput.setText("")
+            postcodeInput.setEnableInput(true)
+            postcodeInput.setText(subDistrict.postcode)
+        }
+        dismissProgressDialog()
+    }
 }

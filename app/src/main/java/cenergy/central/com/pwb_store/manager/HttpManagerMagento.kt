@@ -1592,7 +1592,32 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun getDistrict(provinceId: String, callback: ApiResponseCallback<List<District>>) {
+    fun getDistrict(provinceId: String, districtId: String, callback: ApiResponseCallback<District>) {
+        val memberService = retrofit.create(MemberService::class.java)
+        memberService.getDistrict(Constants.CLIENT_MAGENTO, getLanguage(), provinceId, districtId).enqueue(object : Callback<List<District>> {
+            override fun onResponse(call: Call<List<District>>, response: Response<List<District>>) {
+                if (response.isSuccessful) {
+                    val districts = response.body()
+                    if (districts != null && districts.isNotEmpty()) {
+                        // store districts
+                        districts.forEach { database.storeDistrict(it) }
+                        callback.success(districts.first())
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<List<District>>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+
+    }
+
+    fun getDistricts(provinceId: String, callback: ApiResponseCallback<List<District>>) {
         val memberService = retrofit.create(MemberService::class.java)
         memberService.getDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId).enqueue(object : Callback<List<District>>{
             override fun onResponse(call: Call<List<District>>, response: Response<List<District>>) {
@@ -1616,7 +1641,7 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun getSubDistrict(provinceId: String, districtId: String, callback: ApiResponseCallback<List<SubDistrict>>) {
+    fun getSubDistricts(provinceId: String, districtId: String, callback: ApiResponseCallback<List<SubDistrict>>) {
         val memberService = retrofit.create(MemberService::class.java)
         memberService.getSubDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId, districtId).enqueue(object : Callback<List<SubDistrict>>{
             override fun onResponse(call: Call<List<SubDistrict>>, response: Response<List<SubDistrict>>) {

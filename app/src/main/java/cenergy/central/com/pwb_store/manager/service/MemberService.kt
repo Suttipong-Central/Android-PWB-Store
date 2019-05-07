@@ -37,6 +37,13 @@ interface MemberService {
                      @Path("lang") language: String,
                      @Path("provinceId") provinceId: String) : Call<List<District>>
 
+    // get District
+    @GET("rest/{lang}/V1/region/province/{provinceId}/district/{districtId}")
+    fun getDistrict(@Header("Authorization") token: String,
+                    @Path("lang") language: String,
+                    @Path("provinceId") provinceId: String,
+                    @Path("districtId") districtId: String) : Call<List<District>>
+
     // get SubDistricts
     @GET("rest/{lang}/V1/region/province/{provinceId}/district/{districtId}/subdistrict")
     fun getSubDistricts(@Header("Authorization") token: String,
