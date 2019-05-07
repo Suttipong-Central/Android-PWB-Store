@@ -7,6 +7,7 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.service.CartService
+import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.manager.service.ProductService
 import cenergy.central.com.pwb_store.manager.service.UserService
 import cenergy.central.com.pwb_store.model.*
@@ -1561,6 +1562,83 @@ class HttpManagerMagento(context: Context) {
 
             override fun onFailure(call: okhttp3.Call?, e: IOException?) {
                 callback.failure(APIError(e))
+            }
+        })
+    }
+    // endregion
+
+    // region address information
+    fun getProvinces(callback: ApiResponseCallback<List<Province>>) {
+        val memberService = retrofit.create(MemberService::class.java)
+        memberService.getProvinces(Constants.CLIENT_MAGENTO, getLanguage()).enqueue(object : Callback<List<Province>> {
+            override fun onResponse(call: Call<List<Province>>, response: Response<List<Province>>) {
+                if (response.isSuccessful) {
+                    val provinces = response.body()
+                    if (provinces != null) {
+                        // store provinces
+                        provinces.forEach { database.storeProvince(it) }
+                        callback.success(provinces)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<List<Province>>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getDistrict(provinceId: String, callback: ApiResponseCallback<List<District>>) {
+        val memberService = retrofit.create(MemberService::class.java)
+        memberService.getDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId).enqueue(object : Callback<List<District>>{
+            override fun onResponse(call: Call<List<District>>, response: Response<List<District>>) {
+                if (response.isSuccessful) {
+                    val districts = response.body()
+                    if (districts != null) {
+                        // store districts
+                        districts.forEach { database.storeDistrict(it) }
+                        callback.success(districts)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<List<District>>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun getSubDistrict(provinceId: String, districtId: String, callback: ApiResponseCallback<List<SubDistrict>>) {
+        val memberService = retrofit.create(MemberService::class.java)
+        memberService.getSubDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId, districtId).enqueue(object : Callback<List<SubDistrict>>{
+            override fun onResponse(call: Call<List<SubDistrict>>, response: Response<List<SubDistrict>>) {
+                if (response.isSuccessful) {
+                    val subDistricts = response.body()
+                    if (subDistricts != null) {
+                        // store districts & store postcode
+                        subDistricts.forEach {
+                            database.storeSubDistrict(it)
+                            database.storePostcode(Postcode.asPostcode(it))
+                        }
+                        callback.success(subDistricts)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<List<SubDistrict>>, t: Throwable) {
+                callback.failure(APIError(t))
             }
         })
     }

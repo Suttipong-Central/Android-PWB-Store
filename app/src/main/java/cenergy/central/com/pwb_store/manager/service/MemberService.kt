@@ -1,18 +1,16 @@
 package cenergy.central.com.pwb_store.manager.service
 
+import cenergy.central.com.pwb_store.model.District
 import cenergy.central.com.pwb_store.model.Member
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.Province
+import cenergy.central.com.pwb_store.model.SubDistrict
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.PwbMemberResponse
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.Query
-
-/**
- * Created by Anuphap Suwannamas on 27/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
 interface MemberService {
 
@@ -27,4 +25,22 @@ interface MemberService {
     // get PWB customer
     @GET("rest/V1/headless/customers/{telephone}")
     fun getCustomer(@Path("telephone") telephone: String): Call<PwbMemberResponse>
+
+    // get Provinces
+    @GET("rest/{lang}/V1/region/province")
+    fun getProvinces(@Header("Authorization") token: String,
+                     @Path("lang") language: String) : Call<List<Province>>
+
+    // get Districts
+    @GET("rest/{lang}/V1/region/province/{provinceId}/district")
+    fun getDistricts(@Header("Authorization") token: String,
+                     @Path("lang") language: String,
+                     @Path("provinceId") provinceId: String) : Call<List<District>>
+
+    // get SubDistricts
+    @GET("rest/{lang}/V1/region/province/{provinceId}/district/{districtId}/subdistrict")
+    fun getSubDistricts(@Header("Authorization") token: String,
+                        @Path("lang") language: String,
+                        @Path("provinceId") provinceId: String,
+                        @Path("districtId") districtId: String) : Call<List<SubDistrict>>
 }

@@ -1,25 +1,26 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
-/**
- * Created by Anuphap Suwannamas on 8/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 open class Postcode(
         @PrimaryKey
         @SerializedName("entity_id")
-        var id: Long = 0,
+        var postcodeId: String = "",
         @SerializedName("subdistrict_id")
-        var subDistrictId: Long = 0,
+        var subDistrictId: String = "",
         @SerializedName("zip_code")
-        var postcode: Long = 0):RealmObject() {
-        companion object {
-            const val FIELD_ID = "id"
-            const val FIELD_SUB_DISTRICT_ID = "subDistrictId"
-            const val FIELD_POST_CODE = "postcode"
+        var postcode: String = "") : RealmObject(), AddressAdapter.AddressItem {
+
+    companion object {
+        const val FIELD_ID = "postcodeId"
+        const val FIELD_SUB_DISTRICT_ID = "subDistrictId"
+        const val FIELD_POST_CODE = "postcode"
+
+        fun asPostcode(subDistrict: SubDistrict): Postcode {
+            return Postcode(postcodeId = subDistrict.postcodeId, subDistrictId = subDistrict.subDistrictId, postcode = subDistrict.postcode)
         }
+    }
 }

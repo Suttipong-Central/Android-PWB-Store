@@ -10,23 +10,20 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.model.District
+import cenergy.central.com.pwb_store.model.Postcode
+import cenergy.central.com.pwb_store.model.Province
+import cenergy.central.com.pwb_store.model.SubDistrict
+import kotlinx.android.synthetic.main.layout_text_item.view.*
 
-
-/**
- * Created by Anuphap Suwannamas on 7/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
-class AddressAdapter(private val mContext: Context, private val mLayoutResourceId: Int,
-                     private var items: List<Pair<Long, String>>) : ArrayAdapter<Pair<Long, String>>(mContext, mLayoutResourceId, items) {
+class AddressAdapter(private val mContext: Context, private var mLayoutResourceId: Int,
+                     private var items: List<AddressItem>) : ArrayAdapter<AddressAdapter.AddressItem>(mContext, mLayoutResourceId, items) {
     private var listener: FilterClickListener? = null
-    private var cacheItems: List<Pair<Long, String>> = arrayListOf()
-//    private var listFilter = ListFilter()
+    private var cacheItems: List<AddressItem> = arrayListOf()
 
-    fun setItems(items: List<Pair<Long, String>>) {
+    fun setItems(items: List<AddressItem>) {
         this.items = items
         this.cacheItems = items
-//        this.listFilter = ListFilter()
         notifyDataSetChanged()
     }
 
@@ -34,25 +31,15 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
         this.listener = listener
     }
 
-//    fun setItems(items: List<Pair<Long, String>>) {
-//        items.clear();
-//        items.addAll(newlist)
-//        this.notifyDataSetChanged()
-//    }
-
     override fun getCount(): Int {
         return items.size
     }
 
-    override fun getItem(position: Int): Pair<Long, String>? {
+    override fun getItem(position: Int): AddressItem? {
         return items[position]
     }
 
-    override fun getItemId(position: Int): Long {
-        return items[position].first
-    }
-
-    override fun getPosition(item: Pair<Long, String>?): Int {
+    override fun getPosition(item: AddressItem?): Int {
         return items.indexOf(item)
     }
 
@@ -60,63 +47,22 @@ class AddressAdapter(private val mContext: Context, private val mLayoutResourceI
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         val rootView = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false)
         val item = items[position]
-        val titleTextView = rootView.findViewById<TextView>(R.id.tvTitle)
-        titleTextView.text = item.second
+        val titleTextView = rootView.tvTitle
+        titleTextView.text = when (item) {
+            is Province -> {item.name}
+            is District -> {item.name}
+            is SubDistrict -> {item.name}
+            is Postcode -> {item.postcode}
+            else -> ""
+        }
         rootView.setOnClickListener { listener?.onItemClickListener(item) }
         return rootView
     }
 
-//    override fun getFilter(): Filter {
-//        return listFilter
-//    }
-
-
-//    inner class ListFilter : Filter() {
-//        private var filterItems: List<Pair<Long, String>>? = items
-//
-//        override fun performFiltering(prefix: CharSequence?): FilterResults {
-//            val results = Filter.FilterResults()
-//            if (filterItems == null) {
-//                filterItems = ArrayList<Pair<Long, String>>(items)
-//                items = ArrayList<Pair<Long, String>>(items)
-//            }
-//
-//            if (prefix == null || prefix.isEmpty()) {
-//                results.values = filterItems
-//                results.count = filterItems!!.size
-//            } else {
-//                val searchStrLowerCase = prefix.toString().toLowerCase()
-//                val matchValues = ArrayList<Pair<Long, String>>()
-//                for (dataItem in items) {
-//                    if (dataItem.second.toLowerCase().startsWith(searchStrLowerCase)) {
-//                        matchValues.add(Pair(first = dataItem.first, second = dataItem.second))
-//                    }
-//                }
-//
-//                results.values = matchValues
-//                results.count = matchValues.size
-//            }
-//
-//            return results
-//        }
-//
-//        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-//            items = if (results!!.values != null && results.count > 0) {
-//                results.values as ArrayList<Pair<Long, String>>
-//            } else {
-//                cacheItems
-//            }
-//
-//            if (results.values != null && results.count > 0) {
-//                notifyDataSetChanged()
-//            } else {
-//                notifyDataSetInvalidated()
-//            }
-//        }
-//    }
-
     interface FilterClickListener {
-        fun onItemClickListener(item: Pair<Long, String>)
+        fun onItemClickListener(item: AddressItem)
     }
+
+    interface AddressItem
 }
 

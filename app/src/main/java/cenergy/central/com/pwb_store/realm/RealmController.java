@@ -430,35 +430,35 @@ public class RealmController {
         });
     }
 
-    public Province getProvince(Long provinceId) {
+    public Province getProvince(String provinceId) {
         Realm realm = getRealm();
         return realm.where(Province.class).equalTo(Province.FIELD_ID, provinceId).findFirst();
     }
 
-    public Province getProvinceByNameTh(String name) {
+    public Province getProvinceByFieldName(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(Province.class).equalTo(Province.FIELD_NAME_TH, name).findFirst();
+        return realm.where(Province.class).equalTo(Province.FIELD_NAME, name).findFirst();
     }
 
-    public Province getProvinceByNameEn(String name) {
+    public Province getProvinceByDefaultName(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(Province.class).equalTo(Province.FIELD_NAME_EN, name).findFirst();
+        return realm.where(Province.class).equalTo(Province.FIELD_DEFAULT_NAME, name).findFirst();
     }
 
     public Province getProvinceByName(String name) {
-        return (getProvinceByNameTh(name) == null) ? getProvinceByNameEn(name) : getProvinceByNameTh(name);
+        return (getProvinceByFieldName(name) == null) ? getProvinceByDefaultName(name) : getProvinceByFieldName(name);
     }
 
 
     public List<Province> getProvinces() {
         Realm realm = getRealm();
-        return realm.where(Province.class).sort(Province.FIELD_ID, Sort.ASCENDING).findAll();
+        return realm.where(Province.class).findAll();
     }
 
     public void deleteProvinces() {
@@ -483,29 +483,29 @@ public class RealmController {
         });
     }
 
-    public District getDistrict(Long districtId) {
+    public District getDistrict(String districtId) {
         Realm realm = getRealm();
         return realm.where(District.class).equalTo(District.FIELD_ID, districtId).findFirst();
     }
 
-    public District getDistrictByNameTh(String name) {
+    public District getDistrictByFieldName(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(District.class).equalTo(District.FIELD_NAME_TH, name).findFirst();
+        return realm.where(District.class).equalTo(District.FIELD_NAME, name).findFirst();
     }
 
-    public District getDistrictByNameEn(String name) {
+    public District getDistrictByDefaultName(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(District.class).equalTo(District.FIELD_NAME_EN, name).findFirst();
+        return realm.where(District.class).equalTo(District.FIELD_DEFAULT_NAME, name).findFirst();
     }
 
     public District getDistrictByName(String name) {
-        return (getDistrictByNameTh(name) == null) ? getDistrictByNameEn(name) : getDistrictByNameTh(name);
+        return (getDistrictByFieldName(name) == null) ? getDistrictByDefaultName(name) : getDistrictByFieldName(name);
     }
 
     public List<District> getDistricts() {
@@ -513,7 +513,7 @@ public class RealmController {
         return realm.where(District.class).sort(District.FIELD_ID, Sort.ASCENDING).findAll();
     }
 
-    public List<District> getDistrictsByProvinceId(Long provinceId) {
+    public List<District> getDistrictsByProvinceId(String provinceId) {
         Realm realm = getRealm();
         return realm.where(District.class)
                 .equalTo(District.FIELD_PROVINCE_ID, provinceId)
@@ -542,29 +542,29 @@ public class RealmController {
         });
     }
 
-    public SubDistrict getSubDistrict(Long subDistrictId) {
+    public SubDistrict getSubDistrict(String subDistrictId) {
         Realm realm = getRealm();
         return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_ID, subDistrictId).findFirst();
     }
 
-    public SubDistrict getSubDistrictByNameTh(String name) {
+    public SubDistrict getSubDistrictByFieldName(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_NAME_TH, name).findFirst();
+        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_NAME, name).findFirst();
     }
 
-    public SubDistrict getSubDistrictByNameEn(String name) {
+    public SubDistrict getSubDistrictByDefaultName(String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_NAME_EN, name).findFirst();
+        return realm.where(SubDistrict.class).equalTo(SubDistrict.FIELD_DEFAULT_NAME, name).findFirst();
     }
 
     public SubDistrict getSubDistrictByName(String name) {
-        return (getSubDistrictByNameTh(name) == null) ? getSubDistrictByNameEn(name) : getSubDistrictByNameTh(name);
+        return (getSubDistrictByFieldName(name) == null) ? getSubDistrictByDefaultName(name) : getSubDistrictByFieldName(name);
     }
 
     public List<SubDistrict> getSubDistricts() {
@@ -572,7 +572,7 @@ public class RealmController {
         return realm.where(SubDistrict.class).sort(SubDistrict.FIELD_ID, Sort.ASCENDING).findAll();
     }
 
-    public List<SubDistrict> getSubDistrictsByDistrictId(Long districtId) {
+    public List<SubDistrict> getSubDistrictsByDistrictId(String districtId) {
         Realm realm = getRealm();
         return realm.where(SubDistrict.class)
                 .equalTo(SubDistrict.FIELD_DISTRICT_ID, districtId)
@@ -590,6 +590,7 @@ public class RealmController {
     }
     // endregion
 
+
     // region postcode
     public void storePostcode(final Postcode postcode) {
         Realm realm = getRealm();
@@ -601,9 +602,9 @@ public class RealmController {
         });
     }
 
-    public Postcode getPostcode(Long id) {
+    public Postcode getPostcode(String postcodeId) {
         Realm realm = getRealm();
-        return realm.where(Postcode.class).equalTo(Postcode.FIELD_ID, id).findFirst();
+        return realm.where(Postcode.class).equalTo(Postcode.FIELD_ID, postcodeId).findFirst();
     }
 
     public Postcode getPostcodeByCode(String postcode) {
@@ -611,7 +612,7 @@ public class RealmController {
             return null;
         }
         Realm realm = getRealm();
-        return realm.where(Postcode.class).equalTo(Postcode.FIELD_POST_CODE, Long.parseLong(postcode)).findFirst();
+        return realm.where(Postcode.class).equalTo(Postcode.FIELD_POST_CODE, postcode).findFirst();
     }
 
 
@@ -620,7 +621,7 @@ public class RealmController {
         return realm.where(Postcode.class).sort(Postcode.FIELD_ID, Sort.ASCENDING).findAll();
     }
 
-    public List<Postcode> getPostcodeBySubDistrictId(Long subDistrictId) {
+    public List<Postcode> getPostcodeBySubDistrictId(String subDistrictId) {
         Realm realm = getRealm();
         return realm.where(Postcode.class)
                 .equalTo(Postcode.FIELD_SUB_DISTRICT_ID, subDistrictId)
@@ -637,6 +638,7 @@ public class RealmController {
         });
     }
     // endregion
+
 
     public void userLogout() {
         deleteAllCacheCartItem();

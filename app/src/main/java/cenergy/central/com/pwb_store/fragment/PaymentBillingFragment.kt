@@ -8,10 +8,9 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
-import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,9 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
@@ -79,12 +80,12 @@ class PaymentBillingFragment : Fragment() {
     private var mProgressDialog: ProgressDialog? = null
 
     // data
-    private lateinit var preferenceManager : PreferenceManager
+    private lateinit var preferenceManager: PreferenceManager
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
-    private var paymentProtocol: PaymentProtocol? = null
+    private lateinit var paymentProtocol: PaymentProtocol
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
     private var member: Member? = null
@@ -110,36 +111,38 @@ class PaymentBillingFragment : Fragment() {
     private var homePostalCode: String = ""
     private var homePhone: String = ""
     private var isSameBilling = true
-    private val provinces = database.provinces
-    private var districts = emptyList<District>()
-    private var subDistricts = emptyList<SubDistrict>()
-    private var postcodes = emptyList<Postcode>()
-    private var provinceNameList = listOf<Pair<Long,String>>()
-    private var districtNameList = listOf<Pair<Long,String>>()
-    private var subDistrictNameList = listOf<Pair<Long,String>>()
-    private var postcodeList = listOf<Pair<Long,String>>()
-    private var billingProvinceNameList = listOf<Pair<Long,String>>()
-    private var billingDistrictNameList = listOf<Pair<Long,String>>()
-    private var billingSubDistrictNameList = listOf<Pair<Long,String>>()
-    private var billingPostcodeList = listOf<Pair<Long,String>>()
 
+    // shipping
+    private var provinceList = listOf<Province>()
+    private var districtList = listOf<District>()
+    private var subDistrictList = listOf<SubDistrict>()
+    private var postcodeList = listOf<Postcode>()
+
+    // billing
+    private var billingDistrictList = listOf<District>()
+    private var billingSubDistrictList = listOf<SubDistrict>()
+    private var billingPostcodeList = listOf<Postcode>()
+
+    // data shipping
     private var province: Province? = null
     private var district: District? = null
     private var subDistrict: SubDistrict? = null
     private var postcode: Postcode? = null
+
+    // data billing
     private var billingProvince: Province? = null
     private var billingDistrict: District? = null
     private var billingSubDistrict: SubDistrict? = null
     private var billingPostcode: Postcode? = null
     // adapter
-    private var provinceAdapter: AddressAdapter? = null
-    private var districtAdapter: AddressAdapter? = null
-    private var subDistrictAdapter: AddressAdapter? = null
-    private var postcodeAdapter: AddressAdapter? = null
-    private var billingProvinceAdapter: AddressAdapter? = null
-    private var billingDistrictAdapter: AddressAdapter? = null
-    private var billingSubDistrictAdapter: AddressAdapter? = null
-    private var billingPostcodeAdapter: AddressAdapter? = null
+    private lateinit var provinceAdapter: AddressAdapter
+    private lateinit var districtAdapter: AddressAdapter
+    private lateinit var subDistrictAdapter: AddressAdapter
+    private lateinit var postcodeAdapter: AddressAdapter
+    private lateinit var billingProvinceAdapter: AddressAdapter
+    private lateinit var billingDistrictAdapter: AddressAdapter
+    private lateinit var billingSubDistrictAdapter: AddressAdapter
+    private lateinit var billingPostcodeAdapter: AddressAdapter
 
     companion object {
         private const val ARG_MEMBER = "arg_member"
@@ -177,8 +180,8 @@ class PaymentBillingFragment : Fragment() {
         defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
-        cartItemList = paymentProtocol?.getItems() ?: arrayListOf()
-        shippingAddress = paymentProtocol?.getShippingAddress()
+        cartItemList = paymentProtocol.getItems()
+        shippingAddress = paymentProtocol.getShippingAddress()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -187,7 +190,7 @@ class PaymentBillingFragment : Fragment() {
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(ARG_MEMBER)
         pwbMemberIndex = arguments?.getInt(ARG_MEMBER_INDEX)
-        pwbMemberIndex?.let { pwbMember = paymentProtocol?.getPWBMemberByIndex(it) }
+        pwbMemberIndex?.let { pwbMember = paymentProtocol.getPWBMemberByIndex(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -199,247 +202,11 @@ class PaymentBillingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupInputAddress()
-        initMember()
+        loadProvinceList() // on start
+        setupCartItems()
     }
 
-    private fun initMember() {
-        //Setup Member
-        if (shippingAddress != null) {
-            firstNameEdt.setText(shippingAddress!!.firstname)
-            lastNameEdt.setText(shippingAddress!!.lastname)
-            contactNumberEdt.setText(shippingAddress!!.telephone)
-            emailEdt.setText(shippingAddress!!.email)
-            homeNoEdt.setText(shippingAddress!!.subAddress!!.houseNumber)
-            homeBuildingEdit.setText(shippingAddress!!.subAddress!!.building)
-            homeSoiEdt.setText(shippingAddress!!.subAddress!!.soi)
-            homeRoadEdt.setText(shippingAddress!!.street!![0]!!)
-
-            // validate province with local db
-            val province = database.getProvinceByName(shippingAddress!!.region)
-            if (province != null) {
-                this.province = province
-                this.districts = database.getDistrictsByProvinceId(province.provinceId)
-                this.districtNameList = getDistrictNameList()
-                this.districtAdapter?.setItems(this.districtNameList)
-                provinceInput.setText(province.getProvinceName(defaultLanguage))
-                districtInput.setText("")
-                subDistrictInput.setText("")
-                postcodeInput.setText("")
-                districtInput.setEnableInput(true)
-                subDistrictInput.setEnableInput(false)
-                postcodeInput.setEnableInput(false)
-            } else {
-                return
-            }
-
-            // validate district with local db
-            val district = database.getDistrictByName(shippingAddress!!.subAddress?.district)
-            if (district != null) {
-                this.district = district
-                this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
-                this.subDistrictNameList = getSubDistrictNameList()
-                this.subDistrictAdapter?.setItems(this.subDistrictNameList)
-                districtInput.setText(district.getDistrictName(defaultLanguage))
-                subDistrictInput.setText("")
-                postcodeInput.setText("")
-                subDistrictInput.setEnableInput(true)
-                postcodeInput.setEnableInput(false)
-            } else {
-                return
-            }
-
-            // validate sub district with local db
-            val subDistrict = database.getSubDistrictByName(shippingAddress!!.subAddress?.subDistrict)
-            if (subDistrict != null) {
-                this.subDistrict = subDistrict
-                this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
-                this.postcodeList = getPostcodeList()
-                this.postcodeAdapter?.setItems(this.postcodeList)
-                subDistrictInput.setText(subDistrict.getSubDistrictName(defaultLanguage))
-                postcodeInput.setText("")
-                postcodeInput.setEnableInput(true)
-            } else {
-                return
-            }
-
-            // validate postcode with local db
-            val postcode = database.getPostcodeByCode(shippingAddress!!.subAddress?.postcode)
-            if (postcode != null) {
-                postcodeInput.setText(postcode.postcode.toString())
-                this.postcode = postcode
-            }
-
-            homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
-        } else {
-            when {
-                hasPwbMember() -> pwbMember?.let { pwbMember ->
-                    firstNameEdt.setText(pwbMember.firstname ?: "")
-                    lastNameEdt.setText(pwbMember.lastname ?: "")
-                    contactNumberEdt.setText(pwbMember.telephone!!)
-                    emailEdt.setText(pwbMember.email ?: "")
-                    homeNoEdt.setText(pwbMember.subAddress!!.houseNo!!)
-                    homeBuildingEdit.setText("")
-                    homeSoiEdt.setText("")
-                    homeRoadEdt.setText(pwbMember.street!![0])
-                    homePhoneEdt.setText(pwbMember.telephone!!)
-
-                    // validate province with local db
-                    val provinceId = pwbMember.regionId
-                    if (provinceId != null) {
-                        val province = database.getProvince(provinceId.toLong())
-                        if (province != null) {
-                            this.province = province
-                            this.districts = database.getDistrictsByProvinceId(province.provinceId)
-                            this.districtNameList = getDistrictNameList()
-                            this.districtAdapter?.setItems(this.districtNameList)
-                            provinceInput.setText(province.getProvinceName(defaultLanguage))
-                            districtInput.setText("")
-                            subDistrictInput.setText("")
-                            postcodeInput.setText("")
-                            districtInput.setEnableInput(true)
-                            subDistrictInput.setEnableInput(false)
-                            postcodeInput.setEnableInput(false)
-                        } else {
-                            return@let
-                        }
-                    } else {
-                        return@let
-                    }
-
-                    val subAddress = pwbMember.subAddress
-                    // validate district with local db
-                    val districtId = subAddress?.districtId
-                    if (districtId != null && districtId != "") {
-                        val district = database.getDistrict(districtId.toLong())
-                        if (district != null) {
-                            this.district = district
-                            this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
-                            this.subDistrictNameList = getSubDistrictNameList()
-                            this.subDistrictAdapter?.setItems(this.subDistrictNameList)
-                            districtInput.setText(district.getDistrictName(defaultLanguage))
-                            subDistrictInput.setText("")
-                            postcodeInput.setText("")
-                            subDistrictInput.setEnableInput(true)
-                            postcodeInput.setEnableInput(false)
-                        } else {
-                            return@let
-                        }
-                    } else {
-                        return@let
-                    }
-
-                    // validate sub district with local db
-                    val subDistrictId = subAddress.subDistrictId
-                    if (subDistrictId != null && subDistrictId != "") {
-                        val subDistrict = database.getSubDistrict(subDistrictId.toLong())
-                        if (subDistrict != null) {
-                            this.subDistrict = subDistrict
-                            this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
-                            this.postcodeList = getPostcodeList()
-                            this.postcodeAdapter?.setItems(this.postcodeList)
-                            subDistrictInput.setText(subDistrict.getSubDistrictName(defaultLanguage))
-                            postcodeInput.setText("")
-                            postcodeInput.setEnableInput(true)
-                        } else {
-                            return@let
-                        }
-                    } else {
-                        return@let
-                    }
-
-                    // validate postcode with local db
-                    val postcodeId = subAddress.postcodeId
-                    if (postcodeId != null && postcodeId != "") {
-                        val postcode = database.getPostcode(postcodeId.toLong())
-                        if (postcode != null) {
-                            postcodeInput.setText(postcode.postcode.toString())
-                            this.postcode = postcode
-                        }
-                    } else {
-                        if(pwbMember.postcode != null && pwbMember.postcode != ""){
-                            val postcode = database.getPostcodeByCode(pwbMember.postcode)
-                            if (postcode != null) {
-                                postcodeInput.setText(postcode.postcode.toString())
-                                this.postcode = postcode
-                            }
-                        }
-                    }
-                }
-                // t1c member
-                hasMember() -> member?.let { member ->
-                    firstNameEdt.setText(member.getFirstName())
-                    lastNameEdt.setText(member.getLastName())
-                    contactNumberEdt.setText(member.mobilePhone)
-                    emailEdt.setText(member.email)
-                    homePhoneEdt.setText(member.homePhone)
-
-                    // has address?
-                    if (member.addresses != null && member.addresses!!.isNotEmpty()) {
-                        val memberAddress = member.addresses!![0]
-                        homeNoEdt.setText(memberAddress.homeNo ?: "")
-                        homeBuildingEdit.setText(memberAddress.building ?: "")
-                        homeSoiEdt.setText(memberAddress.soi ?: "")
-                        homeRoadEdt.setText(memberAddress.road ?: "")
-
-                        // validate province with local db
-                        val province = database.getProvinceByName(memberAddress.province)
-                        if (province != null) {
-                            this.province = province
-                            this.districts = database.getDistrictsByProvinceId(province.provinceId)
-                            this.districtNameList = getDistrictNameList()
-                            this.districtAdapter?.setItems(this.districtNameList)
-                            provinceInput.setText(province.getProvinceName(defaultLanguage))
-                            districtInput.setText("")
-                            subDistrictInput.setText("")
-                            postcodeInput.setText("")
-                            districtInput.setEnableInput(true)
-                            subDistrictInput.setEnableInput(false)
-                            postcodeInput.setEnableInput(false)
-                        } else {
-                            return@let
-                        }
-
-                        // validate district with local db
-                        val district = database.getDistrictByName(memberAddress.district)
-                        if (district != null) {
-                            this.district = district
-                            this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
-                            this.subDistrictNameList = getSubDistrictNameList()
-                            this.subDistrictAdapter?.setItems(this.subDistrictNameList)
-                            districtInput.setText(district.getDistrictName(defaultLanguage))
-                            subDistrictInput.setText("")
-                            postcodeInput.setText("")
-                            subDistrictInput.setEnableInput(true)
-                            postcodeInput.setEnableInput(false)
-                        } else {
-                            return@let
-                        }
-
-                        // validate sub district with local db
-                        val subDistrict = database.getSubDistrictByName(memberAddress.subDistrict)
-                        if (subDistrict != null) {
-                            this.subDistrict = subDistrict
-                            this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
-                            this.postcodeList = getPostcodeList()
-                            this.postcodeAdapter?.setItems(this.postcodeList)
-                            subDistrictInput.setText(subDistrict.getSubDistrictName(defaultLanguage))
-                            postcodeInput.setText("")
-                            postcodeInput.setEnableInput(true)
-                        } else {
-                            return@let
-                        }
-
-                        // validate postcode with local db
-                        val postcode = database.getPostcodeByCode(memberAddress.postcode)
-                        if (postcode != null) {
-                            postcodeInput.setText(postcode.postcode.toString())
-                            this.postcode = postcode
-                        }
-                    }
-                }
-            }
-        }
-
+    private fun setupCartItems() {
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
@@ -457,6 +224,246 @@ class PaymentBillingFragment : Fragment() {
         totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
         deliveryBtn.setOnClickListener {
             checkConfirm()
+        }
+    }
+
+    private fun verifyMember() {
+        //Setup Member
+        when {
+            (shippingAddress != null) -> handleCacheMember()
+            hasPwbMember() -> handlePwbMember()
+            hasMember() -> handleT1CMember()
+            else -> dismissProgressDialog()
+        }
+    }
+
+    private fun handleCacheMember() {
+        if (shippingAddress != null) {
+            firstNameEdt.setText(shippingAddress?.firstname ?: "")
+            lastNameEdt.setText(shippingAddress?.lastname ?: "")
+            contactNumberEdt.setText(shippingAddress?.telephone ?: "")
+            emailEdt.setText(shippingAddress?.email ?: "")
+            homeNoEdt.setText(shippingAddress?.subAddress?.houseNumber ?: "")
+            homeBuildingEdit.setText(shippingAddress?.subAddress?.building ?: "")
+            homeSoiEdt.setText(shippingAddress?.subAddress?.soi ?: "")
+            homeRoadEdt.setText(shippingAddress?.street?.get(0) ?: "")
+            homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
+
+            // validate province with local db
+            val province = database.getProvince(shippingAddress!!.regionId)
+            if (province != null) {
+                this.province = province
+                this.districtList = database.getDistrictsByProvinceId(province.provinceId)
+                this.districtAdapter.setItems(this.districtList)
+                provinceInput.setText(province.name)
+                districtInput.setText("")
+                subDistrictInput.setText("")
+                postcodeInput.setText("")
+                districtInput.setEnableInput(true)
+                subDistrictInput.setEnableInput(false)
+                postcodeInput.setEnableInput(false)
+            } else {
+                return
+            }
+
+            // validate district with local db
+            val district = database.getDistrict(shippingAddress!!.subAddress?.districtId)
+            if (district != null) {
+                this.district = district
+                this.subDistrictList = database.getSubDistrictsByDistrictId(district.districtId)
+                this.subDistrictAdapter.setItems(this.subDistrictList)
+                districtInput.setText(district.name)
+                subDistrictInput.setText("")
+                postcodeInput.setText("")
+                subDistrictInput.setEnableInput(true)
+                postcodeInput.setEnableInput(false)
+            } else {
+                return
+            }
+
+            // validate sub district with local db
+            val subDistrict = database.getSubDistrict(shippingAddress!!.subAddress?.subDistrictId)
+            if (subDistrict != null) {
+                this.subDistrict = subDistrict
+                this.postcodeList = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+                this.postcodeAdapter.setItems(this.postcodeList)
+                subDistrictInput.setText(subDistrict.name)
+                postcodeInput.setText("")
+                postcodeInput.setEnableInput(true)
+            } else {
+                return
+            }
+
+            // validate postcode with local db
+            val postcode = database.getPostcode(shippingAddress!!.subAddress?.postcodeId)
+            if (postcode != null) {
+                postcodeInput.setText(postcode.postcode)
+                this.postcode = postcode
+            }
+        }
+    }
+
+    private fun handlePwbMember() {
+        if (pwbMember == null) {
+            return
+        }
+
+        val member = pwbMember!!
+        firstNameEdt.setText(member.firstname ?: "")
+        lastNameEdt.setText(member.lastname ?: "")
+        contactNumberEdt.setText(member.telephone!!)
+        emailEdt.setText(member.email ?: "")
+        homeNoEdt.setText(member.subAddress!!.houseNo)
+        homeBuildingEdit.setText("")
+        homeSoiEdt.setText("")
+        homeRoadEdt.setText(member.street!![0])
+        homePhoneEdt.setText(member.telephone!!)
+
+        // validate province with local db
+        val provinceId = member.regionId
+        if (provinceId != null) {
+            val province = database.getProvince(provinceId.toString())
+            if (province != null) {
+                this.province = province
+//                            this.districts = database.getDistrictsByProvinceId(province.provinceId)
+//                            this.districtNameList = getDistrictNameList()
+//                            this.districtAdapter?.setItems(this.districtNameList)
+                provinceInput.setText(province.name)
+                districtInput.setText("")
+                subDistrictInput.setText("")
+                postcodeInput.setText("")
+                districtInput.setEnableInput(true)
+                subDistrictInput.setEnableInput(false)
+                postcodeInput.setEnableInput(false)
+            }
+        }
+
+        val subAddress = member.subAddress ?: return
+        // validate district with local db
+        val districtId = subAddress.districtId
+        if (districtId.isNotBlank()) {
+            val district = database.getDistrict(districtId)
+            if (district != null) {
+                this.district = district
+//                            this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
+//                            this.subDistrictNameList = getSubDistrictNameList()
+//                            this.subDistrictAdapter?.setItems(this.subDistrictNameList)
+                districtInput.setText(district.name)
+                subDistrictInput.setText("")
+                postcodeInput.setText("")
+                subDistrictInput.setEnableInput(true)
+                postcodeInput.setEnableInput(false)
+            }
+        }
+
+        // validate sub district with local db
+        val subDistrictId = subAddress.subDistrictId
+        if (subDistrictId.isNotBlank()) {
+            val subDistrict = database.getSubDistrict(subDistrictId)
+            if (subDistrict != null) {
+                this.subDistrict = subDistrict
+//                            this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+//                            this.postcodeList = getPostcodeList()
+//                            this.postcodeAdapter?.setItems(this.postcodeList)
+                subDistrictInput.setText(subDistrict.name)
+                postcodeInput.setText("")
+                postcodeInput.setEnableInput(true)
+            }
+        }
+
+        // validate postcode with local db
+        val postcodeId = subAddress.postcodeId
+        postcodeInput.setText(postcodeId)
+//                    val postcode = pwbMember.postcode
+//                    if (postcodeId != null && postcodeId != "") {
+//                        val postcode = database.getPostcode(postcodeId.toLong())
+//                        if (postcode != null) {
+//                            postcodeInput.setText(postcode.postcode.toString())
+//                            this.postcode = postcode
+//                        }
+//                    } else {
+//                        if(pwbMember.postcode != null && pwbMember.postcode != ""){
+//                            val postcode = database.getPostcodeByCode(pwbMember.postcode)
+//                            if (postcode != null) {
+//                                postcodeInput.setText(postcode.postcode.toString())
+//                                this.postcode = postcode
+//                            }
+//                        }
+//                    }
+    }
+
+    private fun handleT1CMember() {
+        member?.let { member ->
+            firstNameEdt.setText(member.getFirstName())
+            lastNameEdt.setText(member.getLastName())
+            contactNumberEdt.setText(member.mobilePhone)
+            emailEdt.setText(member.email)
+            homePhoneEdt.setText(member.homePhone)
+
+            // has address?
+            if (member.addresses != null && member.addresses!!.isNotEmpty()) {
+                val memberAddress = member.addresses!![0]
+                homeNoEdt.setText(memberAddress.homeNo ?: "")
+                homeBuildingEdit.setText(memberAddress.building ?: "")
+                homeSoiEdt.setText(memberAddress.soi ?: "")
+                homeRoadEdt.setText(memberAddress.road ?: "")
+
+                // validate province with local db
+                val province = database.getProvinceByName(memberAddress.province)
+                if (province != null) {
+                    this.province = province
+//                            this.districts = database.getDistrictsByProvinceId(province.provinceId)
+//                            this.districtNameList = getDistrictNameList()
+//                            this.districtAdapter?.setItems(this.districtNameList)
+                    provinceInput.setText(province.name)
+                    districtInput.setText("")
+                    subDistrictInput.setText("")
+                    postcodeInput.setText("")
+                    districtInput.setEnableInput(true)
+                    subDistrictInput.setEnableInput(false)
+                    postcodeInput.setEnableInput(false)
+                } else {
+                    return@let
+                }
+
+                // validate district with local db
+                val district = database.getDistrictByName(memberAddress.district)
+                if (district != null) {
+                    this.district = district
+//                            this.subDistricts = database.getSubDistrictsByDistrictId(district.districtId)
+//                            this.subDistrictNameList = getSubDistrictNameList()
+//                            this.subDistrictAdapter?.setItems(this.subDistrictNameList)
+                    districtInput.setText(district.name)
+                    subDistrictInput.setText("")
+                    postcodeInput.setText("")
+                    subDistrictInput.setEnableInput(true)
+                    postcodeInput.setEnableInput(false)
+                } else {
+                    return@let
+                }
+
+                // validate sub district with local db
+                val subDistrict = database.getSubDistrictByName(memberAddress.subDistrict)
+                if (subDistrict != null) {
+                    this.subDistrict = subDistrict
+//                            this.postcodes = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+//                            this.postcodeList = getPostcodeList()
+//                            this.postcodeAdapter?.setItems(this.postcodeList)
+                    subDistrictInput.setText(subDistrict.name)
+                    postcodeInput.setText("")
+                    postcodeInput.setEnableInput(true)
+                } else {
+                    return@let
+                }
+
+                // validate postcode with local db
+                postcodeInput.setText(memberAddress.postcode ?: "")
+//                        val postcode = database.getPostcodeByCode(memberAddress.postcode)
+//                        if (postcode != null) {
+//                            postcodeInput.setText(postcode.postcode.toString())
+//                            this.postcode = postcode
+//                        }
+            }
         }
     }
 
@@ -545,153 +552,22 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun setupInputAddress() {
-        // setup list dropdown
-        provinceNameList = getProvinceNameList()
-        districtNameList = getDistrictNameList()
-        subDistrictNameList = getSubDistrictNameList()
-        postcodeList = getPostcodeList()
-        billingProvinceNameList = getProvinceNameList()
-        billingDistrictNameList = getDistrictNameList()
-        billingSubDistrictNameList = getSubDistrictNameList()
-        billingPostcodeList = getPostcodeList()
-
-        // setup province
-        provinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, provinceNameList)
-        provinceAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                provinceInput.setError(null) // clear error
-                provinceInput.setText(item.second)
-                provinceInput.clearAllFocus()
-                province = database.getProvince(item.first)
-                districtInput.setText("")
-                subDistrictInput.setText("")
-                postcodeInput.setText("")
-                districtInput.setEnableInput(true)
-                subDistrictInput.setEnableInput(false)
-                postcodeInput.setEnableInput(false)
-                districts = database.getDistrictsByProvinceId(item.first)
-                districtNameList = getDistrictNameList()
-                districtAdapter?.setItems(districtNameList)
-                hideKeyboard()
-            }
-        })
+        // setup dropdown
+        // setup province input
+        initProvinceShippingInput()
+        initProvinceBillingInput()
 
         // setup district
-        districtAdapter = AddressAdapter(context!!, R.layout.layout_text_item, districtNameList)
-        districtAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                districtInput.setError(null) // clear error
-                districtInput.setText(item.second)
-                districtInput.clearAllFocus()
-                district = database.getDistrict(item.first)
-                subDistrictInput.setText("")
-                subDistrictInput.setEnableInput(true)
-                postcodeInput.setEnableInput(false)
-                subDistricts = database.getSubDistrictsByDistrictId(item.first)
-                subDistrictNameList = getSubDistrictNameList()
-                subDistrictAdapter?.setItems(subDistrictNameList)
-                hideKeyboard()
-            }
-
-        })
+        initDistrictShippingInput()
+        initDistrictBillingInput()
 
         // setup sub district
-        subDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, subDistrictNameList)
-        subDistrictAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                subDistrictInput.setError(null) // clear error
-                subDistrictInput.setText(item.second)
-                subDistrictInput.clearAllFocus()
-                subDistrict = database.getSubDistrict(item.first)
-                postcodeInput.setText("")
-                postcodeInput.setEnableInput(true)
-                postcodes = database.getPostcodeBySubDistrictId(item.first)
-                postcodeList = getPostcodeList()
-                postcodeAdapter?.setItems(postcodeList)
-                hideKeyboard()
-            }
-        })
+        initSubDistrictShippingInput()
+        initSubDistrictBillingInput()
 
         // setup postcode
-        postcodeAdapter = AddressAdapter(context!!, R.layout.layout_text_item, postcodeList)
-        postcodeAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                postcodeInput.setError(null) // clear error
-                postcodeInput.setText(item.second)
-                postcodeInput.clearAllFocus()
-                postcode = database.getPostcode(item.first)
-                hideKeyboard()
-            }
-        })
-
-        // setup billing province
-        billingProvinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, billingProvinceNameList)
-        billingProvinceAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                billingProvinceInput.setError(null) // clear error
-                billingProvinceInput.setText(item.second)
-                billingProvinceInput.clearAllFocus()
-                billingProvince = database.getProvince(item.first)
-                billingDistrictInput.setText("")
-                billingSubDistrictInput.setText("")
-                billingPostcodeInput.setText("")
-                billingDistrictInput.setEnableInput(true)
-                billingSubDistrictInput.setEnableInput(false)
-                billingPostcodeInput.setEnableInput(false)
-                districts = database.getDistrictsByProvinceId(item.first)
-                billingDistrictNameList = getDistrictNameList()
-                billingDistrictAdapter?.setItems(billingDistrictNameList)
-                hideKeyboard()
-            }
-        })
-
-        // setup billing district
-        billingDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, billingDistrictNameList)
-        billingDistrictAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                billingDistrictInput.setError(null) // clear error
-                billingDistrictInput.setText(item.second)
-                billingDistrictInput.clearAllFocus()
-                billingDistrict = database.getDistrict(item.first)
-                billingSubDistrictInput.setText("")
-                billingSubDistrictInput.setEnableInput(true)
-                billingPostcodeInput.setEnableInput(false)
-                subDistricts = database.getSubDistrictsByDistrictId(item.first)
-                billingSubDistrictNameList = getSubDistrictNameList()
-                billingSubDistrictAdapter?.setItems(billingSubDistrictNameList)
-                hideKeyboard()
-            }
-
-        })
-
-        // setup billing sub district
-        billingSubDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, billingSubDistrictNameList)
-        billingSubDistrictAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                billingSubDistrictInput.setError(null) // clear error
-                billingSubDistrictInput.setText(item.second)
-                billingSubDistrictInput.clearAllFocus()
-                billingSubDistrict = database.getSubDistrict(item.first)
-                billingPostcodeInput.setText("")
-                billingPostcodeInput.setEnableInput(true)
-                postcodes = database.getPostcodeBySubDistrictId(item.first)
-                billingPostcodeList = getPostcodeList()
-                billingPostcodeAdapter?.setItems(billingPostcodeList)
-                hideKeyboard()
-            }
-        })
-
-        // setup billing postcode
-        billingPostcodeAdapter = AddressAdapter(context!!, R.layout.layout_text_item, billingPostcodeList)
-        billingPostcodeAdapter?.setCallback(object : AddressAdapter.FilterClickListener {
-            override fun onItemClickListener(item: Pair<Long, String>) {
-                billingPostcodeInput.setError(null) // clear error
-                billingPostcodeInput.setText(item.second)
-                billingPostcodeInput.clearAllFocus()
-                billingPostcode = database.getPostcode(item.first)
-                hideKeyboard()
-            }
-        })
+        initPostcodeShippingInput()
+        initPostcodeBillingInput()
 
         // setup adapter
         provinceInput.setAdapter(provinceAdapter)
@@ -754,16 +630,16 @@ class PaymentBillingFragment : Fragment() {
         homeBuilding = homeBuildingEdit.getText()
         homeSoi = homeSoiEdt.getText()
         homeRoad = homeRoadEdt.getText()
-        homeProvinceId = province?.provinceId?.toString() ?: ""
-        homeProvince = province?.getProvinceName(defaultLanguage) ?: ""
+        homeProvinceId = province?.provinceId ?: ""
+        homeProvince = province?.name ?: ""
         homeCountryId = province?.countryId ?: ""
         homeProvinceCode = province?.code ?: ""
-        homeDistrictId = district?.districtId?.toString() ?: ""
-        homeDistrict = district?.getDistrictName(defaultLanguage) ?: ""
-        homeSubDistrictId = subDistrict?.subDistrictId?.toString() ?: ""
-        homeSubDistrict = subDistrict?.getSubDistrictName(defaultLanguage) ?: ""
-        homePostalCodeId = postcode?.id?.toString() ?: ""
-        homePostalCode = postcode?.postcode?.toString() ?: ""
+        homeDistrictId = district?.districtId ?: ""
+        homeDistrict = district?.name ?: ""
+        homeSubDistrictId = subDistrict?.subDistrictId ?: ""
+        homeSubDistrict = subDistrict?.name ?: ""
+        homePostalCodeId = subDistrict?.postcodeId ?: ""
+        homePostalCode = subDistrict?.postcode ?: ""
         homePhone = homePhoneEdt.getText()
 
         return AddressInformation.createAddress(
@@ -784,16 +660,16 @@ class PaymentBillingFragment : Fragment() {
         homeBuilding = billingHomeBuildingEdit.getText()
         homeSoi = billingHomeSoiEdt.getText()
         homeRoad = billingHomeRoadEdt.getText()
-        homeProvinceId = billingProvince?.provinceId?.toString() ?: ""
-        homeProvince = billingProvince?.getProvinceName(defaultLanguage) ?: ""
+        homeProvinceId = billingProvince?.provinceId ?: ""
+        homeProvince = billingProvince?.name ?: ""
         homeCountryId = billingProvince?.countryId ?: ""
         homeProvinceCode = billingProvince?.code ?: ""
-        homeDistrictId = billingDistrict?.districtId?.toString() ?: ""
-        homeDistrict = billingDistrict?.getDistrictName(defaultLanguage) ?: ""
-        homeSubDistrictId = billingSubDistrict?.subDistrictId?.toString() ?: ""
-        homeSubDistrict = billingSubDistrict?.getSubDistrictName(defaultLanguage) ?: ""
-        homePostalCodeId = billingPostcode?.id?.toString() ?: ""
-        homePostalCode = billingPostcode?.postcode?.toString() ?: ""
+        homeDistrictId = billingDistrict?.districtId ?: ""
+        homeDistrict = billingDistrict?.name ?: ""
+        homeSubDistrictId = billingSubDistrict?.subDistrictId ?: ""
+        homeSubDistrict = billingSubDistrict?.name ?: ""
+        homePostalCodeId = billingSubDistrict?.postcodeId ?: ""
+        homePostalCode = billingSubDistrict?.postcode ?: ""
         homePhone = billingHomePhoneEdt.getText()
 
         return AddressInformation.createAddress(
@@ -874,7 +750,15 @@ class PaymentBillingFragment : Fragment() {
             mProgressDialog = DialogUtils.createProgressDialog(context)
             mProgressDialog?.show()
         } else {
-            mProgressDialog?.show()
+            if (!mProgressDialog!!.isShowing) {
+                mProgressDialog?.show()
+            }
+        }
+    }
+
+    private fun dismissProgressDialog() {
+        if (mProgressDialog != null && isAdded) {
+            mProgressDialog!!.dismiss()
         }
     }
 
@@ -887,19 +771,245 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun getProvinceNameList(): List<Pair<Long, String>> {
-        return provinces.map { Pair(first = it.provinceId, second = it.getProvinceName(defaultLanguage)) }
+    private fun loadProvinceList() {
+        context?.let {
+            showProgressDialog()
+            HttpManagerMagento.getInstance(it).getProvinces(object : ApiResponseCallback<List<Province>> {
+                override fun success(response: List<Province>?) {
+                    response?.let { provinceList ->
+                        // update dropdown province
+                        this@PaymentBillingFragment.provinceList = provinceList
+                        provinceAdapter.setItems(provinceList)
+                        billingProvinceAdapter.setItems(provinceList)
+                    }
+                    verifyMember() // check has member information?
+//                    dismissProgressDialog()
+                }
+
+                override fun failure(error: APIError) {
+                    Log.e("PaymentBillingFragment", "can't get province list")
+                    dismissProgressDialog()
+                }
+            })
+        }
     }
 
-    private fun getDistrictNameList(): List<Pair<Long, String>> {
-        return districts.map { Pair(first = it.districtId, second = it.getDistrictName(defaultLanguage)) }
+    private fun loadDistrictList(province: Province, isShipping: Boolean = true) {
+        context?.let {
+            showProgressDialog()
+            HttpManagerMagento.getInstance(it).getDistrict(province.provinceId, object : ApiResponseCallback<List<District>> {
+                override fun success(response: List<District>?) {
+                    response?.let { districtList ->
+                        if (isShipping) {
+                            this@PaymentBillingFragment.districtList = districtList
+                            this@PaymentBillingFragment.districtAdapter.setItems(districtList)
+                        } else {
+                            this@PaymentBillingFragment.billingDistrictList = districtList
+                            this@PaymentBillingFragment.billingDistrictAdapter.setItems(districtList)
+                        }
+                        dismissProgressDialog()
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    Log.e("PaymentBillingFragment", "can't get district list")
+                    dismissProgressDialog()
+                }
+            })
+        }
     }
 
-    private fun getSubDistrictNameList(): List<Pair<Long, String>> {
-        return subDistricts.map { Pair(first = it.subDistrictId, second = it.getSubDistrictName(defaultLanguage)) }
+    private fun loadSubDistrictList(district: District, isShipping: Boolean = true) {
+        context?.let {
+            showProgressDialog()
+            HttpManagerMagento.getInstance(it).getSubDistrict(district.provinceId, district.districtId,
+                    object : ApiResponseCallback<List<SubDistrict>> {
+                        override fun success(response: List<SubDistrict>?) {
+                            response?.let { subDistrictList ->
+                                if (isShipping) {
+                                    this@PaymentBillingFragment.subDistrictList = subDistrictList
+                                    this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList)
+                                } else {
+                                    this@PaymentBillingFragment.billingSubDistrictList = subDistrictList
+                                    this@PaymentBillingFragment.billingSubDistrictAdapter.setItems(subDistrictList)
+                                }
+                                dismissProgressDialog()
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            Log.e("PaymentBillingFragment", "can't get district list")
+                            dismissProgressDialog()
+                        }
+                    })
+        }
     }
 
-    private fun getPostcodeList(): List<Pair<Long, String>> {
-        return postcodes.map { Pair(first = it.id, second = it.postcode.toString()) }
+    private fun initProvinceShippingInput() {
+        provinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, arrayListOf())
+        provinceAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedProvince = item as Province
+                this@PaymentBillingFragment.province = selectedProvince
+                provinceInput.setError(null) // clear error
+                provinceInput.setText(selectedProvince.name)
+                provinceInput.clearAllFocus()
+                districtInput.setText("")
+                subDistrictInput.setText("")
+                postcodeInput.setText("")
+                districtInput.setEnableInput(true)
+                subDistrictInput.setEnableInput(false)
+                postcodeInput.setEnableInput(false)
+//                districts = database.getDistrictsByProvinceId(item.first)
+//                districtNameList = getDistrictNameList()
+//                districtAdapter?.setItems(districtNameList)
+                loadDistrictList(selectedProvince) // load district
+                hideKeyboard()
+            }
+        })
     }
+
+    private fun initProvinceBillingInput() {
+        billingProvinceAdapter = AddressAdapter(context!!, R.layout.layout_text_item, arrayListOf())
+        billingProvinceAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedProvince = item as Province
+                this@PaymentBillingFragment.billingProvince = selectedProvince
+                billingProvinceInput.setError(null) // clear error
+                billingProvinceInput.setText(selectedProvince.name)
+                billingProvinceInput.clearAllFocus()
+                billingDistrictInput.setText("")
+                billingSubDistrictInput.setText("")
+                billingPostcodeInput.setText("")
+                billingDistrictInput.setEnableInput(true)
+                billingSubDistrictInput.setEnableInput(false)
+                billingPostcodeInput.setEnableInput(false)
+//                districts = database.getDistrictsByProvinceId(item.first)
+//                billingDistrictNameList = getDistrictNameList()
+//                billingDistrictAdapter?.setItems(billingDistrictNameList)
+                loadDistrictList(selectedProvince, false) // load district
+                hideKeyboard()
+            }
+        })
+    }
+
+    private fun initDistrictShippingInput() {
+        districtAdapter = AddressAdapter(context!!, R.layout.layout_text_item, arrayListOf())
+        districtAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedDistrict = item as District
+                this@PaymentBillingFragment.district = selectedDistrict
+                districtInput.setError(null) // clear error
+                districtInput.setText(selectedDistrict.name)
+                districtInput.clearAllFocus()
+                subDistrictInput.setText("")
+                subDistrictInput.setEnableInput(true)
+                postcodeInput.setEnableInput(false)
+//                subDistricts = database.getSubDistrictsByDistrictId(item.first)
+//                subDistrictNameList = getSubDistrictNameList()
+//                subDistrictAdapter?.setItems(subDistrictNameList)
+                loadSubDistrictList(selectedDistrict)
+                hideKeyboard()
+            }
+
+        })
+    }
+
+    private fun initDistrictBillingInput() {
+        billingDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, arrayListOf())
+        billingDistrictAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedDistrict = item as District
+                this@PaymentBillingFragment.billingDistrict = selectedDistrict
+
+                billingDistrictInput.setError(null) // clear error
+                billingDistrictInput.setText(selectedDistrict.name)
+                billingDistrictInput.clearAllFocus()
+                billingSubDistrictInput.setText("")
+                billingSubDistrictInput.setEnableInput(true)
+                billingPostcodeInput.setEnableInput(false)
+//                subDistricts = database.getSubDistrictsByDistrictId(item.first)
+//                billingSubDistrictNameList = getSubDistrictNameList()
+//                billingSubDistrictAdapter?.setItems(billingSubDistrictNameList)
+                loadSubDistrictList(selectedDistrict, false)
+                hideKeyboard()
+            }
+
+        })
+    }
+
+    private fun initSubDistrictShippingInput() {
+        subDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, arrayListOf())
+        subDistrictAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedSubDistrict = item as SubDistrict
+                this@PaymentBillingFragment.subDistrict = selectedSubDistrict
+
+                subDistrictInput.setError(null) // clear error
+                subDistrictInput.setText(selectedSubDistrict.name)
+                subDistrictInput.clearAllFocus()
+                postcodeInput.setText("")
+                postcodeInput.setEnableInput(true)
+                postcodeList = selectedSubDistrict.getPostcodeList()
+                postcodeAdapter.setItems(postcodeList)
+                hideKeyboard()
+            }
+        })
+    }
+
+    private fun initSubDistrictBillingInput() {
+        billingSubDistrictAdapter = AddressAdapter(context!!, R.layout.layout_text_item, arrayListOf())
+        billingSubDistrictAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedSubDistrict = item as SubDistrict
+                this@PaymentBillingFragment.billingSubDistrict = selectedSubDistrict
+
+                billingSubDistrictInput.setError(null) // clear error
+                billingSubDistrictInput.setText(selectedSubDistrict.name)
+                billingSubDistrictInput.clearAllFocus()
+                billingPostcodeInput.setText("")
+                billingPostcodeInput.setEnableInput(true)
+                billingPostcodeList = selectedSubDistrict.getPostcodeList()
+                billingPostcodeAdapter.setItems(billingPostcodeList)
+                hideKeyboard()
+            }
+        })
+    }
+
+    private fun initPostcodeShippingInput() {
+        postcodeAdapter = AddressAdapter(context!!, R.layout.layout_text_item, postcodeList)
+        postcodeAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedPostcode = item as Postcode
+                this@PaymentBillingFragment.postcode = selectedPostcode
+
+                postcodeInput.setError(null) // clear error
+                postcodeInput.setText(selectedPostcode.postcode)
+                postcodeInput.clearAllFocus()
+                hideKeyboard()
+            }
+        })
+    }
+
+    private fun initPostcodeBillingInput() {
+        billingPostcodeAdapter = AddressAdapter(context!!, R.layout.layout_text_item, billingPostcodeList)
+        billingPostcodeAdapter.setCallback(object : AddressAdapter.FilterClickListener {
+            override fun onItemClickListener(item: AddressAdapter.AddressItem) {
+                val selectedPostcode = item as Postcode
+                this@PaymentBillingFragment.billingPostcode = selectedPostcode
+
+                billingPostcodeInput.setError(null) // clear error
+                billingPostcodeInput.setText(selectedPostcode.postcode)
+                billingPostcodeInput.clearAllFocus()
+                hideKeyboard()
+            }
+        })
+    }
+
+    private fun SubDistrict.getPostcodeList(): List<Postcode> {
+        val postcodes = arrayListOf<Postcode>()
+        postcodes.add(Postcode.asPostcode(this))
+        return postcodes
+    }
+
 }

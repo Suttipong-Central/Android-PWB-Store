@@ -13,12 +13,12 @@ class PostcodeSeeder(private val context: Context, val database: RealmController
         Log.i("PostcodeSeeder", "start seed!")
         val results = ReadFileHelper<List<Postcode>>().parseRawJson(context, fileResource,
                 object : TypeToken<List<Postcode>>() {}.type, null)
-
-        if (results != null) {
-            for (result in results) {
-                database.storePostcode(result)
-            }
-        }
+//
+//        if (results != null) {
+//            for (result in results) {
+//                database.storePostcode(result)
+//            }
+//        }
         Log.i("PostcodeSeeder", "end seed!")
     }
 }

@@ -28,10 +28,10 @@ class PwbMember(
 }
 
 class MemberSubAddress(
-        var houseNo: String? = "",
-        var district: String? = "",
-        var districtId: String? = "",
-        var subDistrict: String? = "",
-        var subDistrictId: String? = "",
-        var postcodeId: String? = ""
+        var houseNo: String = "",
+        var district: String = "",
+        var districtId: String = "",
+        var subDistrict: String = "",
+        var subDistrictId: String = "",
+        var postcodeId: String = ""
 )
