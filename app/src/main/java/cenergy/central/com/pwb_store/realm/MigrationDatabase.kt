@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.realm
 
+import cenergy.central.com.pwb_store.model.response.LoginUserResponse
+import cenergy.central.com.pwb_store.model.response.UserBranch
 import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
@@ -53,6 +55,11 @@ class MigrationDatabase : RealmMigration {
                 addField("createdAt", String::class.java).setNullable("createdAt", false)
                 addField("updatedAt", String::class.java).setNullable("updatedAt", false)
                 addField("fax", String::class.java).setNullable("fax", false)
+            }
+
+            realm.schema.get("UserInformation")?.apply {
+                addField("userResponse", LoginUserResponse::class.java).setNullable("userResponse", false)
+                addField("userBranch", UserBranch::class.java).setNullable("userBranch", false)
             }
         }
     }
