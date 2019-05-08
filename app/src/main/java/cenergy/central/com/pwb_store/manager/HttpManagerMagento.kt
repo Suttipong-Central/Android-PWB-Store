@@ -162,12 +162,12 @@ class HttpManagerMagento(context: Context) {
                     val userBranch = response.body()
 
                     //TODO: Mock up data will delete soon
-                    val user = User(userResponse.userId, "apptitude", userResponse.staffId, 223L,
-                            "chuan@central.tech", "apptitude", "", 0, "")
+                    val user = User(userResponse.userId, "", userResponse.staffId, 223L,
+                            "chuan@central.tech", "", "", 0, "")
                     val store = Store()
                     store.storeId = 223L
-                    store.storeCode = "00010"
-                    store.storeName = "Central Chidlom"
+                    store.storeCode = ""
+                    store.storeName = ""
 
                     // save user token
                     database.saveUserToken(UserToken(token = userToken))
