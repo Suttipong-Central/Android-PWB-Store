@@ -53,7 +53,7 @@
                     android:id="@+id/first_name_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/first_name"
                     app:required="true" />
@@ -62,7 +62,7 @@
                     android:id="@+id/last_name_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/last_name"
                     app:required="true" />
@@ -80,7 +80,7 @@
                     android:id="@+id/contact_number_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/tell"
                     app:required="true" />
@@ -89,7 +89,7 @@
                     android:id="@+id/email_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/email"
                     app:required="true" />
@@ -113,7 +113,7 @@
                 style="@style/textPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:text="@string/shipping_address"
                 app:typeFaceAsset="RobotoLight.ttf" />
@@ -121,7 +121,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
@@ -129,7 +129,7 @@
                     android:id="@+id/house_no_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/house_no"
                     app:required="true" />
@@ -138,7 +138,7 @@
                     android:id="@+id/place_or_building_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/place_or_building"
                     app:required="false" />
@@ -146,17 +146,17 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:weightSum="2">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
                     android:id="@+id/soi_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/soi"
                     app:required="false" />
@@ -165,11 +165,10 @@
                     android:id="@+id/street_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/street"
                     app:required="true" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -183,7 +182,7 @@
                     android:id="@+id/input_province"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/province"
@@ -193,7 +192,7 @@
                     android:id="@+id/input_district"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/district"
                     app:act_required="true"/>
@@ -211,7 +210,7 @@
                     android:id="@+id/input_sub_district"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/sub_district"
@@ -221,7 +220,7 @@
                     android:id="@+id/input_postcode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/post_code"
                     app:act_required="true"/>
@@ -239,10 +238,73 @@
                     android:id="@+id/tell_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_weight="1"
                     app:header="@string/tel_or_mobile"
                     app:required="false" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/require_tax"
+                    android:layout_gravity="center_vertical"/>
+
+                <RadioGroup
+                    android:id="@+id/radio_tax_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_tax_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/yes"
+                        android:theme="@style/RadioButtonStyle"/>
+
+                    <RadioButton
+                        android:id="@+id/radio_tax_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/no"
+                        android:theme="@style/RadioButtonStyle"/>
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tax_invoice_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                    android:id="@+id/input_company"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    app:header="@string/company"
+                    app:required="false" />
+
+                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                    android:id="@+id/input_tax_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    app:header="@string/tax_id"
+                    app:required="true" />
 
             </LinearLayout>
         </LinearLayout>
@@ -255,7 +317,6 @@
             android:background="@color/lightGray" />
 
         <LinearLayout
-            android:id="@+id/same_billing_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -295,6 +356,7 @@
             android:id="@+id/billing_address_layout_payment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:orientation="vertical">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -316,7 +378,7 @@
                     android:id="@+id/first_name_billing"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/first_name"
                     app:required="true" />
@@ -325,7 +387,7 @@
                     android:id="@+id/last_name_billing"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/last_name"
                     app:required="true" />
@@ -343,7 +405,7 @@
                     android:id="@+id/contact_number_billing"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/tell"
                     app:required="true" />
@@ -352,7 +414,7 @@
                     android:id="@+id/email_billing"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/email"
                     app:required="true" />
@@ -369,7 +431,7 @@
                     android:id="@+id/billing_house_no_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/house_no"
                     app:required="true" />
@@ -378,7 +440,7 @@
                     android:id="@+id/billing_place_or_building_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/place_or_building"
                     app:required="false" />
@@ -396,7 +458,7 @@
                     android:id="@+id/billing_soi_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     app:header="@string/soi"
                     app:required="false" />
@@ -405,7 +467,7 @@
                     android:id="@+id/billing_street_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:header="@string/street"
                     app:required="true" />
@@ -423,7 +485,7 @@
                     android:id="@+id/billing_input_province"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/province"
@@ -433,7 +495,7 @@
                     android:id="@+id/billing_input_district"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/district"
                     app:act_required="true"/>
@@ -451,7 +513,7 @@
                     android:id="@+id/billing_input_sub_district"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/sub_district"
@@ -461,7 +523,7 @@
                     android:id="@+id/billing_input_postcode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/post_code"
                     app:act_required="true"/>
@@ -479,7 +541,7 @@
                     android:id="@+id/billing_tell_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_weight="1"
                     app:header="@string/tel_or_mobile"
                     app:required="false" />

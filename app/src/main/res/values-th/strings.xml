@@ -291,4 +291,7 @@
     <string name="not_found_payment_methods">ไม่พบวิธีการจ่ายเงิน</string>
     <string name="fullpayment">บัตรเครดิต (ชำระเงินเต็มจำนวน)</string>
     <string name="installment">เลือกการผ่อนชำระสินค้า</string>
+    <string name="require_tax">คุณต้องการใบกำกับภาษีเต็มรูปแบบหรือไม่</string>
+    <string name="company">บริษัท</string>
+    <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>
 </resources>
