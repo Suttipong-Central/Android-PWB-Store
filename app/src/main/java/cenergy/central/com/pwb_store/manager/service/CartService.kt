@@ -56,7 +56,7 @@ internal interface CartService {
     @POST("/{lang}/rest/V1/guest-carts/{cartId}/payment-information")
     fun updateOrder(@Path("lang") language: String,
                     @Path("cartId") cartId: String,
-                    @Body paymentInformation: PaymentInformationBodyNew): Call<String>
+                    @Body paymentInformation: PaymentInfoBody): Call<String>
 
     // TODO: TDB - For instigate "Guest Cart"
     @GET("/{lang}/rest/V1/orders/{orderId}")

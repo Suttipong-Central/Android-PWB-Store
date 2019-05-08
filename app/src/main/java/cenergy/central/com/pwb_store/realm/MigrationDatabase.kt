@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.realm
 
+import cenergy.central.com.pwb_store.model.response.LoginUserResponse
+import cenergy.central.com.pwb_store.model.response.UserBranch
 import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
@@ -64,7 +66,10 @@ class MigrationDatabase : RealmMigration {
                 addField("fax", String::class.java).setNullable("fax", false)
             }
 
-            // TODO: Update About Address(Province, District, SubDistrict, Postcode) model
+            realm.schema.get("UserInformation")?.apply {
+                addField("userResponse", LoginUserResponse::class.java).setNullable("userResponse", false)
+                addField("userBranch", UserBranch::class.java).setNullable("userBranch", false)
+            }
         }
     }
 }

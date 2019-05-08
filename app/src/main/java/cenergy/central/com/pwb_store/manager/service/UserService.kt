@@ -1,9 +1,7 @@
 package cenergy.central.com.pwb_store.manager.service
 
 import cenergy.central.com.pwb_store.model.body.UserBody
-import cenergy.central.com.pwb_store.model.response.LoginResponse
-import cenergy.central.com.pwb_store.model.response.LogoutResponse
-import cenergy.central.com.pwb_store.model.response.UserResponse
+import cenergy.central.com.pwb_store.model.response.*
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -17,4 +15,10 @@ interface UserService {
 
     @GET("/api/logout")
     fun userLogout(@Header("Authorization") userToken: String): Call<LogoutResponse>
+
+    @GET("/rest/V1/e-ordering/staff")
+    fun retrieveUserId(@Header("Authorization") userToken: String): Call<LoginUserResponse>
+
+    @GET("/rest/V1/e-ordering/retailers")
+    fun retrieveBrachUser(@Header("Authorization") userToken: String): Call<UserBranch>
 }
