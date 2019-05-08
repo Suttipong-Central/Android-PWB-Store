@@ -10,7 +10,7 @@ data class ShippingInformationResponse(@SerializedName("payment_methods")
                                        var totals: CartTotal? = null
 )
 
-data class PaymentMethod(var code: String? = "", var title: String? = "") : Parcelable {
+data class PaymentMethod(var code: String = "", var title: String = "") : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString()

@@ -1105,32 +1105,11 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun updateOder(cartId: String, paymentMethod: PaymentMethod, email: String, staffId: String, storeId: String, callback: ApiResponseCallback<String>) {
+    fun updateOder(cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod, email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
-        val method = MethodBody(paymentMethod.code!!) // will change soon
-        val paymentMethodBody = PaymentInformationBody(cartId, method, email, staffId, storeId)
+        val paymentMethodBody = PaymentInfoBody.createPaymentInfoBody(cartId = cartId,
+                staffId = staffId, retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = "e_ordering")
         cartService.updateOrder(getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>?, response: Response<String>?) {
-                if (response != null && response.isSuccessful) {
-                    callback.success(response.body())
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
-
-            override fun onFailure(call: Call<String>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
-    }
-
-    // TODO: TDB - For instigate "Guest Cart": Change to use paymentMethodBodyNew
-    fun updateOderNew(cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod, email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>) {
-        val cartService = retrofit.create(CartService::class.java)
-        val method = MethodBody(paymentMethod.code!!) // will change soon
-        val paymentMethodBodyNew = PaymentInfoBody(cartId = cartId, staffId = staffId, sellerCode = sellerCode,
-                paymentMethod = method, email = email, billingAddress = billingAddress)
-        cartService.updateOrder(getLanguage(), cartId, paymentMethodBodyNew).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {
                     callback.success(response.body())
