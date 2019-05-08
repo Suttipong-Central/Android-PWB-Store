@@ -145,56 +145,43 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
     private void login() {
         if (getContext() != null) {
+            HttpManagerMagento.Companion.getInstance(getContext()).userLogin(username, password,
+                    new ApiResponseCallback<UserInformation>() {
+                        @Override
+                        public void success(@org.jetbrains.annotations.Nullable UserInformation response) {
+                            if (response != null) {
+                                if (checkUserLogin(response)) {
+                                    dismissDialog();
+                                    EventBus.getDefault().post(new LoginSuccessBus(true));
+                                } else {
+                                    dismissDialog();
+                                    showAlertDialog("", getString(R.string.some_thing_wrong));
+                                    userLogout();
+                                }
+                            }
+                        }
 
-            // TODO: TDB - For instigate "Guest Cart"
-            // for create userInformation
-            // force user be is_chat_and_shop_user = 0 (e-ordering)
-
-            User user = new User(778, "apptiude testing", "12345678", 223L, "anuphap@apptitude.co.th", "apptitude", "", 0, "");
-            Store store = new Store();
-            store.setStoreId(223L);
-            store.setStoreCode("00010");
-            store.setStoreName("Central Chidlom");
-            RealmController database = RealmController.getInstance();
-            database.saveUserToken(new UserToken("xxxxxx"));
-            database.saveUserInformation(new UserInformation(user.getUserId(), user, store));
-            EventBus.getDefault().post(new LoginSuccessBus(true));
-            dismissDialog();
-            // --> end
-
-//            HttpManagerMagento.Companion.getInstance(getContext()).userLogin(username, password,
-//                    new ApiResponseCallback<UserResponse>() {
-//                        @Override
-//                        public void success(@org.jetbrains.annotations.Nullable UserResponse response) {
-//                            if (response != null) {
-//                                if (checkUserLogin(response)) {
-//                                    dismissDialog();
-//                                    EventBus.getDefault().post(new LoginSuccessBus(true));
-//                                } else {
-//                                    dismissDialog();
-//                                    showAlertDialog("", getString(R.string.some_thing_wrong));
-//                                    userLogout();
-//                                }
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void failure(@NotNull APIError error) {
-//                            dismissDialog();
-//                            if(getContext() != null){
-//                                new DialogHelper(getContext()).showErrorLoginDialog(error);
-//                            }
-//                        }
-//                    });
+                        @Override
+                        public void failure(@NotNull APIError error) {
+                            dismissDialog();
+                            if(getContext() != null){
+                                new DialogHelper(getContext()).showErrorLoginDialog(error);
+                            }
+                        }
+                    });
         }
     }
 
-    private Boolean checkUserLogin(UserResponse userResponse){
-        return  userResponse.getUser().getStaffId() != null && !userResponse.getUser().getStaffId().equals("")
-                && !userResponse.getUser().getStaffId().equals("0") && userResponse.getUser().getStoreId() != null
-                && userResponse.getUser().getStoreId() != 0 && userResponse.getStore() != null
-                && userResponse.getStore().getPostalCode() != null && userResponse.getStore().getStoreId() != null
-                && userResponse.getStore().getStoreId() != 0;
+//    private Boolean checkUserLogin(UserResponse userResponse){
+//        return  userResponse.getUser().getStaffId() != null && !userResponse.getUser().getStaffId().equals("")
+//                && !userResponse.getUser().getStaffId().equals("0") && userResponse.getUser().getStoreId() != null
+//                && userResponse.getUser().getStoreId() != 0 && userResponse.getStore() != null
+//                && userResponse.getStore().getPostalCode() != null && userResponse.getStore().getStoreId() != null
+//                && userResponse.getStore().getStoreId() != 0;
+//    }
+
+    private Boolean checkUserLogin(UserInformation userInformation){
+        return !userInformation.getUserResponse().getStaffId().equals("0") && !userInformation.getUserBranch().getItems().isEmpty();
     }
 
     private void clearData() {

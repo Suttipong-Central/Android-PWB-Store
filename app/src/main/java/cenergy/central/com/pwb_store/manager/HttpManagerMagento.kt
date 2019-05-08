@@ -60,6 +60,7 @@ class HttpManagerMagento(context: Context) {
     companion object {
         //Specific Header
         private const val HEADER_AUTHORIZATION = "Authorization"
+        private const val BEARER = "Bearer"
 
         //Special Promotion Category ID
         private const val PROMOTION_CATEGORY_ID = "130639"
@@ -82,7 +83,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getUserToken(): String = this.userToken
 
-    fun userLogin(username: String, password: String, callback: ApiResponseCallback<UserResponse?>) {
+    fun userLogin(username: String, password: String, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
         val userBody = UserBody(username = username, password = password)
         userService.userLogin(userBody).enqueue(object : Callback<String> {
@@ -92,7 +93,7 @@ class HttpManagerMagento(context: Context) {
                     if (loginResponse != null) {
                         setUserToken(loginResponse)
                         // get user information
-                        getUserDetail(callback)
+                        getUserId(callback)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
                     }
@@ -107,35 +108,84 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun getUserDetail(callback: ApiResponseCallback<UserResponse?>) {
+//    fun getUserDetail(callback: ApiResponseCallback<UserResponse?>) {
+//        val userService = retrofit.create(UserService::class.java)
+//        userService.retrieveUser(userToken).enqueue(object : Callback<UserResponse> {
+//            override fun onResponse(call: Call<UserResponse>?, response: Response<UserResponse>?) {
+//                if (response != null && response.isSuccessful) {
+//                    val userResponse = response.body()
+//                    if (userResponse != null) {
+//                        // save user token
+//                        database.saveUserToken(UserToken(token = userToken))
+//                        // save user information
+//                        val userInformation = UserInformation(userId = userResponse.user.userId,
+//                                user = userResponse.user, store = userResponse.store)
+//                        database.saveUserInformation(userInformation)
+//                        callback.success(userResponse)
+//                    } else {
+//                        callback.success(null)
+//                    }
+//                } else {
+//                    callback.failure(APIErrorUtils.parseError(response))
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<UserResponse>?, t: Throwable?) {
+//                callback.failure(APIError(t))
+//            }
+//        })
+//    }
+
+    fun getUserId(callback: ApiResponseCallback<UserInformation>){
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveUser(userToken).enqueue(object : Callback<UserResponse> {
-            override fun onResponse(call: Call<UserResponse>?, response: Response<UserResponse>?) {
-                if (response != null && response.isSuccessful) {
-                    val userResponse = response.body()
-                    if (userResponse != null) {
-                        // save user token
-                        database.saveUserToken(UserToken(token = userToken))
-                        // save user information
-                        val userInformation = UserInformation(userId = userResponse.user.userId,
-                                user = userResponse.user, store = userResponse.store)
-                        database.saveUserInformation(userInformation)
-                        callback.success(userResponse)
-                    } else {
-                        callback.success(null)
-                    }
+        userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse>{
+            override fun onResponse(call: Call<LoginUserResponse>, response: Response<LoginUserResponse>?) {
+                if (response?.body() != null){
+                    getBranchUser(response.body()!!, callback)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
             }
 
-            override fun onFailure(call: Call<UserResponse>?, t: Throwable?) {
+            override fun onFailure(call: Call<LoginUserResponse>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    private fun getBranchUser(userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
+        val userService = retrofit.create(UserService::class.java)
+        userService.retrieveBrachUser("$BEARER $userToken").enqueue(object : Callback<UserBranch>{
+            override fun onResponse(call: Call<UserBranch>, response: Response<UserBranch>?) {
+                if (response?.body() != null){
+                    val userBranch = response.body()
+
+                    //TODO: Mock up data will delete soon
+                    val user = User(userResponse.userId, "apptitude", userResponse.staffId, 223L,
+                            "chuan@central.tech", "apptitude", "", 0, "")
+                    val store = Store()
+                    store.storeId = 223L
+                    store.storeCode = "00010"
+                    store.storeName = "Central Chidlom"
+
+                    // save user token
+                    database.saveUserToken(UserToken(token = userToken))
+                    // save user information
+                    val userInformation = UserInformation(userId = user.userId,
+                            user = user, store = store, userResponse = userResponse, userBranch = userBranch!!)
+                    database.saveUserInformation(userInformation)
+                    callback.success(userInformation)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<UserBranch>, t: Throwable) {
                 callback.failure(APIError(t))
             }
         })
     }
     // endregion
-
 
     // region category
 //    fun retrieveCategories(force: Boolean, callback: ApiResponseCallback<Category?>) {
@@ -1074,10 +1124,11 @@ class HttpManagerMagento(context: Context) {
     }
 
     // TODO: TDB - For instigate "Guest Cart": Change to use paymentMethodBodyNew
-    fun updateOderNew(cartId: String, paymentMethod: PaymentMethod, email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>) {
+    fun updateOderNew(cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod, email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
         val method = MethodBody(paymentMethod.code!!) // will change soon
-        val paymentMethodBodyNew = PaymentInformationBodyNew(cartId, method, email, billingAddress)
+        val paymentMethodBodyNew = PaymentInfoBody(cartId = cartId, staffId = staffId, sellerCode = sellerCode,
+                paymentMethod = method, email = email, billingAddress = billingAddress)
         cartService.updateOrder(getLanguage(), cartId, paymentMethodBodyNew).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {

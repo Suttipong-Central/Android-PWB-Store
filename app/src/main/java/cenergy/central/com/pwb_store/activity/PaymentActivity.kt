@@ -681,10 +681,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         showProgressDialog()
 
         val email = shippingAddress?.email ?: ""
+        val staffId = database.userInformation.userResponse?.staffId ?: ""
+        var sellerCode = ""
+
+        if(database.userInformation.userBranch != null && database.userInformation.userBranch!!.items.size > 0){
+            sellerCode = database.userInformation.userBranch!!.items[0]?.code ?: ""
+        }
 //        val staffId = userInformation?.user?.staffId ?: ""
 //        val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
 
-        HttpManagerMagento.getInstance(this).updateOderNew(cartId!!, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
+        HttpManagerMagento.getInstance(this).updateOderNew(cartId!!, staffId, sellerCode, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 if (response != null) {
                     getOrder(response)

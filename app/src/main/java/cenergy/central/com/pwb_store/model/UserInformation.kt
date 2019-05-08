@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.model.response.LoginUserResponse
+import cenergy.central.com.pwb_store.model.response.UserBranch
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -11,8 +13,6 @@ import io.realm.annotations.PrimaryKey
 open class UserInformation(@PrimaryKey
                            var userId: Long = 0,
                            var user: User? = null,
-                           var store: Store? = null) : RealmObject() {
-    companion object {
-        const val FIELD_USER_ID = "userId"
-    }
-}
+                           var store: Store? = null,
+                           var userResponse: LoginUserResponse? = null,
+                           var userBranch: UserBranch? = null) : RealmObject()
