@@ -90,7 +90,7 @@ public class AvaliableStoreActivity extends BaseActivity{
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction
                             .replace(R.id.container, AvailableFragment.newInstance(mAvailableStoreDao, mStoreDao))
-                            .commit();
+                            .commitAllowingStateLoss();
                 }
                 dismissProgressDialog();
             }else {
