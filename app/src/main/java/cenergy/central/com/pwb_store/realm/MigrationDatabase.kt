@@ -65,6 +65,91 @@ class MigrationDatabase : RealmMigration {
                 addField("updatedAt", String::class.java).setNullable("updatedAt", false)
                 addField("fax", String::class.java).setNullable("fax", false)
             }
+            
+            // Clear address data
+            realm.delete("Province")
+            realm.delete("District")
+            realm.delete("SubDistrict")
+            realm.delete("Postcode")
+
+            // Update Province
+            realm.schema.get("Province")?.apply {
+                addField("name", String::class.java).setNullable("name", false)
+                addField("defaultName", String::class.java).setNullable("defaultName", false)
+
+                // change provinceId to String
+                addField("provinceId_tmp", String::class.java).setNullable("provinceId_tmp", false)
+                removeField("provinceId")
+                renameField("provinceId_tmp", "provinceId")
+                addPrimaryKey("provinceId")
+
+                removeField("nameTh")
+                removeField("nameEn")
+            }
+
+            // Update District
+            realm.schema.get("District")?.apply {
+                addField("name", String::class.java).setNullable("name", false)
+                addField("defaultName", String::class.java).setNullable("defaultName", false)
+                addField("code", String::class.java).setNullable("code", false)
+                addField("provinceCode", String::class.java).setNullable("provinceCode", false)
+
+                // change districtId to String
+                addField("districtId_tmp", String::class.java).setNullable("districtId_tmp", false)
+                removeField("districtId")
+                renameField("districtId_tmp", "districtId")
+                addPrimaryKey("districtId")
+
+                // change provinceId to String
+                addField("provinceId_tmp", String::class.java).setNullable("provinceId_tmp", false)
+                removeField("provinceId")
+                renameField("provinceId_tmp", "provinceId")
+
+                removeField("nameTh")
+                removeField("nameEn")
+            }
+
+            // Update SubDistrict
+            realm.schema.get("SubDistrict")?.apply {
+                addField("name", String::class.java).setNullable("name", false)
+                addField("defaultName", String::class.java).setNullable("defaultName", false)
+                addField("postcode", String::class.java).setNullable("postcode", false)
+                addField("postcodeId", String::class.java).setNullable("postcodeId", false)
+                addField("code", String::class.java).setNullable("code", false)
+                addField("districtCode", String::class.java).setNullable("districtCode", false)
+
+                // change subDistrictId to String
+                addField("subDistrictId_tmp", String::class.java).setNullable("subDistrictId_tmp", false)
+                removeField("subDistrictId")
+                renameField("subDistrictId_tmp", "subDistrictId")
+                addPrimaryKey("subDistrictId")
+
+                // change districtId to String
+                addField("districtId_tmp", String::class.java).setNullable("districtId_tmp", false)
+                removeField("districtId")
+                renameField("districtId_tmp", "districtId")
+
+                removeField("nameTh")
+                removeField("nameEn")
+            }
+
+            // Update Postcode
+            realm.schema.get("Postcode")?.apply {
+                // update postcodeId
+                addField("postcodeId", String::class.java).setNullable("postcodeId", false)
+                removeField("id")
+                addPrimaryKey("postcodeId")
+
+                // change postcode to String
+                addField("postcode_tmp", String::class.java).setNullable("postcode_tmp", false)
+                removeField("postcode")
+                renameField("postcode_tmp", "postcode")
+
+                // change postcode to String
+                addField("subDistrictId_tmp", String::class.java).setNullable("subDistrictId_tmp", false)
+                removeField("subDistrictId")
+                renameField("subDistrictId_tmp", "subDistrictId")
+            }
 
             realm.schema.get("UserInformation")?.apply {
                 addField("userResponse", LoginUserResponse::class.java).setNullable("userResponse", false)

@@ -15,6 +15,7 @@ open class SubDistrict(
         var districtId: String = "",
         @SerializedName("district_code")
         var districtCode: String = "",
+        var code: String = "",
         @SerializedName("default_name")
         var defaultName: String = "",
         var name: String = "",
