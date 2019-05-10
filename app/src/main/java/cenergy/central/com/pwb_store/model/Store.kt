@@ -25,4 +25,6 @@ open class Store(
         @SerializedName("created_at")
         var createdAt: String? = "",
         @SerializedName("updated_at")
-        var updateAt: String? = ""):RealmObject()
+        var updateAt: String? = "",
+        @SerializedName("retailer_id")
+        var retailerId: String = ""):RealmObject()

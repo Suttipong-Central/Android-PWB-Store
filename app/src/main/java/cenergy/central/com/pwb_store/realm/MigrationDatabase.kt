@@ -1,7 +1,5 @@
 package cenergy.central.com.pwb_store.realm
 
-import cenergy.central.com.pwb_store.model.response.LoginUserResponse
-import cenergy.central.com.pwb_store.model.response.UserBranch
 import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
@@ -149,6 +147,9 @@ class MigrationDatabase : RealmMigration {
                 addField("subDistrictId_tmp", String::class.java).setNullable("subDistrictId_tmp", false)
                 removeField("subDistrictId")
                 renameField("subDistrictId_tmp", "subDistrictId")
+            }
+            realm.schema.get("Store")?.apply {
+                addField("retailerId", String::class.java).setNullable("retailerId", false)
             }
         }
     }

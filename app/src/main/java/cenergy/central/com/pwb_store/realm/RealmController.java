@@ -21,6 +21,7 @@ import cenergy.central.com.pwb_store.model.Province;
 import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
+import cenergy.central.com.pwb_store.model.response.LoginUserResponse;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -355,6 +356,8 @@ public class RealmController {
         });
     }
     // endregion
+
+    // end region
 
     // region userToken
     public void saveUserToken(final UserToken userToken) {

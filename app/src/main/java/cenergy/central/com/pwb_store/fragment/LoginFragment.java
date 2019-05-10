@@ -181,7 +181,9 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 //    }
 
     private Boolean checkUserLogin(UserInformation userInformation){
-        return !userInformation.getUserResponse().getStaffId().equals("0") && !userInformation.getUserBranch().getItems().isEmpty();
+        return userInformation.getStore() != null && userInformation.getUser() != null &&
+                userInformation.getUser().getStaffId() != null && !userInformation.getUser().getStaffId().equals("") &&
+                !userInformation.getUser().getStaffId().equals("0") && !userInformation.getStore().getRetailerId().equals("");
     }
 
     private void clearData() {

@@ -63,10 +63,6 @@ class HttpManagerMagento(context: Context) {
         private const val HEADER_AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"
 
-        //Special Promotion Category ID
-        private const val PROMOTION_CATEGORY_ID = "130639"
-        private const val FIVE_STAR_CATEGORY_ID = "130704"
-
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
 
@@ -109,34 +105,6 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-//    fun getUserDetail(callback: ApiResponseCallback<UserResponse?>) {
-//        val userService = retrofit.create(UserService::class.java)
-//        userService.retrieveUser(userToken).enqueue(object : Callback<UserResponse> {
-//            override fun onResponse(call: Call<UserResponse>?, response: Response<UserResponse>?) {
-//                if (response != null && response.isSuccessful) {
-//                    val userResponse = response.body()
-//                    if (userResponse != null) {
-//                        // save user token
-//                        database.saveUserToken(UserToken(token = userToken))
-//                        // save user information
-//                        val userInformation = UserInformation(userId = userResponse.user.userId,
-//                                user = userResponse.user, store = userResponse.store)
-//                        database.saveUserInformation(userInformation)
-//                        callback.success(userResponse)
-//                    } else {
-//                        callback.success(null)
-//                    }
-//                } else {
-//                    callback.failure(APIErrorUtils.parseError(response))
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<UserResponse>?, t: Throwable?) {
-//                callback.failure(APIError(t))
-//            }
-//        })
-//    }
-
     fun getUserId(callback: ApiResponseCallback<UserInformation>){
         val userService = retrofit.create(UserService::class.java)
         userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse>{
@@ -168,13 +136,16 @@ class HttpManagerMagento(context: Context) {
                     store.storeId = 223L
                     store.storeCode = ""
                     store.storeName = ""
+                    if (userBranch != null && userBranch.items.size > 0){
+                        store.retailerId = userBranch.items[0].code
+                    }
 
                     // save user token
                     database.saveUserToken(UserToken(token = userToken))
                     // save user information
-                    val userInformation = UserInformation(userId = user.userId,
-                            user = user, store = store, userResponse = userResponse, userBranch = userBranch!!)
+                    val userInformation = UserInformation(userId = user.userId, user = user, store = store)
                     database.saveUserInformation(userInformation)
+
                     callback.success(userInformation)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
