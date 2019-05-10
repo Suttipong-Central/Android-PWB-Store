@@ -21,7 +21,6 @@ import cenergy.central.com.pwb_store.model.Province;
 import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
-import cenergy.central.com.pwb_store.model.response.LoginUserResponse;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -411,11 +410,21 @@ public class RealmController {
         });
     }
 
+    public void deleteAllCachedEndpoint() {
+        Realm realm = getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(CachedEndpoint.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+
     public boolean hasFreshlyCachedEndpoint(String endpoint) {
         return hasFreshlyCachedEndpoint(endpoint, 1);
     }
 
-    private boolean hasFreshlyCachedEndpoint(String endpoint, int hours) {
+    public boolean hasFreshlyCachedEndpoint(String endpoint, int hours) {
         Realm realm = getRealm();
         CachedEndpoint cachedEndpoint = realm.where(CachedEndpoint.class).equalTo("endpoint", endpoint).findFirst();
         return cachedEndpoint != null && cachedEndpoint.getLastUpdated().after(new Date(System.currentTimeMillis() - (hours * 60 * 60 * 1000)));
@@ -649,5 +658,6 @@ public class RealmController {
         deleteUserInformation();
         deleteAllOrder();
         deleteUserToken();
+        deleteAllCachedEndpoint();
     }
 }

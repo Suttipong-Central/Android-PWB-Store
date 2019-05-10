@@ -6,6 +6,7 @@ import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.isSpecial
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.manager.service.ProductService
@@ -1569,8 +1570,18 @@ class HttpManagerMagento(context: Context) {
     // endregion
 
     // region address information
-    fun getProvinces(callback: ApiResponseCallback<List<Province>>) {
+    fun getProvinces(force: Boolean = false, callback: ApiResponseCallback<List<Province>>) {
+        val endpointName = "rest/${getLanguage()}/V1/region/province"
         val memberService = retrofit.create(MemberService::class.java)
+
+        // If already cached then do nothing
+        if (!force && database.hasFreshlyCachedEndpoint(endpointName, 24)) {
+            Log.i("ApiManager", "getProvinces: using cached")
+            callback.success(database.provinces)
+            return
+        }
+
+        Log.i("ApiManager", "getProvinces: calling endpoint")
         memberService.getProvinces(Constants.CLIENT_MAGENTO, getLanguage()).enqueue(object : Callback<List<Province>> {
             override fun onResponse(call: Call<List<Province>>, response: Response<List<Province>>) {
                 if (response.isSuccessful) {
@@ -1578,6 +1589,20 @@ class HttpManagerMagento(context: Context) {
                     if (provinces != null) {
                         // store provinces
                         provinces.forEach { database.storeProvince(it) }
+
+                        // cached endpoint
+                        database.updateCachedEndpoint(endpointName)
+                        when (getLanguage()) {
+                            "th" -> {
+                                database.clearCachedEndpoint("rest/${AppLanguage.EN}/V1/region/province")
+                                Log.i("ApiManager", "getProvinces: clear endpoint ${AppLanguage.EN}")
+                            }
+                            "en" -> {
+                                database.clearCachedEndpoint("rest/${AppLanguage.TH}/V1/region/province")
+                                Log.i("ApiManager", "getProvinces: clear endpoint ${AppLanguage.TH}")
+                            }
+                        }
+
                         callback.success(provinces)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))

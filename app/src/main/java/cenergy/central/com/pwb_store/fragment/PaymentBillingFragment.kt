@@ -844,7 +844,7 @@ class PaymentBillingFragment : Fragment() {
     private fun loadProvinceList() {
         context?.let {
             showProgressDialog()
-            HttpManagerMagento.getInstance(it).getProvinces(object : ApiResponseCallback<List<Province>> {
+            HttpManagerMagento.getInstance(it).getProvinces(false, object : ApiResponseCallback<List<Province>> {
                 override fun success(response: List<Province>?) {
                     response?.let { provinceList ->
                         // update dropdown province
