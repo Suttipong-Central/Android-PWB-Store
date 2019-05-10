@@ -467,6 +467,7 @@ class PaymentBillingFragment : Fragment() {
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        taxIdEdt.setTextLength(13)
 
         radioGroup = rootView.findViewById(R.id.radio_group)
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
