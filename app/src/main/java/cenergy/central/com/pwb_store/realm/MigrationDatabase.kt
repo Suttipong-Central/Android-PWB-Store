@@ -150,11 +150,6 @@ class MigrationDatabase : RealmMigration {
                 removeField("subDistrictId")
                 renameField("subDistrictId_tmp", "subDistrictId")
             }
-
-            realm.schema.get("UserInformation")?.apply {
-                addField("userResponse", LoginUserResponse::class.java).setNullable("userResponse", false)
-                addField("userBranch", UserBranch::class.java).setNullable("userBranch", false)
-            }
         }
     }
 }
