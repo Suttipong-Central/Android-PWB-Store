@@ -89,6 +89,7 @@ class PaymentBillingFragment : Fragment() {
     private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
+    private var billingAddress: AddressInformation? = null
     private lateinit var paymentProtocol: PaymentProtocol
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
@@ -189,6 +190,7 @@ class PaymentBillingFragment : Fragment() {
         paymentBillingListener = context as PaymentBillingListener
         cartItemList = paymentProtocol.getItems()
         shippingAddress = paymentProtocol.getShippingAddress()
+        billingAddress = paymentProtocol.getBillingAddress()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -249,15 +251,23 @@ class PaymentBillingFragment : Fragment() {
 
     private fun handleCacheMember() {
         if (shippingAddress != null) {
-            firstNameEdt.setText(shippingAddress?.firstname ?: "")
-            lastNameEdt.setText(shippingAddress?.lastname ?: "")
-            contactNumberEdt.setText(shippingAddress?.telephone ?: "")
-            emailEdt.setText(shippingAddress?.email ?: "")
-            homeNoEdt.setText(shippingAddress?.subAddress?.houseNumber ?: "")
-            homeBuildingEdit.setText(shippingAddress?.subAddress?.building ?: "")
-            homeSoiEdt.setText(shippingAddress?.subAddress?.soi ?: "")
-            homeRoadEdt.setText(shippingAddress?.street?.get(0) ?: "")
+            firstNameEdt.setText(shippingAddress!!.firstname)
+            lastNameEdt.setText(shippingAddress!!.lastname)
+            contactNumberEdt.setText(shippingAddress!!.telephone)
+            emailEdt.setText(shippingAddress!!.email)
+            homeNoEdt.setText(shippingAddress!!.subAddress?.houseNumber ?: "")
+            homeBuildingEdit.setText(shippingAddress!!.subAddress?.building ?: "")
+            homeSoiEdt.setText(shippingAddress!!.subAddress?.soi ?: "")
+            homeRoadEdt.setText(shippingAddress!!.street?.get(0) ?: "")
             homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
+
+            // has input about vat?
+            val vatId = shippingAddress!!.vatId
+            if (vatId.isNotBlank()) {
+                radioTaxGroup.check(R.id.radio_tax_yes)
+                companyEdt.setText(shippingAddress!!.company)
+                taxIdEdt.setText(vatId)
+            }
 
             // validate province with local db
             val province = database.getProvince(shippingAddress!!.regionId)
@@ -310,6 +320,79 @@ class PaymentBillingFragment : Fragment() {
                 postcodeInput.setText(postcode.postcode)
                 this.postcode = postcode
             }
+
+            /**
+             * Has billing address?
+             * Is shipping address not same billing?
+             */
+            if (billingAddress != null && shippingAddress!!.sameBilling == IS_NOT_SAME_BILLING) {
+                radioGroup.check(R.id.radio_no)
+                setupBillingInput(billingAddress!!)
+            }
+        }
+    }
+
+    private fun setupBillingInput(billingAddress: AddressInformation) {
+        billingFirstNameEdt.setText(billingAddress.firstname)
+        billingLastNameEdt.setText(billingAddress.lastname)
+        billingContactNumberEdt.setText(billingAddress.telephone)
+        billingEmailEdt.setText(billingAddress.email)
+        billingHomeNoEdt.setText(billingAddress.subAddress?.houseNumber ?: "")
+        billingHomeBuildingEdit.setText(billingAddress.subAddress?.building ?: "")
+        billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
+        billingHomeRoadEdt.setText(billingAddress.street?.get(0) ?: "")
+        billingHomePhoneEdt.setText(billingAddress.subAddress?.mobile ?: "")
+
+        // validate province with local db
+        val province = database.getProvince(billingAddress.regionId)
+        if (province != null) {
+            this.billingProvince = province
+            this.billingDistrictList = database.getDistrictsByProvinceId(province.provinceId)
+            this.billingDistrictAdapter.setItems(this.billingDistrictList)
+            billingProvinceInput.setText(province.name)
+            billingDistrictInput.setText("")
+            billingSubDistrictInput.setText("")
+            billingPostcodeInput.setText("")
+            billingDistrictInput.setEnableInput(true)
+            billingSubDistrictInput.setEnableInput(false)
+            billingPostcodeInput.setEnableInput(false)
+        } else {
+            return
+        }
+
+        // validate district with local db
+        val district = database.getDistrict(billingAddress.subAddress?.districtId)
+        if (district != null) {
+            this.billingDistrict = district
+            this.billingSubDistrictList = database.getSubDistrictsByDistrictId(district.districtId)
+            this.billingSubDistrictAdapter.setItems(this.billingSubDistrictList)
+            billingDistrictInput.setText(district.name)
+            billingSubDistrictInput.setText("")
+            billingPostcodeInput.setText("")
+            billingSubDistrictInput.setEnableInput(true)
+            billingPostcodeInput.setEnableInput(false)
+        } else {
+            return
+        }
+
+        // validate sub district with local db
+        val subDistrict = database.getSubDistrict(billingAddress.subAddress?.subDistrictId)
+        if (subDistrict != null) {
+            this.billingSubDistrict = subDistrict
+            this.billingPostcodeList = database.getPostcodeBySubDistrictId(subDistrict.subDistrictId)
+            this.billingPostcodeAdapter.setItems(this.billingPostcodeList)
+            billingSubDistrictInput.setText(subDistrict.name)
+            billingPostcodeInput.setText("")
+            billingPostcodeInput.setEnableInput(true)
+        } else {
+            return
+        }
+
+        // validate postcode with local db
+        val postcode = database.getPostcode(billingAddress.subAddress?.postcodeId)
+        if (postcode != null) {
+            billingPostcodeInput.setText(postcode.postcode)
+            this.billingPostcode = postcode
         }
     }
 
@@ -616,7 +699,7 @@ class PaymentBillingFragment : Fragment() {
         homePostalCode = subDistrict?.postcode ?: ""
         homePhone = homePhoneEdt.getText()
         company = companyEdt.getText()
-        vatId = taxIdEdt.getText()
+        vatId = if (isRequireTaxInvoice) taxIdEdt.getText() else ""
 
         return AddressInformation.createAddress(
                 firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
