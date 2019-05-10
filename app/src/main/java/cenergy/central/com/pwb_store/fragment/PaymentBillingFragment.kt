@@ -698,7 +698,7 @@ class PaymentBillingFragment : Fragment() {
         homePostalCodeId = subDistrict?.postcodeId ?: ""
         homePostalCode = subDistrict?.postcode ?: ""
         homePhone = homePhoneEdt.getText()
-        company = companyEdt.getText()
+        company = if (isRequireTaxInvoice) companyEdt.getText() else ""
         vatId = if (isRequireTaxInvoice) taxIdEdt.getText() else ""
 
         return AddressInformation.createAddress(
