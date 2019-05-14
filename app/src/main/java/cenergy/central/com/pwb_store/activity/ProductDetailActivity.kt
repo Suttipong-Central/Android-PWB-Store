@@ -40,7 +40,7 @@ import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
 
-class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
+class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
 
     // widgetview
@@ -62,7 +62,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_product_detail2)
+        setContentView(R.layout.activity_product_detail)
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
@@ -119,8 +119,8 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         }
 
         searchImageView.setOnClickListener { v ->
-            val intent = Intent(this@ProductDetailActivity2, SearchActivity::class.java)
-            ActivityCompat.startActivityForResult(this@ProductDetailActivity2, intent, REQUEST_UPDATE_LANGUAGE,
+            val intent = Intent(this@ProductDetailActivity, SearchActivity::class.java)
+            ActivityCompat.startActivityForResult(this@ProductDetailActivity, intent, REQUEST_UPDATE_LANGUAGE,
                     ActivityOptionsCompat
                             .makeScaleUpAnimation(v, 0, 0, v.width, v.height)
                             .toBundle())
@@ -227,7 +227,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
                     // dismiss loading dialog
                     dismissProgressDialog()
                     // show error message
-                    DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
+                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
                 }
             }
         })
@@ -257,7 +257,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
                     // dismiss loading dialog
                     dismissProgressDialog()
                     // show error message
-                    DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
+                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
                 }
             }
         })
@@ -341,7 +341,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
             override fun onSuccessfully() {
                 dismissProgressDialog()
                 updateCompareBadge()
-                Toast.makeText(this@ProductDetailActivity2, "Generate compare complete.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProductDetailActivity, "Generate compare complete.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onFailure(error: Throwable) {
@@ -377,7 +377,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
 
             override fun failure(error: APIError) {
                 dismissProgressDialog()
-                DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
+                DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
             }
         })
     }
@@ -395,7 +395,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
                 if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
                     showClearCartDialog()
                 } else {
-                    DialogHelper(this@ProductDetailActivity2).showErrorDialog(error)
+                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
                 }
             }
         })
@@ -405,7 +405,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
         database.saveCartItem(CacheCartItem.asCartItem(cartItem!!, product), object : DatabaseListener {
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
-                Toast.makeText(this@ProductDetailActivity2, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProductDetailActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
             }
 
             override fun onFailure(error: Throwable) {
@@ -424,7 +424,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
     }
 
     private fun startWebView(content: String) {
-        val intent = Intent(this@ProductDetailActivity2, WebViewActivity::class.java)
+        val intent = Intent(this@ProductDetailActivity, WebViewActivity::class.java)
         intent.putExtra(WebViewActivity.ARG_WEB_URL, content)
         intent.putExtra(WebViewActivity.ARG_MODE, WebViewFragment.MODE_HTML)
         intent.putExtra(WebViewActivity.ARG_TITLE, "Web")
@@ -455,7 +455,7 @@ class ProductDetailActivity2 : BaseActivity(), ProductDetailListener, PowerBuyCo
     }
 
     companion object {
-        private val TAG = ProductDetailActivity2::class.java.simpleName
+        private val TAG = ProductDetailActivity::class.java.simpleName
 
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID"
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"

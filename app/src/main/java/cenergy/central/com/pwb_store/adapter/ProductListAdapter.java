@@ -15,7 +15,7 @@ import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.BaseActivity;
-import cenergy.central.com.pwb_store.activity.ProductDetailActivity2;
+import cenergy.central.com.pwb_store.activity.ProductDetailActivity;
 import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductListViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SearchResultViewHolder;
@@ -142,8 +142,8 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         public void onClick(View view) {
                             if(clicked){
                                 clicked = false;
-                                Intent intent = new Intent(mContext, ProductDetailActivity2.class);
-                                intent.putExtra(ProductDetailActivity2.ARG_PRODUCT_SKU, product.getSku());
+                                Intent intent = new Intent(mContext, ProductDetailActivity.class);
+                                intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, product.getSku());
                                 ((Activity) mContext).startActivityForResult(intent, BaseActivity.REQUEST_UPDATE_LANGUAGE);
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
