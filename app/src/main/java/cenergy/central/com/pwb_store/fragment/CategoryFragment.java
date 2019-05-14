@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import cenergy.central.com.pwb_store.CategoryUtils;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
@@ -79,53 +80,17 @@ public class CategoryFragment extends Fragment {
         layoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
 
         if (mCategoryDao == null) {
-            retrieveCategories(); // force retrieve category
+            foreRefresh(); // force retrieve category
         } else {
             try {
                 mAdapter.setCategory(mCategoryDao.getCategoryList());
             } catch (Exception e) {
-                retrieveCategories();
+                foreRefresh();
             }
         }
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
-    }
-
-    private void retrieveCategories() {
-//        if (getContext() != null) {
-//            showProgressDialog();
-//            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategories(true, 2, 4, new ApiResponseCallback<Category>() {
-//                @Override
-//                public void success(@Nullable Category category) {
-//                    if (category != null) {
-//                        if (isAdded()) {
-//                            mAdapter.setCategory(category);
-//                        }
-//                        dismissProgressDialog();
-//                    }
-//                }
-//
-//                @Override
-//                public void failure(@NotNull APIError error) {
-//                    dismissProgressDialog();
-//                    if(error.getErrorCode() == null){
-//                        showAlertDialog(getContext().getString(R.string.not_connected_network));
-//                    } else {
-//                        switch (error.getErrorCode()){
-//                            case "401": showAlertDialog(getContext().getString(R.string.user_not_found));
-//                                break;
-//                            case "408":
-//                            case "404":
-//                            case "500": showAlertDialog(getContext().getString(R.string.server_not_found));
-//                                break;
-//                            default: showAlertDialog(getContext().getString(R.string.some_thing_wrong));
-//                                break;
-//                        }
-//                    }
-//                }
-//            });
-//        }
     }
 
     public void foreRefresh() {
@@ -135,7 +100,7 @@ public class CategoryFragment extends Fragment {
 
     private void loadCategories() {
         if(getContext() != null){
-            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory("2", false,
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(CategoryUtils.SUPER_PARENT_ID,false,
                     new ApiResponseCallback<List<Category>>() {
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {

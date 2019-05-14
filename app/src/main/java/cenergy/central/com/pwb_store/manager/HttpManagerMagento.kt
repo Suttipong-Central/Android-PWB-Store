@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -211,30 +212,33 @@ class HttpManagerMagento(context: Context) {
      * @param parentId is categoryId
      *
      * Endpoint
-     * @query include_in_menu 1 meant true
+     * @query include_in_menu
      * @query parent_id
      * */
     fun retrieveCategory(parentId: String, includeInMenu :Boolean, callback: ApiResponseCallback<List<Category>>) {
-        val httpUrlInclude = HttpUrl.Builder()
-                .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("rest/${getLanguage()}/V1/categories/list")
-                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "include_in_menu")
-                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
-                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
-                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
-                .build()
 
-        val httpUrl = HttpUrl.Builder()
-                .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("rest/${getLanguage()}/V1/categories/list")
-                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
-                .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
-                .build()
+        val httpUrl = if (includeInMenu) {
+            HttpUrl.Builder()
+                    .scheme("https")
+                    .host(Constants.PWB_HOST_NAME)
+                    .addPathSegments("rest/${getLanguage()}/V1/categories/list")
+                    .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "include_in_menu")
+                    .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
+                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
+                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                    .build()
+        } else {
+            HttpUrl.Builder()
+                    .scheme("https")
+                    .host(Constants.PWB_HOST_NAME)
+                    .addPathSegments("rest/${getLanguage()}/V1/categories/list")
+                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
+                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                    .build()
+        }
 
         val request = Request.Builder()
-                .url(if (includeInMenu) httpUrlInclude else httpUrl)
+                .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
                 .build()
 

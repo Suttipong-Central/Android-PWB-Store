@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import cenergy.central.com.pwb_store.CategoryUtils;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
@@ -349,7 +350,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void retrieveCategories() {
         // currentFragment null?
         showProgressDialog();
-        HttpManagerMagento.Companion.getInstance(this).retrieveCategory("2", false
+        HttpManagerMagento.Companion.getInstance(this).retrieveCategory(CategoryUtils.SUPER_PARENT_ID, false
                 , new ApiResponseCallback<List<Category>>() {
                     @Override
                     public void success(@Nullable final List<Category> categories) {
