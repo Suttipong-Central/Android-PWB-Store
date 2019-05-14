@@ -1,9 +1,10 @@
-package fragment;
+package cenergy.central.com.pwb_store.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -11,6 +12,7 @@ import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +28,13 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
+import cenergy.central.com.pwb_store.model.Store;
+import cenergy.central.com.pwb_store.model.User;
 import cenergy.central.com.pwb_store.model.UserInformation;
+import cenergy.central.com.pwb_store.model.UserToken;
+import cenergy.central.com.pwb_store.model.response.UserResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.utils.APIErrorUtils;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 
@@ -93,9 +100,8 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
     private void hideSoftKeyboard(View view) {
         // Check if no view has focus:
-        if (view != null && getContext() != null) {
+        if (view != null) {
             InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            assert imm != null;
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }

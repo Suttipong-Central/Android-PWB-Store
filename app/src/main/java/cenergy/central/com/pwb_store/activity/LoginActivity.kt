@@ -1,4 +1,4 @@
-package activity
+package cenergy.central.com.pwb_store.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,13 +9,11 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.BaseActivity
-import cenergy.central.com.pwb_store.activity.MainActivity
+import cenergy.central.com.pwb_store.fragment.LoginFragment
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
-import fragment.LoginFragment
 
 class LoginActivity : BaseActivity() {
 

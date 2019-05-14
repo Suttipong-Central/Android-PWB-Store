@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import activity.LoginActivity;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;

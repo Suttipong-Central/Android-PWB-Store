@@ -6,7 +6,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 
-import activity.LoginActivity;
 import cenergy.central.com.pwb_store.realm.RealmController;
 
 public class SplashScreenActivity extends AppCompatActivity {
