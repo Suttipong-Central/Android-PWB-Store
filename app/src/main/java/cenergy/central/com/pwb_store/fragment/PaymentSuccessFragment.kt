@@ -26,6 +26,7 @@ import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.OrderResponse
@@ -382,7 +383,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             }
 
             // save order to local database
-            val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress, language = preferenceManager?.getDefaultLanguage()?: "TH")
+            val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress, language = preferenceManager?.getDefaultLanguage()?: AppLanguage.TH.key)
 
             database.saveOrder(order, object : DatabaseListener{
                 override fun onSuccessfully() {

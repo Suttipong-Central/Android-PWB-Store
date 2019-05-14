@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
-import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -1711,5 +1710,16 @@ class HttpManagerMagento(context: Context) {
     }
     // endregion
 
-    private fun getLanguage(): String = preferenceManager.getDefaultLanguage()
+    /**
+     * param language
+     * in PWB is th
+     * in CDS is cds_th
+     * */
+    private fun getLanguage(): String {
+        val language = preferenceManager.getDefaultLanguage()
+        return when (BuildConfig.FLAVOR) {
+            "cds" -> "cds_$language"
+            else -> language
+        }
+    }
 }
