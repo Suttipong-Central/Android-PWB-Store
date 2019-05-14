@@ -678,10 +678,7 @@ class HttpManagerMagento(context: Context) {
                 })
     }
 
-    //TODO: TDB for instigate "Product list"
-    /*
-        Hardcode for get custom_attributes
-    */
+    // region product
     fun retrieveProducts(pageSize: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
                          sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
         val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
@@ -793,10 +790,6 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    /*
-    * @Hardcode for get custom_attributes
-    *
-    * */
     fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
@@ -941,6 +934,25 @@ class HttpManagerMagento(context: Context) {
                     }
                 })
     }
+
+    fun getProductDeliveryInfo(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getDeliveryInfo(Constants.CLIENT_MAGENTO, getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>> {
+            override fun onResponse(call: Call<List<DeliveryInfo>>, response: Response<List<DeliveryInfo>>?) {
+                if (response != null && response.isSuccessful) {
+                    val deliveryInfoList = response.body()
+                    callback.success(deliveryInfoList)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<List<DeliveryInfo>>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+    // end product
 
     // region Cart
     fun getCart(callback: ApiResponseCallback<String?>) {

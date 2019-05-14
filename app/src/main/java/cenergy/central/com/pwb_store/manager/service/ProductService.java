@@ -1,5 +1,8 @@
 package cenergy.central.com.pwb_store.manager.service;
 
+import java.util.List;
+
+import cenergy.central.com.pwb_store.model.DeliveryInfo;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ProductDao;
 import cenergy.central.com.pwb_store.model.ProductDetail;
@@ -91,7 +94,6 @@ public interface ProductService {
             @Query("branch_id") String branchId);
 
     // region new api
-
     @GET("/{lang}/rest/V1/headless/search-suggestion")
     Call<ProductSearchResponse> getProductSearch(
             @Path("lang") String language,
@@ -183,21 +185,10 @@ public interface ProductService {
             @Query("searchCriteria[filterGroups][0][filters][0][value]") String barCode,
             @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") String eq);
 
-    // TODO: Delete when get new api this case so hard for filter
-    @GET("/rest/V1/products")
-    Call<ProductResponse> getProductFromSearch(
-            @Query("searchCriteria[filterGroups][0][filters][1][field]") String filterName,
-            @Query("searchCriteria[filterGroups][0][filters][1][value]") String name,
-            @Query("searchCriteria[filterGroups][0][filters][1][conditionType]") String ctName,
-            @Query("searchCriteria[filterGroups][0][filters][2][field]") String filterSku,
-            @Query("searchCriteria[filterGroups][0][filters][2][value]") String sku,
-            @Query("searchCriteria[filterGroups][0][filters][2][conditionType]") String ctSku,
-            @Query("searchCriteria[filterGroups][0][filters][3][field]") String filterBrand,
-            @Query("searchCriteria[filterGroups][0][filters][3][value]") String brand,
-            @Query("searchCriteria[filterGroups][0][filters][3][conditionType]") String ctBrand,
-            @Query("searchCriteria[pageSize]") int pageSize,
-            @Query("searchCriteria[currentPage]") int currentPage,
-            @Query("fields") String fields
-    );
+    @GET("/rest/{lang}/V1/delivery-info/products/{sku}")
+    Call<List<DeliveryInfo>> getDeliveryInfo (
+            @Header("Authorization") String token,
+            @Path("lang") String language,
+            @Path("sku") String sku);
     // end region
 }
