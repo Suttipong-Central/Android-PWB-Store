@@ -9,11 +9,11 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.fragment.LoginFragment
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.fragment.LoginFragment
 
 class LoginActivity : BaseActivity() {
 
