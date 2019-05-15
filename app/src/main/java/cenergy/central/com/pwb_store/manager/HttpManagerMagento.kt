@@ -722,12 +722,15 @@ class HttpManagerMagento(context: Context) {
                             product.name = productObj.getString("name")
                             product.price = productObj.getDouble("price")
                             product.status = productObj.getInt("status")
-                            product.brand = productObj.getString("brand")
-
+                            if(productObj.has("brand")){
+                                product.brand = productObj.getString("brand")
+                            }
+                            if (productObj.has("brand_name")){
+                                product.brand = productObj.getString("brand_name")
+                            }
                             if (!productObj.isNull("image")) {
                                 product.image = productObj.getString("image")
                             }
-
                             val attrArray = productObj.getJSONArray("custom_attributes")
                             for (j in 0 until attrArray.length()) {
                                 when (attrArray.getJSONObject(j).getString("attribute_code")) {
@@ -756,6 +759,19 @@ class HttpManagerMagento(context: Context) {
                             for (j in 0 until filterArray.length()) {
                                 when (filterArray.getJSONObject(j).getString("attribute_code")) {
                                     "brand" -> {
+                                        productFilter.name = filterArray.getJSONObject(j).getString("name")
+                                        productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
+                                        productFilter.position = filterArray.getJSONObject(j).getInt("position")
+                                        val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
+                                        for (k in 0 until itemArray.length()){
+                                            val label = itemArray.getJSONObject(k).getString("label")
+                                            val value = itemArray.getJSONObject(k).getString("value")
+                                            val count = itemArray.getJSONObject(k).getInt("count")
+                                            filterItem.add(FilterItem(label, value, count))
+                                        }
+                                        productFilter.items = filterItem
+                                    }
+                                    "brand_name" -> {
                                         productFilter.name = filterArray.getJSONObject(j).getString("name")
                                         productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
                                         productFilter.position = filterArray.getJSONObject(j).getInt("position")
