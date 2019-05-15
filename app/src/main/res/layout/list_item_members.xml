@@ -4,7 +4,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/powerBuyWhite">
+    android:background="@color/white">
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/member_name_list_members"

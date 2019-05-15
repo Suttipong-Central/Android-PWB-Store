@@ -7,7 +7,7 @@
 
     <color name="powerBuyPurple">#542D87</color>
     <color name="powerBuyOrange">#F4893F</color>
-    <color name="powerBuyWhite">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
 
     <color name="contentTextColor">#282828</color>
     <color name="categoryColor">#F4893F</color>

@@ -52,7 +52,7 @@
                 android:layout_height="48dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@color/powerBuyWhite"
+                android:background="@color/white"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="@color/powerBuyPurple"
                 app:tabMode="scrollable"

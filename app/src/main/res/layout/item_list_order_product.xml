@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/powerBuyWhite"
+    android:background="@color/white"
     android:orientation="horizontal"
     android:paddingStart="16dp"
     android:paddingTop="8dp"
@@ -44,7 +44,7 @@
                 android:maxLines="2"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
-                android:textColor="@color/powerBuyWhite"
+                android:textColor="@color/white"
                 android:visibility="gone"
                 android:textSize="20sp"
                 android:text="@string/title_free_item" />

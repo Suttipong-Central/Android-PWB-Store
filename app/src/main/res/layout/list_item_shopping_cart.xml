@@ -48,7 +48,7 @@
         android:maxLines="2"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        android:textColor="@color/powerBuyWhite"
+        android:textColor="@color/white"
         android:visibility="gone"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"

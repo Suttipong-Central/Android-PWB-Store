@@ -29,5 +29,5 @@
         android:gravity="center"
         android:padding="8dp"
         android:text="@string/hint_en"
-        android:textColor="@color/powerBuyWhite" />
+        android:textColor="@color/white" />
 </RadioGroup>

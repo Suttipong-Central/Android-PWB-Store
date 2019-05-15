@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             app:typeFaceAsset="RobotoLight.ttf"
-            android:textColor="@color/powerBuyWhite"
+            android:textColor="@color/white"
             android:text="@string/store_avaliable"
             />
 

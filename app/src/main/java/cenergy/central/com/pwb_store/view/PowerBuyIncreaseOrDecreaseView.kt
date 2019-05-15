@@ -99,7 +99,7 @@ class PowerBuyIncreaseOrDecreaseView : LinearLayout {
         if (!button.isEnabled) {
             button.setBackgroundColor(ContextCompat.getColor(context, R.color.disableButton))
         } else {
-            button.setBackgroundColor(ContextCompat.getColor(context, R.color.powerBuyWhite))
+            button.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
         }
     }
 
