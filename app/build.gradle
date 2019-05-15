@@ -48,6 +48,7 @@ android {
             versionNameSuffix "-dev"
             ext.alwaysUpdateBuildId = false
             testCoverageEnabled true
+            buildConfigField 'boolean', 'IS_PRODUCTION', 'false'
         }
 
         staging {
@@ -62,6 +63,7 @@ android {
             renderscriptDebuggable false
             renderscriptOptimLevel 3
             zipAlignEnabled true
+            buildConfigField 'boolean', 'IS_PRODUCTION', 'false'
         }
 
         uat {
@@ -76,6 +78,7 @@ android {
             renderscriptDebuggable false
             renderscriptOptimLevel 3
             zipAlignEnabled true
+            buildConfigField 'boolean', 'IS_PRODUCTION', 'false'
         }
 
         release {
@@ -88,6 +91,7 @@ android {
             renderscriptDebuggable false
             renderscriptOptimLevel 3
             zipAlignEnabled true
+            buildConfigField 'boolean', 'IS_PRODUCTION', 'true'
         }
     }
 

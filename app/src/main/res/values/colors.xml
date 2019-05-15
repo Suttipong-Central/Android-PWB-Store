@@ -23,6 +23,7 @@
     <color name="salePriceColor">#D0021B</color>
     <color name="dangerColor">#D0021B</color>
     <color name="viewColor">#E0E0E0</color>
+    <color name="textWaterMarkColor">#5B6F6F6F</color>
 
     <!-- Compare -->
     <color name="headDetail">#f2f2f2</color>

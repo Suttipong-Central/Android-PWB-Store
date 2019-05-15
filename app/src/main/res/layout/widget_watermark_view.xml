@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end|bottom"
+    android:clickable="false"
+    android:longClickable="false"
+    android:minWidth="150dp"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvBusiness"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textWaterMarkColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvBuildVersion"
+        android:visibility="gone"
+        tools:text="PowerBuy" />
+
+    <TextView
+        android:id="@+id/tvBuildVersion"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textWaterMarkColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBusiness"
+        app:layout_constraintBottom_toTopOf="@+id/tvEnvironment"
+        tools:text="Build Version 1.0.0(55)" />
+
+    <TextView
+        android:id="@+id/tvEnvironment"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textWaterMarkColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBuildVersion"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        tools:text="Staging" />
+
+</android.support.constraint.ConstraintLayout>
