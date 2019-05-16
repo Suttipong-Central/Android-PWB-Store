@@ -11,11 +11,8 @@
     <!-- drawer sub header -->
     <color name="drawerSubHeaderColor">#A6192E</color>
 
-    <!-- product detail -->
-    <color name="addToCartButton">#A6192E</color>
-
-    <!-- check out -->
-    <color name="checkOutColorButton">#A6192E</color>
-
     <color name="specialPriceColor">#D0021B</color>
+    <color name="primaryButtonColor">#A6192E</color>
+    <color name="defaultButtonColor">#F4893F</color>
+    <color name="categoryColor">#F4893F</color>
 </resources>

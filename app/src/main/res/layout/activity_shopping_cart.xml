@@ -125,7 +125,7 @@
             android:layout_marginBottom="16dp"
             android:layout_weight="0.5"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/categoryColor"
+            app:cardBackgroundColor="@color/defaultButtonColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline"
             app:layout_constraintStart_toStartOf="parent">

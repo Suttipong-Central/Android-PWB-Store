@@ -11,4 +11,16 @@
         <item name="navigationIcon">@drawable/ic_clear_white</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
     </style>
+
+    <style name="textNameCategory">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/defaultButtonColor</item>
+    </style>
+
+    <style name="textCompare">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/defaultButtonColor</item>
+    </style>
 </resources>

@@ -274,7 +274,7 @@
                 android:layout_marginRight="3dp"
                 android:layout_weight="0.5"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/categoryColor">
+                app:cardBackgroundColor="@color/defaultButtonColor">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -312,7 +312,7 @@
                 android:layout_marginStart="3dp"
                 android:layout_weight="0.5"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/categoryColor">
+                app:cardBackgroundColor="@color/defaultButtonColor">
 
                 <LinearLayout
                     android:layout_width="wrap_content"

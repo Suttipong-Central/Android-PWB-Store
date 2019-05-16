@@ -10,7 +10,6 @@
     <color name="white">#FFFFFF</color>
 
     <color name="contentTextColor">#282828</color>
-    <color name="categoryColor">#F4893F</color>
 
     <!-- Search Bar-->
     <color name="hintColor">#FFA1A1A1</color>
