@@ -69,7 +69,7 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
     private fun checkCanSave() {
         if (contactInput.text.toString().length == 10){
-            context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
+            context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.checkOutColorButton)) }
             okBtn.isEnabled = true
             okBtn.setOnClickListener { checkOnClick() }
         } else {

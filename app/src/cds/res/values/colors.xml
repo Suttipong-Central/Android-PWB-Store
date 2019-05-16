@@ -11,4 +11,7 @@
     <!-- activity detail -->
     <color name="addToCartButton">#A6192E</color>
     <color name="salePrice">#A6192E</color>
+
+    <!-- check out -->
+    <color name="checkOutColorButton">#A6192E</color>
 </resources>

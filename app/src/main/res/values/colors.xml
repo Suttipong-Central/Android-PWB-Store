@@ -42,6 +42,8 @@
     <color name="addToCartButton">#542D87</color>
     <color name="salePrice">#542D87</color>
 
+    <!-- check out -->
+    <color name="checkOutColorButton">#542D87</color>
 
     <!-- Network state-->
     <color name="network_disconnected">#D0021B</color>
