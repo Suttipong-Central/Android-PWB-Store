@@ -6,7 +6,7 @@
     android:id="@+id/app_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@color/graySelect"
     android:fitsSystemWindows="true"
     tools:context=".activity.CompareActivity">
 
@@ -14,7 +14,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="@color/white"
         android:theme="@style/ToolbarBack"
         app:contentInsetEnd="0dp"
         app:contentInsetLeft="0dp"

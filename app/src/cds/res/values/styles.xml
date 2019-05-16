@@ -2,14 +2,22 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryBlack</item>
-        <item name="colorAccent">@color/colorPrimary</item>
         <item name="drawerArrowStyle">@style/DrawerHamburgerStyle</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
     </style>
 
     <style name="DrawerHamburgerStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/colorPrimary</item>
+        <item name="color">@color/colorAccent</item>
+    </style>
+
+    <style name="ToolbarBack">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back_cds</item>
+    </style>
+
+    <style name="ToolbarCancel">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="navigationIcon">@drawable/ic_clear_cds</item>
     </style>
 </resources>

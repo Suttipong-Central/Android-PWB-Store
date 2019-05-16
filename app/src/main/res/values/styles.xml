@@ -103,18 +103,6 @@
         <item name="searchViewStyle">@style/SearchViewStyle</item>
     </style>
 
-    <style name="ToolbarBack">
-        <item name="colorControlHighlight">#DCDCDC</item>
-        <item name="navigationIcon">@drawable/ic_arrow_back_white</item>
-        <item name="searchViewStyle">@style/SearchViewStyle</item>
-    </style>
-
-    <style name="ToolbarCancel">
-        <item name="colorControlHighlight">#DCDCDC</item>
-        <item name="navigationIcon">@drawable/ic_clear_white</item>
-        <item name="searchViewStyle">@style/SearchViewStyle</item>
-    </style>
-
     <style name="SearchViewStyle" parent="Widget.AppCompat.Light.SearchView">
         <item name="closeIcon">@drawable/ic_clear</item>
         <item name="searchIcon">@drawable/ic_search</item>

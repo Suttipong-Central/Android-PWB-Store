@@ -6,6 +6,7 @@
     android:id="@+id/app_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/graySelect"
     android:fitsSystemWindows="true"
     tools:context=".activity.ProductListActivity">
 
@@ -13,7 +14,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@color/white"
         android:theme="@style/ToolbarCancel"
         app:contentInsetEnd="0dp"
         app:contentInsetLeft="0dp"

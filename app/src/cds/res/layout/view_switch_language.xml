@@ -3,7 +3,7 @@
     android:id="@+id/toggle_language"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_purple_out_line"
+    android:background="@drawable/bg_toggle_out_line"
     android:checkedButton="@id/lang_th"
     android:orientation="horizontal">
 
@@ -17,7 +17,7 @@
         android:gravity="center"
         android:padding="8dp"
         android:text="@string/hint_th"
-        android:textColor="@color/colorPrimary" />
+        android:textColor="@color/white" />
 
     <RadioButton
         android:id="@+id/lang_en"
@@ -29,5 +29,5 @@
         android:gravity="center"
         android:padding="8dp"
         android:text="@string/hint_en"
-        android:textColor="@color/white" />
+        android:textColor="@color/colorPrimaryDark" />
 </RadioGroup>

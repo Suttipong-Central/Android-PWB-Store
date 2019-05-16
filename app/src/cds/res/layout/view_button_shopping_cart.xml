@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_cart"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/image_view_shopping_cart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_shopping_cart_cds"
+        android:contentDescription="@string/app_name"/>
+
+    <FrameLayout
+        android:id="@+id/layout_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/image_view_shopping_cart"
+        android:layout_alignTop="@id/image_view_shopping_cart"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/ic_badge_circle_cds"
+        android:visibility="invisible">
+
+        <com.robinhood.ticker.TickerView
+            android:id="@+id/txt_view_badge_shopping_cart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/image_view_shopping_cart"
+            android:layout_alignTop="@id/image_view_shopping_cart"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            tools:text="23"
+            tools:visibility="visible"/>
+    </FrameLayout>
+
+</RelativeLayout>
