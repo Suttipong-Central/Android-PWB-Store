@@ -5,4 +5,6 @@
 
     <!-- cdsBlack is toolbar icon color -->
     <color name="cdsBlack">#333333</color>
+
+    <color name="cdsRed">@color/colorAccent</color>
 </resources>
