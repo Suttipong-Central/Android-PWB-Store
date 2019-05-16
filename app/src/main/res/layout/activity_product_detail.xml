@@ -35,19 +35,19 @@
                 android:id="@+id/containerDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent" />
+                android:background="@color/white" />
 
             <FrameLayout
                 android:id="@+id/containerOverview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent" />
+                android:background="@color/white" />
 
             <FrameLayout
                 android:id="@+id/containerExtension"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent" />
+                android:background="@color/white" />
 
         </LinearLayout>
     </ScrollView>
