@@ -119,7 +119,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
             if (!mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
                 username = mEditTextUserName.getText().toString();
                 password = mEditTextPassword.getText().toString();
-                mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.powerBuyOrange));
+                mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.pwbOrange));
                 mLoginButton.setOnClickListener(this);
             } else {
                 mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.hintColor));

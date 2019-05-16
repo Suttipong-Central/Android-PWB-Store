@@ -46,7 +46,7 @@
             android:background="@android:color/transparent"
             android:inputType="text"
             android:maxLines="1"
-            android:textCursorDrawable="@drawable/cursor_orange"
+            android:textCursorDrawable="@drawable/custom_cursor"
             android:textSize="18sp"
             android:windowSoftInputMode="adjustResize" />
     </android.support.design.widget.TextInputLayout>

@@ -249,7 +249,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun checkCanClickPayment() {
         if (cartItemList.isNotEmpty()) {
-            paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.powerBuyPurple))
+            paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.primaryButtonColor))
             paymentButton.setOnClickListener {
                 PaymentActivity.intent(this)
             }

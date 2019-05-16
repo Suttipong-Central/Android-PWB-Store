@@ -23,4 +23,13 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/defaultButtonColor</item>
     </style>
+
+    <!-- Form -->
+    <style name="Form" />
+
+    <style name="Form.EditTextLayoutTheme" parent="AppTheme">
+        <item name="colorAccent">@color/pwbOrange</item>
+        <item name="colorControlNormal">@color/pwbOrange</item>
+        <item name="colorControlActivated">@color/pwbOrange</item>
+    </style>
 </resources>
