@@ -113,7 +113,7 @@
                     android:layout_weight="0.5"
                     android:gravity="end"
                     android:maxLines="1"
-                    android:textColor="@color/salePriceColor"
+                    android:textColor="@color/specialPriceColor"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:typeFaceAsset="RobotoLight.ttf"

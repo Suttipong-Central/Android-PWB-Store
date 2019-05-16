@@ -7,4 +7,8 @@
     <color name="cdsBlack">#333333</color>
 
     <color name="cdsRed">@color/colorAccent</color>
+
+    <!-- activity detail -->
+    <color name="addToCartButton">#A6192E</color>
+    <color name="salePrice">#A6192E</color>
 </resources>

@@ -110,7 +110,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
                     mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_stock));
                 } else {
                     mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
-                    mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+                    mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.dangerColor));
                 }
             }
         }
@@ -210,7 +210,7 @@ public class ProductDetailDescriptionViewHolder extends RecyclerView.ViewHolder 
             addToCartButton.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.powerBuyPurple));
         } else {
             mStock.setText(Contextor.getInstance().getContext().getResources().getString(R.string.product_out_stock));
-            mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.salePriceColor));
+            mStock.setTextColor(Contextor.getInstance().getContext().getResources().getColor(R.color.dangerColor));
             addToCartButton.setEnabled(false);
             addToCartButton.setCardBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.hintColor));
         }

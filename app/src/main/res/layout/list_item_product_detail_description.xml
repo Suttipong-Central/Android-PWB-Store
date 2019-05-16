@@ -106,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:textColor="@color/salePriceColor"
+                android:textColor="@color/specialPriceColor"
                 android:textSize="16sp"
                 app:typeFaceAsset="RobotoLight.ttf"
                 tools:text="Price : "/>
@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:textColor="@color/salePriceColor"
+                android:textColor="@color/specialPriceColor"
                 android:textSize="20sp"
                 app:typeFaceAsset="Roboto-Medium.ttf"
                 tools:text="฿2,890" />

@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
             android:text="@string/required_field"
-            android:textColor="@color/salePriceColor"
+            android:textColor="@color/specialPriceColor"
             android:textSize="16sp" />
 
     </LinearLayout>

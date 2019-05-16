@@ -20,7 +20,7 @@
     <color name="nameProductColor">#282828</color>
     <color name="inStockColor">#5DA807</color>
     <color name="freeColor">#62a910</color>
-    <color name="salePriceColor">#D0021B</color>
+    <color name="specialPriceColor">#D0021B</color>
     <color name="dangerColor">#D0021B</color>
     <color name="viewColor">#E0E0E0</color>
     <color name="textWaterMarkColor">#5B6F6F6F</color>
@@ -33,13 +33,15 @@
     <color name="blackText">#000000</color>
     <color name="divider">#FFECECEC</color>
     <color name="disableButton">#f2f2f2</color>
-
     <color name="disableInput">#40e7e7e7</color>
     <color name="white80">#b9ffffff</color>
     <color name="gray">#e0e0e0</color>
     <color name="lightGray">#e7e7e7</color>
     <color name="lightGray2">#bfbfbf</color>
     <color name="passwordIconColor">#FF9A9A9A</color>
+    <color name="addToCartButton">#542D87</color>
+    <color name="salePrice">#542D87</color>
+
 
     <!-- Network state-->
     <color name="network_disconnected">#D0021B</color>

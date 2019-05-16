@@ -164,7 +164,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 //        tvStock.text = txtStock
 
         if (product.extension?.stokeItem?.isInStock == true) {
-            context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
+            context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.addToCartButton)) }
             addItemButton.setOnClickListener(this)
         }
 
