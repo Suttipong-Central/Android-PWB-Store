@@ -32,4 +32,10 @@
         <item name="colorControlNormal">@color/pwbOrange</item>
         <item name="colorControlActivated">@color/pwbOrange</item>
     </style>
+
+    <style name="RadioButtonStyle">
+        <item name="colorControlNormal">@color/graySelect</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/graySelect</item>
+    </style>
 </resources>
