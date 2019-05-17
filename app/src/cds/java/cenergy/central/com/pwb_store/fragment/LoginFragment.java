@@ -140,7 +140,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
             //TODO: Mock up data will delete soon
             User user = new User(0, "", "0", 223L,
-                    "chuan@central.tech", "", "", 0, "");
+                    "chuan@central.tech", "", "", 1, "");
             Store store = new Store();
             store.setStoreId(223L);
             store.setStoreCode("");
