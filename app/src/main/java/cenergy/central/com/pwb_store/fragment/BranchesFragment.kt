@@ -3,10 +3,8 @@ package cenergy.central.com.pwb_store.fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +12,12 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.StoresDeliveryAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Branch
-import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class BranchesFragment : Fragment(), StoreClickListener {
 
     private val storesAdapter = StoresDeliveryAdapter(this)
-    var branches: ArrayList<Branch?> = arrayListOf()
+    var branches: ArrayList<Branch> = arrayListOf()
     private lateinit var storesRecycler: RecyclerView
     private var listener: StorePickUpListener? = null
 
@@ -57,7 +51,7 @@ class BranchesFragment : Fragment(), StoreClickListener {
         storesAdapter.branches = branches
     }
 
-    fun updateBranches(branches: ArrayList<Branch?>, totalBranch: Int) {
+    fun updateBranches(branches: ArrayList<Branch>, totalBranch: Int) {
         this.branches = branches
         storesAdapter.branches = branches
     }

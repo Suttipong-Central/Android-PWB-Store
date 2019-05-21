@@ -13,6 +13,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
@@ -66,7 +67,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-    private var branches: ArrayList<Branch?> = arrayListOf()
+    private var branches: ArrayList<Branch> = arrayListOf()
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
@@ -168,7 +169,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
-                getStoresDelivery() // default page
+                getStoresDelivery(deliveryOption) // default page
             }
             HOME -> {
                 showProgressDialog()
@@ -548,8 +549,29 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun getStoresDelivery() {
-        this.branches = arrayListOf()
+    private fun getStoresDelivery(deliveryOption: DeliveryOption) {
+        this.branches = arrayListOf() // clear branch list
+        when (BuildConfig.FLAVOR) {
+            "cds" -> {
+                handlePickupLocationList(deliveryOption.extension.pickupLocations)
+            }
+            else -> loadBranches()
+        }
+    }
+
+    /**
+     * FOR CDS using pickup locations (we cast it to branch model)
+     */
+    private fun handlePickupLocationList(pickupLocations: List<PickupLocation>) {
+        pickupLocations.mapTo(branches) { it.asBranch() } // add pickup location to branch
+        startStorePickupFragment(pickupLocations.size)
+
+        // TODO: handle sort with staff's storeID
+
+        mProgressDialog?.dismiss()
+    }
+
+    private fun loadBranches() {
         HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
             override fun success(response: List<Branch>?) {
                 runOnUiThread {
@@ -741,7 +763,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getEnableDateShipping(): ArrayList<ShippingSlot> = this.enableShippingSlot
 
-    override fun getBranches(): ArrayList<Branch?> = this.branches
+    override fun getBranches(): ArrayList<Branch> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
 

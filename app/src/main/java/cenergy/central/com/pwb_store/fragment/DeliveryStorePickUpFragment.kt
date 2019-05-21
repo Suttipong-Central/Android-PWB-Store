@@ -13,7 +13,7 @@ import cenergy.central.com.pwb_store.model.Branch
 class DeliveryStorePickUpFragment : Fragment() {
 
     private var listener: PaymentProtocol? = null
-    private var branches: ArrayList<Branch?> = arrayListOf()
+    private var branches: ArrayList<Branch> = arrayListOf()
     private val branchesFragment = BranchesFragment.newInstance()
     private val branchDetailFragment = BranchDetailFragment.newInstance()
     private var totalBranch: Int = 0
@@ -54,7 +54,7 @@ class DeliveryStorePickUpFragment : Fragment() {
         updateBranches(branches)
     }
 
-    private fun updateBranches(branches: ArrayList<Branch?>) {
+    private fun updateBranches(branches: ArrayList<Branch>) {
         this.branches = branches
         branchesFragment.updateBranches(branches, totalBranch)
     }
