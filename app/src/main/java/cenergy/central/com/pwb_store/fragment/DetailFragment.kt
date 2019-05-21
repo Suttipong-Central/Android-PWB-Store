@@ -25,15 +25,11 @@ import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.fragment_detail.view.*
 
-
-/**
- * Created by Anuphap Suwannamas on 21/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
-    private var productDetailListener: ProductDetailListener? = null
+    private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
 
     // widget view
@@ -52,7 +48,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
-        product = productDetailListener?.getProduct()
+        product = productDetailListener.getProduct()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -69,15 +65,15 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.card_view_store -> {
-                productDetailListener?.onDisplayAvailableStore(product)
+                productDetailListener.onDisplayAvailableStore(product)
             }
 
             R.id.card_view_add_compare -> {
-                productDetailListener?.addProductToCompare(product)
+                productDetailListener.addProductToCompare(product)
             }
 
             R.id.card_view_add_to_cart -> {
-                productDetailListener?.addProductToCart(product)
+                productDetailListener.addProductToCart(product)
             }
         }
     }
@@ -100,6 +96,14 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         addItemButton = rootView.findViewById(R.id.card_view_add_to_cart)
         storeButton = rootView.findViewById(R.id.card_view_store)
         compareButton = rootView.findViewById(R.id.card_view_add_compare)
+
+        if (product!= null && product!!.typeId == "configurable") {
+            rootView.inputProductShape.visibility = View.VISIBLE
+            rootView.inputProductColor.visibility = View.VISIBLE
+        } else {
+            rootView.inputProductShape.visibility = View.GONE
+            rootView.inputProductColor.visibility = View.GONE
+        }
     }
 
     @SuppressLint("SetTextI18n")

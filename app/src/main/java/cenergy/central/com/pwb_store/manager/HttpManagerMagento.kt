@@ -841,6 +841,10 @@ class HttpManagerMagento(context: Context) {
                         product.price = productObject.getDouble("price")
                         product.status = productObject.getInt("status")
 
+                        if (productObject.has("type_id")) {
+                            product.typeId = productObject.getString("type_id")
+                        }
+
                         val extensionObject = productObject.getJSONObject("extension_attributes")
                         val stockObject = extensionObject.getJSONObject("stock_item")
 //                        stockItem.itemId = stockObject.getLong("item_id")

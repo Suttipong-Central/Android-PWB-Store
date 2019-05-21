@@ -18,6 +18,7 @@ class Product(
         var sku: String = "",
         var name: String = "",
         var price: Double = 0.0,
+        var typeId: String = "",
         @SerializedName("special_price")
         var specialPrice: Double = 0.0,
         @SerializedName("special_from_date")
@@ -42,6 +43,7 @@ class Product(
         sku = parcel.readString()
         name = parcel.readString()
         price = parcel.readDouble()
+        typeId = parcel.readString()
         specialPrice = parcel.readDouble()
         specialFromDate = parcel.readString()
         specialToDate = parcel.readString()
@@ -139,6 +141,7 @@ class Product(
         parcel.writeString(sku)
         parcel.writeString(name)
         parcel.writeDouble(price)
+        parcel.writeString(typeId)
         parcel.writeDouble(specialPrice)
         parcel.writeString(specialFromDate)
         parcel.writeString(specialToDate)
