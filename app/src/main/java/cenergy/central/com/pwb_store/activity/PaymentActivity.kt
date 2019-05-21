@@ -400,7 +400,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 mProgressDialog?.dismiss()
                                 if (response != null) {
                                     if (isUserChatAndShop()){
-                                        selectPaymentTypes()
+                                        selectPaymentTypes(response.paymentMethods)
                                     } else {
                                         showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
                                     }
@@ -422,7 +422,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         mProgressDialog?.dismiss()
                         if (response != null) {
                             if (isUserChatAndShop()){
-                                selectPaymentTypes()
+                                selectPaymentTypes(response.paymentMethods)
                             } else {
                                 showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
                             }
@@ -440,9 +440,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun selectPaymentTypes() {
-        if(paymentMethods.isEmpty()){
-            showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
+    private fun selectPaymentTypes(paymentMethods: ArrayList<PaymentMethod>) {
+        if(this.paymentMethods.isEmpty()){
+            if(paymentMethods.isEmpty()){
+                showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
+            } else {
+                this.paymentMethods = paymentMethods
+                startSelectMethod()
+            }
         } else {
             startSelectMethod()
         }
