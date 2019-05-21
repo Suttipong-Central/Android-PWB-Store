@@ -1,9 +1,5 @@
 package cenergy.central.com.pwb_store.model
 
-/**
- * Created by Anuphap Suwannamas on 17/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
 enum class DeliveryType(val methodCode: String) {
     EXPRESS("express") {
@@ -12,11 +8,11 @@ enum class DeliveryType(val methodCode: String) {
     STANDARD("standard") {
         override fun toString(): String = "ส่งธรรมดา (โดย KERRY)"
     },
-    STORE_PICK_UP("sts") {
+    STORE_PICK_UP("pickupatstore") {
         override fun toString(): String = "รับที่สาขา"
     },
     HOME("hdl") {
-        override fun toString(): String = "กำหนดวันจัดส่ง (โดยรถพาวเวอร์บาย)"
+        override fun toString(): String = "กำหนดวันจัดส่ง (โดยรถ CDS)"
     };
     companion object {
         private val map = values().associateBy(DeliveryType::methodCode)
