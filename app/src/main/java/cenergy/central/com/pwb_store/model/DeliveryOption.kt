@@ -16,14 +16,65 @@ class DeliveryOption(
         var baseAmount: Int = 0,
         var available: Boolean = false,
         @SerializedName("extension_attributes")
-        var remote: Remote,
+        var extension: DeliveryExtension,
         @SerializedName("error_message")
         var errorMessage: String = "",
         @SerializedName("price_excl_tax")
         var priceExcludeTax: String = "",
         @SerializedName("price_incl_tax")
         var priceIncludeTax: String = ""
-        )
+)
 
-data class Remote(@SerializedName("is_remote")
-                  var isRemote: String = "")
+data class DeliveryExtension(@SerializedName("pickup_locations")
+                             var pickupLocations: List<PickupLocation> = arrayListOf())
+
+data class PickupLocation(var id: String = "",
+                          var code: String = "",
+                          var name: String = "",
+                          @SerializedName("display_order")
+                          var displayOrder: String = "",
+                          @SerializedName("address_line1")
+                          var address: String = "",
+                          var district: String = "",
+                          var province: String = "",
+                          @SerializedName("region_id")
+                          var regionId: String = "",
+                          @SerializedName("postal_code")
+                          var postcode: String = "",
+                          var telephone: String? = "",
+                          @SerializedName("lat")
+                          var latitude: String = "",
+                          @SerializedName("long")
+                          var longitude: String = "",
+                          @SerializedName("pickup_fee")
+                          var pickupFee: String = "",
+                          @SerializedName("pos_handling_fee")
+                          var posHandlingFee: String = "",
+                          @SerializedName("extension_attributes")
+                          var extension: PickupExtension
+) {
+    fun asBranch(): Branch {
+        return Branch(storeId = id, address = getFullAddress(), city = extension.pickupAddressInfo.region,
+                phone = telephone
+                        ?: "", postcode = postcode, storeName = name, centralStoreCode = code,
+                latitude = latitude, longitude = longitude)
+    }
+
+    private fun getFullAddress(): String = "$address, ${extension.pickupAddressInfo.subDistrict}, " +
+            "${extension.pickupAddressInfo.district}, ${extension.pickupAddressInfo.region}, $postcode"
+}
+
+data class PickupExtension(@SerializedName("additional_address_info")
+                           var pickupAddressInfo: PickupAddressInfo)
+
+data class PickupAddressInfo(@SerializedName("subdistrict")
+                             var subDistrict: String = "",
+                             @SerializedName("subdistrict_id")
+                             var subDistrictId: String,
+                             var district: String = "",
+                             @SerializedName("districtId")
+                             var districtId: String,
+                             @SerializedName("region_name")
+                             var region: String = "",
+                             @SerializedName("region_id")
+                             var regionId: String)
