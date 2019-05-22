@@ -21,6 +21,10 @@
         <item name="navigationIcon">@drawable/ic_clear_cds</item>
     </style>
 
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/cdsRed</item>
+    </style>
+
     <style name="textNameCategory">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>

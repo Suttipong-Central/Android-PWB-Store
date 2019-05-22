@@ -12,7 +12,7 @@ import cenergy.central.com.pwb_store.model.Branch
 
 class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var selectedIndex: Int? = null
+    var selectedIndex: Int? = 0
     var branches = listOf<Branch?>()
         set(value) {
             field = value
@@ -38,7 +38,6 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         if (holder is StoresViewHolder) {
             val branch = branches[position]
             holder.bindView(branch!!)
