@@ -1115,7 +1115,7 @@ class HttpManagerMagento(context: Context) {
     fun updateOder(cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod, email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>) {
         val cartService = retrofit.create(CartService::class.java)
         val paymentMethodBody = PaymentInfoBody.createPaymentInfoBody(cartId = cartId,
-                staffId = staffId, retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = "e_ordering")
+                staffId = staffId, retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = paymentMethod.code)
         cartService.updateOrder(getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {

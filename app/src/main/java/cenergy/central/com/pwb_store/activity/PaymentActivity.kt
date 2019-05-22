@@ -75,7 +75,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("payatstore",  "Pay at store")
+    private val paymentMethod = PaymentMethod("e_ordering",  "Pay at store")
 
     // date
     private val dateTime = DateTime.now()
@@ -441,12 +441,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun selectPaymentTypes(paymentMethods: ArrayList<PaymentMethod>) {
+    private fun selectPaymentTypes(paymentMethodsFromAPI: ArrayList<PaymentMethod>) {
         if(this.paymentMethods.isEmpty()){
-            if(paymentMethods.isEmpty()){
+            if(paymentMethodsFromAPI.isEmpty()){
                 showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
             } else {
-                this.paymentMethods = paymentMethods
+                this.paymentMethods = paymentMethodsFromAPI
                 startSelectMethod()
             }
         } else {
