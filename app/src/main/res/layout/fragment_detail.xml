@@ -313,6 +313,7 @@
         </android.support.v7.widget.CardView>
 
         <LinearLayout
+            android:id="@+id/layoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

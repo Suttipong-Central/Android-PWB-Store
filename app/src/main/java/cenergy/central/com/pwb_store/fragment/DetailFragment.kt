@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
@@ -96,6 +97,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         addItemButton = rootView.findViewById(R.id.card_view_add_to_cart)
         storeButton = rootView.findViewById(R.id.card_view_store)
         compareButton = rootView.findViewById(R.id.card_view_add_compare)
+
+        when(BuildConfig.FLAVOR){
+            "cds" -> rootView.layoutButton.visibility = View.GONE
+        }
 
         if (product!= null && product!!.typeId == "configurable") {
             rootView.inputProductShape.visibility = View.VISIBLE
