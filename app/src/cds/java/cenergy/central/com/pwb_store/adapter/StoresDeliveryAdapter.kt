@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter
 
+import android.annotation.SuppressLint
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,7 +13,7 @@ import cenergy.central.com.pwb_store.model.Branch
 
 class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var selectedIndex: Int? = 0
+    private var selectedIndex: Int? = null
     var branches = listOf<Branch?>()
         set(value) {
             field = value
@@ -37,6 +38,7 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
         return if (branches[position] != null) VIEW_ITEM else VIEW_LOADING
     }
 
+    @SuppressLint("RecyclerView")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is StoresViewHolder) {
             val branch = branches[position]
