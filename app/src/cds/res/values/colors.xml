@@ -13,6 +13,10 @@
 
     <color name="specialPriceColor">#D0021B</color>
     <color name="primaryButtonColor">#A6192E</color>
-    <color name="defaultButtonColor">#F4893F</color>
+    <color name="defaultButtonColor">@color/white</color>
+    <color name="defaultTextButtonColor">#A6192E</color>
+    <color name="defaultButtonStrokeColor">#A6192E</color>
+    <color name="iconArrowBack">@color/colorAccent</color>
+
     <color name="categoryColor">#F4893F</color>
 </resources>

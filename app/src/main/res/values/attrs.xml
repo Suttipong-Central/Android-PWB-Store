@@ -21,4 +21,8 @@
         <attr name="act_header" format="string"/>
         <attr name="act_required" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="PowerBuyBackButton">
+        <attr name="disable" format="boolean"/>
+        <attr name="hide_icon" format="boolean"/>
+    </declare-styleable>
 </resources>

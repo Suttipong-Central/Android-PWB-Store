@@ -13,7 +13,7 @@
 
     <style name="ToolbarBack">
         <item name="colorControlHighlight">@color/colorAccent</item>
-        <item name="navigationIcon">@drawable/ic_arrow_back_cds</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back</item>
     </style>
 
     <style name="ToolbarCancel">

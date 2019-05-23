@@ -32,6 +32,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.PowerBuyBackButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
@@ -43,14 +44,13 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var networkStateView: NetworkStateView
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
-    private lateinit var backToShopButton: CardView
+    private lateinit var backToShopButton: PowerBuyBackButton
     private lateinit var paymentButton: CardView
     private lateinit var searchImageView: ImageView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var title: PowerBuyTextView
     private lateinit var tvT1: PowerBuyTextView
     private lateinit var cartItemList: List<CartItem>
-    private lateinit var titleBackButton: TextView
     private lateinit var titlePaymentButton: TextView
     private var mProgressDialog: ProgressDialog? = null
     // data
@@ -123,11 +123,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
-        titleBackButton = backToShopButton.findViewById(R.id.back_title_text_view)
         titlePaymentButton = paymentButton.findViewById(R.id.title_text_view)
 
         updateTitle(0) // default title
 
+        forceUpdateView()
         backToShopButton.setOnClickListener { finish() }
     }
 
@@ -182,8 +182,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun forceUpdateView() {
-        // update shit! button using card view =[]='
-        titleBackButton.setText(R.string.shopping)
+        backToShopButton.setText(getString(R.string.shopping))
         titlePaymentButton.setText(R.string.check_out)
 
         // update text label

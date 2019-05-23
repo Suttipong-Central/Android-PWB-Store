@@ -46,4 +46,11 @@
     <color name="transparent">#00ffffff</color>
     <color name="color_toggle">#bd8bff</color>
     <color name="color_toggle_selected">#895fc1</color>
+
+
+    <color name="defaultButtonColor">#F4893F</color>
+    <color name="defaultTextButtonColor">@color/white</color>
+    <color name="defaultButtonStrokeColor">#F4893F</color>
+    <color name="iconArrowBack">@color/white</color>
+
 </resources>
