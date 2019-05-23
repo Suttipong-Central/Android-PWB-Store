@@ -21,7 +21,7 @@
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/txt_title_home_delivery"
-        style="@style/textPaymentHeader"
+        style="@style/textSubHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

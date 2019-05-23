@@ -120,7 +120,7 @@
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/order_info_sub_header_order_success"
-                style="@style/textPaymentHeader"
+                style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -262,7 +262,7 @@
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/shipping_header_order_success"
-                style="@style/textPaymentHeader"
+                style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -475,7 +475,7 @@
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:id="@+id/header_billing_address_order_success"
-                    style="@style/textPaymentHeader"
+                    style="@style/textSubHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -590,7 +590,7 @@
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/order_detail_order_success"
-                style="@style/textPaymentHeader"
+                style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -771,7 +771,7 @@
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:id="@+id/txt_total_price_order_success"
-                    style="@style/textPaymentHeader"
+                    style="@style/textSubHeader"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
