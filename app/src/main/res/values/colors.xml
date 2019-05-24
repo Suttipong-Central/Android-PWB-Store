@@ -44,9 +44,12 @@
 
     <!-- Language toggle-->
     <color name="transparent">#00ffffff</color>
-    <color name="color_toggle">#bd8bff</color>
-    <color name="color_toggle_selected">#895fc1</color>
 
+    <color name="toggleSelectedStroke">@color/colorAccent</color>
+    <color name="toggleSelectedFill">@color/colorPrimary</color>
+    <color name="togglePressedFill">@color/colorAccent</color>
+    <color name="toggleFill">@color/colorAccent</color>
+    <color name="toggleStroke">@color/colorAccent</color>
 
     <color name="defaultButtonColor">#F4893F</color>
     <color name="defaultTextButtonColor">@color/white</color>
