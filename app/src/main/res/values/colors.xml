@@ -57,5 +57,6 @@
     <color name="toggleFill">@color/colorPrimary</color>
     <color name="toggleStroke">@color/white</color>
 
+    <color name="textDefaultColor">@color/pwbOrange</color>
     <color name="cursorColor">@color/pwbOrange</color>
 </resources>

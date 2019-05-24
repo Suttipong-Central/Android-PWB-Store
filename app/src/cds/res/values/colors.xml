@@ -24,6 +24,7 @@
     <color name="toggleFill">@color/colorAccent</color>
     <color name="toggleStroke">@color/colorAccent</color>
 
+    <color name="textDefaultColor">@color/cdsRed</color>
     <color name="cursorColor">@color/cdsRed</color>
 
     <color name="categoryColor">#F4893F</color>
