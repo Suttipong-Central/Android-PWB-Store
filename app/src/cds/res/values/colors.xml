@@ -18,5 +18,7 @@
     <color name="defaultButtonStrokeColor">#A6192E</color>
     <color name="iconArrowBack">@color/colorAccent</color>
 
+    <color name="cursorColor">@color/cdsRed</color>
+
     <color name="categoryColor">#F4893F</color>
 </resources>

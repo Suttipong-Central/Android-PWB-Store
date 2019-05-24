@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#44246E</color>
     <color name="colorAccent">#F4F4F4</color>
 
+    <color name="pwbOrange">#F4893F</color>
     <color name="powerBuyPurple">#542D87</color>
     <color name="white">#FFFFFF</color>
 
@@ -56,4 +57,5 @@
     <color name="defaultButtonStrokeColor">#F4893F</color>
     <color name="iconArrowBack">@color/white</color>
 
+    <color name="cursorColor">@color/pwbOrange</color>
 </resources>
