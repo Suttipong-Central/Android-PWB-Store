@@ -18,6 +18,12 @@
     <color name="defaultButtonStrokeColor">#A6192E</color>
     <color name="iconArrowBack">@color/colorAccent</color>
 
+    <color name="toggleSelectedStroke">@color/colorAccent</color>
+    <color name="toggleSelectedFill">@color/colorPrimary</color>
+    <color name="togglePressedFill">@color/colorAccent</color>
+    <color name="toggleFill">@color/colorAccent</color>
+    <color name="toggleStroke">@color/colorAccent</color>
+
     <color name="cursorColor">@color/cdsRed</color>
 
     <color name="categoryColor">#F4893F</color>
