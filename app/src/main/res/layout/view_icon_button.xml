@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pwbButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_unselected"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/iconImage"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="6dp"
+        android:contentDescription="@string/product_available"
+        tools:src="@drawable/ic_shopping_cart" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/buttonText"
+        style="@style/RaisedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        app:typeFaceAsset="RobotoLight.ttf"
+        tools:text="@string/shopping"
+        tools:textColor="@color/white"/>
+</LinearLayout>

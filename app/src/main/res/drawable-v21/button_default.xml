@@ -5,7 +5,7 @@
             <solid android:color="@color/defaultButtonColor" />
             <stroke
                 android:width="2dp"
-                android:color="@color/defaultButtonColor" />
+                android:color="@color/defaultButtonStrokeColor" />
             <corners
                 android:radius="@dimen/raised_button_cardCornerRadius"/>
         </shape>

@@ -30,10 +30,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.view.LanguageButton
-import cenergy.central.com.pwb_store.view.NetworkStateView
-import cenergy.central.com.pwb_store.view.PowerBuyBackButton
-import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import cenergy.central.com.pwb_store.view.*
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -45,13 +42,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var mToolbar: Toolbar
     private lateinit var recycler: RecyclerView
     private lateinit var backToShopButton: PowerBuyBackButton
-    private lateinit var paymentButton: CardView
+    private lateinit var paymentButton: PowerBuyIconButton
     private lateinit var searchImageView: ImageView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var title: PowerBuyTextView
     private lateinit var tvT1: PowerBuyTextView
     private lateinit var cartItemList: List<CartItem>
-    private lateinit var titlePaymentButton: TextView
     private var mProgressDialog: ProgressDialog? = null
     // data
     private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
@@ -99,7 +95,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == BaseActivity.REQUEST_UPDATE_LANGUAGE) {
+        if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
@@ -123,7 +119,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         paymentButton = findViewById(R.id.payment)
-        titlePaymentButton = paymentButton.findViewById(R.id.title_text_view)
 
         updateTitle(0) // default title
 
@@ -183,7 +178,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun forceUpdateView() {
         backToShopButton.setText(getString(R.string.shopping))
-        titlePaymentButton.setText(R.string.check_out)
+        paymentButton.setText(getString(R.string.check_out))
+        paymentButton.setImageDrawable(R.drawable.ic_check)
 
         // update text label
         findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
@@ -248,13 +244,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun checkCanClickPayment() {
         if (cartItemList.isNotEmpty()) {
-            paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.primaryButtonColor))
+            paymentButton.isDisable = false
             paymentButton.setOnClickListener {
                 PaymentActivity.intent(this)
             }
         } else {
-            paymentButton.setCardBackgroundColor(ContextCompat.getColor(this, R.color.hintColor))
-            paymentButton.isEnabled = false
+            paymentButton.isDisable = true
         }
     }
 
@@ -317,7 +312,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(R.string.ok) { dialog, _ -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)

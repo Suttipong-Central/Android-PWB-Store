@@ -25,4 +25,8 @@
         <attr name="disable" format="boolean"/>
         <attr name="hide_icon" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="PowerBuyIconButton">
+        <attr name="btn_disable" format="boolean"/>
+        <attr name="icon_invisible" format="boolean"/>
+    </declare-styleable>
 </resources>
