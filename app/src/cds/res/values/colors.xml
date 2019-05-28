@@ -20,7 +20,7 @@
 
     <color name="toggleSelectedStroke">@color/colorAccent</color>
     <color name="toggleSelectedFill">@color/colorPrimary</color>
-    <color name="togglePressedFill">@color/colorAccent</color>
+    <color name="togglePressedFill">@color/white80</color>
     <color name="toggleFill">@color/colorAccent</color>
     <color name="toggleStroke">@color/colorAccent</color>
 
