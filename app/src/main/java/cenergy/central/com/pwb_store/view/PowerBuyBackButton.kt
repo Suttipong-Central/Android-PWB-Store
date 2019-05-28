@@ -13,7 +13,7 @@ class PowerBuyBackButton : RelativeLayout {
 
     private lateinit var pwbButton: RelativeLayout
     private lateinit var icon: ImageView
-    private lateinit var textview: PowerBuyTextView
+    private lateinit var textView: PowerBuyTextView
     var isDisable: Boolean = false
     var isHideIcon: Boolean = false
     private var textInput = ""
@@ -35,7 +35,7 @@ class PowerBuyBackButton : RelativeLayout {
         val view = View.inflate(context, R.layout.view_back_button, this)
         pwbButton = view.findViewById(R.id.pwbButton)
         icon = view.findViewById(R.id.iconImage)
-        textview = view.findViewById(R.id.buttonText)
+        textView = view.findViewById(R.id.buttonText)
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
@@ -56,8 +56,12 @@ class PowerBuyBackButton : RelativeLayout {
     private fun notifyAttributeChanged() {
         if (isDisable) {
             pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_unselected)
+            icon.setColorFilter(ContextCompat.getColor(context, R.color.white))
+            textView.setTextColor(ContextCompat.getColor(context, R.color.white))
         } else {
             pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_default)
+            icon.setColorFilter(ContextCompat.getColor(context, R.color.iconArrowBack))
+            textView.setTextColor(ContextCompat.getColor(context, R.color.defaultTextButtonColor))
         }
 
         if (isHideIcon){
@@ -66,9 +70,7 @@ class PowerBuyBackButton : RelativeLayout {
             icon.visibility = View.VISIBLE
         }
 
-        icon.setColorFilter(ContextCompat.getColor(context, R.color.iconArrowBack))
-        textview.setTextColor(ContextCompat.getColor(context, R.color.defaultTextButtonColor))
-        textview.text = textInput
+        textView.text = textInput
     }
 
     fun setText(input: String){
