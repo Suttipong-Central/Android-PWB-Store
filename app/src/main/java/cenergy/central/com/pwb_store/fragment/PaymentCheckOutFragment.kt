@@ -3,8 +3,6 @@ package cenergy.central.com.pwb_store.fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -15,13 +13,14 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.utils.ValidationHelper
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
+import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 
 class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
     private var checkoutListener: CheckoutListener? = null
 
     private lateinit var contactInput : PowerBuyEditText
-    private lateinit var okBtn : CardView
+    private lateinit var okBtn : PowerBuyIconButton
 
     companion object {
         fun newInstance(): PaymentCheckOutFragment {
@@ -60,21 +59,19 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
     private fun setupView(rootView: View) {
         contactInput = rootView.findViewById(R.id.contact_number_check_out)
-        okBtn = rootView.findViewById(R.id.ok_btn_check_out)
+        okBtn = rootView.findViewById(R.id.checkoutButton)
         val skipBtn: TextView = rootView.findViewById(R.id.skipButton)
-        okBtn.isEnabled = false
+        okBtn.setButtonDisable(true)
         contactInput.addTextChangedListener(this)
         skipBtn.setOnClickListener { checkoutListener?.startCheckout(null) }
     }
 
     private fun checkCanSave() {
         if (contactInput.text.toString().length == 10){
-            context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.primaryButtonColor)) }
-            okBtn.isEnabled = true
+            okBtn.setButtonDisable(false)
             okBtn.setOnClickListener { checkOnClick() }
         } else {
-            context?.let { okBtn.setCardBackgroundColor(ContextCompat.getColor(it, R.color.hintColor)) }
-            okBtn.isEnabled = false
+            okBtn.setButtonDisable(true)
         }
     }
 
