@@ -118,7 +118,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         tvT1 = findViewById(R.id.txt_t1_shopping_cart)
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
+
+        // setup payment button
         paymentButton = findViewById(R.id.payment)
+        paymentButton.setImageDrawable(R.drawable.ic_check)
 
         updateTitle(0) // default title
 
@@ -179,7 +182,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun forceUpdateView() {
         backToShopButton.setText(getString(R.string.shopping))
         paymentButton.setText(getString(R.string.check_out))
-        paymentButton.setImageDrawable(R.drawable.ic_check)
 
         // update text label
         findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
