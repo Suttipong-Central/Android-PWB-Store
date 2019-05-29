@@ -89,7 +89,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         timeSlotDialogFragment.setOnPickDateListener(this)
         dateText = rootView.findViewById(R.id.edit_text_time)
         timeText = rootView.findViewById(R.id.edit_text_time2)
-        paymentButton = rootView.findViewById(R.id.home_delivery_button_payment)
+        paymentButton = rootView.findViewById(R.id.homeDeliveryButton)
         dateText.setOnClickListener(this)
         timeText.setOnClickListener(this)
         paymentButton.setOnClickListener(this)
@@ -138,7 +138,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
             R.id.edit_text_time2 -> {
                 checkPickDate()
             }
-            R.id.home_delivery_button_payment -> {
+            R.id.homeDeliveryButton -> {
                 checkPayment()
             }
         }

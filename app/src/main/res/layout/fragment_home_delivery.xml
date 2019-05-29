@@ -106,27 +106,16 @@
         app:layout_constraintStart_toEndOf="@id/edit_text_time"
         app:layout_constraintTop_toBottomOf="@id/txt_title_hour" />
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/home_delivery_button_payment"
-        style="@style/RaisedButtonCard"
+    <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+        android:id="@+id/homeDeliveryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            style="@style/RaisedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/payment_header"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            app:typeFaceAsset="RobotoLight.ttf" />
-    </android.support.v7.widget.CardView>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:text="@string/payment_header"
+        app:icon_invisible="true"/>
 </android.support.constraint.ConstraintLayout>
