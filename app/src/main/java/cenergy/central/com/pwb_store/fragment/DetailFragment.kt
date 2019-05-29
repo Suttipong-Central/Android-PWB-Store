@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
@@ -24,6 +23,7 @@ import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
+import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.view.*
@@ -42,9 +42,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var tvTitleSpecialPrice: TextView
     private lateinit var tvSpecialPrice: TextView
     private lateinit var tvNormalPrice: PowerBuyTextView
-    private lateinit var addItemButton: CardView
-    private lateinit var storeButton: CardView
-    private lateinit var compareButton: CardView
+    private lateinit var addItemButton: PowerBuyIconButton
+    private lateinit var storeButton: PowerBuyIconButton
+    private lateinit var compareButton: PowerBuyIconButton
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -65,15 +65,15 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.card_view_store -> {
+            R.id.availableStoreButton -> {
                 productDetailListener.onDisplayAvailableStore(product)
             }
 
-            R.id.card_view_add_compare -> {
+            R.id.addToCompareButton -> {
                 productDetailListener.addProductToCompare(product)
             }
 
-            R.id.card_view_add_to_cart -> {
+            R.id.addToCartButton -> {
                 productDetailListener.addProductToCart(product)
             }
         }
@@ -94,9 +94,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvTitleSpecialPrice = rootView.findViewById(R.id.txt_name_price)
         tvSpecialPrice = rootView.findViewById(R.id.txt_sale_price)
         tvNormalPrice = rootView.findViewById(R.id.txt_regular)
-        addItemButton = rootView.findViewById(R.id.card_view_add_to_cart)
-        storeButton = rootView.findViewById(R.id.card_view_store)
-        compareButton = rootView.findViewById(R.id.card_view_add_compare)
+        addItemButton = rootView.findViewById(R.id.addToCartButton)
+        storeButton = rootView.findViewById(R.id.availableStoreButton)
+        compareButton = rootView.findViewById(R.id.addToCompareButton)
 
         when(BuildConfig.FLAVOR){
             "cds" -> rootView.layoutButton.visibility = View.GONE
@@ -172,13 +172,21 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 //        }
 //        tvStock.text = txtStock
 
+        // setup add item button
         if (product.extension?.stokeItem?.isInStock == true) {
-            context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.primaryButtonColor)) }
+            addItemButton.isDisable = false
             addItemButton.setOnClickListener(this)
+        } else {
+            addItemButton.isDisable = true
         }
+        addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
 
-        // setup onclick
+        // setup available store button
+        storeButton.setImageDrawable(R.drawable.ic_store)
         storeButton.setOnClickListener(this)
+
+        // setup add to compare button
+        compareButton.setImageDrawable(R.drawable.ic_compare_bar)
         compareButton.setOnClickListener(this)
     }
 

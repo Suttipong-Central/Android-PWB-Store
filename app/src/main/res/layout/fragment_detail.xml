@@ -277,40 +277,11 @@
         app:layout_constraintStart_toEndOf="@id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/inputProductShape">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_view_add_to_cart"
-            style="@style/RaisedButtonCard"
+        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+            android:id="@+id/addToCartButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/hintColor">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/img_cart"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="@string/add_to_cart"
-                    android:src="@drawable/ic_shopping_cart" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:text="@string/add_to_cart"
-                    android:textColor="@android:color/white" />
-
-            </LinearLayout>
-
-
-        </android.support.v7.widget.CardView>
+            app:text="@string/add_to_cart"/>
 
         <LinearLayout
             android:id="@+id/layoutButton"
@@ -319,81 +290,27 @@
             android:orientation="horizontal"
             android:weightSum="2">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_view_store"
-                style="@style/RaisedButtonCard"
+            <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+                android:id="@+id/availableStoreButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/defaultButtonColor">
+                app:btn_default="true"
+                app:text="@string/product_available"/>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/img_icon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:contentDescription="@string/store_avaliable"
-                        android:src="@drawable/ic_store_white" />
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Medium"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:text="@string/product_available"
-                        android:textColor="@android:color/white" />
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_view_add_compare"
-                style="@style/RaisedButtonCard"
+            <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+                android:id="@+id/addToCompareButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/defaultButtonColor">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/img_compare"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:contentDescription="@string/product_compare"
-                        android:src="@drawable/ic_compare_bar" />
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Medium"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:text="@string/product_compare"
-                        android:textColor="@android:color/white" />
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
+                app:btn_default="true"
+                app:text="@string/product_compare"/>
         </LinearLayout>
     </LinearLayout>
     <!-- endregion -->
