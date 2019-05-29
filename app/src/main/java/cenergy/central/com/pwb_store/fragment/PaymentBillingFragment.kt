@@ -33,6 +33,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
@@ -64,7 +65,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
     private lateinit var totalPrice: PowerBuyTextView
-    private lateinit var deliveryBtn: CardView
+    private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
     private lateinit var radioTaxGroup: RadioGroup
 
@@ -536,7 +537,7 @@ class PaymentBillingFragment : Fragment() {
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
-        deliveryBtn = rootView.findViewById(R.id.delivery_button_payment)
+        deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
         // Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
