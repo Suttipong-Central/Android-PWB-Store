@@ -7,7 +7,6 @@ import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.CardView
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +20,7 @@ import cenergy.central.com.pwb_store.helpers.DateHelper
 import cenergy.central.com.pwb_store.model.response.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.Slot
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
+import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
@@ -44,7 +44,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     // region view
     private lateinit var dateText: PowerBuyEditText
     private lateinit var timeText: PowerBuyEditText
-    private lateinit var paymentButton: CardView
+    private lateinit var paymentButton: PowerBuyIconButton
     // end region view
 
     // region listener

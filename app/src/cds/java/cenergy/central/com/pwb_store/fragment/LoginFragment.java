@@ -28,6 +28,7 @@ import cenergy.central.com.pwb_store.model.UserToken;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
+import cenergy.central.com.pwb_store.view.PowerBuyIconButton;
 
 @SuppressWarnings("unused")
 public class LoginFragment extends Fragment implements TextWatcher, View.OnClickListener {
@@ -36,7 +37,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     //View Members
     private PowerBuyEditText mEditTextUserName;
     private PowerBuyEditText mEditTextPassword;
-    private CardView mLoginButton;
+    private PowerBuyIconButton mLoginButton;
     private ProgressDialog mProgressDialog;
     private String username;
     private String password;
@@ -60,7 +61,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     private void initInstances(View rootView, Bundle savedInstanceState) {
         mEditTextUserName = rootView.findViewById(R.id.edit_text_username);
         mEditTextPassword = rootView.findViewById(R.id.edit_text_password);
-        mLoginButton = rootView.findViewById(R.id.card_view_login);
+        mLoginButton = rootView.findViewById(R.id.loginButton);
         mEditTextUserName.addTextChangedListener(this);
         mEditTextPassword.addTextChangedListener(this);
     }
@@ -114,10 +115,10 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
             if (!mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
                 username = mEditTextUserName.getText().toString();
                 password = mEditTextPassword.getText().toString();
-                mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryButtonColor));
+                mLoginButton.setButtonDisable(false);
                 mLoginButton.setOnClickListener(this);
             } else {
-                mLoginButton.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.hintColor));
+                mLoginButton.setButtonDisable(true);
                 mLoginButton.setOnClickListener(null);
             }
         }
@@ -125,7 +126,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.card_view_login) {
+        if (v.getId() == R.id.loginButton) {
             hideSoftKeyboard(v);
             showProgressDialog();
             login();
