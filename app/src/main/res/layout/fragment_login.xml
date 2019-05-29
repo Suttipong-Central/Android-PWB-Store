@@ -102,27 +102,6 @@
                         </android.support.design.widget.TextInputLayout>
                     </LinearLayout>
 
-                    <android.support.v7.widget.CardView
-                        android:id="@+id/card_view_login"
-                        style="@style/RaisedButtonCard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="20dp"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        app:cardBackgroundColor="@color/hintColor">
-
-                        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                            style="@style/RaisedButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:paddingEnd="72dp"
-                            android:paddingStart="72dp"
-                            android:text="@string/login"
-                            android:textColor="@android:color/white" />
-                    </android.support.v7.widget.CardView>
-
                     <cenergy.central.com.pwb_store.view.PowerBuyIconButton
                         android:id="@+id/loginButton"
                         android:layout_width="match_parent"

@@ -64,6 +64,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
         mLoginButton = rootView.findViewById(R.id.loginButton);
         mEditTextUserName.addTextChangedListener(this);
         mEditTextPassword.addTextChangedListener(this);
+        checkLogin();
     }
 
     private void showAlertDialog(String title, String message) {
