@@ -33,6 +33,7 @@ import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
@@ -65,7 +66,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var tvDeliveryInfo: PowerBuyTextView
     private lateinit var tvAmount: TextView
     private lateinit var tvShippingAmount: TextView
-    private lateinit var finishButton: CardView
+    private lateinit var finishButton: PowerBuyIconButton
     private lateinit var storeAddressLayout: LinearLayout
     private lateinit var billingAddressLayout: LinearLayout
     private lateinit var deliveryLayout: LinearLayout
@@ -169,7 +170,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         address = rootView.findViewById(R.id.txt_address_order_success)
         tel = rootView.findViewById(R.id.txt_tell_order_success)
         openToday = rootView.findViewById(R.id.txt_open_today_order_success)
-        finishButton = rootView.findViewById(R.id.finish_btn_order_success)
+        finishButton = rootView.findViewById(R.id.buttonFinished)
 
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
@@ -320,7 +321,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             rootView.findViewById<PowerBuyTextView>(R.id.total_order_success).text = getString(R.string.total)
             rootView.findViewById<PowerBuyTextView>(R.id.delivery_price_order_success).text = getString(R.string.delivery_price)
             rootView.findViewById<PowerBuyTextView>(R.id.total_result_order_success).text = getString(R.string.total_price)
-            rootView.findViewById<PowerBuyTextView>(R.id.txt_finish_btn_order_success).text = getString(R.string.finished)
+            finishButton.setText(getString(R.string.finished))
         }
         // end set label
     }

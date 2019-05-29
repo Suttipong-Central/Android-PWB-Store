@@ -696,6 +696,7 @@
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline80" />
 
@@ -715,6 +716,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
+                        app:layout_constraintTop_toTopOf="parent"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/blackText"
@@ -785,26 +787,12 @@
                     tools:text="4,404" />
             </android.support.constraint.ConstraintLayout>
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/finish_btn_order_success"
-                style="@style/RaisedButtonCard"
+            <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+                android:id="@+id/buttonFinished"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/colorPrimary">
-
-                <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                    android:id="@+id/txt_finish_btn_order_success"
-                    style="@style/RaisedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/finished"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    app:typeFaceAsset="RobotoLight.ttf" />
-
-            </android.support.v7.widget.CardView>
+                app:icon_invisible="true"
+                app:text="@string/finished"/>
 
         </LinearLayout>
 
