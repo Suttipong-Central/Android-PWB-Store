@@ -16,6 +16,7 @@ class PowerBuyIconButton : LinearLayout {
     private lateinit var textView: PowerBuyTextView
     var isDisable: Boolean = false
     var isHideIcon: Boolean = false
+    var isDefaultButton: Boolean = false
     private var textInput = ""
     private var colorIcon = R.color.white
     private var colorText = R.color.primaryButtonTextColor
@@ -48,6 +49,8 @@ class PowerBuyIconButton : LinearLayout {
         //Get attribute values
         isDisable = typedArray.getBoolean(R.styleable. PowerBuyIconButton_btn_disable, false)
         isHideIcon = typedArray.getBoolean(R.styleable.PowerBuyIconButton_icon_invisible, false)
+        isDefaultButton = typedArray.getBoolean(R.styleable.PowerBuyIconButton_btn_default, false)
+        textInput = typedArray.getString(R.styleable.PowerBuyIconButton_text)?:""
 
         typedArray.recycle()
 
@@ -63,9 +66,16 @@ class PowerBuyIconButton : LinearLayout {
             textView.setTextColor(ContextCompat.getColor(context, R.color.white))
             pwbButton.isEnabled = false
         } else {
-            pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_primary)
+            if(isDefaultButton){
+                pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_default)
+                colorIcon = R.color.defaultIconButtonColor
+                colorText = R.color.defaultTextButtonColor
+            } else {
+                pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_primary)
+            }
             icon.setColorFilter(ContextCompat.getColor(context, colorIcon))
             textView.setTextColor(ContextCompat.getColor(context, colorText))
+            pwbButton.isEnabled = true
         }
 
         if (isHideIcon){
@@ -95,6 +105,21 @@ class PowerBuyIconButton : LinearLayout {
 
     fun setImageDrawable(imageDrawable: Int){
         this.iconDefaultImage = imageDrawable
+        notifyAttributeChanged()
+    }
+
+    fun setButtonDefault(default: Boolean){
+        this.isDefaultButton = default
+        notifyAttributeChanged()
+    }
+
+    fun setButtonDisable(disable: Boolean){
+        this.isDisable = disable
+        notifyAttributeChanged()
+    }
+
+    fun setButtonHideIcon(hide: Boolean){
+        this.isHideIcon = hide
         notifyAttributeChanged()
     }
 }

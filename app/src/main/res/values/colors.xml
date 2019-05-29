@@ -50,6 +50,7 @@
     <color name="primaryButtonTextColor">@color/white</color>
     <color name="defaultButtonColor">#F4893F</color>
     <color name="defaultTextButtonColor">@color/white</color>
+    <color name="defaultIconButtonColor">@color/white</color>
     <color name="defaultButtonStrokeColor">#F4893F</color>
     <color name="iconArrowBack">@color/white</color>
 
