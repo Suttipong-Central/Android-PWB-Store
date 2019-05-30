@@ -14,9 +14,9 @@ class PowerBuyIconButton : LinearLayout {
     private lateinit var pwbButton: LinearLayout
     private lateinit var icon: ImageView
     private lateinit var textView: PowerBuyTextView
-    var isDisable: Boolean = false
-    var isHideIcon: Boolean = false
-    var isDefaultButton: Boolean = false
+    private var isDisable: Boolean = false
+    private var isHideIcon: Boolean = false
+    private var isDefaultButton: Boolean = false
     private var textInput = ""
     private var colorIcon = R.color.white
     private var colorText = R.color.primaryButtonTextColor

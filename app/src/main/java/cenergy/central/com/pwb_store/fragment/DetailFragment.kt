@@ -174,10 +174,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
         // setup add item button
         if (product.extension?.stokeItem?.isInStock == true) {
-            addItemButton.isDisable = false
+            addItemButton.setButtonDisable(false)
             addItemButton.setOnClickListener(this)
         } else {
-            addItemButton.isDisable = true
+            addItemButton.setButtonDisable(true)
         }
         addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
 

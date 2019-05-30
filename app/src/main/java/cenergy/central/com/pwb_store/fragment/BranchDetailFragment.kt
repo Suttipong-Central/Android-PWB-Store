@@ -1,12 +1,13 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.CardView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -21,7 +22,7 @@ class BranchDetailFragment : Fragment() {
     private lateinit var tvContract: TextView
     private lateinit var tvTitleOpenStore: TextView
     private lateinit var tvOpenStore: TextView
-    private lateinit var selectedButton: CardView
+    private lateinit var selectedButton: Button
 
     private var listener: StorePickUpListener? = null
 
@@ -49,7 +50,10 @@ class BranchDetailFragment : Fragment() {
         tvContract = rootView.findViewById(R.id.store_contact_txt)
         tvTitleOpenStore = rootView.findViewById(R.id.store_open_title)
         tvOpenStore = rootView.findViewById(R.id.store_open_txt)
-        selectedButton = rootView.findViewById(R.id.select_button)
+        selectedButton = rootView.findViewById(R.id.selectButton)
+        context?.let {context ->
+            selectedButton.typeface = Typeface.createFromAsset(context.assets, "fonts/RobotoLight.ttf")
+        }
         hideContentView()
         return rootView
     }

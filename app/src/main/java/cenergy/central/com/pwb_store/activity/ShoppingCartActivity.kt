@@ -246,12 +246,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun checkCanClickPayment() {
         if (cartItemList.isNotEmpty()) {
-            paymentButton.isDisable = false
+            paymentButton.setButtonDisable(false)
             paymentButton.setOnClickListener {
                 PaymentActivity.intent(this)
             }
         } else {
-            paymentButton.isDisable = true
+            paymentButton.setButtonDisable(true)
         }
     }
 
