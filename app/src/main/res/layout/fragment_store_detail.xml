@@ -130,6 +130,7 @@
         android:text="@string/choose_store"
         android:paddingEnd="32dp"
         android:paddingStart="32dp"
-        android:textSize="14sp"/>
+        android:textSize="14sp"
+        android:textStyle="bold"/>
 
 </android.support.constraint.ConstraintLayout>
