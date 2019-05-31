@@ -50,6 +50,11 @@ public class APIError implements Parcelable {
     public APIError() {
     }
 
+    public APIError(String errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
     /**
      * @param errorMessage
      * @param errorCode

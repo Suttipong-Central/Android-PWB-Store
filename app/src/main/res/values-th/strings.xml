@@ -294,5 +294,5 @@
     <string name="require_tax">คุณต้องการใบกำกับภาษีเต็มรูปแบบหรือไม่</string>
     <string name="company">บริษัท</string>
     <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>
-    <string name="created_order">Created order already</string>
+    <string name="created_order">สร้างคำสั่งซื้อแล้ว</string>
 </resources>

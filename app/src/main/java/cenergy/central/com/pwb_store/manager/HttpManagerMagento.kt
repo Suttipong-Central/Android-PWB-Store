@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 class HttpManagerMagento(context: Context) {
 
     private var retrofit: Retrofit
-    private var defaultHttpClient: OkHttpClient
+    var defaultHttpClient: OkHttpClient
     private var database = RealmController.getInstance()
     private val preferenceManager by lazy { cenergy.central.com.pwb_store.manager.preferences.PreferenceManager(context) }
 
@@ -68,6 +68,7 @@ class HttpManagerMagento(context: Context) {
         //Specific Header
         private const val HEADER_AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"
+        const val OPEN_ORDER_CREATED_PAGE = "OpenOrderCreatedPage"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null

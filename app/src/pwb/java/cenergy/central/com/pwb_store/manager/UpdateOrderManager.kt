@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.manager
 
 import android.content.Context
-import android.util.Log
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
@@ -11,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UpdateOrdreManager {
+class UpdateOrderManager {
 
     fun updateOrder(context: Context, cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod,
                     email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>){

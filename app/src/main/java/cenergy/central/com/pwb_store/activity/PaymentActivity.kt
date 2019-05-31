@@ -719,45 +719,35 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val staffId = userInformation?.user?.staffId ?: ""
         val retailerId = userInformation?.store?.retailerId ?: ""
 
-//        val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
-//
-//        HttpManagerMagento.getInstance(this).updateOder(cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
-//            override fun success(response: String?) {
-//                if (response != null) {
-//                    getOrder(response)
-//                } else {
-//                    mProgressDialog?.dismiss()
-//                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-//                }
-//            }
-//
-//            override fun failure(error: APIError) {
-//                mProgressDialog?.dismiss()
-//                DialogHelper(this@PaymentActivity).showErrorDialog(error)
-//            }
-//        })
-
-        UpdateOrdreManager().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
+        UpdateOrderManager().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
-                if (response != null) {
-                    getOrder(response)
-                } else {
-                    mProgressDialog?.dismiss()
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                runOnUiThread {
+                    if (response != null) {
+                        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                        mToolbar?.setNavigationOnClickListener(null)
+                        if(response == HttpManagerMagento.OPEN_ORDER_CREATED_PAGE){
+                            startCreatedOrderFragment()
+                            mProgressDialog?.dismiss()
+                        } else {
+                            getOrder(response)
+                        }
+                    } else {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    }
                 }
             }
 
             override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                runOnUiThread {
+                    mProgressDialog?.dismiss()
+                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                }
             }
         })
     }
 
     fun getOrder(orderId: String) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        mToolbar?.setNavigationOnClickListener(null)
-
         startSuccessfullyFragment(orderId)
         mProgressDialog?.dismiss()
     }
