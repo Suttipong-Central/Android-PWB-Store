@@ -9,7 +9,7 @@ import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import retrofit2.Call
 import retrofit2.http.*
 
-internal interface CartService {
+interface CartService {
 
     @POST("/rest/{lang}/V1/guest-carts")
     fun createCart(@Path("lang") language: String): Call<String>
