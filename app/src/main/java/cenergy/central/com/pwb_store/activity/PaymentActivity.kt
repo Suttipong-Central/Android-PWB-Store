@@ -23,10 +23,7 @@ import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
-import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.HttpManagerHDL
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
+import cenergy.central.com.pwb_store.manager.*
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
@@ -114,6 +111,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         super.onChangedLanguage(lang)
         if (currentFragment is PaymentSuccessFragment) {
             (currentFragment as PaymentSuccessFragment).retrieveOrder() // update content
+        }
+        if (currentFragment is PaymentCreatedOrder) {
+            (currentFragment as PaymentCreatedOrder).updateView() // update content
         }
     }
 
@@ -229,6 +229,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun onBackPressed() {
         backPressed()
+    }
+
+    private fun startCreatedOrderFragment(){
+        languageButton.visibility = View.VISIBLE
+        val cacheCart = ArrayList<CacheCartItem>()
+        cacheCart.addAll(cacheCartItems)
+        startFragment(PaymentCreatedOrder.newInstance())
+        clearCachedCart() // clear cache item
     }
 
     private fun startSuccessfullyFragment(orderId: String) {
@@ -712,8 +720,24 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val retailerId = userInformation?.store?.retailerId ?: ""
 
 //        val storeId = branch?.storeId?: if (userInformation?.user?.storeId != null) userInformation?.user?.storeId.toString() else ""
+//
+//        HttpManagerMagento.getInstance(this).updateOder(cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
+//            override fun success(response: String?) {
+//                if (response != null) {
+//                    getOrder(response)
+//                } else {
+//                    mProgressDialog?.dismiss()
+//                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+//                }
+//            }
+//
+//            override fun failure(error: APIError) {
+//                mProgressDialog?.dismiss()
+//                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+//            }
+//        })
 
-        HttpManagerMagento.getInstance(this).updateOder(cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
+        UpdateOrdreManager().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 if (response != null) {
                     getOrder(response)

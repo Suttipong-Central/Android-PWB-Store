@@ -62,4 +62,9 @@
 
     <color name="textDefaultColor">@color/pwbOrange</color>
     <color name="cursorColor">@color/pwbOrange</color>
+
+    <!-- select branch page -->
+    <color name="textHeaderBranchDetail">@color/colorPrimary</color>
+    <color name="textHeaderBranchTitle">@color/white</color>
+    <color name="backgroundHeaderBranchTitle">@color/colorPrimary</color>
 </resources>

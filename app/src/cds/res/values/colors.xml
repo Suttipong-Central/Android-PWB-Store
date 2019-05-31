@@ -29,4 +29,9 @@
     <color name="cursorColor">@color/cdsRed</color>
 
     <color name="categoryColor">#F4893F</color>
+
+    <!-- select branch page -->
+    <color name="textHeaderBranchDetail">@color/cdsRed</color>
+    <color name="textHeaderBranchTitle">@color/white</color>
+    <color name="backgroundHeaderBranchTitle">@color/cdsRed</color>
 </resources>
