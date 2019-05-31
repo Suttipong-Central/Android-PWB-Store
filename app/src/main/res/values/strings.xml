@@ -292,4 +292,5 @@
     <string name="require_tax">Do you require a full tax invoice?</string>
     <string name="company">Company</string>
     <string name="tax_id">Tax ID/ID no.</string>
+    <string name="created_order">Created order already</string>
 </resources>
