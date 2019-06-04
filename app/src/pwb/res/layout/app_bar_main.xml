@@ -14,7 +14,6 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:focusableInTouchMode="true"
-        app:theme="@style/ToolbarColoredBackArrow"
         app:contentInsetEnd="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetRight="0dp"
