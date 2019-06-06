@@ -293,7 +293,10 @@ class HttpManagerMagento(context: Context) {
                             product.name = productObj.getString("name")
                             product.price = productObj.getDouble("price")
                             product.status = productObj.getInt("status")
-                            product.brand = productObj.getString("brand")
+
+                            if (productObj.has("brand")) {
+                                product.brand = productObj.getString("brand")
+                            }
 
                             if (!productObj.isNull("image")) {
                                 product.image = productObj.getString("image")
