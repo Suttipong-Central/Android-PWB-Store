@@ -29,6 +29,9 @@ class PwbMember(
 
 class MemberSubAddress(
         var houseNo: String = "",
+        var building: String = "",
+        var soi: String = "",
+        var street: String = "",
         var district: String = "",
         var districtId: String = "",
         var subDistrict: String = "",

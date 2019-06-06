@@ -404,13 +404,13 @@ class PaymentBillingFragment : Fragment() {
         val member = pwbMember!!
         firstNameEdt.setText(member.firstname ?: "")
         lastNameEdt.setText(member.lastname ?: "")
-        contactNumberEdt.setText(member.telephone!!)
+        contactNumberEdt.setText(member.telephone ?: "")
         emailEdt.setText(member.email ?: "")
-        homeNoEdt.setText(member.subAddress!!.houseNo)
-        homeBuildingEdit.setText("")
-        homeSoiEdt.setText("")
-        homeRoadEdt.setText(member.street!![0])
-        homePhoneEdt.setText(member.telephone!!)
+        homeNoEdt.setText(member.subAddress?.houseNo ?: "")
+        homeBuildingEdit.setText(member.subAddress?.building ?: "")
+        homeSoiEdt.setText(member.subAddress?.soi ?: "")
+        homeRoadEdt.setText(member.subAddress?.street ?: "")
+        homePhoneEdt.setText(member.telephone ?: "")
 
         // validate province with local db
         val provinceId = member.regionId

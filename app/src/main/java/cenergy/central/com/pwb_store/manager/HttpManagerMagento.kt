@@ -903,6 +903,21 @@ class HttpManagerMagento(context: Context) {
                                             memberSubAddress.houseNo = houseNo
                                         }
 
+                                        "building" -> {
+                                            val building = ctmAttr.getString("value") ?: ""
+                                            memberSubAddress.building = building
+                                        }
+
+                                        "soi" -> {
+                                            val soi = ctmAttr.getString("value") ?: ""
+                                            memberSubAddress.soi = soi
+                                        }
+
+                                        "address_line" -> {
+                                            val street = ctmAttr.getString("value") ?: ""
+                                            memberSubAddress.street = street
+                                        }
+
                                         "district" -> {
                                             val district = ctmAttr.getString("value")
                                                     ?: ""
