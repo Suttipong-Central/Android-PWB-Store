@@ -290,7 +290,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which -> dismissProgressDialog() }
+                .setPositiveButton(getString(R.string.ok_alert)) { _, _ -> dismissProgressDialog() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -301,7 +301,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun showAlertDialog(message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok)) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
 
         builder.show()
     }
@@ -435,7 +435,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setCancelable(false)
                 .setMessage(getString(R.string.title_clear_cart))
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, which ->
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
                     clearCart() // clear item cart
                     updateShoppingCartBadge() // update ui
                     dialog.dismiss()

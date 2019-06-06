@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.extensions
 
 import android.content.Context
+import android.os.Parcel
 import cenergy.central.com.pwb_store.Constants.Companion.SPECIAL_CATEGORIES
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CacheCartItem
@@ -43,4 +44,18 @@ fun List<PaymentMethod>.getMethodTitle(): List<String> {
 fun Category.isSpecial(): Boolean {
     val specialIDs = SPECIAL_CATEGORIES
     return specialIDs.contains(this.id)
+}
+
+fun Parcel.writeLongList(input:List<Long>) {
+    writeInt(input.size) // Save number of elements.
+    input.forEach(this::writeLong) // Save each element.
+}
+
+fun Parcel.createLongList() : List<Long> {
+    val size = readLong()
+    val output = ArrayList<Long>()
+    for (i in 0 until size) {
+        output.add(readLong())
+    }
+    return output
 }

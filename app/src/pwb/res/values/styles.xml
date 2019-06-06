@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ToolbarBack">\
+    <style name="ToolbarBack">
         <item name="navigationIcon">@drawable/ic_arrow_back_white</item>
     </style>
 
     <style name="ToolbarCancel">
         <item name="navigationIcon">@drawable/ic_clear_white</item>
-    </style>
-
-    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/defaultButtonColor</item>
     </style>
 
     <style name="textNameCategory">
