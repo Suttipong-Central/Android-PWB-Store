@@ -577,6 +577,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun getShippingHomeDelivery() {
+        productHDLList = arrayListOf()
         for (i in cartItemList.indices) {
             val productHDL = ProductHDLBody.createProductHDL("", i + 1, cartItemList[i].sku!!,
                     cartItemList[i].qty!!, "00139")
@@ -589,7 +590,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
             }
         }
-
         val period = PeriodBody.createPeriod(year, month)
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
                 district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
