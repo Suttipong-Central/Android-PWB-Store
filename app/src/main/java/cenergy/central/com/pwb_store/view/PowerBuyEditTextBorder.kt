@@ -7,6 +7,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
+import android.app.Activity
+import android.view.inputmethod.InputMethodManager
 
 
 class PowerBuyEditTextBorder : LinearLayout {
@@ -35,9 +37,13 @@ class PowerBuyEditTextBorder : LinearLayout {
         header = view.findViewById(R.id.txt_header)
         requiredField = view.findViewById(R.id.required_field)
         editText = view.findViewById(R.id.edit_text)
-//        editText.setOnFocusChangeListener { v, hasFocus ->
-//            editText.error = null
-//        }
+        editText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus && findFocus() !is PowerBuyEditTextBorder) {
+                hideKeyboard(v)
+            } else {
+                showKeyboard(v)
+            }
+        }
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
@@ -93,4 +99,14 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     fun getError(): CharSequence? = this.editText.error
+
+    fun hideKeyboard(view: View) {
+        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun showKeyboard(view: View) {
+        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(view, 0)
+    }
 }
