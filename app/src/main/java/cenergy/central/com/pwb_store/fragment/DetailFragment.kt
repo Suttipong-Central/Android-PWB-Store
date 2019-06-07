@@ -190,7 +190,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         compareButton.setOnClickListener(this)
     }
 
-
     private fun showSpecialPrice(unit: String, product: Product) {
         if (product.specialPrice > 0) {
             if (product.price != product.specialPrice) {
