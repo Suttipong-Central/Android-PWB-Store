@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.extensions.asPostcode
 import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.CartService
@@ -1079,7 +1080,7 @@ class HttpManagerMagento(context: Context) {
                         // store districts & store postcode
                         subDistricts.forEach {
                             database.storeSubDistrict(it)
-                            database.storePostcode(Postcode.asPostcode(it))
+                            database.storePostcode(it.asPostcode())
                         }
                         callback.success(subDistricts)
                     } else {

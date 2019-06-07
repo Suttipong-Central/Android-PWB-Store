@@ -18,9 +18,5 @@ open class Postcode(
         const val FIELD_ID = "postcodeId"
         const val FIELD_SUB_DISTRICT_ID = "subDistrictId"
         const val FIELD_POST_CODE = "postcode"
-
-        fun asPostcode(subDistrict: SubDistrict): Postcode {
-            return Postcode(postcodeId = subDistrict.postcodeId, subDistrictId = subDistrict.subDistrictId, postcode = subDistrict.postcode)
-        }
     }
 }

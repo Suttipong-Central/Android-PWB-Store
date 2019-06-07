@@ -21,6 +21,8 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.extensions.getPostcodeList
+import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -291,7 +293,7 @@ class PaymentBillingFragment : Fragment() {
             if (district != null) {
                 this.district = district
                 this.subDistrictList = database.getSubDistrictsByDistrictId(district.districtId)
-                this.subDistrictAdapter.setItems(this.subDistrictList)
+                this.subDistrictAdapter.setItems(this.subDistrictList.toDistinctId())
                 districtInput.setText(district.name)
                 subDistrictInput.setText("")
                 postcodeInput.setText("")
@@ -365,7 +367,7 @@ class PaymentBillingFragment : Fragment() {
         if (district != null) {
             this.billingDistrict = district
             this.billingSubDistrictList = database.getSubDistrictsByDistrictId(district.districtId)
-            this.billingSubDistrictAdapter.setItems(this.billingSubDistrictList)
+            this.billingSubDistrictAdapter.setItems(this.billingSubDistrictList.toDistinctId())
             billingDistrictInput.setText(district.name)
             billingSubDistrictInput.setText("")
             billingPostcodeInput.setText("")
@@ -431,9 +433,10 @@ class PaymentBillingFragment : Fragment() {
                 // load district and verify customer address
                 val districtId = subAddress.districtId
                 val subDistrictId = subAddress.subDistrictId
+                val postcodeStr = member.postcode ?: ""
                 if (districtId.isNotBlank()) {
                     if (subDistrictId.isNotBlank()) {
-                        memberLoadDistrict(province.provinceId, districtId, subDistrictId)
+                        memberLoadDistrict(province.provinceId, districtId, subDistrictId, postcodeStr)
                     } else {
                         memberLoadDistrict(province.provinceId, districtId)
                     }
@@ -480,9 +483,11 @@ class PaymentBillingFragment : Fragment() {
                 // load district and verify customer address
                 val districtName = memberAddress.district ?: ""
                 val subDistrictName = memberAddress.subDistrict ?: ""
+                val postcodeStr = memberAddress.postcode ?: ""
                 if (districtName.isNotBlank()) {
                     if (subDistrictName.isNotBlank()) {
-                        memberLoadDistrict(province.provinceId, districtName, subDistrictName, false)
+                        memberLoadDistrict(province.provinceId, districtName, subDistrictName,
+                                postcodeStr,false)
                     } else {
                         memberLoadDistrict(province.provinceId, districtName)
                     }
@@ -556,7 +561,7 @@ class PaymentBillingFragment : Fragment() {
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
 
         checkRequireTaxInvoice()
-        radioTaxGroup.setOnCheckedChangeListener{ radioTaxGroup, _ ->
+        radioTaxGroup.setOnCheckedChangeListener { radioTaxGroup, _ ->
             when (radioTaxGroup.checkedRadioButtonId) {
                 R.id.radio_tax_no -> {
                     isRequireTaxInvoice = false
@@ -789,10 +794,10 @@ class PaymentBillingFragment : Fragment() {
                 || billingHomeRoadEdt.getError() != null)
     }
 
-    private fun hasRequireTaxInvoice(): Boolean{
+    private fun hasRequireTaxInvoice(): Boolean {
         val validator = ValidationHelper.getInstance(context!!)
         taxIdEdt.setError(validator.validText(taxIdEdt.getText()))
-         return if (isRequireTaxInvoice){
+        return if (isRequireTaxInvoice) {
             taxIdEdt.getError() != null
         } else {
             false
@@ -898,10 +903,10 @@ class PaymentBillingFragment : Fragment() {
                             response?.let { subDistrictList ->
                                 if (isShipping) {
                                     this@PaymentBillingFragment.subDistrictList = subDistrictList
-                                    this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList)
+                                    this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList.toDistinctId())
                                 } else {
                                     this@PaymentBillingFragment.billingSubDistrictList = subDistrictList
-                                    this@PaymentBillingFragment.billingSubDistrictAdapter.setItems(subDistrictList)
+                                    this@PaymentBillingFragment.billingSubDistrictAdapter.setItems(subDistrictList.toDistinctId())
                                 }
                                 dismissProgressDialog()
                             }
@@ -1008,7 +1013,7 @@ class PaymentBillingFragment : Fragment() {
                 subDistrictInput.clearAllFocus()
                 postcodeInput.setText("")
                 postcodeInput.setEnableInput(true)
-                postcodeList = selectedSubDistrict.getPostcodeList()
+                postcodeList = subDistrictList.getPostcodeList(selectedSubDistrict.subDistrictId)
                 postcodeAdapter.setItems(postcodeList)
                 hideKeyboard()
             }
@@ -1027,7 +1032,7 @@ class PaymentBillingFragment : Fragment() {
                 billingSubDistrictInput.clearAllFocus()
                 billingPostcodeInput.setText("")
                 billingPostcodeInput.setEnableInput(true)
-                billingPostcodeList = selectedSubDistrict.getPostcodeList()
+                billingPostcodeList = billingSubDistrictList.getPostcodeList(selectedSubDistrict.subDistrictId)
                 billingPostcodeAdapter.setItems(billingPostcodeList)
                 hideKeyboard()
             }
@@ -1064,15 +1069,9 @@ class PaymentBillingFragment : Fragment() {
         })
     }
 
-    private fun SubDistrict.getPostcodeList(): List<Postcode> {
-        val postcodes = arrayListOf<Postcode>()
-        postcodes.add(Postcode.asPostcode(this))
-        return postcodes
-    }
-
     // region member find address
     private fun memberLoadDistrict(provinceId: String, districtStr: String,
-                                   subDistrictStr: String = "", isPwbMember: Boolean = true) {
+                                   subDistrictStr: String = "", postcodeStr: String = "", isPwbMember: Boolean = true) {
         context?.let {
             showProgressDialog()
             HttpManagerMagento.getInstance(it).getDistricts(provinceId, object : ApiResponseCallback<List<District>> {
@@ -1086,7 +1085,7 @@ class PaymentBillingFragment : Fragment() {
                         } else {
                             districtList.find { district -> district.name == districtStr } //by district.name
                         }
-                        memberSetDistrict(provinceId, district, subDistrictStr, isPwbMember) // set district
+                        memberSetDistrict(provinceId, district, subDistrictStr, postcodeStr, isPwbMember) // set district
                     }
                 }
 
@@ -1098,7 +1097,8 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun memberSetDistrict(provinceId: String, district: District?, subDistrictStr: String, isPwbMember: Boolean) {
+    private fun memberSetDistrict(provinceId: String, district: District?, subDistrictStr: String,
+                                  postcodeStr: String, isPwbMember: Boolean) {
         // found district?
         if (district != null) {
             this@PaymentBillingFragment.district = district
@@ -1109,7 +1109,7 @@ class PaymentBillingFragment : Fragment() {
             postcodeInput.setEnableInput(false)
 
             if (subDistrictStr.isNotBlank()) {
-                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, isPwbMember)
+                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, postcodeStr, isPwbMember)
             } else {
                 dismissProgressDialog()
             }
@@ -1118,21 +1118,22 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun memberLoadSubDistrict(provinceId: String, districtId: String, subDistrictStr: String = "", isPwbMember: Boolean) {
-        context?.let{
+    private fun memberLoadSubDistrict(provinceId: String, districtId: String,
+                                      subDistrictStr: String = "", postcodeStr: String, isPwbMember: Boolean) {
+        context?.let {
             showProgressDialog()
             HttpManagerMagento.getInstance(it).getSubDistricts(provinceId, districtId, object : ApiResponseCallback<List<SubDistrict>> {
                 override fun success(response: List<SubDistrict>?) {
                     response?.let { subDistrictList ->
                         this@PaymentBillingFragment.subDistrictList = subDistrictList
-                        this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList)
+                        this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList.toDistinctId())
 
                         val subDistrict = if (isPwbMember) {
                             subDistrictList.find { subDistrict -> subDistrict.subDistrictId == subDistrictStr } // by districtId
                         } else {
                             subDistrictList.find { subDistrict -> subDistrict.name == subDistrictStr } // by district.name
                         }
-                        memberSetSubDistrict(subDistrict) // set subDistrict
+                        subDistrict?.let { it1 -> memberSetSubDistrict(it1, response, postcodeStr) } // set subDistrict
                     }
                 }
 
@@ -1144,20 +1145,26 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun memberSetSubDistrict(subDistrict: SubDistrict?) {
+    private fun memberSetSubDistrict(subDistrict: SubDistrict?, subDistricts: List<SubDistrict>, postcodeStr: String) {
         if (subDistrict != null) {
-            Log.d("Member", "set subdistrict")
             this.subDistrict = subDistrict
             subDistrictInput.setText(subDistrict.name)
 
-            this.postcodeList = subDistrict.getPostcodeList()
+            // setup member postcode
+            val postcodeData = subDistricts.getPostcodeList(subDistrictId = subDistrict.subDistrictId)
+            this.postcodeList = postcodeData
             this.postcodeAdapter.setItems(this.postcodeList)
-
-            this.postcode = Postcode.asPostcode(subDistrict)
-            postcodeInput.setText("")
-            postcodeInput.setEnableInput(true)
-            postcodeInput.setText(subDistrict.postcode)
+            if (postcodeData.size == 1 && postcodeData[0].postcode == postcodeStr) {
+                this.postcode = postcodeData[0]
+                postcodeInput.setText("")
+                postcodeInput.setEnableInput(true)
+                postcodeInput.setText(postcodeData[0].postcode)
+            } else {
+                postcodeInput.setEnableInput(true)
+                postcodeInput.setText("")
+            }
         }
+
         dismissProgressDialog()
     }
 }
