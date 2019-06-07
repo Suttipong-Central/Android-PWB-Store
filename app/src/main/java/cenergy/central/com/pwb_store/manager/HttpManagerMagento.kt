@@ -7,6 +7,8 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.asPostcode
 import cenergy.central.com.pwb_store.extensions.isSpecial
+import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
+import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.CartService
 import cenergy.central.com.pwb_store.manager.service.MemberService
@@ -111,11 +113,11 @@ class HttpManagerMagento(context: Context) {
         })
     }
 
-    fun getUserId(callback: ApiResponseCallback<UserInformation>){
+    fun getUserId(callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse>{
+        userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse> {
             override fun onResponse(call: Call<LoginUserResponse>, response: Response<LoginUserResponse>?) {
-                if (response?.body() != null){
+                if (response?.body() != null) {
                     getBranchUser(response.body()!!, callback)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -130,9 +132,9 @@ class HttpManagerMagento(context: Context) {
 
     private fun getBranchUser(userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveBrachUser("$BEARER $userToken").enqueue(object : Callback<UserBranch>{
+        userService.retrieveBrachUser("$BEARER $userToken").enqueue(object : Callback<UserBranch> {
             override fun onResponse(call: Call<UserBranch>, response: Response<UserBranch>?) {
-                if (response?.body() != null){
+                if (response?.body() != null) {
                     val userBranch = response.body()
 
                     //TODO: Mock up data will delete soon
@@ -142,7 +144,7 @@ class HttpManagerMagento(context: Context) {
                     store.storeId = 223L
                     store.storeCode = ""
                     store.storeName = ""
-                    if (userBranch != null && userBranch.items.size > 0){
+                    if (userBranch != null && userBranch.items.size > 0) {
                         store.retailerId = userBranch.items[0].code
                     }
 
@@ -172,7 +174,7 @@ class HttpManagerMagento(context: Context) {
      * @query include_in_menu
      * @query parent_id
      * */
-    fun retrieveCategory(parentId: String, includeInMenu :Boolean, callback: ApiResponseCallback<List<Category>>) {
+    fun retrieveCategory(parentId: String, includeInMenu: Boolean, callback: ApiResponseCallback<List<Category>>) {
 
         val httpUrl = if (includeInMenu) {
             HttpUrl.Builder()
@@ -199,7 +201,7 @@ class HttpManagerMagento(context: Context) {
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
                 .build()
 
-        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback{
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
                 val body = response.body()
                 if (body == null) {
@@ -239,7 +241,7 @@ class HttpManagerMagento(context: Context) {
                         categoryList.add(category)
                     }
                     categoryList.forEach { category ->
-                        if(!category.IsIncludeInMenu() && !category.isSpecial()){
+                        if (!category.IsIncludeInMenu() && !category.isSpecial()) {
                             toRemove.add(category)
                         }
                     }
@@ -259,7 +261,7 @@ class HttpManagerMagento(context: Context) {
 
     // region product
     fun retrieveProducts(pageSize: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
-                         sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
+                         sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>) {
         val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
@@ -299,18 +301,18 @@ class HttpManagerMagento(context: Context) {
                             product.price = productObj.getDouble("price")
                             product.status = productObj.getInt("status")
 
-                            if(productObj.has("brand")) {
+                            if (productObj.has("brand")) {
                                 product.brand = productObj.getString("brand")
                             }
 
-                            if (productObj.has("brand_name")){
+                            if (productObj.has("brand_name")) {
                                 product.brand = productObj.getString("brand_name")
                             }
 
                             if (!productObj.isNull("image")) {
                                 product.image = productObj.getString("image")
                             }
-                            
+
                             val attrArray = productObj.getJSONArray("custom_attributes")
                             for (j in 0 until attrArray.length()) {
                                 when (attrArray.getJSONObject(j).getString("attribute_code")) {
@@ -343,7 +345,7 @@ class HttpManagerMagento(context: Context) {
                                         productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
                                         productFilter.position = filterArray.getJSONObject(j).getInt("position")
                                         val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
-                                        for (k in 0 until itemArray.length()){
+                                        for (k in 0 until itemArray.length()) {
                                             val label = itemArray.getJSONObject(k).getString("label")
                                             val value = itemArray.getJSONObject(k).getString("value")
                                             val count = itemArray.getJSONObject(k).getInt("count")
@@ -356,7 +358,7 @@ class HttpManagerMagento(context: Context) {
                                         productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
                                         productFilter.position = filterArray.getJSONObject(j).getInt("position")
                                         val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
-                                        for (k in 0 until itemArray.length()){
+                                        for (k in 0 until itemArray.length()) {
                                             val label = itemArray.getJSONObject(k).getString("label")
                                             val value = itemArray.getJSONObject(k).getString("value")
                                             val count = itemArray.getJSONObject(k).getInt("count")
@@ -393,10 +395,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("rest/${getLanguage()}/V2/products/$sku")
-//                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "status")
-//                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
-//                .addQueryParameter("searchCriteria[filterGroups][0][filters][0][conditionType]", "eq")
+                .addPathSegments(ProductDetailApi().getPath(getLanguage(), sku))
                 .build()
 
         val request = Request.Builder()
@@ -438,27 +437,27 @@ class HttpManagerMagento(context: Context) {
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 
-                        if (extensionObject.has("configurable_product_options")){
+                        if (extensionObject.has("configurable_product_options")) {
                             val productConfigArray = extensionObject.getJSONArray("configurable_product_options")
-                            for (i in 0 until productConfigArray.length()){
+                            for (i in 0 until productConfigArray.length()) {
                                 val id = productConfigArray.getJSONObject(i).getInt("id")
                                 val attrId = productConfigArray.getJSONObject(i).getString("attribute_id")
                                 val label = productConfigArray.getJSONObject(i).getString("label")
                                 val position = productConfigArray.getJSONObject(i).getInt("position")
                                 val productId = productConfigArray.getJSONObject(i).getLong("product_id")
                                 val productValues = arrayListOf<ProductValue>()
-                                if (productConfigArray.getJSONObject(i).has("values")){
+                                if (productConfigArray.getJSONObject(i).has("values")) {
                                     val valuesArray = productConfigArray.getJSONObject(i).getJSONArray("values")
                                     val productIDs = arrayListOf<Long>()
-                                    for (j in 0 until valuesArray.length()){
+                                    for (j in 0 until valuesArray.length()) {
                                         val index = valuesArray.getJSONObject(j).getLong("value_index")
                                         val valueExtensionObject = valuesArray.getJSONObject(j).getJSONObject("extension_attributes")
                                         val valueLabel = valueExtensionObject.getString("label")
                                         val value = valueExtensionObject.getString("frontend_value")
                                         val type = valueExtensionObject.getString("frontend_type")
-                                        if(valueExtensionObject.has("products")){
+                                        if (valueExtensionObject.has("products")) {
                                             val productArray = valueExtensionObject.getJSONArray("products")
-                                            for (k in 0 until productArray.length()){
+                                            for (k in 0 until productArray.length()) {
                                                 productIDs.add(productArray.getLong(k))
                                             }
                                         }
@@ -593,7 +592,7 @@ class HttpManagerMagento(context: Context) {
 
     fun addProductToCart(cartId: String, cartItemBody: CartItemBody, callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.addProduct(getLanguage(),cartId, cartItemBody).enqueue(object : Callback<CartItem> {
+        cartService.addProduct(getLanguage(), cartId, cartItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -648,7 +647,7 @@ class HttpManagerMagento(context: Context) {
         val cartService = retrofit.create(CartService::class.java)
         val item = ItemBody(cartId = cartId, itemId = itemId, qty = qty)
         val updateItemBody = UpdateItemBody(cartItem = item)
-        cartService.updateItem(getLanguage() ,cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
+        cartService.updateItem(getLanguage(), cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -736,7 +735,7 @@ class HttpManagerMagento(context: Context) {
                 .url(httpUrl)
                 .build()
 
-        defaultHttpClient.newCall(request).enqueue(object: okhttp3.Callback{
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 if (response != null) {
                     val data = response.body()
@@ -750,7 +749,7 @@ class HttpManagerMagento(context: Context) {
                                 val branch = Branch() // new Branch
                                 branch.storeId = storeObj.getString("id")
                                 branch.storeName = storeObj.getString("name")
-                                branch.isActive = if(storeObj.getBoolean("is_active")) 1  else 0
+                                branch.isActive = if (storeObj.getBoolean("is_active")) 1 else 0
                                 branch.sellerCode = storeObj.getString("seller_code")
                                 branch.createdAt = storeObj.getString("created_at")
                                 branch.updatedAt = storeObj.getString("updated_at")
@@ -761,7 +760,7 @@ class HttpManagerMagento(context: Context) {
                                     val extensionObj = storeObj.getJSONObject("extension_attributes")
                                     if (extensionObj.has("address")) {
                                         val addressObj = extensionObj.getJSONObject("address")
-                                        branch.city =  addressObj.getString("city")
+                                        branch.city = addressObj.getString("city")
                                         branch.postcode = addressObj.getString("postcode")
                                         val street = addressObj.getJSONArray("street")
                                         var txtStreet = ""
@@ -828,7 +827,7 @@ class HttpManagerMagento(context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("${getLanguage()}/${PowerBuy.MEMBER.FULL_PATH}")
+                .addPathSegments(PwbMemberApi().getPath(getLanguage()))
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][field]", "telephone")
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][value]", telephone)
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][condition_type]", "eq")
@@ -1042,7 +1041,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getDistricts(provinceId: String, callback: ApiResponseCallback<List<District>>) {
         val memberService = retrofit.create(MemberService::class.java)
-        memberService.getDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId).enqueue(object : Callback<List<District>>{
+        memberService.getDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId).enqueue(object : Callback<List<District>> {
             override fun onResponse(call: Call<List<District>>, response: Response<List<District>>) {
                 if (response.isSuccessful) {
                     val districts = response.body()
@@ -1066,7 +1065,7 @@ class HttpManagerMagento(context: Context) {
 
     fun getSubDistricts(provinceId: String, districtId: String, callback: ApiResponseCallback<List<SubDistrict>>) {
         val memberService = retrofit.create(MemberService::class.java)
-        memberService.getSubDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId, districtId).enqueue(object : Callback<List<SubDistrict>>{
+        memberService.getSubDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId, districtId).enqueue(object : Callback<List<SubDistrict>> {
             override fun onResponse(call: Call<List<SubDistrict>>, response: Response<List<SubDistrict>>) {
                 if (response.isSuccessful) {
                     val subDistricts = response.body()
@@ -1097,7 +1096,7 @@ class HttpManagerMagento(context: Context) {
      * in PWB is th
      * in CDS is cds_th
      * */
-     fun getLanguage(): String {
+    fun getLanguage(): String {
         val language = preferenceManager.getDefaultLanguage()
         return when (BuildConfig.FLAVOR) {
             "cds" -> "cds_$language"
