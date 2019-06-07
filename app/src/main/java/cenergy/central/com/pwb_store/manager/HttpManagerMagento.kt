@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.extensions.asPostcode
 import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.CartService
@@ -297,15 +298,19 @@ class HttpManagerMagento(context: Context) {
                             product.name = productObj.getString("name")
                             product.price = productObj.getDouble("price")
                             product.status = productObj.getInt("status")
-                            if(productObj.has("brand")){
+
+                            if(productObj.has("brand")) {
                                 product.brand = productObj.getString("brand")
                             }
+
                             if (productObj.has("brand_name")){
                                 product.brand = productObj.getString("brand_name")
                             }
+
                             if (!productObj.isNull("image")) {
                                 product.image = productObj.getString("image")
                             }
+                            
                             val attrArray = productObj.getJSONArray("custom_attributes")
                             for (j in 0 until attrArray.length()) {
                                 when (attrArray.getJSONObject(j).getString("attribute_code")) {
@@ -827,10 +832,7 @@ class HttpManagerMagento(context: Context) {
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][field]", "telephone")
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][value]", telephone)
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][condition_type]", "eq")
-//                .addPathSegment(telephone)
                 .build()
-
-
 
         val request = Request.Builder()
                 .url(httpUrl)
@@ -919,6 +921,21 @@ class HttpManagerMagento(context: Context) {
                                             val houseNo = ctmAttr.getString("value")
                                                     ?: ""
                                             memberSubAddress.houseNo = houseNo
+                                        }
+
+                                        "building" -> {
+                                            val building = ctmAttr.getString("value") ?: ""
+                                            memberSubAddress.building = building
+                                        }
+
+                                        "soi" -> {
+                                            val soi = ctmAttr.getString("value") ?: ""
+                                            memberSubAddress.soi = soi
+                                        }
+
+                                        "address_line" -> {
+                                            val street = ctmAttr.getString("value") ?: ""
+                                            memberSubAddress.street = street
                                         }
 
                                         "district" -> {
@@ -1057,7 +1074,7 @@ class HttpManagerMagento(context: Context) {
                         // store districts & store postcode
                         subDistricts.forEach {
                             database.storeSubDistrict(it)
-                            database.storePostcode(Postcode.asPostcode(it))
+                            database.storePostcode(it.asPostcode())
                         }
                         callback.success(subDistricts)
                     } else {
