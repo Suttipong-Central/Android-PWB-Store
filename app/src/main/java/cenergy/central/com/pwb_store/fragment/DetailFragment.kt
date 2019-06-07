@@ -173,13 +173,13 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 //        tvStock.text = txtStock
 
         // setup add item button
+        addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
         if (product.extension?.stokeItem?.isInStock == true) {
             addItemButton.setButtonDisable(false)
             addItemButton.setOnClickListener(this)
         } else {
-            addItemButton.setButtonDisable(true)
+            disableAddToCartButton()
         }
-        addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
 
         // setup available store button
         storeButton.setImageDrawable(R.drawable.ic_store)
@@ -210,5 +210,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvSpecialPrice.visibility = View.GONE
         tvTitleSpecialPrice.visibility = View.GONE
         tvNormalPrice.setEnableStrikeThrough(false)
+    }
+
+    fun disableAddToCartButton(){
+        addItemButton.setButtonDisable(true)
     }
 }

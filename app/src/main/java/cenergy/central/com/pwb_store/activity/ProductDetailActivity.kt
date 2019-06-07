@@ -43,7 +43,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
 class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
 
-    // widgetview
+    // widget view
     private var progressDialog: ProgressDialog? = null
     lateinit var mToolbar: Toolbar
     lateinit var mBuyCompareView: PowerBuyCompareView
@@ -59,6 +59,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productId: String? = null
     private var isBarcode: Boolean = false
     private var product: Product? = null
+
+    // fragment
+    private val detailFragment = DetailFragment()
+    private val overviewFragment = ProductOverviewFragment()
+    private val extensionFragment = ProductExtensionFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -266,9 +271,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     fun startProductDetailFragment() {
         // setup
-        supportFragmentManager.beginTransaction().replace(R.id.containerDetail, DetailFragment()).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, ProductOverviewFragment()).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.containerExtension, ProductExtensionFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerDetail, detailFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, overviewFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerExtension, extensionFragment).commit()
     }
 
     private fun updateShoppingCartBadge() {
@@ -316,40 +321,40 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     // region action compare product
-    private fun addToCompare(product: Product) {
-        showProgressDialog()
-        val count = database.compareProducts.size
-        Log.d(TAG, "" + count)
-        if (count >= 4) {
-            dismissProgressDialog()
-            showAlertDialog(getString(R.string.alert_count))
-        } else {
-            val compareProduct = database.getCompareProduct(product.sku)
-            if (compareProduct != null) {
-                dismissProgressDialog()
-                showAlertDialog(getString(R.string.alert_compare)
-                        + "" + compareProduct.name + "" + getString(R.string.alert_compare_yes))
-            } else {
-                // store compare product to database
-                saveCompareProduct(product)
-            }
-        }
-    }
+//    private fun addToCompare(product: Product) {
+//        showProgressDialog()
+//        val count = database.compareProducts.size
+//        Log.d(TAG, "" + count)
+//        if (count >= 4) {
+//            dismissProgressDialog()
+//            showAlertDialog(getString(R.string.alert_count))
+//        } else {
+//            val compareProduct = database.getCompareProduct(product.sku)
+//            if (compareProduct != null) {
+//                dismissProgressDialog()
+//                showAlertDialog(getString(R.string.alert_compare)
+//                        + "" + compareProduct.name + "" + getString(R.string.alert_compare_yes))
+//            } else {
+//                // store compare product to database
+//                saveCompareProduct(product)
+//            }
+//        }
+//    }
 
-    private fun saveCompareProduct(product: Product) {
-        database.saveCompareProduct(product, object : DatabaseListener {
-            override fun onSuccessfully() {
-                dismissProgressDialog()
-                updateCompareBadge()
-                Toast.makeText(this@ProductDetailActivity, "Generate compare complete.", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onFailure(error: Throwable) {
-                dismissProgressDialog()
-                Log.d(TAG, "" + error.message)
-            }
-        })
-    }
+//    private fun saveCompareProduct(product: Product) {
+//        database.saveCompareProduct(product, object : DatabaseListener {
+//            override fun onSuccessfully() {
+//                dismissProgressDialog()
+//                updateCompareBadge()
+//                Toast.makeText(this@ProductDetailActivity, "Generate compare complete.", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onFailure(error: Throwable) {
+//                dismissProgressDialog()
+//                Log.d(TAG, "" + error.message)
+//            }
+//        })
+//    }
     // end region
 
     // region action add product to cart
@@ -357,7 +362,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         this.product = product
         showProgressDialog()
         val cartId = preferenceManager.cartId
-        if (preferenceManager.cartId != null) {
+        if (cartId != null) {
             Log.d("ProductDetail", "has cart id")
             addProductToCart(cartId, product)
         } else {
@@ -382,11 +387,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         })
     }
 
-    private fun addProductToCart(cartId: String?, product: Product) {
-        val cartItemBody = CartItemBody(CartBody(cartId!!, product.sku, 1)) // default add qty 1
+    private fun addProductToCart(cartId: String, product: Product) {
+        val cartItemBody = CartItemBody(CartBody(cartId, product.sku, 1)) // default add qty 1
         HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
                 saveCartItem(response, product)
+                if(product.extension?.stokeItem?.qty == 1){
+                    detailFragment.disableAddToCartButton()
+                }
                 dismissProgressDialog()
             }
 
