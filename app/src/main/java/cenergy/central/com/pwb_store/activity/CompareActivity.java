@@ -213,29 +213,30 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
 
     private void addProductToCart(final String cartId, final CompareProduct compareProduct) {
         showProgressDialog();
-        CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, compareProduct.getSku(), 1)); // default add qty 1
-        HttpManagerMagento.Companion.getInstance(this).addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
-            @Override
-            public void success(@Nullable CartItem cartItem) {
-                saveCartItem(cartItem, compareProduct);
-                if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                    mProgressDialog.dismiss();
-                }
-            }
-
-            @Override
-            public void failure(@NotNull APIError error) {
-                if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                    mProgressDialog.dismiss();
-                }
-
-                if (error.getErrorCode().equals(String.valueOf(APIError.INTERNAL_SERVER_ERROR))) {
-                    showClearCartDialog();
-                } else {
-                    showAlertDialog("", error.getErrorMessage());
-                }
-            }
-        });
+        //TODO: FIXED ME
+//        CartItemBody cartItemBody = new CartItemBody(new CartBody(cartId, compareProduct.getSku(), 1)); // default add qty 1
+//        HttpManagerMagento.Companion.getInstance(this).addProductToCart(cartId, cartItemBody, new ApiResponseCallback<CartItem>() {
+//            @Override
+//            public void success(@Nullable CartItem cartItem) {
+//                saveCartItem(cartItem, compareProduct);
+//                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+//                    mProgressDialog.dismiss();
+//                }
+//            }
+//
+//            @Override
+//            public void failure(@NotNull APIError error) {
+//                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+//                    mProgressDialog.dismiss();
+//                }
+//
+//                if (error.getErrorCode().equals(String.valueOf(APIError.INTERNAL_SERVER_ERROR))) {
+//                    showClearCartDialog();
+//                } else {
+//                    showAlertDialog("", error.getErrorMessage());
+//                }
+//            }
+//        });
     }
 
     private void saveCartItem(CartItem cartItem, final CompareProduct compareProduct) {
