@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
+import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
 
 
 class PowerBuyAutoCompleteTextStroke : LinearLayout {
@@ -128,6 +129,10 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     }
 
     fun setAdapter(adapter: AddressAdapter?) {
+        this.inputText.setAdapter(adapter)
+    }
+
+    fun setAdapter(adapter: ProductOptionAdepter?) {
         this.inputText.setAdapter(adapter)
     }
 
