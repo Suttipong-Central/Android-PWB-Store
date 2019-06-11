@@ -6,15 +6,15 @@ import com.google.gson.annotations.SerializedName
 
 class ProductValue (
         @SerializedName("value_index")
-        var index: Long = 0,
+        var index: Int = 0,
         @SerializedName("extension_attributes")
         var valueExtension: ProductValueExtension? = null): Parcelable {
     constructor(parcel: Parcel) : this(
-            parcel.readLong(),
+            parcel.readInt(),
             parcel.readParcelable(ProductValueExtension::class.java.classLoader))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(index)
+        parcel.writeInt(index)
         parcel.writeParcelable(valueExtension, flags)
     }
 

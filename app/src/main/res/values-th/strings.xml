@@ -54,6 +54,8 @@
     <string name="add_to_cart">ใส่รถเข็น</string>
     <string name="tab_promotion">โปรโมชั่นและของแถม</string>
     <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
+    <string name="size">ไซต์:</string>
+    <string name="shade">สี:</string>
 
     <!-- Compare -->
     <string name="compare_header">เปรียบเทียบสินค้า</string>

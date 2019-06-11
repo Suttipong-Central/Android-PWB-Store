@@ -450,7 +450,7 @@ class HttpManagerMagento(context: Context) {
                                     val valuesArray = productConfigArray.getJSONObject(i).getJSONArray("values")
                                     val productIDs = arrayListOf<Long>()
                                     for (j in 0 until valuesArray.length()) {
-                                        val index = valuesArray.getJSONObject(j).getLong("value_index")
+                                        val index = valuesArray.getJSONObject(j).getInt("value_index")
                                         val valueExtensionObject = valuesArray.getJSONObject(j).getJSONObject("extension_attributes")
                                         val valueLabel = valueExtensionObject.getString("label")
                                         val value = valueExtensionObject.getString("frontend_value")

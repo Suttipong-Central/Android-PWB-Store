@@ -14,15 +14,19 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
+import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
+import cenergy.central.com.pwb_store.model.body.OptionBody
+import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
@@ -37,7 +41,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var ivProductImage: ImageView
     private lateinit var rvProductImage: RecyclerView
     private lateinit var tvProductName: TextView
-//    private lateinit var tvStock: TextView
     private lateinit var tvProductCode: TextView
     private lateinit var tvTitleSpecialPrice: TextView
     private lateinit var tvSpecialPrice: TextView
@@ -45,6 +48,15 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var addItemButton: PowerBuyIconButton
     private lateinit var storeButton: PowerBuyIconButton
     private lateinit var compareButton: PowerBuyIconButton
+
+    private lateinit var productSizeSelect: PowerBuyAutoCompleteTextStroke
+    private lateinit var productShadeSelect: PowerBuyAutoCompleteTextStroke
+
+    private lateinit var sizeAdepter: ProductOptionAdepter
+    private lateinit var shadeAdepter: ProductOptionAdepter
+    var configItemOptions: ArrayList<OptionBody> = arrayListOf()
+    var optionSize: OptionBody? = null
+    var optionShade: OptionBody? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -74,7 +86,22 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             }
 
             R.id.addToCartButton -> {
-                productDetailListener.addProductToCart(product)
+                product?:return
+                if (product!!.typeId == "configurable") {
+                    if (optionSize == null) {
+                        Toast.makeText(context,"Size null", Toast.LENGTH_LONG).show()
+                        return
+                    }
+                    if (optionShade == null) {
+                        Toast.makeText(context,"Shade null", Toast.LENGTH_LONG).show()
+                        return
+                    }
+                    configItemOptions.add(optionSize!!)
+                    configItemOptions.add(optionShade!!)
+                    productDetailListener.addProductConfigToCart(product, configItemOptions)
+                } else {
+                    productDetailListener.addProductToCart(product)
+                }
             }
         }
     }
@@ -89,7 +116,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         ivProductImage = rootView.findViewById(R.id.ivProductImage)
         rvProductImage = rootView.findViewById(R.id.rvProductImage)
         tvProductName = rootView.findViewById(R.id.tvProductName)
-//        tvStock = rootView.findViewById(R.id.txt_stock)
         tvProductCode = rootView.findViewById(R.id.txt_view_product_code)
         tvTitleSpecialPrice = rootView.findViewById(R.id.txt_name_price)
         tvSpecialPrice = rootView.findViewById(R.id.txt_sale_price)
@@ -102,13 +128,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             "cds" -> rootView.layoutButton.visibility = View.GONE
         }
 
-        if (product!= null && product!!.typeId == "configurable") {
-            rootView.inputProductShape.visibility = View.VISIBLE
-            rootView.inputProductColor.visibility = View.VISIBLE
-        } else {
-            rootView.inputProductShape.visibility = View.GONE
-            rootView.inputProductColor.visibility = View.GONE
-        }
+        productSizeSelect = rootView.findViewById(R.id.inputProductSize)
+        productShadeSelect = rootView.findViewById(R.id.inputProductShade)
     }
 
     @SuppressLint("SetTextI18n")
@@ -144,33 +165,50 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
-//        val txtStock: String
-//        if (product.extension?.stokeItem?.isInStock == true) {
-//            when {
-//                product.extension?.stokeItem?.qty!! > 5 -> {
-//                    txtStock = getString(R.string.product_stock_more)
-//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.inStockColor)) }
-//                }
-//                product.extension?.stokeItem?.qty!! > 1 -> {
-//                    txtStock = getString(R.string.product_stock_medium)
-//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.powerBuyOrange)) }
-//                }
-//                product.extension?.stokeItem?.qty!! > 0 -> {
-//                    txtStock = getString(R.string.product_stock_less)
-//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
-//                }
-//                else -> {
-//                    txtStock = getString(R.string.product_out_stock)
-//                    context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
-//                }
-//            }
-//            context?.let { addItemButton.setCardBackgroundColor(ContextCompat.getColor(it, R.color.powerBuyPurple)) }
-//            addItemButton.setOnClickListener(this)
-//        } else {
-//            txtStock = getString(R.string.product_out_stock)
-//            context?.let { tvStock.setTextColor(ContextCompat.getColor(it, R.color.salePriceColor)) }
-//        }
-//        tvStock.text = txtStock
+        val configOptions = product.extension?.productConfigOptions
+        if (product.typeId == "configurable" && configOptions != null) {
+            configOptions.forEach { configOption ->
+                when (configOption.label) {
+                    "Size" -> {
+                        sizeAdepter = ProductOptionAdepter(context!!, R.layout.layout_text_item, arrayListOf())
+                        sizeAdepter.setItems(configOption.values)
+                        productSizeSelect.setAdapter(sizeAdepter)
+
+                        val defaultOption = configOption.values[0]
+                        optionSize = OptionBody(configOption.attrId, defaultOption.index) // set default
+                        productSizeSelect.setText(defaultOption.valueExtension?.label ?: "")
+
+                        productSizeSelect.visibility = View.VISIBLE
+                        sizeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
+                            override fun onOptionClickListener(optionValue: Int, label: String) {
+                                productSizeSelect.setText(label)
+                                optionSize = OptionBody(configOption.attrId, optionValue)
+                            }
+                        })
+                    }
+                    "Shade" -> {
+                        shadeAdepter = ProductOptionAdepter(context!!, R.layout.layout_text_item, arrayListOf())
+                        shadeAdepter.setItems(configOption.values)
+                        productShadeSelect.setAdapter(shadeAdepter)
+
+                        val defaultOption = configOption.values[0]
+                        optionShade = OptionBody(configOption.attrId, defaultOption.index) // set default
+                        productShadeSelect.setText(defaultOption.valueExtension?.label ?: "")
+
+                        productShadeSelect.visibility = View.VISIBLE
+                        shadeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
+                            override fun onOptionClickListener(optionValue: Int, label: String) {
+                                productShadeSelect.setText(label)
+                                optionShade = OptionBody(configOption.attrId, optionValue)
+                            }
+                        })
+                    }
+                }
+            }
+        } else {
+            productSizeSelect.visibility = View.GONE
+            productShadeSelect.visibility = View.GONE
+        }
 
         // setup add item button
         addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)

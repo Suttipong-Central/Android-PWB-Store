@@ -230,7 +230,7 @@
         app:layout_constraintTop_toBottomOf="@+id/productPriceLayout" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
-        android:id="@+id/inputProductColor"
+        android:id="@+id/inputProductSize"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -238,16 +238,16 @@
         android:layout_marginEnd="16dp"
         android:layout_weight="1"
         android:completionThreshold="1"
-        app:act_header="สี:"
+        app:act_header="@string/size"
         android:visibility="gone"
         app:act_required="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/inputProductShape"
+        app:layout_constraintBottom_toTopOf="@+id/inputProductShade"
         app:layout_constraintStart_toEndOf="@id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/line1" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
-        android:id="@+id/inputProductShape"
+        android:id="@+id/inputProductShade"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -256,12 +256,12 @@
         android:visibility="gone"
         android:layout_weight="1"
         android:completionThreshold="1"
-        app:act_header="Size:"
+        app:act_header="@string/shade"
         app:act_required="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
         app:layout_constraintBottom_toTopOf="@id/groupActionButton"
-        app:layout_constraintTop_toBottomOf="@+id/inputProductColor" />
+        app:layout_constraintTop_toBottomOf="@+id/inputProductSize" />
 
     <LinearLayout
         android:id="@+id/groupActionButton"
@@ -275,7 +275,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/inputProductShape">
+        app:layout_constraintTop_toBottomOf="@+id/inputProductShade">
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/addToCartButton"

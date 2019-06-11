@@ -54,6 +54,8 @@
     <string name="add_to_cart">Add to cart</string>
     <string name="tab_promotion">Promotion</string>
     <string name="tab_delivery">Arrange Delivery</string>
+    <string name="size">Size:</string>
+    <string name="shade">Shade:</string>
 
     <!-- Compare -->
     <string name="compare_header">Compare products</string>

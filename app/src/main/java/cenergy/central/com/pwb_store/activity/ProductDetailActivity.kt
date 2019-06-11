@@ -30,8 +30,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.Product
-import cenergy.central.com.pwb_store.model.body.CartBody
-import cenergy.central.com.pwb_store.model.body.CartItemBody
+import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -171,7 +170,12 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     override fun addProductToCart(product: Product?) {
-        product?.let { startAddToCart(it) }
+        product?.let { startAddToCart(it, arrayListOf()) }
+    }
+
+    override fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>) {
+        product?.let { startAddToCart(it, listOptionsBody) }
+
     }
 
     override fun onDisplayAvailableStore(product: Product?) {
@@ -358,25 +362,25 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // end region
 
     // region action add product to cart
-    private fun startAddToCart(product: Product) {
+    private fun startAddToCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {
         this.product = product
         showProgressDialog()
         val cartId = preferenceManager.cartId
         if (cartId != null) {
             Log.d("ProductDetail", "has cart id")
-            addProductToCart(cartId, product)
+            addProductToCart(cartId, product, listOptionsBody)
         } else {
             Log.d("ProductDetail", "new cart id")
-            retrieveCart(product)
+            retrieveCart(product, listOptionsBody)
         }
     }
 
-    private fun retrieveCart(product: Product) {
+    private fun retrieveCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {
         HttpManagerMagento.getInstance(this).getCart(object : ApiResponseCallback<String?> {
             override fun success(response: String?) {
                 if (response != null) {
                     preferenceManager.setCartId(response)
-                    addProductToCart(response, product)
+                    addProductToCart(response, product, listOptionsBody)
                 }
             }
 
@@ -387,8 +391,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         })
     }
 
-    private fun addProductToCart(cartId: String, product: Product) {
-        val cartItemBody = CartItemBody(CartBody(cartId, product.sku, 1)) // default add qty 1
+    private fun addProductToCart(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>) {
+        val cartItemBody = CartItemBody.create(cartId, product.sku, listOptionsBody)
         HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
                 saveCartItem(response, product)
