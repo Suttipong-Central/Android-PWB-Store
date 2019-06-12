@@ -163,7 +163,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
-                val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
+                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
                         "", "", "")
                 createShippingInformation(null, subscribeCheckOut)
             }
@@ -210,7 +210,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         HttpManagerHDL.getInstance(this@PaymentActivity).createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
             override fun success(response: BookingNumberResponse?) {
                 if (response != null) {
-                    val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email,
+                    val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
                             shippingDate, slot.id.toString(), slot.description)
                     createShippingInformation(null, subscribeCheckOut)
                 } else {
@@ -796,7 +796,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-                val subscribeCheckOut = SubscribeCheckOut.createSubscribe(shippingAddress!!.email, "", "", "")
+                val storePickup = StorePickup(branch.storeId.toInt())
+                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, "",
+                        "", "", storePickup)
                 // store shipping this case can be anything
                 createShippingInformation(shippingAddress, subscribeCheckOut)
             }

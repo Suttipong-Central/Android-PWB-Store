@@ -7,15 +7,12 @@ class SubscribeCheckOut(
         var checkout: String = "",
         var shippingDate: String = "",
         var shippingSlotInDay: String = "",
-        var shippingSlotDescription: String = ""
-) {
-    companion object {
-        fun createSubscribe(checkout: String, shippingDate: String, shippingSlotInDay: String, shippingSlotDescription: String): SubscribeCheckOut {
-            return SubscribeCheckOut(checkout = checkout,
-                    shippingDate = shippingDate,
-                    shippingSlotInDay = shippingSlotInDay,
-                    shippingSlotDescription = shippingSlotDescription)
+        var shippingSlotDescription: String = "",
+        @SerializedName("pickup_store")
+        var storePickup: StorePickup? = null
+)
 
-        }
-    }
-}
+class StorePickup(
+        @SerializedName("store_id")
+        var storeId: Int
+)
