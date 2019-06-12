@@ -51,9 +51,6 @@ class BranchDetailFragment : Fragment() {
         tvTitleOpenStore = rootView.findViewById(R.id.store_open_title)
         tvOpenStore = rootView.findViewById(R.id.store_open_txt)
         selectedButton = rootView.findViewById(R.id.selectButton)
-        context?.let {context ->
-            selectedButton.typeface = Typeface.createFromAsset(context.assets, "fonts/RobotoLight.ttf")
-        }
         hideContentView()
         return rootView
     }

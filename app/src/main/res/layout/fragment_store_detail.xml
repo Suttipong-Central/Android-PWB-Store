@@ -26,7 +26,7 @@
         android:gravity="center"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
-        android:textColor="@color/textHeaderBranchTitle"
+        android:textColor="@color/textHeaderBranchDetail"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -129,8 +129,6 @@
         app:layout_constraintTop_toBottomOf="@+id/store_open_txt"
         android:text="@string/choose_store"
         android:paddingEnd="32dp"
-        android:paddingStart="32dp"
-        android:textSize="14sp"
-        android:textStyle="bold"/>
+        android:paddingStart="32dp"/>
 
 </android.support.constraint.ConstraintLayout>

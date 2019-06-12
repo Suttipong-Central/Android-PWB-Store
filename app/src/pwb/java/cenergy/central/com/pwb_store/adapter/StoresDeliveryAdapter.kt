@@ -12,7 +12,7 @@ import cenergy.central.com.pwb_store.model.Branch
 
 class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var selectedIndex: Int? = 0
+    private var selectedIndex: Int? = null
     var branches = listOf<Branch?>()
         set(value) {
             field = value
