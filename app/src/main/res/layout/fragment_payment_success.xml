@@ -697,6 +697,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toTopOf="parent"
+                        android:text="@string/total"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline80" />
 
@@ -706,6 +707,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:text="@string/delivery_price"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline80"
                         app:layout_constraintTop_toBottomOf="@+id/total_order_success" />
