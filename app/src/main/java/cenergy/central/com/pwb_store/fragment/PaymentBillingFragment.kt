@@ -63,7 +63,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingHomeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var billingHomeSoiEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeRoadEdt: PowerBuyEditTextBorder
-    private lateinit var billingHomePhoneEdt: PowerBuyEditTextBorder
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
     private lateinit var totalPrice: PowerBuyTextView
@@ -344,7 +343,6 @@ class PaymentBillingFragment : Fragment() {
         billingHomeBuildingEdit.setText(billingAddress.subAddress?.building ?: "")
         billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
         billingHomeRoadEdt.setText(billingAddress.street?.get(0) ?: "")
-        billingHomePhoneEdt.setText(billingAddress.subAddress?.mobile ?: "")
 
         // validate province with local db
         val province = database.getProvince(billingAddress.regionId)
@@ -533,7 +531,6 @@ class PaymentBillingFragment : Fragment() {
         billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
         billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
         billingHomeRoadEdt = rootView.findViewById(R.id.billing_street_payment)
-        billingHomePhoneEdt = rootView.findViewById(R.id.billing_tell_payment)
         // Setup view input billing address
         billingProvinceInput = rootView.findViewById(R.id.billing_input_province)
         billingDistrictInput = rootView.findViewById(R.id.billing_input_district)
@@ -551,8 +548,6 @@ class PaymentBillingFragment : Fragment() {
         billingContactNumberEdt.setTextLength(10)
         homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         homePhoneEdt.setTextLength(10)
-        billingHomePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        billingHomePhoneEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
@@ -736,12 +731,11 @@ class PaymentBillingFragment : Fragment() {
         homeSubDistrict = billingSubDistrict?.name ?: ""
         homePostalCodeId = billingSubDistrict?.postcodeId ?: ""
         homePostalCode = billingSubDistrict?.postcode ?: ""
-        homePhone = billingHomePhoneEdt.getText()
 
         return AddressInformation.createAddress(
                 firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
                 homeNo = homeNo, homeBuilding = homeBuilding, homeSoi = homeSoi, homeRoad = homeRoad,
-                homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
+                homePostalCode = homePostalCode, homePhone = "", provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
                 homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)

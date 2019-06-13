@@ -533,24 +533,6 @@
                     app:act_required="true"/>
 
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:weightSum="2">
-
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/billing_tell_payment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
-                    app:header="@string/tel_or_mobile"
-                    app:required="false" />
-
-            </LinearLayout>
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
