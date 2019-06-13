@@ -67,4 +67,7 @@
     <color name="textHeaderBranchDetail">@color/colorPrimary</color>
     <color name="textHeaderBranchTitle">@color/white</color>
     <color name="backgroundHeaderBranchTitle">@color/colorPrimary</color>
+
+    <!-- tab color item freebie -->
+    <color name="itemFreebieTabColor">@color/colorPrimary</color>
 </resources>

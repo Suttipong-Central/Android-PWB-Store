@@ -34,4 +34,7 @@
     <color name="textHeaderBranchDetail">@color/cdsRed</color>
     <color name="textHeaderBranchTitle">@color/white</color>
     <color name="backgroundHeaderBranchTitle">@color/cdsRed</color>
+
+    <!-- tab color item freebie -->
+    <color name="itemFreebieTabColor">@color/cdsRed</color>
 </resources>
