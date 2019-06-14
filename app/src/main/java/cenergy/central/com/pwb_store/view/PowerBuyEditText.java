@@ -7,8 +7,6 @@ import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.google.common.base.Strings;
-
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.TypeFaceManager;
 
@@ -50,7 +48,7 @@ public class PowerBuyEditText extends TextInputEditText {
 
             if (ta != null) {
                 String fontAsset = ta.getString(R.styleable.PowerBuyEditText_typeFaceAsset);
-                if (!Strings.isNullOrEmpty(fontAsset)) {
+                if (fontAsset != null) {
                     fontAsset = "fonts/" + fontAsset;
                     Typeface tf = TypeFaceManager.getInstance().getFont(fontAsset);
                     int style = Typeface.NORMAL;

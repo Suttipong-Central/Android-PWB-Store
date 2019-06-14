@@ -23,7 +23,7 @@ class DialogHelper(var context: Context) {
         if (error.errorCode == null) {
             showAlertDialog("", context.getString(R.string.not_connected_network))
         } else {
-            when (error.getErrorCode()) {
+            when (error.errorCode) {
                 "408", "404", "500" -> showAlertDialog("", context.getString(R.string.server_not_found))
                 else -> showAlertDialog("", context.getString(R.string.some_thing_wrong))
             }

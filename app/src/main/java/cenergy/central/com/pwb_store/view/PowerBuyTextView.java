@@ -12,8 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.common.base.Strings;
-
 import java.util.ArrayList;
 
 import cenergy.central.com.pwb_store.R;
@@ -70,7 +68,7 @@ public class PowerBuyTextView extends TextView {
 
             if (ta != null) {
                 String fontAsset = ta.getString(R.styleable.PowerBuyTextView_typeFaceAsset);
-                if (!Strings.isNullOrEmpty(fontAsset)) {
+                if (fontAsset != null) {
                     fontAsset = "fonts/" + fontAsset;
                     Typeface tf = TypeFaceManager.getInstance().getFont(fontAsset);
                     int style = Typeface.NORMAL;

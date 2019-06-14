@@ -5,8 +5,6 @@ import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import com.google.common.base.Strings;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,8 +62,9 @@ public class TypeFaceManager{
     private String fixAssetFilename(String asset) {
         // Empty font filename?
         // Just return it. We can't help.
-        if (Strings.isNullOrEmpty(asset))
+        if (asset != null) {
             return asset;
+        }
 
         // Make sure that the font ends in '.ttf' or '.ttc'
         if ((!asset.endsWith(".ttf")) && (!asset.endsWith(".ttc")))

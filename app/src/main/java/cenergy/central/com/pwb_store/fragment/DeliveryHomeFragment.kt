@@ -120,7 +120,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         this.date = dateTime.dayOfMonth
         this.month = dateTime.monthOfYear
         this.year = dateTime.year
-        timeText.text.clear()
+        timeText.text?.clear()
         this.slot = null
     }
 

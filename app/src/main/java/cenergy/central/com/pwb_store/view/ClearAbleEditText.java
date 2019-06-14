@@ -8,8 +8,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.common.base.Strings;
-
 import cenergy.central.com.pwb_store.R;
 
 /**
@@ -86,8 +84,8 @@ public class ClearAbleEditText extends PowerBuyEditText implements View.OnTouchL
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-            setClearIconVisible(!Strings.isNullOrEmpty(getText().toString()));
+        if (hasFocus ) {
+            setClearIconVisible(getText() != null);
         } else {
             setClearIconVisible(false);
         }
@@ -99,7 +97,7 @@ public class ClearAbleEditText extends PowerBuyEditText implements View.OnTouchL
     @Override
     public void onTextChanged(PowerBuyEditText view, String text) {
         if (isFocused()) {
-            setClearIconVisible(!Strings.isNullOrEmpty(text));
+            setClearIconVisible(text != null);
         }
     }
 
@@ -147,12 +145,12 @@ public class ClearAbleEditText extends PowerBuyEditText implements View.OnTouchL
         }
     }
 
-    public static enum Location {
+    public enum Location {
         LEFT(0), RIGHT(2);
 
         final int idx;
 
-        private Location(int idx) {
+        Location(int idx) {
             this.idx = idx;
         }
     }

@@ -33,9 +33,9 @@ class ProductImageAdapter(private val listener: ProductImageListener,private val
         }
     }
 
-    inner class ProductImageViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+    inner class ProductImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val ivProductImage = itemView?.findViewById<ImageView>(R.id.ivProductImage)
+        private val ivProductImage = itemView.findViewById<ImageView>(R.id.ivProductImage)
         fun bindItem(productImage: ProductDetailImageItem) {
             ivProductImage?.setImageUrl(productImage.imgUrl)
         }

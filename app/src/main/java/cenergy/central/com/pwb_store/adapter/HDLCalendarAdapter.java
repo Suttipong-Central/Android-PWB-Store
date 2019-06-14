@@ -48,7 +48,7 @@ public class HDLCalendarAdapter extends BaseAdapter {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             convertView = layoutInflater.inflate(R.layout.list_item_calendar_text, null);
 
-            final PowerBuyTextView nameTextView = (PowerBuyTextView) convertView.findViewById(R.id.txt_calendar);
+            final PowerBuyTextView nameTextView = convertView.findViewById(R.id.txt_calendar);
 
             final ViewHolder viewHolder = new ViewHolder(nameTextView);
             convertView.setTag(viewHolder);

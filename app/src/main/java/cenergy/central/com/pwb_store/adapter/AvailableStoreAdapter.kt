@@ -34,13 +34,8 @@ class AvailableStoreAdapter(val mContext: Context, private val mStoreDao: StoreD
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
-            VIEW_TYPE_ID_EMPTY_RESULT -> return EmptyViewHolder(
-                    LayoutInflater
-                            .from(parent.context)
-                            .inflate(R.layout.list_item_loading_result, parent, false)
-            )
             VIEW_TYPE_ID_STORE_TOPIC -> return AvaliableTopicViewHolder(
                     LayoutInflater
                             .from(parent.context)
@@ -51,8 +46,12 @@ class AvailableStoreAdapter(val mContext: Context, private val mStoreDao: StoreD
                             .from(parent.context)
                             .inflate(R.layout.list_item_avaliable_detail, parent, false)
             )
+            else -> return EmptyViewHolder(
+                    LayoutInflater
+                            .from(parent.context)
+                            .inflate(R.layout.list_item_loading_result, parent, false)
+            )
         }
-        return null
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

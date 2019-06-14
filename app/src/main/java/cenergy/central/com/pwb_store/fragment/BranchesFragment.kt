@@ -17,7 +17,7 @@ import cenergy.central.com.pwb_store.model.Branch
 class BranchesFragment : Fragment(), StoreClickListener {
 
     private val storesAdapter = StoresDeliveryAdapter(this)
-    var branches: ArrayList<Branch> = arrayListOf()
+    private var branches: ArrayList<Branch> = arrayListOf()
     private lateinit var storesRecycler: RecyclerView
     private var listener: StorePickUpListener? = null
 

@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Category
+import kotlinx.android.synthetic.main.activity_sub_header_product.view.*
 
 class SubHeaderProductFragment : Fragment() {
 
@@ -39,7 +40,7 @@ class SubHeaderProductFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
-        val subHeaderRecycler = rootView.findViewById<RecyclerView>(R.id.sub_header_recycler)
+        val subHeaderRecycler = rootView.sub_header_recycler
         val gridLayoutManager = GridLayoutManager(rootView.context, 3, LinearLayoutManager.VERTICAL, false)
         gridLayoutManager.spanSizeLookup = adapter.spanSize
         subHeaderRecycler.layoutManager = gridLayoutManager

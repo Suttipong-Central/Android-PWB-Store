@@ -28,7 +28,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.CalendarViewCustom
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import com.google.common.reflect.TypeToken
+import com.google.gson.reflect.TypeToken
 import org.joda.time.DateTime
 
 /**

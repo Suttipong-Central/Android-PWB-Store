@@ -61,5 +61,5 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
         const val VIEW_LOADING = 2
     }
 
-    inner class ProgressViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView)
+    inner class ProgressViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }

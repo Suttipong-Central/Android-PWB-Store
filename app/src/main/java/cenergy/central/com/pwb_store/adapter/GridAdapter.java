@@ -55,10 +55,10 @@ public class GridAdapter extends ArrayAdapter {
             view.setBackgroundColor(Color.parseColor("#cccccc"));
         }
         //Add day to calendar
-        TextView cellNumber = (TextView)view.findViewById(R.id.calendar_date_id);
+        TextView cellNumber = view.findViewById(R.id.calendar_date_id);
         cellNumber.setText(String.valueOf(dayValue));
         //Add events to the calendar
-        TextView eventIndicator = (TextView)view.findViewById(R.id.event_id);
+        TextView eventIndicator = view.findViewById(R.id.event_id);
         Calendar eventCalendar = Calendar.getInstance();
         //for(int i = 0; i < allEvents.size(); i++){
             //eventCalendar.setTime(allEvents.get(i).getDate());

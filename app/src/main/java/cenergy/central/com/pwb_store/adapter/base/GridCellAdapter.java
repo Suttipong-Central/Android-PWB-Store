@@ -165,12 +165,11 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
                             + " => "
                             + getMonthAsString(prevMonth)
                             + " "
-                            + String.valueOf((daysInPrevMonth
+                            + ((daysInPrevMonth
                             - trailingSpaces + DAY_OFFSET)
                             + i));
-            list.add(String
-                    .valueOf((daysInPrevMonth - trailingSpaces + DAY_OFFSET)
-                            + i)
+            list.add(((daysInPrevMonth - trailingSpaces + DAY_OFFSET)
+                    + i)
                     + "-GREY"
                     + "-"
                     + getMonthAsString(prevMonth)
@@ -180,13 +179,13 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
 
         // Current Month Days
         for (int i = 1; i <= daysInMonth; i++) {
-            Log.d(currentMonthName, String.valueOf(i) + " "
+            Log.d(currentMonthName, i + " "
                     + getMonthAsString(currentMonth) + " " + yy);
             if (i == getCurrentDayOfMonth()) {
-                list.add(String.valueOf(i) + "-BLUE" + "-"
+                list.add(i + "-BLUE" + "-"
                         + getMonthAsString(currentMonth) + "-" + yy);
             } else {
-                list.add(String.valueOf(i) + "-WHITE" + "-"
+                list.add(i + "-WHITE" + "-"
                         + getMonthAsString(currentMonth) + "-" + yy);
             }
         }
@@ -194,7 +193,7 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
         // Leading Month days
         for (int i = 0; i < list.size() % 7; i++) {
             Log.d(tag, "NEXT MONTH:= " + getMonthAsString(nextMonth));
-            list.add(String.valueOf(i + 1) + "-GREY" + "-"
+            list.add((i + 1) + "-GREY" + "-"
                     + getMonthAsString(nextMonth) + "-" + nextYear);
         }
     }
@@ -231,7 +230,7 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
         }
 
         // Get a reference to the Day gridcell
-        gridcell = (TextView) row.findViewById(R.id.calendar_date_id);
+        gridcell = row.findViewById(R.id.calendar_date_id);
         gridcell.setOnClickListener(this);
 
         // ACCOUNT FOR SPACING
@@ -243,9 +242,9 @@ public class GridCellAdapter extends BaseAdapter implements View.OnClickListener
         String theyear = day_color[3];
         if ((!eventsPerMonthMap.isEmpty()) && (eventsPerMonthMap != null)) {
             if (eventsPerMonthMap.containsKey(theday)) {
-                num_events_per_day = (TextView) row
+                num_events_per_day = row
                         .findViewById(R.id.event_id);
-                Integer numEvents = (Integer) eventsPerMonthMap.get(theday);
+                Integer numEvents = eventsPerMonthMap.get(theday);
                 num_events_per_day.setText(numEvents.toString());
             }
         }

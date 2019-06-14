@@ -93,7 +93,7 @@ public class SortingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setSorting(SortingList sorting) {
         this.mSortingHeaders = sorting.getSortingHeaders();
     }
-;
+
     public void addSortLevel2(List<SortingItem> sortingItemList) {
 
         for (SortingItem sortingItem :

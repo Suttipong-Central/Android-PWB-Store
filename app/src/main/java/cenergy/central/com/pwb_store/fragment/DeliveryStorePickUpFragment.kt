@@ -64,7 +64,7 @@ class DeliveryStorePickUpFragment : Fragment() {
     }
 
     private fun setupView() {
-        childFragmentManager.beginTransaction()?.replace(R.id.content_branches, branchesFragment, TAG_FRAGMENT_STORES)?.commit()
-        childFragmentManager.beginTransaction()?.replace(R.id.content_branch_detail, branchDetailFragment, TAG_FRAGMENT_STORE_DETAIL)?.commit()
+        childFragmentManager.beginTransaction().replace(R.id.content_branches, branchesFragment, TAG_FRAGMENT_STORES).commit()
+        childFragmentManager.beginTransaction().replace(R.id.content_branch_detail, branchDetailFragment, TAG_FRAGMENT_STORE_DETAIL).commit()
     }
 }

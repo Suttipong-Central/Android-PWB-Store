@@ -28,7 +28,7 @@ public class DialogUtils {
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(R.layout.dialog_loading);
-        ProgressBar progressbar = (ProgressBar) dialog.findViewById(R.id.progress_bar);
+        ProgressBar progressbar = dialog.findViewById(R.id.progress_bar);
         progressbar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
         dialog.setCancelable(false);
         return dialog;
