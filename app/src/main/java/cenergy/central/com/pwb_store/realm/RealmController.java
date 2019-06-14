@@ -64,7 +64,7 @@ public class RealmController {
     public RealmResults<AddCompare> getCompares() {
 
         //return realm.where(AddCompare.class).findAll();
-        return realm.where(AddCompare.class).findAllSorted("productSku", Sort.DESCENDING);
+        return realm.where(AddCompare.class).sort("productSku", Sort.DESCENDING).findAll();
     }
 
     public RealmResults<AddCompare> deletedCompare(final String productSku) {
@@ -72,7 +72,10 @@ public class RealmController {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<AddCompare> result = realm.where(AddCompare.class).equalTo("productSku", productSku).findAllSorted("productSku", Sort.DESCENDING);
+                RealmResults<AddCompare> result = realm.where(AddCompare.class)
+                        .equalTo("productSku", productSku)
+                        .sort("productSku", Sort.DESCENDING)
+                        .findAll();
                 result.deleteAllFromRealm();
             }
         });
