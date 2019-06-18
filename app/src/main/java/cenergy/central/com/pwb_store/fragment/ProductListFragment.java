@@ -617,15 +617,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final ProductResponse response) {
                             if (getActivity() != null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        if (response != null) {
-                                            updateProductList(response);
-                                        } else {
-                                            Log.d("productResponse", "productResponse is null");
-                                            layoutProgress.setVisibility(View.GONE);
-                                            mProgressDialog.dismiss();
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    if (response != null) {
+                                        updateProductList(response);
+                                    } else {
+                                        Log.d("productResponse", "productResponse is null");
+                                        layoutProgress.setVisibility(View.GONE);
+                                        mProgressDialog.dismiss();
                                     }
                                 });
                             }
@@ -634,15 +632,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         @Override
                         public void failure(@NotNull final APIError error) {
                             if(getActivity() != null){
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        layoutProgress.setVisibility(View.GONE);
-                                        mProgressDialog.dismiss();
-                                        // show error dialog
-                                        if (getContext() != null) {
-                                            new DialogHelper(getContext()).showErrorDialog(error);
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    layoutProgress.setVisibility(View.GONE);
+                                    mProgressDialog.dismiss();
+                                    // show error dialog
+                                    if (getContext() != null) {
+                                        new DialogHelper(getContext()).showErrorDialog(error);
                                     }
                                 });
                             }
@@ -658,9 +653,22 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             Filter filter = Filter.Companion.createFilter("search_term", keyWord, "eq");
             ArrayList<Filter> filters = new ArrayList<>();
             filters.add(filter);
-            FilterGroups filterGroups = new FilterGroups(filters);
+            FilterGroups filterGroupSearch = new FilterGroups(filters);
+
+            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
+            ArrayList<Filter> filterByStock = new ArrayList<>();
+            filterByStock.add(filterStock);
+            FilterGroups filterGroupStock = new FilterGroups(filterByStock);
+
+            Filter filterPrice = Filter.Companion.createFilter("price", "0", "gt");
+            ArrayList<Filter> filterByPrice = new ArrayList<>();
+            filterByPrice.add(filterPrice);
+            FilterGroups filterGroupPrice = new FilterGroups(filterByPrice);
+
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
-            filterGroupsList.add(filterGroups);
+            filterGroupsList.add(filterGroupSearch);
+            filterGroupsList.add(filterGroupStock);
+            filterGroupsList.add(filterGroupPrice);
 
             SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
@@ -675,15 +683,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final ProductResponse response) {
                             if (getActivity() != null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        if (response != null) {
-                                            updateProductList(response);
-                                        } else {
-                                            Log.d("productResponse", "productResponse is null");
-                                            layoutProgress.setVisibility(View.GONE);
-                                            mProgressDialog.dismiss();
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    if (response != null) {
+                                        updateProductList(response);
+                                    } else {
+                                        Log.d("productResponse", "productResponse is null");
+                                        layoutProgress.setVisibility(View.GONE);
+                                        mProgressDialog.dismiss();
                                     }
                                 });
                             }
@@ -692,15 +698,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         @Override
                         public void failure(@NotNull final APIError error) {
                             if (getActivity() != null){
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        layoutProgress.setVisibility(View.GONE);
-                                        mProgressDialog.dismiss();
-                                        // show error dialog
-                                        if (getContext() != null) {
-                                            new DialogHelper(getContext()).showErrorDialog(error);
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    layoutProgress.setVisibility(View.GONE);
+                                    mProgressDialog.dismiss();
+                                    // show error dialog
+                                    if (getContext() != null) {
+                                        new DialogHelper(getContext()).showErrorDialog(error);
                                     }
                                 });
                             }
@@ -762,13 +765,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     @Override
                     public void success(final List<Category> categories) {
                         if (getActivity() != null) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    categoriesLv3 = new ArrayList<>(); // clear category lv3 list
-                                    categoriesLv3.addAll(categories);
-                                    mProductLayout.setVisibility(View.VISIBLE); // show product layout
-                                }
+                            getActivity().runOnUiThread(() -> {
+                                categoriesLv3 = new ArrayList<>(); // clear category lv3 list
+                                categoriesLv3.addAll(categories);
+                                mProductLayout.setVisibility(View.VISIBLE); // show product layout
                             });
                         }
                     }
