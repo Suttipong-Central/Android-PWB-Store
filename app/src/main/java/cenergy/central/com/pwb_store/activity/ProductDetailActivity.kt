@@ -216,17 +216,20 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductFromBarcode(barcode, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
-                dismissProgressDialog()
-                if (response != null) {
-                    tvNotFound.visibility = View.INVISIBLE
-                    containerGroupView.visibility = View.VISIBLE
+                runOnUiThread {
+                    dismissProgressDialog()
+                    if (response != null) {
+                        tvNotFound.visibility = View.INVISIBLE
+                        containerGroupView.visibility = View.VISIBLE
 
-                    // setup product
-                    product = response
-                    startProductDetailFragment()
-                } else {
-                    tvNotFound.visibility = View.VISIBLE
-                    containerGroupView.visibility = View.INVISIBLE
+                        // setup product
+                        product = response
+                        startProductDetailFragment()
+                        checkDisableAddProductButton(product!!)
+                    } else {
+                        tvNotFound.visibility = View.VISIBLE
+                        containerGroupView.visibility = View.INVISIBLE
+                    }
                 }
             }
 
@@ -246,17 +249,20 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductDetail(sku, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
-                dismissProgressDialog()
-                if (response != null) {
-                    tvNotFound.visibility = View.INVISIBLE
-                    containerGroupView.visibility = View.VISIBLE
+                runOnUiThread {
+                    dismissProgressDialog()
+                    if (response != null) {
+                        tvNotFound.visibility = View.INVISIBLE
+                        containerGroupView.visibility = View.VISIBLE
 
-                    // setup product
-                    product = response
-                    startProductDetailFragment()
-                } else {
-                    tvNotFound.visibility = View.VISIBLE
-                    containerGroupView.visibility = View.INVISIBLE
+                        // setup product
+                        product = response
+                        startProductDetailFragment()
+                        checkDisableAddProductButton(product!!)
+                    } else {
+                        tvNotFound.visibility = View.VISIBLE
+                        containerGroupView.visibility = View.INVISIBLE
+                    }
                 }
             }
 
@@ -395,11 +401,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         val cartItemBody = CartItemBody.create(cartId, product.sku, listOptionsBody)
         HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
-                saveCartItem(response, product)
-                if(product.extension?.stokeItem?.qty == 1){
-                    detailFragment.disableAddToCartButton()
+                runOnUiThread {
+                    saveCartItem(response, product)
+                    checkDisableAddProductButton(product)
+                    dismissProgressDialog()
                 }
-                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
@@ -453,6 +459,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                     dialog.dismiss()
                 }
         builder.show()
+    }
+
+    fun checkDisableAddProductButton(product: Product) {
+        val productInCart = database.getCacheCartItemBySKU(product.sku)
+        if (productInCart != null && productInCart.qty!! >= product.extension?.stokeItem?.qty!!){
+            detailFragment.disableAddToCartButton()
+        }
     }
 
     private fun clearCart() {

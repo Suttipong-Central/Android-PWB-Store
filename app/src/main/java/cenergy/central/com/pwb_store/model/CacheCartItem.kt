@@ -62,6 +62,7 @@ open class CacheCartItem(
 
     companion object CREATOR : Parcelable.Creator<CacheCartItem> {
         const val FIELD_ID = "itemId"
+        const val FIELD_SKU = "sku"
 
         @JvmStatic
         fun asCartItem(cartItem: CartItem, product: Product): CacheCartItem {
