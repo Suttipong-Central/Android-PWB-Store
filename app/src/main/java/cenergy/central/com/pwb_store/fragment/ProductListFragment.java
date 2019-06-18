@@ -516,7 +516,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterByCategory.add(filterCategory);
             FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
 
-            Filter filterStock = Filter.Companion.createFilter("stock.is_in_stock", "1", "eq");
+            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
@@ -544,15 +544,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final ProductResponse response) {
                             if (getActivity() != null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        if (response != null) {
-                                            updateProductList(response);
-                                        } else {
-                                            Log.d("productResponse", "productResponse is null");
-                                            layoutProgress.setVisibility(View.GONE);
-                                            mProgressDialog.dismiss();
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    if (response != null) {
+                                        updateProductList(response);
+                                    } else {
+                                        Log.d("productResponse", "productResponse is null");
+                                        layoutProgress.setVisibility(View.GONE);
+                                        mProgressDialog.dismiss();
                                     }
                                 });
                             }
@@ -562,14 +560,12 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         public void failure(@NotNull final APIError error) {
                             if (getActivity() != null) {
                                 getActivity().runOnUiThread(
-                                        new Runnable() {
-                                            public void run() {
-                                                layoutProgress.setVisibility(View.GONE);
-                                                mProgressDialog.dismiss();
-                                                // show error dialog
-                                                if (getContext() != null) {
-                                                    new DialogHelper(getContext()).showErrorDialog(error);
-                                                }
+                                        () -> {
+                                            layoutProgress.setVisibility(View.GONE);
+                                            mProgressDialog.dismiss();
+                                            // show error dialog
+                                            if (getContext() != null) {
+                                                new DialogHelper(getContext()).showErrorDialog(error);
                                             }
                                         });
                             }
@@ -587,7 +583,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterByCategory.add(filterCategory);
             FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
 
-            Filter filterStock = Filter.Companion.createFilter("stock.is_in_stock", "1", "eq");
+            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
