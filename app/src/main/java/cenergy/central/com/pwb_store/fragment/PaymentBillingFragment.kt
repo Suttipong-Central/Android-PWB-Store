@@ -1149,11 +1149,13 @@ class PaymentBillingFragment : Fragment() {
             val postcodeData = subDistricts.getPostcodeList(subDistrictId = subDistrict.subDistrictId)
             this.postcodeList = postcodeData
             this.postcodeAdapter.setItems(this.postcodeList)
-            if (postcodeData.size == 1 && postcodeData[0].postcode == postcodeStr) {
-                this.postcode = postcodeData[0]
+
+            val realPostcode = postcodeData.find { it.postcode == postcodeStr }
+            if (realPostcode != null) {
+                this.postcode = realPostcode
                 postcodeInput.setText("")
                 postcodeInput.setEnableInput(true)
-                postcodeInput.setText(postcodeData[0].postcode)
+                postcodeInput.setText(realPostcode.postcode)
             } else {
                 postcodeInput.setEnableInput(true)
                 postcodeInput.setText("")
