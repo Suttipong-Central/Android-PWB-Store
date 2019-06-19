@@ -24,6 +24,7 @@ import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.*
+import cenergy.central.com.pwb_store.manager.api.OrderApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
@@ -719,7 +720,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val staffId = userInformation?.user?.staffId ?: ""
         val retailerId = userInformation?.store?.retailerId ?: ""
 
-        UpdateOrderManager().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
+        OrderApi().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email, shippingAddress!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 runOnUiThread {
                     if (response != null) {

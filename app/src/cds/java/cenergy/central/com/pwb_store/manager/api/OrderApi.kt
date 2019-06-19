@@ -1,8 +1,10 @@
-package cenergy.central.com.pwb_store.manager
+package cenergy.central.com.pwb_store.manager.api
 
 import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
@@ -11,7 +13,7 @@ import com.google.gson.Gson
 import okhttp3.*
 import java.io.IOException
 
-class UpdateOrderManager {
+class OrderApi {
 
     /**
      * Use this because we need to check response from API is 200 with orderID or 200 with redirect link
