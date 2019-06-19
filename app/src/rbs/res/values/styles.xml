@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="drawerArrowStyle">@style/DrawerHamburgerStyle</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+    </style>
+
+    <style name="DrawerHamburgerStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/colorAccent</item>
+    </style>
+
+    <style name="ToolbarBack">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back_cds</item>
+    </style>
+
+    <style name="ToolbarCancel">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="navigationIcon">@drawable/ic_clear_cds</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/cdsRed</item>
+    </style>
+
+    <style name="textSubHeader">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/cdsBlack</item>
+    </style>
+
+    <style name="textNameCategory">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/cdsRed</item>
+    </style>
+
+    <style name="textCompare">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/cdsRed</item>
+    </style>
+
+    <!-- Form -->
+    <style name="Form" />
+
+    <style name="Form.EditTextLayoutTheme" parent="AppTheme">
+        <item name="colorAccent">@color/cdsRed</item>
+        <item name="colorControlNormal">@color/cdsRed</item>
+        <item name="colorControlActivated">@color/cdsRed</item>
+    </style>
+
+    <style name="RadioButtonStyle">
+        <item name="colorControlNormal">@color/graySelect</item>
+        <item name="colorAccent">@color/cdsRed</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/graySelect</item>
+    </style>
+</resources>

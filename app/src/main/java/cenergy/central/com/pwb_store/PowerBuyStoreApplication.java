@@ -22,7 +22,7 @@ public class PowerBuyStoreApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (!BuildConfig.DEBUG) {
+        if (BuildConfig.IS_PRODUCTION) {
             Fabric.with(this, new Crashlytics());
         }
 
@@ -45,7 +45,7 @@ public class PowerBuyStoreApplication extends Application {
     private void initRealm() {
         Realm.init(this);  // add this line
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("power_buy.realm")
+                .name("eordering.realm")
                 .migration(new MigrationDatabase())
                 .schemaVersion(MigrationDatabase.SCHEMA_VERSION)
                 .build();

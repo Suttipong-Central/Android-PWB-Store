@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorAccent">#A6192E</color>
+
+    <!-- cdsBlack is toolbar icon color -->
+    <color name="cdsBlack">#333333</color>
+
+    <color name="cdsRed">@color/colorAccent</color>
+
+    <!-- drawer sub header -->
+    <color name="drawerSubHeaderColor">#A6192E</color>
+
+    <color name="specialPriceColor">#D0021B</color>
+    <color name="primaryButtonColor">#A6192E</color>
+    <color name="defaultButtonColor">@color/white</color>
+    <color name="defaultIconButtonColor">#A6192E</color>
+    <color name="defaultTextButtonColor">#A6192E</color>
+    <color name="defaultButtonStrokeColor">#A6192E</color>
+    <color name="iconArrowBack">@color/colorAccent</color>
+
+    <color name="toggleSelectedStroke">@color/colorAccent</color>
+    <color name="toggleSelectedFill">@color/colorPrimary</color>
+    <color name="togglePressedFill">@color/white80</color>
+    <color name="toggleFill">@color/colorAccent</color>
+    <color name="toggleStroke">@color/colorAccent</color>
+
+    <color name="textDefaultColor">@color/cdsRed</color>
+    <color name="cursorColor">@color/cdsRed</color>
+
+    <color name="categoryColor">#F4893F</color>
+
+    <!-- select branch page -->
+    <color name="textHeaderBranchDetail">@color/cdsRed</color>
+    <color name="textHeaderBranchTitle">@color/white</color>
+    <color name="backgroundHeaderBranchTitle">@color/cdsRed</color>
+
+    <!-- tab color item freebie -->
+    <color name="itemFreebieTabColor">@color/cdsRed</color>
+</resources>
