@@ -58,8 +58,8 @@ class BranchDetailFragment : Fragment() {
     fun updateBranchDetail(branch: Branch) {
         tvTitle.text = branch.storeName
         tvAddress.text = branch.address
-        tvContract.text = branch.phone
-        tvOpenStore.text = branch.description
+        tvContract.text = if (branch.phone.isNotBlank()) branch.phone else "-"
+        tvOpenStore.text = if (branch.description.isNotBlank()) branch.description else "-"
         selectedButton.setOnClickListener {
             listener?.onSelectedStore(branch)
         }

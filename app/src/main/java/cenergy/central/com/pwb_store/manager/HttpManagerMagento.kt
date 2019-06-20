@@ -30,7 +30,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 class HttpManagerMagento(context: Context) {
@@ -775,8 +777,10 @@ class HttpManagerMagento(context: Context) {
 
                                     if (extensionObj.has("opening_hours")) {
                                         val openingArray = extensionObj.getJSONArray("opening_hours")
-                                        if (openingArray.length() > 0) {
-                                            val openItemArray = openingArray.getJSONArray(openingArray.length() - 1)
+                                        val calendar = Calendar.getInstance()
+                                        val day = calendar.get(Calendar.DAY_OF_WEEK) - 1 // index of opening_hours
+                                        if (openingArray.length() > 0 && day < openingArray.length()) {
+                                            val openItemArray = openingArray.getJSONArray(day)
                                             val startTime = openItemArray.getJSONObject(0).getString("start_time")
                                             val endTime = openItemArray.getJSONObject(0).getString("end_time")
                                             branch.description = "$startTime - $endTime"
