@@ -1,18 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_topic"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="wrap_content"
+    android:background="@color/headDetail"
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/text_header"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_store"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp"
-        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center|center_vertical"
+        android:text="@string/store_code"
         android:textColor="@color/nameProductColor"
-        android:text="Central Department Store"/>
+        android:textStyle="bold" />
 
-</RelativeLayout>
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/text_name"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        android:gravity="center|center_vertical"
+        android:text="@string/store_name"
+        android:textColor="@color/nameProductColor"
+        android:textStyle="bold" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/telephone_text_view"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        android:gravity="center|center_vertical"
+        android:text="@string/telephone"
+        android:textColor="@color/nameProductColor"
+        android:textStyle="bold" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/text_stock"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center|center_vertical"
+        android:text="@string/stock"
+        android:textColor="@color/nameProductColor"
+        android:textStyle="bold" />
+</LinearLayout>

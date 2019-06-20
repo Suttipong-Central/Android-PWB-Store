@@ -17,7 +17,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 
-class AvailableStoreActivity : BaseActivity(), AvailableProtocol{
+class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
     private lateinit var mToolbar: Toolbar
     private lateinit var languageButton: LanguageButton
@@ -37,9 +37,9 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol{
         }
 
         initView()
+        handleChangeLanguage()
 
         if (savedInstanceState == null) {
-            showProgressDialog()
             retrieveChangeLanguage()
         } else {
             val fragmentTransaction = supportFragmentManager.beginTransaction()
@@ -51,11 +51,12 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol{
     }
 
     private fun retrieveChangeLanguage() {
-        HttpManagerMagento.getInstance(this).getAvailableStore(sku!!, object : ApiResponseCallback<List<StoreAvailable>>{
+        showProgressDialog()
+        HttpManagerMagento.getInstance(this).getAvailableStore(sku!!, object : ApiResponseCallback<List<StoreAvailable>> {
             override fun success(response: List<StoreAvailable>?) {
                 runOnUiThread {
                     dismissProgressDialog()
-                    if (response!= null){
+                    if (response != null) {
                         storeAvailableList = response
                         val fragmentTransaction = supportFragmentManager.beginTransaction()
                         fragmentTransaction
@@ -85,7 +86,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol{
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
         mToolbar.setNavigationOnClickListener { finish() }
-        languageButton = findViewById(R.id.switch_language_button);
+        languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
     }
 
@@ -130,6 +131,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol{
     }
 
     override fun onChangedLanguage(lang: AppLanguage) {
+        super.onChangedLanguage(lang)
         retrieveChangeLanguage()
     }
 
@@ -146,6 +148,6 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol{
     }
 }
 
-interface  AvailableProtocol{
+interface AvailableProtocol {
     fun getStoreAvailable(): List<StoreAvailable>
 }

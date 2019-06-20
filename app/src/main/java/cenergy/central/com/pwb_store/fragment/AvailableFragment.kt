@@ -40,13 +40,15 @@ class AvailableFragment : Fragment() {
     private fun initInstances(rootView: View) {
         // Init 'View' instance(s) with rootView.findViewById here
         recyclerView = rootView.findViewById(R.id.recycler_view)
-        availableStoreAdapter = AvailableStoreAdapter(storeAvailableList)
+        availableStoreAdapter = AvailableStoreAdapter()
+        recyclerView.setHasFixedSize(true)
+        recyclerView.isNestedScrollingEnabled = true
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = availableStoreAdapter
         if (userInformation!!.store != null) {
-            availableStoreAdapter!!.setCompareAvailable(userInformation.store!!.retailerId)
+            availableStoreAdapter!!.setCompareAvailable(userInformation.store!!.retailerId, storeAvailableList)
         } else {
-            availableStoreAdapter!!.setCompareAvailable("")
+            availableStoreAdapter!!.setCompareAvailable("", storeAvailableList)
         }
     }
 
