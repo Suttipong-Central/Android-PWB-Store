@@ -426,8 +426,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun startAvailableStore(product: Product) {
         Log.d(TAG, "sku" + product.id)
-        val intent = Intent(this, AvaliableStoreActivity::class.java)
-        intent.putExtra(AvaliableStoreActivity.ARG_SKU, product.sku)
+        val intent = Intent(this, AvailableStoreActivity::class.java)
+        intent.putExtra(AvailableStoreActivity.ARG_SKU, product.sku)
         startActivity(intent)
     }
 

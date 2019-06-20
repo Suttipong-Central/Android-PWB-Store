@@ -5,7 +5,7 @@
     android:id="@+id/activity_cart"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.AvaliableStoreActivity">
+    tools:context=".activity.AvailableStoreActivity">
 
     <include
         android:id="@+id/layout_app_bar"

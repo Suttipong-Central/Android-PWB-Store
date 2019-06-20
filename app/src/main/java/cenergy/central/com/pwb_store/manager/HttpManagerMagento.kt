@@ -32,8 +32,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
-
 
 class HttpManagerMagento(context: Context) {
 
@@ -542,6 +540,72 @@ class HttpManagerMagento(context: Context) {
             }
 
             override fun onFailure(call: okhttp3.Call?, e: IOException?) {
+                callback.failure(APIError(e))
+            }
+        })
+    }
+
+    fun getAvailableStore(sku: String, callback: ApiResponseCallback<List<StoreAvailable>>) {
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments("${getLanguage()}/rest/V1/storepickup/stores/active/$sku")
+                .build()
+
+        val request = Request.Builder()
+                .url(httpUrl)
+                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .build()
+
+        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
+                if (response != null) {
+                    val data = response.body()
+                    val storeAvailableList: ArrayList<StoreAvailable> = arrayListOf()
+
+                    try {
+                        val storeAvailableArray = JSONArray(data?.string())
+                        for (i in 0 until storeAvailableArray.length()){
+                            val storeAvailable = StoreAvailable()
+                            val storeAvailableObject = storeAvailableArray.getJSONObject(i)
+                            if(storeAvailableObject.has("source_item")){
+                                val sourceObject = storeAvailableObject.getJSONObject("source_item")
+                                if (sourceObject.has("quantity")){
+                                    storeAvailable.qty = sourceObject.getInt("quantity")
+                                }
+                            }
+                            if(storeAvailableObject.has("store")){
+                                val storeObject = storeAvailableObject.getJSONObject("store")
+                                if (storeObject.has("name")){
+                                    storeAvailable.name = storeObject.getString("name")
+                                }
+                                if (storeObject.has("seller_code")){
+                                    storeAvailable.sellerCode = storeObject.getString("seller_code")
+                                }
+                                if (storeObject.has("custom_attributes")){
+                                    val attrArray = storeObject.getJSONArray("custom_attributes")
+                                    for (j in 0 until attrArray.length()) {
+                                        when (attrArray.getJSONObject(j).getString("name")) {
+                                            "contact_phone" -> {
+                                                storeAvailable.contactPhone = attrArray.getJSONObject(j).getString("value")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            storeAvailableList.add(storeAvailable)
+                        }
+                        callback.success(storeAvailableList)
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
+                    }
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+                response?.close()
+            }
+
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
                 callback.failure(APIError(e))
             }
         })

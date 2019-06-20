@@ -15,7 +15,6 @@
         android:paddingRight="10dp"
         android:text="ไม่พบข้อมูลที่ค้นหา"
         android:textSize="40sp"
-        app:typeFaceAsset="RobotoLight.ttf"
-        />
+        app:typeFaceAsset="RobotoLight.ttf" />
 
 </FrameLayout>
