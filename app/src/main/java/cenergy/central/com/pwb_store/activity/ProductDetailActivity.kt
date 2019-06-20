@@ -30,7 +30,8 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.Product
-import cenergy.central.com.pwb_store.model.body.*
+import cenergy.central.com.pwb_store.model.body.CartItemBody
+import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -58,11 +59,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productId: String? = null
     private var isBarcode: Boolean = false
     private var product: Product? = null
-
-    // fragment
-    private val detailFragment = DetailFragment()
-    private val overviewFragment = ProductOverviewFragment()
-    private val extensionFragment = ProductExtensionFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -216,21 +212,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductFromBarcode(barcode, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
-                runOnUiThread {
-                    dismissProgressDialog()
-                    if (response != null) {
-                        tvNotFound.visibility = View.INVISIBLE
-                        containerGroupView.visibility = View.VISIBLE
-
-                        // setup product
-                        product = response
-                        startProductDetailFragment()
-                        checkDisableAddProductButton(product!!)
-                    } else {
-                        tvNotFound.visibility = View.VISIBLE
-                        containerGroupView.visibility = View.INVISIBLE
-                    }
-                }
+                handleGetProductSuccess(response)
             }
 
             override fun failure(error: APIError) {
@@ -249,21 +231,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductDetail(sku, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
-                runOnUiThread {
-                    dismissProgressDialog()
-                    if (response != null) {
-                        tvNotFound.visibility = View.INVISIBLE
-                        containerGroupView.visibility = View.VISIBLE
-
-                        // setup product
-                        product = response
-                        startProductDetailFragment()
-                        checkDisableAddProductButton(product!!)
-                    } else {
-                        tvNotFound.visibility = View.VISIBLE
-                        containerGroupView.visibility = View.INVISIBLE
-                    }
-                }
+                handleGetProductSuccess(response)
             }
 
             override fun failure(error: APIError) {
@@ -277,13 +245,35 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             }
         })
     }
+
+    private fun handleGetProductSuccess(response: Product?) {
+            dismissProgressDialog()
+            if (response != null) {
+                tvNotFound.visibility = View.INVISIBLE
+                containerGroupView.visibility = View.VISIBLE
+
+                // setup product
+                product = response
+                startProductDetailFragment()
+                checkDisableAddProductButton(product!!)
+            } else {
+                tvNotFound.visibility = View.VISIBLE
+                containerGroupView.visibility = View.INVISIBLE
+            }
+    }
     // end region
 
-    fun startProductDetailFragment() {
+    private fun startProductDetailFragment() {
         // setup
-        supportFragmentManager.beginTransaction().replace(R.id.containerDetail, detailFragment).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.containerOverview, overviewFragment).commit()
-        supportFragmentManager.beginTransaction().replace(R.id.containerExtension, extensionFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerDetail,
+                DetailFragment(),
+                TAG_DETAIL_FRAGMENT).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerOverview,
+                ProductOverviewFragment(),
+                TAG_EXTENSION_FRAGMENT).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
+                ProductExtensionFragment(),
+                TAG_OVERVIEW_FRAGMENT).commit()
     }
 
     private fun updateShoppingCartBadge() {
@@ -462,9 +452,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     fun checkDisableAddProductButton(product: Product) {
-        val productInCart = database.getCacheCartItemBySKU(product.sku)
-        if (productInCart != null && productInCart.qty!! >= product.extension?.stokeItem?.qty!!){
-            detailFragment.disableAddToCartButton()
+        runOnUiThread {
+            val productInCart = database.getCacheCartItemBySKU(product.sku)
+            if (productInCart != null && productInCart.qty!! >= product.extension?.stokeItem?.qty!!) {
+               val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+                if (fragment!= null && fragment is DetailFragment) {
+                    fragment.disableAddToCartButton()
+                }
+            }
         }
     }
 
@@ -485,5 +480,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID"
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
         const val ARG_IS_BARCODE = "ARG_IS_BARCODE"
+
+        private const val TAG_DETAIL_FRAGMENT = "fragment_detail"
+        private const val TAG_OVERVIEW_FRAGMENT = "fragment_overview"
+        private const val TAG_EXTENSION_FRAGMENT = "fragment_extension"
     }
 }
