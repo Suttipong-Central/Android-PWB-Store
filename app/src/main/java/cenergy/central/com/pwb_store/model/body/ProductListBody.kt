@@ -22,10 +22,10 @@ class FilterGroups(
 class Filter(
         var field: String = "",
         var value: String = "",
-        var conditionType: String = ""
+        var conditionType: String? = null
 ) {
     companion object {
-        fun createFilter(field: String, value: String, conditionType: String): Filter {
+        fun createFilter(field: String, value: String, conditionType: String? = null): Filter {
             return Filter(field = field, value = value, conditionType = conditionType)
         }
     }

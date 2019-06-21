@@ -78,7 +78,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
         bindView()
 
-       retrieveProductDetail()
+        retrieveProductDetail()
     }
 
     private fun retrieveProductDetail() {
@@ -132,7 +132,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item != null && item.itemId == android.R.id.home){
+        if (item != null && item.itemId == android.R.id.home) {
             finish()
         }
         return true
@@ -154,6 +154,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             retrieveProductDetail()
         }
     }
+
     override fun getStateView(): NetworkStateView? = networkStateView
     // endregion
 
@@ -247,19 +248,19 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun handleGetProductSuccess(response: Product?) {
-            dismissProgressDialog()
-            if (response != null) {
-                tvNotFound.visibility = View.INVISIBLE
-                containerGroupView.visibility = View.VISIBLE
+        dismissProgressDialog()
+        if (response != null) {
+            tvNotFound.visibility = View.INVISIBLE
+            containerGroupView.visibility = View.VISIBLE
 
-                // setup product
-                product = response
-                startProductDetailFragment()
-                checkDisableAddProductButton(product!!)
-            } else {
-                tvNotFound.visibility = View.VISIBLE
-                containerGroupView.visibility = View.INVISIBLE
-            }
+            // setup product
+            product = response
+            startProductDetailFragment()
+            checkDisableAddProductButton(product!!)
+        } else {
+            tvNotFound.visibility = View.VISIBLE
+            containerGroupView.visibility = View.INVISIBLE
+        }
     }
     // end region
 
@@ -455,8 +456,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         runOnUiThread {
             val productInCart = database.getCacheCartItemBySKU(product.sku)
             if (productInCart != null && productInCart.qty!! >= product.extension?.stokeItem?.qty!!) {
-               val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-                if (fragment!= null && fragment is DetailFragment) {
+                val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+                if (fragment != null && fragment is DetailFragment) {
                     fragment.disableAddToCartButton()
                 }
             }

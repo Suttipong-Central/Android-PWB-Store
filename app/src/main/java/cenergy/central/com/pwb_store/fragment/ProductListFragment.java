@@ -516,10 +516,22 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterByCategory.add(filterCategory);
             FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
 
-            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
+            Filter filterStock = Filter.Companion.createFilter("expr-p",
+                    "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))",
+                    null);
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
+
+            Filter filterStatus = Filter.Companion.createFilter("status", "1", null);
+            ArrayList<Filter> filterByStatus = new ArrayList<>();
+            filterByStatus.add(filterStatus);
+            FilterGroups filterGroupStatus = new FilterGroups(filterByStatus);
+
+            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", null);
+            ArrayList<Filter> filterByVisible = new ArrayList<>();
+            filterByVisible.add(filterVisible);
+            FilterGroups filterGroupVisible = new FilterGroups(filterByVisible);
 
             Filter filterPrice = Filter.Companion.createFilter("price", "0", "gt");
             ArrayList<Filter> filterByPrice = new ArrayList<>();
@@ -530,6 +542,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterGroupsList.add(filterGroupCategory);
             filterGroupsList.add(filterGroupStock);
             filterGroupsList.add(filterGroupPrice);
+            filterGroupsList.add(filterGroupStatus);
+            filterGroupsList.add(filterGroupVisible);
 
             SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
@@ -583,10 +597,22 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterByCategory.add(filterCategory);
             FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
 
-            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
+            Filter filterStock = Filter.Companion.createFilter("expr-p",
+                    "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))",
+                    null);
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
+
+            Filter filterStatus = Filter.Companion.createFilter("status", "1", null);
+            ArrayList<Filter> filterByStatus = new ArrayList<>();
+            filterByStatus.add(filterStatus);
+            FilterGroups filterGroupStatus = new FilterGroups(filterByStatus);
+
+            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", null);
+            ArrayList<Filter> filterByVisible = new ArrayList<>();
+            filterByVisible.add(filterVisible);
+            FilterGroups filterGroupVisible = new FilterGroups(filterByVisible);
 
             Filter filterPrice = Filter.Companion.createFilter("price", "0", "gt");
             ArrayList<Filter> filterByPrice = new ArrayList<>();
@@ -603,6 +629,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterGroupsList.add(filterGroupStock);
             filterGroupsList.add(filterGroupPrice);
             filterGroupsList.add(filterGroupBrand);
+            filterGroupsList.add(filterGroupStatus);
+            filterGroupsList.add(filterGroupVisible);
 
             SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
@@ -655,10 +683,22 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filters.add(filter);
             FilterGroups filterGroupSearch = new FilterGroups(filters);
 
-            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
+            Filter filterStock = Filter.Companion.createFilter("expr-p",
+                    "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))",
+                    null);
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
+
+            Filter filterStatus = Filter.Companion.createFilter("status", "1", null);
+            ArrayList<Filter> filterByStatus = new ArrayList<>();
+            filterByStatus.add(filterStatus);
+            FilterGroups filterGroupStatus = new FilterGroups(filterByStatus);
+
+            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", null);
+            ArrayList<Filter> filterByVisible = new ArrayList<>();
+            filterByVisible.add(filterVisible);
+            FilterGroups filterGroupVisible = new FilterGroups(filterByVisible);
 
             Filter filterPrice = Filter.Companion.createFilter("price", "0", "gt");
             ArrayList<Filter> filterByPrice = new ArrayList<>();
@@ -669,6 +709,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterGroupsList.add(filterGroupSearch);
             filterGroupsList.add(filterGroupStock);
             filterGroupsList.add(filterGroupPrice);
+            filterGroupsList.add(filterGroupStatus);
+            filterGroupsList.add(filterGroupVisible);
 
             SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
