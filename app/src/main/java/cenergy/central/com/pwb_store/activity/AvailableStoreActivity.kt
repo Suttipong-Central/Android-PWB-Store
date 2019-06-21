@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import kotlinx.android.synthetic.pwb.app_bar_avaliable.view.*
 
 class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
@@ -132,6 +133,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
+        updateView()
         retrieveChangeLanguage()
     }
 
@@ -140,6 +142,10 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
     override fun getStateView(): NetworkStateView? = networkStateView
 
     override fun getSwitchButton(): LanguageButton? = languageButton
+
+    private fun updateView() {
+        mToolbar.txt_header.text = getString(R.string.store_avaliable)
+    }
 
     companion object {
         private val TAG = AvailableStoreActivity::class.java.simpleName

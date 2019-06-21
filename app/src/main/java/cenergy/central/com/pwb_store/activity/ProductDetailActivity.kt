@@ -428,7 +428,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         Log.d(TAG, "sku" + product.id)
         val intent = Intent(this, AvailableStoreActivity::class.java)
         intent.putExtra(AvailableStoreActivity.ARG_SKU, product.sku)
-        startActivity(intent)
+        startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
     }
 
     private fun startWebView(content: String) {
