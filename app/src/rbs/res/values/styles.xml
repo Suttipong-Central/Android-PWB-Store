@@ -22,39 +22,39 @@
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/cdsRed</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="textSubHeader">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/cdsBlack</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <style name="textNameCategory">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/cdsRed</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <style name="textCompare">
         <item name="android:textSize">24sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/cdsRed</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <!-- Form -->
     <style name="Form" />
 
     <style name="Form.EditTextLayoutTheme" parent="AppTheme">
-        <item name="colorAccent">@color/cdsRed</item>
-        <item name="colorControlNormal">@color/cdsRed</item>
-        <item name="colorControlActivated">@color/cdsRed</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
     </style>
 
     <style name="RadioButtonStyle">
         <item name="colorControlNormal">@color/graySelect</item>
-        <item name="colorAccent">@color/cdsRed</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimaryDisableOnly">@color/graySelect</item>
     </style>
 </resources>

@@ -50,7 +50,7 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
             }
             if (selectedIndex == position) {
                 holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context,
-                        R.color.cdsRed))
+                        R.color.colorAccent))
             } else {
                 holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context,
                         R.color.grayTextColor))

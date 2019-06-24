@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorAccent">#A6192E</color>
-
-    <!-- cdsBlack is toolbar icon color -->
-    <color name="cdsBlack">#333333</color>
-
-    <color name="cdsRed">@color/colorAccent</color>
+    <color name="colorAccent">#72bf44</color>
 
     <!-- drawer sub header -->
-    <color name="drawerSubHeaderColor">#A6192E</color>
+    <color name="drawerSubHeaderColor">#72bf44</color>
 
     <color name="specialPriceColor">#D0021B</color>
-    <color name="primaryButtonColor">#A6192E</color>
+    <color name="primaryButtonColor">#72bf44</color>
     <color name="defaultButtonColor">@color/white</color>
-    <color name="defaultIconButtonColor">#A6192E</color>
-    <color name="defaultTextButtonColor">#A6192E</color>
-    <color name="defaultButtonStrokeColor">#A6192E</color>
+    <color name="defaultIconButtonColor">#72bf44</color>
+    <color name="defaultTextButtonColor">#72bf44</color>
+    <color name="defaultButtonStrokeColor">#72bf44</color>
     <color name="iconArrowBack">@color/colorAccent</color>
 
     <color name="toggleSelectedStroke">@color/colorAccent</color>
@@ -25,16 +20,16 @@
     <color name="toggleFill">@color/colorAccent</color>
     <color name="toggleStroke">@color/colorAccent</color>
 
-    <color name="textDefaultColor">@color/cdsRed</color>
-    <color name="cursorColor">@color/cdsRed</color>
+    <color name="textDefaultColor">@color/colorAccent</color>
+    <color name="cursorColor">@color/colorAccent</color>
 
-    <color name="categoryColor">#F4893F</color>
+    <color name="categoryColor">@color/colorAccent</color>
 
     <!-- select branch page -->
-    <color name="textHeaderBranchDetail">@color/cdsRed</color>
+    <color name="textHeaderBranchDetail">@color/colorAccent</color>
     <color name="textHeaderBranchTitle">@color/white</color>
-    <color name="backgroundHeaderBranchTitle">@color/cdsRed</color>
+    <color name="backgroundHeaderBranchTitle">@color/colorAccent</color>
 
     <!-- tab color item freebie -->
-    <color name="itemFreebieTabColor">@color/cdsRed</color>
+    <color name="itemFreebieTabColor">@color/colorAccent</color>
 </resources>
