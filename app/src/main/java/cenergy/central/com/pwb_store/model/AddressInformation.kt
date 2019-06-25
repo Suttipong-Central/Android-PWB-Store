@@ -22,7 +22,7 @@ open class AddressInformation(
         @SerializedName("customAttributes")
         var subAddress: SubAddress? = null,
         @SerializedName("same_as_billing")
-        var sameBilling: Int = 0,
+        var sameBilling: Int? = null,
         @SerializedName("save_in_address_book")
         var saveInAddress: Int = 0,
         var saveInAddressBook: String? = null,
@@ -36,7 +36,7 @@ open class AddressInformation(
                           homeNo: String, homeBuilding: String, homeSoi: String, homeDistrict: String,
                           homeSubDistrict: String, homeCity: String, homeRoad: String, homePostalCode: String,
                           homePhone: String, provinceId: String, provinceCode: String, countryId: String,
-                          districtId: String, subDistrictId: String, postcodeId: String, sameBilling: Int,
+                          districtId: String, subDistrictId: String, postcodeId: String, sameBilling: Int? = null,
                           company: String = "", vatId: String = ""): AddressInformation {
 
             val subAddress = SubAddress(

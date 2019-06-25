@@ -6,7 +6,7 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 4
+        const val SCHEMA_VERSION = 5
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -63,7 +63,7 @@ class MigrationDatabase : RealmMigration {
                 addField("updatedAt", String::class.java).setNullable("updatedAt", false)
                 addField("fax", String::class.java).setNullable("fax", false)
             }
-            
+
             // Clear address data
             realm.delete("Province")
             realm.delete("District")
@@ -150,6 +150,14 @@ class MigrationDatabase : RealmMigration {
             }
             realm.schema.get("Store")?.apply {
                 addField("retailerId", String::class.java).setNullable("retailerId", false)
+            }
+        }
+
+        if (oldVersion < 5) {
+            // Update AddressInformation model
+            realm.schema.get("AddressInformation")?.apply {
+                // update same_as_billing to be optional
+                setNullable("sameBilling", true)
             }
         }
     }

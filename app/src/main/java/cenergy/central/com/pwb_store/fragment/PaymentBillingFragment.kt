@@ -696,8 +696,8 @@ class PaymentBillingFragment : Fragment() {
         homeDistrict = district?.name ?: ""
         homeSubDistrictId = subDistrict?.subDistrictId ?: ""
         homeSubDistrict = subDistrict?.name ?: ""
-        homePostalCodeId = subDistrict?.postcodeId ?: ""
-        homePostalCode = subDistrict?.postcode ?: ""
+        homePostalCodeId = postcode?.postcodeId ?: ""
+        homePostalCode = postcode?.postcode ?: ""
         homePhone = homePhoneEdt.getText()
         company = if (isRequireTaxInvoice) companyEdt.getText() else ""
         vatId = if (isRequireTaxInvoice) taxIdEdt.getText() else ""
@@ -708,8 +708,8 @@ class PaymentBillingFragment : Fragment() {
                 homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
-                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling,
-                company = company, vatId = vatId)
+                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict,
+                sameBilling = sameBilling, company = company, vatId = vatId)
     }
 
     private fun createBilling(sameBilling: Int): AddressInformation {
@@ -729,8 +729,8 @@ class PaymentBillingFragment : Fragment() {
         homeDistrict = billingDistrict?.name ?: ""
         homeSubDistrictId = billingSubDistrict?.subDistrictId ?: ""
         homeSubDistrict = billingSubDistrict?.name ?: ""
-        homePostalCodeId = billingSubDistrict?.postcodeId ?: ""
-        homePostalCode = billingSubDistrict?.postcode ?: ""
+        homePostalCodeId = billingPostcode?.postcodeId ?: ""
+        homePostalCode = billingPostcode?.postcode ?: ""
 
         return AddressInformation.createAddress(
                 firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
@@ -738,7 +738,8 @@ class PaymentBillingFragment : Fragment() {
                 homePostalCode = homePostalCode, homePhone = "", provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
-                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict, sameBilling = sameBilling)
+                homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict,
+                sameBilling = null)
     }
 
     private fun hasEmptyInput(): Boolean {
