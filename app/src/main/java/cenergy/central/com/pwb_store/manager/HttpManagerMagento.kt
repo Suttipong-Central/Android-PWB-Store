@@ -751,8 +751,28 @@ class HttpManagerMagento(context: Context) {
 
     fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation,
                                   subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption, callback: ApiResponseCallback<ShippingInformationResponse>) {
+
         val cartService = retrofit.create(CartService::class.java)
-        val addressInformationBody = AddressInformationBody(shippingAddress, billingAddress, deliveryOption.methodCode,
+
+        // clone shipping address and clear tax information
+        val newShoppingAddress = AddressInformation(
+                city = shippingAddress.city,
+                region = shippingAddress.region,
+                regionId = shippingAddress.regionId,
+                regionCode = shippingAddress.regionCode,
+                countryId = shippingAddress.countryId,
+                street = shippingAddress.street,
+                postcode = shippingAddress.postcode,
+                firstname = shippingAddress.firstname,
+                lastname = shippingAddress.lastname,
+                email = shippingAddress.email,
+                telephone = shippingAddress.telephone,
+                subAddress = shippingAddress.subAddress,
+                sameBilling = shippingAddress.sameBilling,
+                company = "",
+                vatId = "")
+
+        val addressInformationBody = AddressInformationBody(newShoppingAddress, billingAddress, deliveryOption.methodCode,
                 deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
         cartService.createShippingInformation(getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {

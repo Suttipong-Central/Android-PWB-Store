@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputType
@@ -486,7 +485,7 @@ class PaymentBillingFragment : Fragment() {
                 if (districtName.isNotBlank()) {
                     if (subDistrictName.isNotBlank()) {
                         memberLoadDistrict(province.provinceId, districtName, subDistrictName,
-                                postcodeStr,false)
+                                postcodeStr, false)
                     } else {
                         memberLoadDistrict(province.provinceId, districtName)
                     }
@@ -709,7 +708,9 @@ class PaymentBillingFragment : Fragment() {
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
                 homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict,
-                sameBilling = sameBilling, company = company, vatId = vatId)
+                sameBilling = sameBilling,
+                company = if (sameBilling == IS_SAME_BILLING) company else "",
+                vatId = if (sameBilling == IS_SAME_BILLING) vatId else "")
     }
 
     private fun createBilling(sameBilling: Int): AddressInformation {
@@ -731,6 +732,8 @@ class PaymentBillingFragment : Fragment() {
         homeSubDistrict = billingSubDistrict?.name ?: ""
         homePostalCodeId = billingPostcode?.postcodeId ?: ""
         homePostalCode = billingPostcode?.postcode ?: ""
+        company = if (isRequireTaxInvoice) companyEdt.getText() else ""
+        vatId = if (isRequireTaxInvoice) taxIdEdt.getText() else ""
 
         return AddressInformation.createAddress(
                 firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
@@ -739,7 +742,7 @@ class PaymentBillingFragment : Fragment() {
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
                 homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict,
-                sameBilling = null)
+                sameBilling = null, company = company, vatId = vatId)
     }
 
     private fun hasEmptyInput(): Boolean {
