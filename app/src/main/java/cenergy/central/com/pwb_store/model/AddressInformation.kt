@@ -50,7 +50,8 @@ open class AddressInformation(
                     postcode = homePostalCode,
                     districtId = districtId,
                     subDistrictId = subDistrictId,
-                    postcodeId = postcodeId)
+                    postcodeId = postcodeId,
+                    addressLine = homeRoad)
             return AddressInformation(
                     city = homeCity,
                     region = homeCity,

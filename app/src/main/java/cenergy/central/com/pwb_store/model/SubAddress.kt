@@ -20,4 +20,6 @@ open class SubAddress(
         @SerializedName("subdistrict_id")
         var subDistrictId: String = "",
         @SerializedName("postcode_id")
-        var postcodeId: String = "") : RealmObject()
+        var postcodeId: String = "",
+        @SerializedName("address_line")
+        var addressLine: String = "") : RealmObject()

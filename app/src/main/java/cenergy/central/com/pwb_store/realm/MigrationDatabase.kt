@@ -6,7 +6,7 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 5
+        const val SCHEMA_VERSION = 6
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -158,6 +158,14 @@ class MigrationDatabase : RealmMigration {
             realm.schema.get("AddressInformation")?.apply {
                 // update same_as_billing to be optional
                 setNullable("sameBilling", true)
+            }
+        }
+
+        if (oldVersion < 6) {
+            // Update SubAddress model
+            realm.schema.get("SubAddress")?.apply {
+                // add addressLine for street value**
+                addField("addressLine", String::class.java).setNullable("addressLine", false)
             }
         }
     }
