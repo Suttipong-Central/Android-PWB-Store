@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.view
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -14,7 +15,7 @@ class PowerBuyIconButton : LinearLayout {
     private lateinit var pwbButton: LinearLayout
     private lateinit var icon: ImageView
     private lateinit var textView: PowerBuyTextView
-    private var isDisable: Boolean = false
+    var isDisable: Boolean = false
     private var isHideIcon: Boolean = false
     private var isDefaultButton: Boolean = false
     private var textInput = ""
@@ -61,11 +62,12 @@ class PowerBuyIconButton : LinearLayout {
 
     private fun notifyAttributeChanged() {
         if (isDisable) {
+            pwbButton.isEnabled = false
             pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_unselected)
             icon.setColorFilter(ContextCompat.getColor(context, R.color.white))
             textView.setTextColor(ContextCompat.getColor(context, R.color.white))
-            pwbButton.isEnabled = false
         } else {
+            pwbButton.isEnabled = true
             if(isDefaultButton){
                 pwbButton.background = ContextCompat.getDrawable(context, R.drawable.button_default)
                 colorIcon = R.color.defaultIconButtonColor
@@ -75,7 +77,6 @@ class PowerBuyIconButton : LinearLayout {
             }
             icon.setColorFilter(ContextCompat.getColor(context, colorIcon))
             textView.setTextColor(ContextCompat.getColor(context, colorText))
-            pwbButton.isEnabled = true
         }
 
         if (isHideIcon){
@@ -121,5 +122,9 @@ class PowerBuyIconButton : LinearLayout {
     fun setButtonHideIcon(hide: Boolean){
         this.isHideIcon = hide
         notifyAttributeChanged()
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        return !isDisable
     }
 }

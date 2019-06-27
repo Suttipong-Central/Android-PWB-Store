@@ -201,7 +201,7 @@ public class RealmController {
         });
     }
 
-    public List<CacheCartItem> deleteCartItem(final Long itemId) {
+    public void deleteCartItem(final Long itemId) {
         Realm realm = getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -211,8 +211,6 @@ public class RealmController {
                 realmCompareProducts.deleteAllFromRealm();
             }
         });
-
-        return getCacheCartItems();
     }
 
     public List<CacheCartItem> getCacheCartItems() {
@@ -222,11 +220,13 @@ public class RealmController {
     }
 
     public CacheCartItem getCacheCartItem(Long itemId) {
+        Realm realm = getRealm();
         CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_ID, itemId).findFirst();
         return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
     }
 
     public CacheCartItem getCacheCartItemBySKU(String sku) {
+        Realm realm = getRealm();
         CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_SKU, sku).findFirst();
         return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
     }

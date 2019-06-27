@@ -30,6 +30,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.calendar_layout.*
 import kotlinx.android.synthetic.main.fragment_detail.view.*
 
 
@@ -86,21 +87,23 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             }
 
             R.id.addToCartButton -> {
-                product?:return
-                if (product!!.typeId == "configurable") {
-                    if (optionSize == null) {
-                        Toast.makeText(context,"Size null", Toast.LENGTH_LONG).show()
-                        return
+                if (!(view as PowerBuyIconButton).isDisable) {
+                    product ?: return
+                    if (product!!.typeId == "configurable") {
+                        if (optionSize == null) {
+                            Toast.makeText(context, "Size null", Toast.LENGTH_LONG).show()
+                            return
+                        }
+                        if (optionShade == null) {
+                            Toast.makeText(context, "Shade null", Toast.LENGTH_LONG).show()
+                            return
+                        }
+                        configItemOptions.add(optionSize!!)
+                        configItemOptions.add(optionShade!!)
+                        productDetailListener.addProductConfigToCart(product, configItemOptions)
+                    } else {
+                        productDetailListener.addProductToCart(product)
                     }
-                    if (optionShade == null) {
-                        Toast.makeText(context,"Shade null", Toast.LENGTH_LONG).show()
-                        return
-                    }
-                    configItemOptions.add(optionSize!!)
-                    configItemOptions.add(optionShade!!)
-                    productDetailListener.addProductConfigToCart(product, configItemOptions)
-                } else {
-                    productDetailListener.addProductToCart(product)
                 }
             }
         }
@@ -249,7 +252,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.setEnableStrikeThrough(false)
     }
 
-    fun disableAddToCartButton(){
-        addItemButton.setButtonDisable(true)
+    fun disableAddToCartButton(isDisable: Boolean = true){
+        addItemButton.setButtonDisable(isDisable)
     }
 }

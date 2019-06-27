@@ -93,11 +93,17 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         super.onResume()
         updateCompareBadge()
         updateShoppingCartBadge()
+
+        product?.let { checkDisableAddProductButton(it)}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
+            // check add button
+            product?.let { checkDisableAddProductButton(it) }
+
+            // check language
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
@@ -256,7 +262,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             // setup product
             product = response
             startProductDetailFragment()
-            checkDisableAddProductButton(product!!)
+            product?.let { checkDisableAddProductButton(it)}
         } else {
             tvNotFound.visibility = View.VISIBLE
             containerGroupView.visibility = View.INVISIBLE
@@ -364,10 +370,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         val cartId = preferenceManager.cartId
         if (cartId != null) {
-            Log.d("ProductDetail", "has cart id")
             addProductToCart(cartId, product, listOptionsBody)
         } else {
-            Log.d("ProductDetail", "new cart id")
             retrieveCart(product, listOptionsBody)
         }
     }
@@ -394,7 +398,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             override fun success(response: CartItem?) {
                 runOnUiThread {
                     saveCartItem(response, product)
-                    checkDisableAddProductButton(product)
                     dismissProgressDialog()
                 }
             }
@@ -415,6 +418,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
                 Toast.makeText(this@ProductDetailActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
+                checkDisableAddProductButton(product)
             }
 
             override fun onFailure(error: Throwable) {
@@ -426,7 +430,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // endregion
 
     private fun startAvailableStore(product: Product) {
-        Log.d(TAG, "sku" + product.id)
         val intent = Intent(this, AvailableStoreActivity::class.java)
         intent.putExtra(AvailableStoreActivity.ARG_SKU, product.sku)
         startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
@@ -452,15 +455,28 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         builder.show()
     }
 
-    fun checkDisableAddProductButton(product: Product) {
+    private fun checkDisableAddProductButton(product: Product) {
         runOnUiThread {
             val productInCart = database.getCacheCartItemBySKU(product.sku)
-            if (productInCart != null && productInCart.qty!! >= product.extension?.stokeItem?.qty!!) {
-                val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-                if (fragment != null && fragment is DetailFragment) {
-                    fragment.disableAddToCartButton()
-                }
+            val productQty = product.extension?.stokeItem?.qty ?: 0
+
+            if (productInCart != null && productInCart.qty!! >= productQty) {
+                disableAddToCartButton()
+            } else if (productInCart == null && productQty <= 0) {
+                disableAddToCartButton()
             }
+
+            if (productInCart == null && productQty > 0) {
+                disableAddToCartButton(false)
+            }
+        }
+    }
+
+    private fun disableAddToCartButton(disable: Boolean = true) {
+        Log.d("ProductDetail", "disable add to cart button")
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+        if (fragment != null && fragment is DetailFragment) {
+            fragment.disableAddToCartButton(disable)
         }
     }
 
