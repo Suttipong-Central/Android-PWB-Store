@@ -49,9 +49,10 @@ class AvailableStoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun setCompareAvailable(storeCode: String, storeAvailableList: List<StoreAvailable>) {
 
         // empty items
-        if (storeAvailableList.isEmpty()) {
+        if (storeAvailableList.isNullOrEmpty()) {
             this.storeAvailableList = arrayListOf()
             this.storeAvailableList.add(ItemEmpty())
+            notifyDataSetChanged()
             return
         }
 
