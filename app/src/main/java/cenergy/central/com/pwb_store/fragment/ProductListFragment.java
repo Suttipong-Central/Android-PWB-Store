@@ -98,8 +98,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private String brandName;
 
     //Sort
-    private String sortName = "view_count";
-    private String sortType = "DESC";
+    private String sortName = "";
+    private String sortType = "";
     private Category categoryLv2;
 
     //Pagination
@@ -379,8 +379,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         isLoadingMore = true;
         mPreviousTotal = 0;
         if (!isSorting) {
-            sortName = "view_count";
-            sortType = "DESC";
+            sortName = "";
+            sortType = "";
         }
     }
 
@@ -516,19 +516,17 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterByCategory.add(filterCategory);
             FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
 
-            Filter filterStock = Filter.Companion.createFilter("expr-p",
-                    "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))",
-                    null);
+            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
 
-            Filter filterStatus = Filter.Companion.createFilter("status", "1", null);
+            Filter filterStatus = Filter.Companion.createFilter("status", "1", "eq");
             ArrayList<Filter> filterByStatus = new ArrayList<>();
             filterByStatus.add(filterStatus);
             FilterGroups filterGroupStatus = new FilterGroups(filterByStatus);
 
-            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", null);
+            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", "eq");
             ArrayList<Filter> filterByVisible = new ArrayList<>();
             filterByVisible.add(filterVisible);
             FilterGroups filterGroupVisible = new FilterGroups(filterByVisible);
@@ -545,9 +543,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterGroupsList.add(filterGroupStatus);
             filterGroupsList.add(filterGroupVisible);
 
-            SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
-            sortOrders.add(sortOrder);
+            if (!sortName.isEmpty() && !sortType.isEmpty()) {
+                SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
+                sortOrders.add(sortOrder);
+            }
 
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
                     PER_PAGE,
@@ -597,19 +597,17 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterByCategory.add(filterCategory);
             FilterGroups filterGroupCategory = new FilterGroups(filterByCategory);
 
-            Filter filterStock = Filter.Companion.createFilter("expr-p",
-                    "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))",
-                    null);
+            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
 
-            Filter filterStatus = Filter.Companion.createFilter("status", "1", null);
+            Filter filterStatus = Filter.Companion.createFilter("status", "1", "eq");
             ArrayList<Filter> filterByStatus = new ArrayList<>();
             filterByStatus.add(filterStatus);
             FilterGroups filterGroupStatus = new FilterGroups(filterByStatus);
 
-            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", null);
+            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", "eq");
             ArrayList<Filter> filterByVisible = new ArrayList<>();
             filterByVisible.add(filterVisible);
             FilterGroups filterGroupVisible = new FilterGroups(filterByVisible);
@@ -632,9 +630,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterGroupsList.add(filterGroupStatus);
             filterGroupsList.add(filterGroupVisible);
 
-            SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
-            sortOrders.add(sortOrder);
+            if (!sortName.isEmpty() && !sortType.isEmpty()) {
+                SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
+                sortOrders.add(sortOrder);
+            }
 
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
                     PER_PAGE,
@@ -683,19 +683,17 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filters.add(filter);
             FilterGroups filterGroupSearch = new FilterGroups(filters);
 
-            Filter filterStock = Filter.Companion.createFilter("expr-p",
-                    "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))",
-                    null);
+            Filter filterStock = Filter.Companion.createFilter("stock.salable", "1", "eq");
             ArrayList<Filter> filterByStock = new ArrayList<>();
             filterByStock.add(filterStock);
             FilterGroups filterGroupStock = new FilterGroups(filterByStock);
 
-            Filter filterStatus = Filter.Companion.createFilter("status", "1", null);
+            Filter filterStatus = Filter.Companion.createFilter("status", "1", "eq");
             ArrayList<Filter> filterByStatus = new ArrayList<>();
             filterByStatus.add(filterStatus);
             FilterGroups filterGroupStatus = new FilterGroups(filterByStatus);
 
-            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", null);
+            Filter filterVisible = Filter.Companion.createFilter("visibility", "4", "eq");
             ArrayList<Filter> filterByVisible = new ArrayList<>();
             filterByVisible.add(filterVisible);
             FilterGroups filterGroupVisible = new FilterGroups(filterByVisible);
@@ -712,9 +710,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             filterGroupsList.add(filterGroupStatus);
             filterGroupsList.add(filterGroupVisible);
 
-            SortOrder sortOrder = SortOrder.Companion.createSortOrder(sortName, sortType);
             ArrayList<SortOrder> sortOrders = new ArrayList<>();
-            sortOrders.add(sortOrder);
+
 
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
                     PER_PAGE,
