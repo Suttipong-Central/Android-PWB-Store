@@ -2,18 +2,15 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,10 +32,8 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
@@ -256,7 +251,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             } else {
                 billingEmailLayout.visibility = View.VISIBLE
                 billingTelephoneLayout.visibility = View.VISIBLE
-                tvBillingEmail.text = billingAddress.email
+                val billingEmail = billingAddress.email
+                tvBillingEmail.text = if (billingEmail.isBlank()) shippingAddress.email else billingEmail
                 tvBillingTelephone.text = billingAddress.telephone
             }
         } else {
