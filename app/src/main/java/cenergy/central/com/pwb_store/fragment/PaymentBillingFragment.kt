@@ -57,7 +57,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
     private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
     private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
-    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
+//    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeNoEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var billingHomeSoiEdt: PowerBuyEditTextBorder
@@ -337,7 +337,7 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt.setText(billingAddress.firstname)
         billingLastNameEdt.setText(billingAddress.lastname)
         billingContactNumberEdt.setText(billingAddress.telephone)
-        billingEmailEdt.setText(billingAddress.email)
+//        billingEmailEdt.setText(billingAddress.email)
         billingHomeNoEdt.setText(billingAddress.subAddress?.houseNumber ?: "")
         billingHomeBuildingEdit.setText(billingAddress.subAddress?.building ?: "")
         billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
@@ -533,7 +533,7 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
         billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
         billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
-        billingEmailEdt = rootView.findViewById(R.id.email_billing)
+//        billingEmailEdt = rootView.findViewById(R.id.email_billing)
         billingHomeNoEdt = rootView.findViewById(R.id.billing_house_no_payment)
         billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
         billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
@@ -556,7 +556,7 @@ class PaymentBillingFragment : Fragment() {
         homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         homePhoneEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+//        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
 
@@ -724,7 +724,7 @@ class PaymentBillingFragment : Fragment() {
     private fun createBilling(sameBilling: Int): AddressInformation {
         firstName = billingFirstNameEdt.getText()
         lastName = billingLastNameEdt.getText()
-        email = billingEmailEdt.getText()
+//        email = billingEmailEdt.getText()
         contactNo = billingContactNumberEdt.getText()
         homeNo = billingHomeNoEdt.getText()
         homeBuilding = billingHomeBuildingEdit.getText()
@@ -744,7 +744,7 @@ class PaymentBillingFragment : Fragment() {
         vatId = if (isRequireTaxInvoice) taxIdEdt.getText() else ""
 
         return AddressInformation.createAddress(
-                firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
+                firstName = firstName, lastName = lastName, email = "", contactNo = contactNo,
                 homeNo = homeNo, homeBuilding = homeBuilding, homeSoi = homeSoi, homeRoad = homeRoad,
                 homePostalCode = homePostalCode, homePhone = "", provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
@@ -782,7 +782,7 @@ class PaymentBillingFragment : Fragment() {
         // setup error
         billingFirstNameEdt.setError(validator.validText(billingFirstNameEdt.getText()))
         billingLastNameEdt.setError(validator.validText(billingLastNameEdt.getText()))
-        billingEmailEdt.setError(validator.validEmail(billingEmailEdt.getText()))
+//        billingEmailEdt.setError(validator.validEmail(billingEmailEdt.getText()))
         if (billingContactNumberEdt.getText().isNotEmpty()) {
             billingContactNumberEdt.setError(validator.validThaiPhoneNumber(billingContactNumberEdt.getText()))
         } else {
@@ -795,7 +795,7 @@ class PaymentBillingFragment : Fragment() {
         billingSubDistrictInput.setError(validator.validText(billingSubDistrictInput.getText()))
         billingPostcodeInput.setError(validator.validText(billingPostcodeInput.getText()))
 
-        return (billingFirstNameEdt.getError() != null || billingLastNameEdt.getError() != null || billingEmailEdt.getError() != null
+        return (billingFirstNameEdt.getError() != null || billingLastNameEdt.getError() != null
                 || billingContactNumberEdt.getError() != null || billingHomeNoEdt.getError() != null || billingProvinceInput.getError() != null
                 || billingDistrictInput.getError() != null || billingSubDistrictInput.getError() != null || billingPostcodeInput.getError() != null
                 || billingHomeRoadEdt.getError() != null)
