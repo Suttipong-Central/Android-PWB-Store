@@ -343,6 +343,14 @@ class PaymentBillingFragment : Fragment() {
         billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
         billingHomeRoadEdt.setText(billingAddress.street?.get(0) ?: "")
 
+        // has input about vat?
+        val vatId = billingAddress.vatId
+        if (vatId.isNotBlank()) {
+            radioTaxGroup.check(R.id.radio_tax_yes)
+            companyEdt.setText(billingAddress.company)
+            taxIdEdt.setText(vatId)
+        }
+
         // validate province with local db
         val province = database.getProvince(billingAddress.regionId)
         if (province != null) {
