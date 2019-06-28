@@ -185,6 +185,8 @@ class HttpManagerMagento(context: Context) {
                     .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
                     .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
                     .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                    .addQueryParameter("searchCriteria[filterGroups][2][filters][0][field]", "is_active")
+                    .addQueryParameter("searchCriteria[filterGroups][2][filters][0][value]", "1")
                     .build()
         } else {
             HttpUrl.Builder()
