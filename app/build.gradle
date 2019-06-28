@@ -98,8 +98,8 @@ android {
         pwb {
             applicationId "cenergy.central.com.powerbuy_store"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 64
-            versionName "1.0.5"
+            versionCode 65
+            versionName "1.0.6"
         }
 
         cds {
