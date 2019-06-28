@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter
 
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
@@ -56,19 +57,22 @@ class AvailableStoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             return
         }
 
+        var tempAvailableList = arrayListOf<AvailableStoreItem>()
+        tempAvailableList.add(AvailableStoreHeader()) // header
         val sameStore = storeAvailableList.firstOrNull { it.sellerCode == storeCode }
         if (sameStore != null) {
-            var tempAvailableList = arrayListOf<AvailableStoreItem>()
-            tempAvailableList.add(AvailableStoreHeader())
             tempAvailableList.add(sameStore)
-            storeAvailableList.forEach {
-                if (tempAvailableList.indexOf(it) == -1) {
-                    tempAvailableList.add(it)
-                }
-            }
-            this.storeAvailableList = tempAvailableList
-            tempAvailableList = arrayListOf()
         }
+
+        storeAvailableList.forEach {
+            if (tempAvailableList.indexOf(it) == -1) {
+                tempAvailableList.add(it)
+            }
+        }
+
+        this.storeAvailableList = tempAvailableList
+        tempAvailableList = arrayListOf()
+
         notifyDataSetChanged()
     }
 
