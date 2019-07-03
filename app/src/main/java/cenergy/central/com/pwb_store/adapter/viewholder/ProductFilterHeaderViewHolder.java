@@ -40,9 +40,12 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void bindItem(final Category category) {
+    public void bindItem(Category category, Category selectedFilter) {
         mTxtHeader.setText(category.getDepartmentName());
         mImgFilterHeader.setVisibility(View.GONE);
+        if (selectedFilter != null) {
+            mTxtHeader.setTextAppearance(itemView.getContext(), category.getId().equals(selectedFilter.getId()) ? R.style.textSubCheck : R.style.textSub);
+        }
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -160,13 +160,23 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         showProgressDialog();
         isDoneFilter = true;
         isSorting = true;
+        brandName = ""; // clear filter brand name
         currentPage = 1; // clear current page
         Category categoryLv3 = productFilterItemBus.getProductFilterItem();
-        Log.d(TAG, "productFilterItemBus" + categoryLv3.getId());
-        callFilter(categoryLv3.getId(), sortName, sortType);
-        title = categoryLv3.getDepartmentName();
-        categoryId = categoryLv3.getId();
-        mPowerBuyPopupWindow.updateSingleProductFilterItem(categoryLv3);
+        int clickPosition = productFilterItemBus.getPosition();
+        if (categoryLv3 != null && clickPosition != 0) {
+            Log.d(TAG, "productFilterItemBus" + categoryLv3.getId());
+            callFilter(categoryLv3.getId(), sortName, sortType);
+            title = categoryLv3.getDepartmentName();
+            categoryId = categoryLv3.getId();
+            mPowerBuyPopupWindow.updateSingleProductFilterItem(categoryLv3);
+        } else  {
+            Log.d(TAG, "productFilterItemBus -> clear filter");
+            // clear filter
+            callFilter(categoryLv2.getId(), sortName, sortType);
+            title = categoryLv2.getDepartmentName();
+            categoryId = categoryLv2.getId();
+        }
         Log.d(TAG, "productFilterItemBus" + isDoneFilter);
     }
 
@@ -756,6 +766,11 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         if (response != null) {
             if (!response.getFilters().isEmpty()){
                 brands = response.getFilters().get(0).getItems();
+                for (FilterItem filterItem : brands) {
+                    if (brandName != null && brandName.equals(filterItem.getValue())) {
+                        filterItem.setSelected(true);
+                    }
+                }
             }
             totalItem = response.getTotalCount();
             totalPage = totalPageCal(totalItem);
@@ -770,30 +785,38 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             setTextHeader(totalItem, title);
         }
 
-//        if (!isSearch) {
-//            getBrands(categoryId);
-//        } else {
-//            layoutProgress.setVisibility(View.GONE);
-//            mProgressDialog.dismiss();
-//        }
-
         layoutProgress.setVisibility(View.GONE);
         mProgressDialog.dismiss();
     }
 
     // region {@link OnBrandFilterClickListener}
     @Override
-    public void onClickedItem(@NotNull FilterItem filterItem) {
+    public void onClickedItem(FilterItem filterItem) {
         isDoneFilter = true;
         resetPage();
-        brandName = filterItem.getValue(); // brand name
+
+        if (filterItem != null) {
+            brandName = filterItem.getValue(); // brand name
+            if (mProgressDialog != null && !mProgressDialog.isShowing()) {
+                showProgressDialog();
+            }
+//        if (mPowerBuyPopupWindow.isShowing()) {
+//            mPowerBuyPopupWindow.dismiss();
+//        }
+            retrieveProductList(categoryId, brandName, sortName, sortType);
+            mPowerBuyPopupWindow.updateSingleBrandFilterItem(filterItem);
+        } else  {
+           clearBrandFilter();
+        }
+    }
+
+    private void clearBrandFilter() {
+        brandName = ""; // clear brand
         if (mProgressDialog != null && !mProgressDialog.isShowing()) {
             showProgressDialog();
         }
-        if (mPowerBuyPopupWindow.isShowing()) {
-            mPowerBuyPopupWindow.dismiss();
-        }
         retrieveProductList(categoryId, brandName, sortName, sortType);
+        mPowerBuyPopupWindow.updateSingleBrandFilterItem(null);
     }
     // endregion
 

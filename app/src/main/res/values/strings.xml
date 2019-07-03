@@ -35,6 +35,7 @@
     <string name="product_stock_less">จำนวนสินค้าในคลัง: น้อย</string>
     <string name="filter_count">(%1$s)</string>
     <string name="brand">Brand</string>
+    <string name="filter_all">All</string>
 
     <!-- Product Detail -->
     <string name="promotion_header">รับประสบการณ์เหนือจินตนาการกับ FUJIFILM เมื่อแบ่งจ่ายด้วยบัตรเครดิต SCB นาน 10 เดือน</string>

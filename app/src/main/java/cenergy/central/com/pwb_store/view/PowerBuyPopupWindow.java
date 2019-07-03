@@ -48,6 +48,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     RecyclerView mRecyclerViewFilter;
 
     //Data Member
+    private FilterByBrandAdapter mFilterByBrandAdapter;
     private ProductFilterAdapter mProductFilterAdapter;
     private SortingAdapter mSortingAdapter;
     private AvaliableStoreFilterAdapter mAvaliableStoreFilterAdapter;
@@ -95,6 +96,14 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mRecyclerViewFilter.setAdapter(mAvaliableStoreFilterAdapter);
     }
 
+    public void setRecyclerViewFilterByBrand(List<FilterItem> filterItems, OnBrandFilterClickListener listener) {
+        mFilterByBrandAdapter = new FilterByBrandAdapter(listener);
+        mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mFilterByBrandAdapter.setBrandForFilter(filterItems);
+        mRecyclerViewFilter.setLayoutManager(mLayoutManager);
+        mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
+    }
+
     public void setSortingItem(SortingHeader sortingHeader) {
         //if (sortingHeader.isExpanded()) {
         //           mSortingAdapter.addSortLevel2(sortingHeader);
@@ -138,16 +147,12 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
         mProductFilterAdapter.updateSingleProductFilterItem(category);
     }
 
+    public void updateSingleBrandFilterItem(FilterItem filterItem) {
+        mFilterByBrandAdapter.updateSingleBrandFilterItem(filterItem);
+    }
+
     @Override
     public void onClick(View view) {
         Log.d(TAG, "Popup Click");
-    }
-
-    public void setRecyclerViewFilterByBrand(List<FilterItem> filterItems, OnBrandFilterClickListener listener) {
-        FilterByBrandAdapter mFilterByBrandAdapter = new FilterByBrandAdapter(listener);
-        mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mFilterByBrandAdapter.setBrandForFilter(filterItems);
-        mRecyclerViewFilter.setLayoutManager(mLayoutManager);
-        mRecyclerViewFilter.setAdapter(mFilterByBrandAdapter);
     }
 }

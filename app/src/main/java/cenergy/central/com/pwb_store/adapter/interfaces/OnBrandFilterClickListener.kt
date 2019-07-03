@@ -8,5 +8,5 @@ import cenergy.central.com.pwb_store.model.FilterItem
  */
 
 interface OnBrandFilterClickListener {
-     fun onClickedItem(filterItem: FilterItem)
+     fun onClickedItem(filterItem: FilterItem?)
 }
