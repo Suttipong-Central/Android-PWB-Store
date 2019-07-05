@@ -96,14 +96,14 @@ android {
 
     productFlavors {
         pwb {
-            applicationId "cenergy.central.com.powerbuy_store"
+            applicationId "cenergy.central.com.eordering.pwb"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 67
             versionName "1.0.8"
         }
 
         cds {
-            applicationId "cenergy.central.com.eordering"
+            applicationId "cenergy.central.com.eordering.cds"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 1
             versionName "0.0.1"
