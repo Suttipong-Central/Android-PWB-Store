@@ -76,12 +76,7 @@ public class ProductListActivity extends BaseActivity {
         }
         if (isSearch){
             mToolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white));
-            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    finish();
-                }
-            });
+            mToolbar.setNavigationOnClickListener(view -> finish());
         }
     }
 

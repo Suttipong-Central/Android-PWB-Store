@@ -16,11 +16,10 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
  */
 
 public class ProductListViewHolder extends RecyclerView.ViewHolder {
-    private static final String TAG = ProductListViewHolder.class.getSimpleName();
 
     private ImageView mImageView;
     private PowerBuyTextView productName;
-    private PowerBuyTextView productDescription;
+//    private PowerBuyTextView productDescription;
     private PowerBuyTextView oldPrice;
     private PowerBuyTextView newPrice;
     private PowerBuyTextView productBrand;
@@ -29,7 +28,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mImageView = itemView.findViewById(R.id.img_product);
         productName = itemView.findViewById(R.id.txt_product_name);
-        productDescription = itemView.findViewById(R.id.txt_product_description);
+//        productDescription = itemView.findViewById(R.id.txt_product_description);
         oldPrice = itemView.findViewById(R.id.txt_product_old_price);
         newPrice = itemView.findViewById(R.id.txt_product_new_price);
         productBrand = itemView.findViewById(R.id.txt_product_brand);

@@ -17,7 +17,16 @@ class ProductListBody(
 
 class FilterGroups(
         var filters: ArrayList<Filter> = arrayListOf()
-)
+){
+    companion object{
+        fun createFilterGroups(field: String, value: String, conditionType: String): FilterGroups{
+            val filter = Filter.createFilter(field, value, conditionType)
+            val filterList = arrayListOf<Filter>()
+            filterList.add(filter)
+            return FilterGroups(filterList)
+        }
+    }
+}
 
 class Filter(
         var field: String = "",

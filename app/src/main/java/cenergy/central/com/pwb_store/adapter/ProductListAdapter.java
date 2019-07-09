@@ -137,21 +137,13 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     final Product product = (Product) viewType;
                     ProductListViewHolder productListViewHolder = (ProductListViewHolder) holder;
                     productListViewHolder.setViewHolder(product);
-                    productListViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(clicked){
-                                clicked = false;
-                                Intent intent = new Intent(mContext, ProductDetailActivity.class);
-                                intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, product.getSku());
-                                ((Activity) mContext).startActivityForResult(intent, BaseActivity.REQUEST_UPDATE_LANGUAGE);
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        clicked = true;
-                                    }
-                                },1000);
-                            }
+                    productListViewHolder.itemView.setOnClickListener(view -> {
+                        if(clicked){
+                            clicked = false;
+                            Intent intent = new Intent(mContext, ProductDetailActivity.class);
+                            intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, product.getSku());
+                            ((Activity) mContext).startActivityForResult(intent, BaseActivity.REQUEST_UPDATE_LANGUAGE);
+                            new Handler().postDelayed(() -> clicked = true,1000);
                         }
                     });
                 }
@@ -178,7 +170,8 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         // Add deal paginated
         int startPosition = mListViewType.size();
-        ArrayList<Product> products = productResponse.getProducts() == null ? new ArrayList<Product>() : productResponse.getProducts();
+        productResponse.getProducts();
+        ArrayList<Product> products = productResponse.getProducts();
         for (Product product : products) {
             if(skuList.indexOf(product.getSku()) == -1){
                 skuList.add(product.getSku());
