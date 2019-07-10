@@ -101,14 +101,14 @@ public class SpecFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    public static SpecFragment newInstance(Product product) {
-        SpecFragment fragment = new SpecFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PRODUCT, product);
-        fragment.setArguments(args);
-        return fragment;
-    }
+//
+//    public static SpecFragment newInstance(Product product) {
+//        SpecFragment fragment = new SpecFragment();
+//        Bundle args = new Bundle();
+//        args.putParcelable(ARG_PRODUCT, product);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

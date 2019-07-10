@@ -20,5 +20,15 @@ interface UserService {
     fun retrieveUserId(@Header("Authorization") userToken: String): Call<LoginUserResponse>
 
     @GET("/rest/V1/e-ordering/retailers")
-    fun retrieveBrachUser(@Header("Authorization") userToken: String): Call<UserBranch>
+    fun retrieveStoreUser(@Header("Authorization") userToken: String): Call<UserBranch>
+
+    @GET("rest/{lang}/V1/storelocator")
+    fun retrieveStoreLocation(@Path("lang") language: String,
+                              @Query("criteria[filter_groups][0][filters][0][value]") sellerCode: String,
+                              @Query("criteria[filter_groups][0][filters][0][field]") field: String): Call<StoreLocationResponse>
+
+    @GET("/rest/{lang}/all/V1/headless/storepickup")
+    fun getBranches(@Path("lang") language: String,
+                    @Query("searchCriteria[sortOrders][0][field]") orderBy: String,
+                    @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
 }

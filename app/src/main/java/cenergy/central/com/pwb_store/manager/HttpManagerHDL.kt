@@ -23,7 +23,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class HttpManagerHDL(context: Context) {
+class HttpManagerHDL {
     private var retrofit: Retrofit
 
     init {
@@ -117,9 +117,9 @@ class HttpManagerHDL(context: Context) {
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerHDL? = null
 
-        fun getInstance(context: Context): HttpManagerHDL {
+        fun getInstance(): HttpManagerHDL {
             if (instance == null)
-                instance = HttpManagerHDL(context)
+                instance = HttpManagerHDL()
             return instance as HttpManagerHDL
         }
     }

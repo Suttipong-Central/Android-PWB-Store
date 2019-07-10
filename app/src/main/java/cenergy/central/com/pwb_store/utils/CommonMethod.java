@@ -1,16 +1,14 @@
 package cenergy.central.com.pwb_store.utils;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressLint("SimpleDateFormat")
 public class CommonMethod {
-	private static final String TAG = CommonMethod.class.getSimpleName();
-
 	public static String convertWeekDays(String date) {
-		Log.d(TAG, " Date: " + date);
 		String formattedDate = null;
 		try {
 			SimpleDateFormat originalFormat = new SimpleDateFormat(
@@ -21,15 +19,10 @@ public class CommonMethod {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return formattedDate;
-
 	}
 
-	
-	
-	public static String convertWeekDaysMouth(String date, Locale locale)
-	{
+	public static String convertWeekDaysMouth(String date, Locale locale) {
 		String formattedDate = null;
 		try
 			{
@@ -41,13 +34,11 @@ public class CommonMethod {
 			{
 				e.printStackTrace();
 			}
-
 		return formattedDate;
 
 	}
 
 	public static String convertMonth(String date) {
-		Log.d(TAG, " Date: " + date);
 		String formattedDate = null;
 		try {
 			SimpleDateFormat originalFormat = new SimpleDateFormat(
@@ -58,9 +49,6 @@ public class CommonMethod {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return formattedDate;
-
 	}
-
 }

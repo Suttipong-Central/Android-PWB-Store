@@ -26,10 +26,7 @@ import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.realm.DatabaseListener
@@ -254,23 +251,35 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun handleGetProductSuccess(response: Product?) {
-        dismissProgressDialog()
         if (response != null) {
-            tvNotFound.visibility = View.INVISIBLE
-            containerGroupView.visibility = View.VISIBLE
-
-            // setup product
-            product = response
-            startProductDetailFragment()
-            product?.let { checkDisableAddProductButton(it)}
+            checkHDLOption(response)
         } else {
+            dismissProgressDialog()
             tvNotFound.visibility = View.VISIBLE
             containerGroupView.visibility = View.INVISIBLE
         }
     }
+
+    private fun checkHDLOption(product: Product) {
+        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>>{
+            override fun success(response: List<DeliveryInfo>?) {
+                product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
+                dismissProgressDialog()
+                startProductDetailFragment(product)
+            }
+
+            override fun failure(error: APIError) {
+                dismissProgressDialog()
+                startProductDetailFragment(product)
+            }
+        })
+    }
     // end region
 
-    private fun startProductDetailFragment() {
+    private fun startProductDetailFragment(product: Product) {
+        // set product
+        this.product = product
+
         // setup
         supportFragmentManager.beginTransaction().replace(R.id.containerDetail,
                 DetailFragment(),
@@ -281,6 +290,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
                 ProductExtensionFragment(),
                 TAG_OVERVIEW_FRAGMENT).commit()
+
+        tvNotFound.visibility = View.INVISIBLE
+        containerGroupView.visibility = View.VISIBLE
+
+        checkDisableAddProductButton(product) // Check disable add product button
     }
 
     private fun updateShoppingCartBadge() {

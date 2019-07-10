@@ -132,7 +132,7 @@ class HttpManagerMagento(context: Context) {
 
     private fun getBranchUser(userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveBrachUser("$BEARER $userToken").enqueue(object : Callback<UserBranch> {
+        userService.retrieveStoreUser("$BEARER $userToken").enqueue(object : Callback<UserBranch> {
             override fun onResponse(call: Call<UserBranch>, response: Response<UserBranch>?) {
                 if (response?.body() != null) {
                     val userBranch = response.body()
@@ -140,12 +140,37 @@ class HttpManagerMagento(context: Context) {
                     //TODO: Mock up data will delete soon
                     val user = User(userResponse.userId, "", userResponse.staffId, 223L,
                             "chuan@central.tech", "", "", 0, "")
-                    val store = Store()
-                    store.storeId = 223L
-                    store.storeCode = ""
-                    store.storeName = ""
+
                     if (userBranch != null && userBranch.items.size > 0) {
-                        store.retailerId = userBranch.items[0].code
+                        getStoreLocation(user, userBranch.items[0].code, callback)
+                    }
+
+
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<UserBranch>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    private fun getStoreLocation(user: User, sellerCode: String, callback: ApiResponseCallback<UserInformation>) {
+        val userService = retrofit.create(UserService::class.java)
+        userService.retrieveStoreLocation(getLanguage(), sellerCode,"seller_code").enqueue(object : Callback<StoreLocationResponse>{
+            override fun onResponse(call: Call<StoreLocationResponse>, response: Response<StoreLocationResponse>?) {
+                if (response?.body() != null){
+                    val storeLocation = response.body()?.items?.firstOrNull()
+                    val store = Store()
+                    store.retailerId = sellerCode
+                    if(storeLocation != null){
+                        store.storeId = storeLocation.id.toLong()
+                        store.storeName = storeLocation.name
+                        store.province = storeLocation.extension?.address?.region?: ""
+                        store.district = storeLocation.extension?.address?.city?: ""
+                        store.postalCode = storeLocation.extension?.address?.postcode?: ""
                     }
 
                     // save user token
@@ -153,14 +178,13 @@ class HttpManagerMagento(context: Context) {
                     // save user information
                     val userInformation = UserInformation(userId = user.userId, user = user, store = store)
                     database.saveUserInformation(userInformation)
-
                     callback.success(userInformation)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
             }
 
-            override fun onFailure(call: Call<UserBranch>, t: Throwable) {
+            override fun onFailure(call: Call<StoreLocationResponse>, t: Throwable) {
                 callback.failure(APIError(t))
             }
         })
@@ -543,6 +567,23 @@ class HttpManagerMagento(context: Context) {
 
             override fun onFailure(call: okhttp3.Call?, e: IOException?) {
                 callback.failure(APIError(e))
+            }
+        })
+    }
+
+    fun getDeliveryInformation(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>){
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getDeliveryInfo(getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>>{
+            override fun onResponse(call: Call<List<DeliveryInfo>>, response: Response<List<DeliveryInfo>>) {
+                if (response.body() != null){
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<List<DeliveryInfo>>, t: Throwable) {
+                callback.failure(APIError(t))
             }
         })
     }

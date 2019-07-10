@@ -76,18 +76,10 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isAdded) {
-            product?.let { product ->
-                if (product.deliveryMethod.contains(HOME_DELIVERY) && store != null) {
-                    header.visibility = View.VISIBLE
-                    mCalendarView.visibility = View.VISIBLE
-                    tvNoHaveHomeDelivery.visibility = View.GONE
-                    getShippingHomeDelivery()
-                } else if (product.deliveryMethod.contains(HOME_DELIVERY) && store == null) {
-                    hideCalendarView()
-                    showAlertDialog("", resources.getString(R.string.cannot_get_shipping_slot))
-                } else {
-                    hideCalendarView()
-                }
+            if (store != null && product != null && product!!.isHDL) {
+                getShippingHomeDelivery()
+            } else {
+                hideCalendarView()
             }
         }
     }
@@ -118,59 +110,58 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     }
 
     private fun getShippingHomeDelivery() {
-        product?.let { product ->
-            showProgressDialog()
-            val productHDL = ProductHDLBody.createProductHDL("", 1, product.sku,
-                    1, "00139")
-            productHDLList.add(productHDL)
-            if ((getSpecialSKUList() ?: arrayListOf()).contains(product.sku.toLong())) {
-                customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
-            }
-            val period = PeriodBody.createPeriod(year, month)
-            val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                    district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
-                    province = store?.province ?: "", postalId = store?.postalCode ?: "",
-                    period = period, customDetail = customDetail)
-            context?.let {
-                HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
-                    override fun success(response: ShippingSlotResponse?) {
-                        if (response != null) {
-                            if (response.shippingSlot.isNotEmpty()) {
-                                if (response.shippingSlot.size > 14) {
-                                    for (i in response.shippingSlot.indices) {
-                                        if (enableShippingSlot.size == 14) {
-                                            break
-                                        }
-                                        enableShippingSlot.add(response.shippingSlot[i])
+        showProgressDialog()
+        val productHDL = ProductHDLBody.createProductHDL("",1, product!!.sku,1,"00139")
+        productHDLList.add(productHDL)
+        if ((getSpecialSKUList() ?: arrayListOf()).contains(product!!.sku.toLong())) {
+            customDetail = CustomDetail(deliveryType = "2", deliveryByStore = "00139", deliveryToStore = "")
+        }
+        val period = PeriodBody.createPeriod(year, month)
+        val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
+                district = store?.district ?: "", subDistrict = store?.subDistrict ?: "",
+                province = store?.province ?: "", postalId = store?.postalCode ?: "",
+                period = period, customDetail = customDetail)
+        context?.let {
+            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+                override fun success(response: ShippingSlotResponse?) {
+                    if (response != null) {
+                        if (response.shippingSlot.isNotEmpty()) {
+                            if (response.shippingSlot.size > 14) {
+                                for (i in response.shippingSlot.indices) {
+                                    if (enableShippingSlot.size == 14) {
+                                        break
                                     }
+                                    enableShippingSlot.add(response.shippingSlot[i])
+                                }
+                                progressDialog?.dismiss()
+                                createShippingData(true)
+                            } else {
+                                response.shippingSlot.forEach { shippingSlot ->
+                                    enableShippingSlot.add(shippingSlot)
+                                }
+                                if (enableShippingSlot.size == 14) {
                                     progressDialog?.dismiss()
                                     createShippingData(true)
                                 } else {
-                                    response.shippingSlot.forEach { shippingSlot ->
-                                        enableShippingSlot.add(shippingSlot)
-                                    }
-                                    if (enableShippingSlot.size == 14) {
-                                        progressDialog?.dismiss()
-                                        createShippingData(true)
-                                    } else {
-                                        getNextMonthShippingSlot()
-                                    }
+                                    getNextMonthShippingSlot()
                                 }
-                            } else {
-                                getNextMonthShippingSlot()
                             }
                         } else {
-                            progressDialog?.dismiss()
-                            showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                            getNextMonthShippingSlot()
                         }
-                    }
-
-                    override fun failure(error: APIError) {
+                    } else {
                         progressDialog?.dismiss()
-                        showAlertDialog("", error.errorMessage)
+                        hideCalendarView()
+                        showAlertDialog("", getString(R.string.not_have_day_to_delivery))
                     }
-                })
-            }
+                }
+
+                override fun failure(error: APIError) {
+                    progressDialog?.dismiss()
+                    hideCalendarView()
+                    showAlertDialog("", getString(R.string.not_have_day_to_delivery))
+                }
+            })
         }
     }
 
@@ -191,7 +182,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 province = store?.province ?: "", postalId = store?.postalCode ?: "",
                 period = period, customDetail = customDetail)
         context?.let {
-            HttpManagerHDL.getInstance(it).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                 override fun success(response: ShippingSlotResponse?) {
                     if (response != null && response.shippingSlot.isNotEmpty()) {
                         for (i in response.shippingSlot.indices) {
@@ -209,7 +200,8 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
 
                 override fun failure(error: APIError) {
                     progressDialog?.dismiss()
-                    showAlertDialog("", error.errorMessage)
+                    hideCalendarView()
+                    showAlertDialog("", getString(R.string.not_have_day_to_delivery))
                 }
             })
         }
@@ -280,8 +272,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 var itemS = ShippingItem(0, getString(R.string.full))
 
                 for (shippingItem in currentDay.slot) {
-                    val slotTime = shippingItem.description
-                    when (slotTime) {
+                    when (shippingItem.description) {
                         "09:00-09:30" -> {
                             itemA = ShippingItem(shippingItem.id, shippingItem.description)
                         }
@@ -445,6 +436,11 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
         }
         mCalendarView.hideTimeColumn(availableTime)
         mCalendarView.setTimeSlotItem(shippingItems)
+
+        // Display calendar view
+        header.visibility = View.VISIBLE
+        mCalendarView.visibility = View.VISIBLE
+        tvNoHaveHomeDelivery.visibility = View.GONE
     }
     // endregion
 
@@ -475,9 +471,5 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
             builder?.setTitle(title)
         }
         builder?.show()
-    }
-
-    companion object {
-        private const val HOME_DELIVERY = "pwb_homedelivery"
     }
 }

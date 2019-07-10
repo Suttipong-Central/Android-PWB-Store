@@ -28,7 +28,6 @@ class ProductExtensionFragment : Fragment() {
         product = productDetailListener?.getProduct()
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_product_extension, container, false)
         setupView(rootView)

@@ -114,12 +114,12 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
             product = extras.getParcelable(ARG_PRODUCT);
         }
 
-        if (product != null){
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction
-                    .replace(R.id.container, SpecFragment.newInstance(product))
-                    .commit();
-        }
+//        if (product != null){
+//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//            fragmentTransaction
+//                    .replace(R.id.container, SpecFragment.newInstance(product))
+//                    .commit();
+//        }
 //        if (savedInstanceState == null){
 //            showProgressDialog();
 //            HttpManagerMagentoOld.getInstance().getProductService().getProductDetailMagento(productId, UserInfoManager.getInstance().getUserId(),

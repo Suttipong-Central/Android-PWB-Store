@@ -1,11 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
-import android.os.Parcel
-import android.os.Parcelable
-
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.model.response.ProductSearch
 import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat
@@ -34,30 +30,10 @@ class Product(
         var attributeID: Int = 0,
         var status: Int = 1,
         var paymentMethod: String = "",
+        var isHDL: Boolean = false,
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
-        private var productImageList: ProductDetailImage? = null) : IViewType, Parcelable {
-
-    constructor(parcel: Parcel) : this() {
-        id = parcel.readInt()
-        sku = parcel.readString()
-        name = parcel.readString()
-        price = parcel.readDouble()
-        typeId = parcel.readString()
-        specialPrice = parcel.readDouble()
-        specialFromDate = parcel.readString()
-        specialToDate = parcel.readString()
-        brand = parcel.readString()
-        image = parcel.readString()
-        deliveryMethod = parcel.readString()
-        gallery = parcel.createTypedArrayList(ProductGallery)
-        viewTypeID = parcel.readInt()
-        attributeID = parcel.readInt()
-        status = parcel.readInt()
-        paymentMethod = parcel.readString()
-        extension = parcel.readParcelable(ProductExtension::class.java.classLoader)
-        productImageList = parcel.readParcelable(ProductDetailImage::class.java.classLoader)
-    }
+        private var productImageList: ProductDetailImage? = null) : IViewType {
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -136,40 +112,7 @@ class Product(
         this.productImageList = productImageList
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
-        parcel.writeString(sku)
-        parcel.writeString(name)
-        parcel.writeDouble(price)
-        parcel.writeString(typeId)
-        parcel.writeDouble(specialPrice)
-        parcel.writeString(specialFromDate)
-        parcel.writeString(specialToDate)
-        parcel.writeString(brand)
-        parcel.writeString(image)
-        parcel.writeString(deliveryMethod)
-        parcel.writeTypedList(gallery)
-        parcel.writeInt(viewTypeID)
-        parcel.writeInt(attributeID)
-        parcel.writeInt(status)
-        parcel.writeString(paymentMethod)
-        parcel.writeParcelable(extension, flags)
-        parcel.writeParcelable(productImageList, flags)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Product> {
-        override fun createFromParcel(parcel: Parcel): Product {
-            return Product(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Product?> {
-            return arrayOfNulls(size)
-        }
-
+    companion object {
         fun asProduct(product: ProductSearch): Product{
             return Product(id = product.id!!, sku = product.sku!!, price = product.price!!,
                     name = product.name!!, image = product.thumbnail?: "", brand = product.brand!!)
