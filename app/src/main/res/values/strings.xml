@@ -74,7 +74,7 @@
     <string name="store_name">Store name</string>
     <string name="address">Address</string>
     <string name="stock">In-stock quantity</string>
-    <string name="telephone">tel.</string>
+    <string name="telephone">Tel.</string>
 
     <!-- Drawer -->
     <string name="drawer_delivery">Delivery Schedule</string>
