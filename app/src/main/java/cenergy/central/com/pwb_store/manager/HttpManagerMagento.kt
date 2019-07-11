@@ -438,6 +438,7 @@ class HttpManagerMagento(context: Context) {
                     val stockItem = StockItem()
                     val images = arrayListOf<ProductGallery>()
                     val productOptions = arrayListOf<ProductOption>()
+                    val specifications = arrayListOf<Specification>()
 
                     try {
                         val productObject = JSONObject(data?.string())
@@ -451,8 +452,8 @@ class HttpManagerMagento(context: Context) {
                             product.typeId = productObject.getString("type_id")
                         }
 
-                        val extensionObject = productObject.getJSONObject("extension_attributes")
-                        val stockObject = extensionObject.getJSONObject("stock_item")
+                        val extensionObj = productObject.getJSONObject("extension_attributes")
+                        val stockObject = extensionObj.getJSONObject("stock_item")
 //                        stockItem.itemId = stockObject.getLong("item_id")
                         stockItem.productId = stockObject.getLong("product_id")
                         stockItem.stockId = stockObject.getLong("stock_id")
@@ -463,8 +464,26 @@ class HttpManagerMagento(context: Context) {
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 
-                        if (extensionObject.has("configurable_product_options")) {
-                            val productConfigArray = extensionObject.getJSONArray("configurable_product_options")
+                        // get product specification
+                        if (extensionObj.has("specification_attributes")) {
+                            val specAttrs = extensionObj.getJSONArray("specification_attributes")
+                            for (specIndex in 0 until specAttrs.length()) {
+                                val specAttr = specAttrs.getJSONObject(specIndex)
+                                if (specAttr.has("attribute_code") && specAttr.has("label")) {
+                                    // no need attr star_rating
+                                    if (!specAttr.getString("attribute_code").contains("star_rating")) {
+                                        val attrCode = specAttr.getString("attribute_code")
+                                        val label = specAttr.getString("label")
+                                        specifications.add(Specification(code = attrCode, label = label))
+                                    }
+                                }
+                            }
+                        }
+
+                        Log.d("Specifications", "${specifications.size}")
+
+                        if (extensionObj.has("configurable_product_options")) {
+                            val productConfigArray = extensionObj.getJSONArray("configurable_product_options")
                             for (i in 0 until productConfigArray.length()) {
                                 val id = productConfigArray.getJSONObject(i).getInt("id")
                                 val attrId = productConfigArray.getJSONObject(i).getString("attribute_id")
@@ -510,49 +529,72 @@ class HttpManagerMagento(context: Context) {
 
                         val attrArray = productObject.getJSONArray("custom_attributes")
                         for (i in 0 until attrArray.length()) {
-                            when (attrArray.getJSONObject(i).getString("name")) {
+                            val customAttr = attrArray.getJSONObject(i)
+                            when (customAttr.getString("name")) {
                                 "special_price" -> {
-                                    val specialPrice = attrArray.getJSONObject(i).getString("value")
+                                    val specialPrice = customAttr.getString("value")
                                     product.specialPrice = if (specialPrice.trim() == "") 0.0 else specialPrice.toDouble()
                                 }
 
                                 "special_from_date" -> {
-                                    product.specialFromDate = attrArray.getJSONObject(i).getString("value")
+                                    product.specialFromDate = customAttr.getString("value")
                                 }
 
                                 "special_to_date" -> {
-                                    product.specialToDate = attrArray.getJSONObject(i).getString("value")
+                                    product.specialToDate = customAttr.getString("value")
                                 }
 
                                 "image" -> {
-                                    product.image = attrArray.getJSONObject(i).getString("value")
+                                    product.image = customAttr.getString("value")
                                 }
 
                                 "delivery_method" -> {
-                                    product.deliveryMethod = attrArray.getJSONObject(i).getString("value")
+                                    product.deliveryMethod = customAttr.getString("value")
                                 }
 
                                 "brand" -> {
-                                    product.brand = attrArray.getJSONObject(i).getString("value")
+                                    product.brand = customAttr.getString("value")
                                 }
 
                                 "description" -> {
-                                    productExtension.description = attrArray.getJSONObject(i).getString("value")
+                                    productExtension.description = customAttr.getString("value")
                                 }
 
                                 "short_description" -> {
-                                    productExtension.shortDescription = attrArray.getJSONObject(i).getString("value")
+                                    productExtension.shortDescription = customAttr.getString("value")
                                 }
 
                                 "barcode" -> {
-                                    productExtension.barcode = attrArray.getJSONObject(i).getString("value")
+                                    productExtension.barcode = customAttr.getString("value")
                                 }
 
                                 "payment_method" -> {
-                                    product.paymentMethod = attrArray.getJSONObject(i).getString("value")
+                                    product.paymentMethod = customAttr.getString("value")
+                                }
+                            }
+                            // set value to product specifications
+                            val customAttrCode = customAttr.getString("attribute_code")
+                            specifications.forEach {
+                                if (it.code == customAttrCode) {
+                                    val customAttrValue = customAttr.getString("value")
+                                    it.value = customAttrValue
                                 }
                             }
                         }
+
+                        val attrOptions = productObject.getJSONArray("custom_attributes_option")
+                        // set value to product specifications
+                        for (optionIndex in 0 until attrOptions.length()) {
+                            val attrOption = attrOptions.getJSONObject(optionIndex)
+                            val customAttrCode = attrOption.getString("attribute_code")
+                            specifications.forEach {
+                                if (it.code == customAttrCode) {
+                                    val customAttrValue = attrOption.getString("value")
+                                    it.value = customAttrValue
+                                }
+                            }
+                        }
+                        productExtension.specifications = specifications // addd product spec to product extension
                         product.extension = productExtension // add product extension to product
                         callback.success(product)
                     } catch (e: Exception) {

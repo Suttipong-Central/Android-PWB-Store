@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:paddingBottom="16dp">
 
+    <!--Key Features-->
     <LinearLayout
         android:id="@+id/overviewLayout"
         android:layout_width="match_parent"
@@ -18,7 +19,8 @@
         android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/tvOverviewHeader"
@@ -49,27 +51,98 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/lightGray" />
+        android:background="@color/lightGray"
+        app:layout_constraintTop_toBottomOf="@+id/overviewLayout" />
 
     <LinearLayout
         android:id="@+id/overviewWebLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@color/white"
-        android:paddingBottom="16dp"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:paddingTop="16dp"
-        android:visibility="gone">
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/line1">
 
         <WebView
             android:id="@+id/overviewWeb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             tools:ignore="WebViewLayout" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightGray" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/infoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/overviewWebLayout">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvInfoHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_overview"
+            android:drawablePadding="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/product_info"
+            android:textColor="@color/nameProductColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="RobotoLight.ttf" />
+
+        <ImageView
+            android:id="@+id/infoArrowIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_keyboard_arrow_down" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/lightGray"
+        app:layout_constraintTop_toBottomOf="@+id/infoLayout" />
+
+    <LinearLayout
+        android:id="@+id/infowWebLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/line2">
+
+        <WebView
+            android:id="@+id/infoWebView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            tools:ignore="WebViewLayout" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightGray" />
+    </LinearLayout>
+
+    <!--Specification-->
     <LinearLayout
         android:id="@+id/specLayout"
         android:layout_width="match_parent"
@@ -79,7 +152,8 @@
         android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/infowWebLayout">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/tvSpecHeader"
@@ -106,27 +180,34 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/line2"
+        android:id="@+id/line3"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/lightGray" />
+        android:background="@color/lightGray"
+        app:layout_constraintTop_toBottomOf="@+id/specLayout" />
 
     <LinearLayout
-        android:id="@+id/specWebLayout"
+        android:id="@+id/specListLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@color/white"
-        android:paddingBottom="16dp"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:paddingTop="16dp"
-        android:visibility="gone">
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/line3">
 
-        <WebView
-            android:id="@+id/specWeb"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvSpecifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:ignore="WebViewLayout" />
+            android:clipToPadding="false"
+            android:fadeScrollbars="false"
+            android:padding="8dp"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightGray" />
     </LinearLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

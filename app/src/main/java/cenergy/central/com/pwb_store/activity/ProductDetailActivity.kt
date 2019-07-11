@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v7.app.AlertDialog
@@ -46,7 +47,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     lateinit var mBuyCompareView: PowerBuyCompareView
     lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
     lateinit var tvNotFound: TextView
-    lateinit var containerGroupView: LinearLayout
+    lateinit var containerGroupView: ConstraintLayout
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
 

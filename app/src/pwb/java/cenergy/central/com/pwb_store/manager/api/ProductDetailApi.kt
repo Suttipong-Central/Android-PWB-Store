@@ -7,6 +7,6 @@ class ProductDetailApi {
      *
      * */
     fun getPath(lang: String, sku: String): String {
-        return "rest/$lang/V1/products/$sku"
+        return "rest/$lang/V2/products/$sku"
     }
 }

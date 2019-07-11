@@ -13,7 +13,8 @@ class ProductExtension(
         @SerializedName("stock_item")
         var stokeItem: StockItem? = null,
         @SerializedName("configurable_product_options")
-        var productConfigOptions: List<ProductOption>? = arrayListOf()) : Parcelable {
+        var productConfigOptions: List<ProductOption>? = arrayListOf(),
+        var specifications: List<Specification> = arrayListOf()) : Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readString(),

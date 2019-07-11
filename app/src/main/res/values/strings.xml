@@ -23,11 +23,12 @@
     <!-- ProductList -->
     <string name="baht">฿</string>
     <string name="product_overview">Key Features</string>
+    <string name="product_info">Product Info</string>
     <string name="product_available">Check store stock</string>
     <string name="product_compare">Compare products</string>
     <string name="product_read">Read More >></string>
     <string name="product_promotion">Promotion</string>
-    <string name="product_spec">Product Info</string>
+    <string name="product_spec">Specification</string>
     <string name="product_stock">In-stock</string>
     <string name="product_out_stock">Temporary out of stock</string>
     <string name="product_stock_more">จำนวนสินค้าในคลัง: มาก</string>

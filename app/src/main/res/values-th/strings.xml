@@ -22,7 +22,8 @@
     <string name="search_hint">ค้นหา</string>
     <!-- ProductList -->
     <string name="baht">฿</string>
-    <string name="product_overview">ข้อมูลสินค้า</string>
+    <string name="product_overview">รายละเอียดสินค้า</string>
+    <string name="product_info">ข้อมูลสินค้า</string>
     <string name="product_available">ดูสาขาที่มีสินค้า</string>
     <string name="product_compare">เปรียบเทียบสินค้า</string>
     <string name="product_read">Read More >></string>
