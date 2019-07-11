@@ -22,7 +22,7 @@ public class PowerBuyStoreApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (BuildConfig.IS_PRODUCTION) {
+        if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
 
