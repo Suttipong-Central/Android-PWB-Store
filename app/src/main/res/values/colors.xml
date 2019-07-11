@@ -37,6 +37,7 @@
     <color name="lightGray">#e7e7e7</color>
     <color name="lightGray2">#bfbfbf</color>
     <color name="passwordIconColor">#FF9A9A9A</color>
+    <color name="highlightRow">#F4F4F4</color>
 
     <!-- Network state-->
     <color name="network_disconnected">#D0021B</color>

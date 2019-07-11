@@ -16,6 +16,6 @@ class SpecViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         tvLabel.text = spec.label
         tvValue.text = spec.value
         rootSpecView.setBackgroundColor(ContextCompat.getColor(itemView.context,
-                if (isDarkBg) R.color.lightGray else R.color.white))
+                if (isDarkBg) R.color.highlightRow else R.color.white))
     }
 }
