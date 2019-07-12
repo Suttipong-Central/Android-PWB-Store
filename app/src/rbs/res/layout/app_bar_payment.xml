@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@drawable/ic_cds_primary"
+            android:src="@mipmap/ic_launcher"
             android:contentDescription="@string/app_name" />
 
         <cenergy.central.com.pwb_store.view.LanguageButton

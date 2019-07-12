@@ -12,12 +12,10 @@
     </style>
 
     <style name="ToolbarBack">
-        <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="navigationIcon">@drawable/ic_arrow_back_cds</item>
     </style>
 
     <style name="ToolbarCancel">
-        <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="navigationIcon">@drawable/ic_clear_cds</item>
     </style>
 

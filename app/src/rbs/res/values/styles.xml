@@ -12,13 +12,11 @@
     </style>
 
     <style name="ToolbarBack">
-        <item name="colorControlHighlight">@color/colorAccent</item>
-        <item name="navigationIcon">@drawable/ic_arrow_back_cds</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back_rbs</item>
     </style>
 
     <style name="ToolbarCancel">
-        <item name="colorControlHighlight">@color/colorAccent</item>
-        <item name="navigationIcon">@drawable/ic_clear_cds</item>
+        <item name="navigationIcon">@drawable/ic_clear_rbs</item>
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
