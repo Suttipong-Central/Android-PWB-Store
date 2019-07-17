@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -83,11 +84,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var cacheOrder: Order? = null
 
     // get data activity
-    private val paymentListener by lazy { context as PaymentProtocol }
-    private val deliveryType by lazy { paymentListener.getSelectedDeliveryType() }
-    private val shippingInfo by lazy { paymentListener.getShippingAddress() }
-    private val billingInfo by lazy { paymentListener.getBillingAddress() }
-    private val branchAddress by lazy { paymentListener.getSelectedBranch() }
+    private lateinit var paymentListener: PaymentProtocol
+    private var deliveryType: DeliveryType? = null
+    private var shippingInfo: AddressInformation? = null
+    private var billingInfo: AddressInformation? = null
+    private var branchAddress: Branch? = null
 
     companion object {
         private const val ARG_ORDER_ID = "ARG_ORDER_ID"
@@ -113,9 +114,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        preferenceManager = PreferenceManager(context)
+        paymentListener = context as PaymentProtocol
+        deliveryType = paymentListener.getSelectedDeliveryType()
+        shippingInfo = paymentListener.getShippingAddress()
+        billingInfo = paymentListener.getBillingAddress()
+        branchAddress = paymentListener.getSelectedBranch()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        preferenceManager = context?.let { PreferenceManager(it) }
         orderId = arguments?.getString(ARG_ORDER_ID)
         cacheOrderId = arguments?.getString(ARG_CACHE_ORDER_ID)
         cacheCartItems = arguments?.getParcelableArrayList(ARG_CART_ITEMS)
