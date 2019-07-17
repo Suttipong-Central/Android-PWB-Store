@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.AvailableFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -16,7 +17,6 @@ import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
-import kotlinx.android.synthetic.pwb.app_bar_avaliable.view.*
 
 class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
@@ -60,8 +60,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
                     if (response != null) {
                         storeAvailableList = response
                         val fragmentTransaction = supportFragmentManager.beginTransaction()
-                        fragmentTransaction
-                                .replace(R.id.container, AvailableFragment.newInstance())
+                        fragmentTransaction.replace(R.id.container, AvailableFragment.newInstance())
                                 .commit()
                     } else {
                         val error = APIErrorUtils.parseError(response)
@@ -144,7 +143,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
     override fun getSwitchButton(): LanguageButton? = languageButton
 
     private fun updateView() {
-        mToolbar.txt_header.text = getString(R.string.store_avaliable)
+        mToolbar.findViewById<TextView>(R.id.txt_header).text = getString(R.string.store_avaliable)
     }
 
     companion object {
