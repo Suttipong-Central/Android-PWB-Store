@@ -162,7 +162,6 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void setProduct(ProductResponse productResponse) {
-
         if (productResponse.isFirstPage()) {
             mListViewType.clear();
             skuList.clear();
@@ -170,7 +169,6 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         // Add deal paginated
         int startPosition = mListViewType.size();
-        productResponse.getProducts();
         ArrayList<Product> products = productResponse.getProducts();
         for (Product product : products) {
             if(skuList.indexOf(product.getSku()) == -1){

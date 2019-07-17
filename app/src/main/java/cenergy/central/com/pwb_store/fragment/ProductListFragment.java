@@ -109,6 +109,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private int totalItem;
     private Context mContext;
     private String keyWord;
+    private ProductResponse productResponse = null;
 
     final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
         @Override
@@ -272,7 +273,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 EventBus.getDefault().post(new CategoryTwoBus());
                 break;
             case R.id.layout_product:
-                if (categoriesLv3 == null) {
+                if (categoriesLv3 == null || categoriesLv3.isEmpty()) {
                     mPowerBuyPopupWindow.dismiss();
                 } else {
                     mPowerBuyPopupWindow.setRecyclerViewFilter(categoriesLv3);
@@ -280,7 +281,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 }
                 break;
             case R.id.layout_sort:
-                if (mSortingList == null) {
+                // Create productResponse for check because we mock up sort items
+                if (mSortingList == null || productResponse == null || productResponse.getProducts().isEmpty()) {
                     mPowerBuyPopupWindow.dismiss();
                 } else {
                     mPowerBuyPopupWindow.setRecyclerViewSorting(mSortingList);
@@ -514,15 +516,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final ProductResponse response) {
                             if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    if (response != null) {
-                                        updateProductList(response);
-                                    } else {
-                                        Log.d("productResponse", "productResponse is null");
-                                        layoutProgress.setVisibility(View.GONE);
-                                        mProgressDialog.dismiss();
-                                    }
-                                });
+                                getActivity().runOnUiThread(() -> updateProductList(response));
                             }
                         }
 
@@ -545,6 +539,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     private void updateProductList(ProductResponse response) {
+        productResponse = response;
         if (response != null) {
             if (!response.getFilters().isEmpty()){
                 brands = response.getFilters().get(0).getItems();
@@ -554,11 +549,15 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                     }
                 }
             }
-            totalItem = response.getTotalCount();
-            totalPage = totalPageCal(totalItem);
-            currentPage = getNextPage();
-            response.setCurrentPage(currentPage);
-            mProductListAdapter.setProduct(response);
+            if(!response.getProducts().isEmpty()){
+                totalItem = response.getTotalCount();
+                totalPage = totalPageCal(totalItem);
+                currentPage = getNextPage();
+                response.setCurrentPage(currentPage);
+                mProductListAdapter.setProduct(response);
+            } else {
+                mProductListAdapter.setError();
+            }
             setTextHeader(totalItem, title);
         } else {
             if (mProductListAdapter.getItemCount() == 0) {
@@ -619,7 +618,13 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
                     @Override
                     public void failure(@NotNull APIError error) {
-                        Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                        if(getActivity() != null){
+                            getActivity().runOnUiThread(() -> {
+                                Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                                categoriesLv3 = null;
+                                mProductLayout.setVisibility(View.GONE);
+                            });
+                        }
                     }
                 });
     }
