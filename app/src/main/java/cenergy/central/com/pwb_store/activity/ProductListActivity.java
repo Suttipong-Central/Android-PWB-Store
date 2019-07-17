@@ -74,10 +74,7 @@ public class ProductListActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        if (isSearch){
-            mToolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white));
-            mToolbar.setNavigationOnClickListener(view -> finish());
-        }
+        mToolbar.setNavigationOnClickListener(view -> finish());
     }
 
     private void startProductListFragment(String keyWord, boolean isSearch) {

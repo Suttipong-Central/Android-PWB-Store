@@ -7,15 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".activity.ProductListActivity">
 
-    <include
-        layout="@layout/app_bar_main"/>
+    <include layout="@layout/app_bar_payment"/>
 
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <cenergy.central.com.pwb_store.view.NetworkStateView
         android:id="@+id/network_state_View"
