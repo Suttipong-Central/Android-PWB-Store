@@ -30,6 +30,8 @@
 
     <color name="categoryColor">#F4893F</color>
 
+    <color name="tabCalendarColor">@color/colorAccent</color>
+
     <!-- select branch page -->
     <color name="textHeaderBranchDetail">@color/cdsRed</color>
     <color name="textHeaderBranchTitle">@color/white</color>

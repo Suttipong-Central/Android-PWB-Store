@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorAccent">#72bf44</color>
+    <color name="colorPrimaryDark">#67AC26</color>
 
     <!-- drawer sub header -->
     <color name="drawerSubHeaderColor">#72bf44</color>
@@ -25,6 +26,7 @@
 
     <color name="categoryColor">@color/colorAccent</color>
 
+    <color name="tabCalendarColor">@color/colorPrimaryDark</color>
     <!-- select branch page -->
     <color name="textHeaderBranchDetail">@color/colorAccent</color>
     <color name="textHeaderBranchTitle">@color/white</color>
