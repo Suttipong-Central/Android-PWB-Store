@@ -102,12 +102,12 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="3dp"
                     android:text="@string/for_staff"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/textDefaultColor" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="@color/colorPrimary" />
+                    android:background="@color/textDefaultColor" />
             </LinearLayout>
         </LinearLayout>
 
