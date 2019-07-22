@@ -23,6 +23,7 @@
 
     <color name="textDefaultColor">@color/colorAccent</color>
     <color name="cursorColor">@color/colorAccent</color>
+    <color name="textStaffColor">@color/colorAccent</color>
 
     <color name="categoryColor">@color/colorAccent</color>
 

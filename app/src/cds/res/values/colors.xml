@@ -27,6 +27,7 @@
 
     <color name="textDefaultColor">@color/cdsRed</color>
     <color name="cursorColor">@color/cdsRed</color>
+    <color name="textStaffColor">@color/cdsRed</color>
 
     <color name="categoryColor">#F4893F</color>
 
