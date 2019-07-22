@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import java.lang.Exception
 import java.text.NumberFormat
 import java.util.*
 
@@ -91,6 +93,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var branchAddress: Branch? = null
 
     companion object {
+        private const val TAG = "PaymentSuccessFragment"
         private const val ARG_ORDER_ID = "ARG_ORDER_ID"
         private const val ARG_CART_ITEMS = "ARG_CART_ITEMS"
         private const val ARG_CACHE_ORDER_ID = "ARG_CACHE_ORDER_ID"
@@ -117,11 +120,15 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         preferenceManager = PreferenceManager(context)
-        paymentListener = context as PaymentProtocol
-        deliveryType = paymentListener.getSelectedDeliveryType()
-        shippingInfo = paymentListener.getShippingAddress()
-        billingInfo = paymentListener.getBillingAddress()
-        branchAddress = paymentListener.getSelectedBranch()
+        try {
+            paymentListener = context as PaymentProtocol
+            deliveryType = paymentListener.getSelectedDeliveryType()
+            shippingInfo = paymentListener.getShippingAddress()
+            billingInfo = paymentListener.getBillingAddress()
+            branchAddress = paymentListener.getSelectedBranch()
+        } catch (e: Exception) {
+            Log.d(TAG, e.toString())
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
