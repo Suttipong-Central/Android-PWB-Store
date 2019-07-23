@@ -297,4 +297,8 @@
     <string name="company">Company</string>
     <string name="tax_id">Tax ID/ID no.</string>
     <string name="created_order">Order is Created</string>
+    <string name="privacy_description">By clicking on Pay Now, you have agreed to our</string>
+    <string name="pay_credit_card_description">Pay securely without sharing your financial information and OTP verification</string>
+    <string name="cod_description">Our staff will send the item(s) right to your doorstep so you can see the item(s) first before you purchase it.</string>
+    <string name="pay_at_store">Pay by cash or credit card at the store after purchase.</string>
 </resources>

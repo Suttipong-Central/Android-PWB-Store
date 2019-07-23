@@ -3,21 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="wrap_content"
     android:paddingStart="16dp"
     android:paddingTop="16dp"
     android:paddingEnd="16dp">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="36dp"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/app_name"
-        app:layout_constraintEnd_toStartOf="@id/tv_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/option_line"
-        tools:src="@drawable/ic_store" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/tv_title"
@@ -27,11 +17,26 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_cod"
         app:layout_constraintEnd_toStartOf="@+id/choose_payment_method"
-        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/option_line"
-        tools:text="carrier_title" />
+        tools:text="Full Payment" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tv_cod"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/cod_description"
+        android:textColor="@color/graySelect"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/choose_payment_method"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
     <Button
         android:id="@+id/choose_payment_method"
@@ -52,6 +57,8 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@color/graySelect"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_cod"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

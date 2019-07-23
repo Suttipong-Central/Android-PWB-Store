@@ -12,11 +12,12 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
+import cenergy.central.com.pwb_store.model.response.PaymentMethod
 
 class PaymentSelectMethodFragment : Fragment() {
 
-    private val paymentListener by lazy { context as PaymentProtocol }
-    private val paymentMethods by lazy{ paymentListener.getPaymentMethods()}
+    private lateinit var paymentListener: PaymentProtocol
+    private var paymentMethods: List<PaymentMethod> = listOf()
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
 
@@ -31,6 +32,8 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+        paymentListener = context as PaymentProtocol
+        paymentMethods = paymentListener.getPaymentMethods()
         paymentTypeClickListener = context as PaymentTypeClickListener
     }
 

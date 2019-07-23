@@ -719,9 +719,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
         val retailerId = userInformation?.store?.retailerId ?: ""
+        val methodCode = paymentMethod.code ?: ""
 
         val addressInfo = if (billingAddress == null) shippingAddress else billingAddress
-        OrderApi().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email,
+        OrderApi().updateOrder(this, cartId!!, staffId, retailerId, methodCode, email,
                 addressInfo!!, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 runOnUiThread {

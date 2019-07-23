@@ -21,6 +21,6 @@ open class User(
         var updatedAt: String = "") : RealmObject(){
 
     fun getChatAndShopUser() : Boolean {
-        return  isChatAndShopUser == 1
+        return true
     }
 }

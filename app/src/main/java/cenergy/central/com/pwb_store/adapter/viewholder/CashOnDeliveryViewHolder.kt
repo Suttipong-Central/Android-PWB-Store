@@ -8,7 +8,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 
-class PaymentMethodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+class CashOnDeliveryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     val title: TextView = itemView.findViewById(R.id.tv_title)
     val button: Button = itemView.findViewById(R.id.choose_payment_method)

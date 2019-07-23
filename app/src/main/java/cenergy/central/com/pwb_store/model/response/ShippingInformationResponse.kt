@@ -10,7 +10,10 @@ data class ShippingInformationResponse(@SerializedName("payment_methods")
                                        var totals: CartTotal? = null
 )
 
-data class PaymentMethod(var code: String = "", var title: String = "") : Parcelable {
+data class PaymentMethod(
+        var code: String? = "",
+        var title: String? = ""
+) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString()
@@ -33,5 +36,10 @@ data class PaymentMethod(var code: String = "", var title: String = "") : Parcel
         override fun newArray(size: Int): Array<PaymentMethod?> {
             return arrayOfNulls(size)
         }
+
+        const val CASH_ON_DELIVERY = "cashondelivery"
+        const val FULL_PAYMENT = "fullpaymentredirect"
+        const val PAY_AT_STORE = "e_ordering"
+        const val INSTALLMENT = "p2c2p_ipp"
     }
 }

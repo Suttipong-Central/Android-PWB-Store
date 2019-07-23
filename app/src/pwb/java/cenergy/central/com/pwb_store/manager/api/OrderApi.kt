@@ -6,7 +6,6 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,12 +13,12 @@ import retrofit2.Response
 
 class OrderApi {
 
-    fun updateOrder(context: Context, cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod,
+    fun updateOrder(context: Context, cartId: String, staffId: String, sellerCode: String, methodCode: String,
                     email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>){
         val apiManager = HttpManagerMagento.getInstance(context)
 
         val paymentMethodBody = PaymentInfoBody.createPaymentInfoBody(cartId = cartId,
-                staffId = staffId, retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = paymentMethod.code)
+                staffId = staffId, retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = methodCode)
         apiManager.cartService.updateOrder(apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {

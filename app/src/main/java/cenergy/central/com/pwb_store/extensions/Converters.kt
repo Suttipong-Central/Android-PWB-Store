@@ -36,7 +36,7 @@ fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
 fun List<PaymentMethod>.getMethodTitle(): List<String> {
     val methods = arrayListOf<String>()
     forEach { paymentMethod ->
-        paymentMethod.title.let { methods.add(it) }
+        paymentMethod.title?.let { methods.add(it) }
     }
     return methods
 }
