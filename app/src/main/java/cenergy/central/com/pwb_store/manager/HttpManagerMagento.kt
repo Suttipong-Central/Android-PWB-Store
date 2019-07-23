@@ -520,8 +520,14 @@ class HttpManagerMagento(context: Context) {
                             val id = galleryArray.getJSONObject(i).getString("id")
                             val type = galleryArray.getJSONObject(i).getString("media_type")
                             val label = galleryArray.getJSONObject(i).getString("label")
-                            val position = galleryArray.getJSONObject(i).getInt("position")
-                            val disabled = galleryArray.getJSONObject(i).getBoolean("disabled")
+                            var position = 0
+                            if(!galleryArray.getJSONObject(i).isNull("position")){
+                                position = galleryArray.getJSONObject(i).getInt("position")
+                            }
+                            var disabled = false
+                            if(!galleryArray.getJSONObject(i).isNull("disabled")){
+                                disabled = galleryArray.getJSONObject(i).getBoolean("disabled")
+                            }
                             val file = galleryArray.getJSONObject(i).getString("file")
                             images.add(ProductGallery(id, type, label, position, disabled, file))
                         }
