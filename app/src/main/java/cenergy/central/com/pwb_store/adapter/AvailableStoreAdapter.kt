@@ -37,7 +37,7 @@ class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStore
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is AvailableDetailViewHolder -> {
-                holder.setViewHolder(getItem(position) as StoreAvailable)
+                holder.setViewHolder(getItem(position) as StoreAvailable) // first?
             }
             is AvailableHeaderViewHolder -> {
                 holder.bind(sortedBy) // header
@@ -88,6 +88,7 @@ class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStore
 //        tempAvailableList.add(AvailableStoreHeader()) // header
         val sameStore = storeAvailableList.firstOrNull { it.sellerCode == storeCode }
         if (sameStore != null) {
+            sameStore.isHighLight = true
             tempAvailableList.add(sameStore)
         }
 

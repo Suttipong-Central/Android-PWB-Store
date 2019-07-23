@@ -6,5 +6,6 @@ class StoreAvailable(
         var qty: Int = 0,
         var name: String = "",
         var sellerCode: String = "",
-        var contactPhone: String = ""
+        var contactPhone: String = "",
+        var isHighLight: Boolean = false
 ) : AvailableStoreAdapter.AvailableStoreItem

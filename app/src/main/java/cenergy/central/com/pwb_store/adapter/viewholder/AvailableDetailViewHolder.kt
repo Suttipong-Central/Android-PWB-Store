@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
@@ -19,5 +20,13 @@ class AvailableDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
         name.text = storeAvailable.name
         tel.text = if(storeAvailable.contactPhone.isNotBlank()) storeAvailable.contactPhone else "-"
         stock.text = storeAvailable.qty.toString()
+
+        if (storeAvailable.isHighLight) {
+            val context = itemView.context
+            storeCode.setTextColor(ContextCompat.getColor(context,R.color.pwbOrange))
+            name.setTextColor(ContextCompat.getColor(context,R.color.pwbOrange))
+            tel.setTextColor(ContextCompat.getColor(context,R.color.pwbOrange))
+            stock.setTextColor(ContextCompat.getColor(context,R.color.pwbOrange))
+        }
     }
 }
