@@ -1,17 +1,22 @@
 package cenergy.central.com.pwb_store.adapter
 
+import android.support.v7.recyclerview.extensions.ListAdapter
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.AvailableDetailViewHolder
-import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableHeaderViewHolder
+import cenergy.central.com.pwb_store.adapter.viewholder.AvailableHeaderViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.EmptyViewHolder
+import cenergy.central.com.pwb_store.fragment.AvailableFragment.Companion.SORT_NONE
 import cenergy.central.com.pwb_store.model.StoreAvailable
 
-class AvailableStoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var storeAvailableList: ArrayList<AvailableStoreItem> = arrayListOf()
+class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStoreItem,
+        RecyclerView.ViewHolder>(StockItemDiffCallback()) {
+
+    private var sortedBy : Int = SORT_NONE
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             VIEW_ITEM_EMPTY -> {
@@ -19,46 +24,68 @@ class AvailableStoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         .inflate(R.layout.list_item_loading_result, parent, false))
             }
             VIEW_ITEM_HEADER -> {
-                AvaliableHeaderViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_avaliable_header, parent, false))
+                AvailableHeaderViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_available_header, parent, false))
             }
             else -> {
-                 AvailableDetailViewHolder(LayoutInflater.from(parent.context)
+                AvailableDetailViewHolder(LayoutInflater.from(parent.context)
                         .inflate(R.layout.list_item_avaliable_detail, parent, false))
             }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is AvailableDetailViewHolder) {
-            holder.setViewHolder(storeAvailableList[position] as StoreAvailable)
+        when (holder) {
+            is AvailableDetailViewHolder -> {
+                holder.setViewHolder(getItem(position) as StoreAvailable)
+            }
+            is AvailableHeaderViewHolder -> {
+                holder.bind(sortedBy) // header
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return storeAvailableList.size
-    }
-
     override fun getItemViewType(position: Int): Int {
-        return when (storeAvailableList[position]) {
+        return when (getItem(position)) {
             is ItemEmpty -> VIEW_ITEM_EMPTY
             is AvailableStoreHeader -> VIEW_ITEM_HEADER
             else -> VIEW_ITEM_STORE
         }
     }
 
-    fun setCompareAvailable(storeCode: String, storeAvailableList: List<StoreAvailable>) {
+    class StockItemDiffCallback : DiffUtil.ItemCallback<AvailableStoreItem>() {
+        override fun areItemsTheSame(oldItem: AvailableStoreItem, newItem: AvailableStoreItem): Boolean {
+            return if (oldItem is StoreAvailable && newItem is StoreAvailable) {
+                oldItem.sellerCode == newItem.sellerCode
+            } else {
+                false
+            }
+        }
 
+        override fun areContentsTheSame(oldItem: AvailableStoreItem, newItem: AvailableStoreItem): Boolean {
+            return if (oldItem is StoreAvailable && newItem is StoreAvailable) {
+                (oldItem.name == newItem.name && oldItem.contactPhone == newItem.contactPhone
+                        && oldItem.qty == newItem.qty && oldItem.sellerCode == newItem.sellerCode)
+            } else {
+                false
+            }
+        }
+    }
+
+    fun setStoreStockItems(storeCode: String, storeAvailableList: List<StoreAvailable>, sortBy: Int) {
+        this.sortedBy = sortBy
+
+        val items: ArrayList<AvailableStoreItem>
         // empty items
         if (storeAvailableList.isNullOrEmpty()) {
-            this.storeAvailableList = arrayListOf()
-            this.storeAvailableList.add(ItemEmpty())
-            notifyDataSetChanged()
+            items = arrayListOf()
+            items.add(ItemEmpty())
+            submitList(items)
             return
         }
 
         var tempAvailableList = arrayListOf<AvailableStoreItem>()
-        tempAvailableList.add(AvailableStoreHeader()) // header
+//        tempAvailableList.add(AvailableStoreHeader()) // header
         val sameStore = storeAvailableList.firstOrNull { it.sellerCode == storeCode }
         if (sameStore != null) {
             tempAvailableList.add(sameStore)
@@ -70,10 +97,10 @@ class AvailableStoreAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
         }
 
-        this.storeAvailableList = tempAvailableList
+        items = tempAvailableList
         tempAvailableList = arrayListOf()
 
-        notifyDataSetChanged()
+        submitList(items)
     }
 
     interface AvailableStoreItem

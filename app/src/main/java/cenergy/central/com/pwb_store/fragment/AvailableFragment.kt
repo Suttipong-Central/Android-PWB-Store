@@ -8,20 +8,23 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.AvailableProtocol
 import cenergy.central.com.pwb_store.adapter.AvailableStoreAdapter
 import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.realm.RealmController
+import kotlinx.android.synthetic.main.fragment_avaliable.*
 
 class AvailableFragment : Fragment() {
 
     private var listener: AvailableProtocol? = null
-    private val userInformation = RealmController.getInstance().userInformation
+    private val userInformation by lazy { RealmController.getInstance().userInformation }
     private lateinit var recyclerView: RecyclerView
-    private var availableStoreAdapter: AvailableStoreAdapter? = null
+    private lateinit var availableStoreAdapter: AvailableStoreAdapter
 
     private var storeAvailableList: List<StoreAvailable> = arrayListOf()
+    private var sortedBy: Int = SORT_NONE
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -33,11 +36,25 @@ class AvailableFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_avaliable, container, false)
-        initInstances(rootView)
+        setupView(rootView)
         return rootView
     }
 
-    private fun initInstances(rootView: View) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupStoreStocks(storeAvailableList)
+        setupOnClickHeader()
+    }
+
+    private fun setupStoreStocks(items: List<StoreAvailable>) {
+        if (userInformation != null && userInformation.store != null) {
+            availableStoreAdapter.setStoreStockItems(userInformation.store!!.retailerId, items, sortedBy)
+        } else {
+            availableStoreAdapter.setStoreStockItems("", storeAvailableList, sortedBy)
+        }
+    }
+
+    private fun setupView(rootView: View) {
         // Init 'View' instance(s) with rootView.findViewById here
         recyclerView = rootView.findViewById(R.id.recycler_view)
         availableStoreAdapter = AvailableStoreAdapter()
@@ -45,14 +62,93 @@ class AvailableFragment : Fragment() {
         recyclerView.isNestedScrollingEnabled = true
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = availableStoreAdapter
-        if (userInformation!!.store != null) {
-            availableStoreAdapter!!.setCompareAvailable(userInformation.store!!.retailerId, storeAvailableList)
-        } else {
-            availableStoreAdapter!!.setCompareAvailable("", storeAvailableList)
+
+    }
+
+    private fun setupOnClickHeader() {
+        tvStoreCode.setOnClickListener {
+            clearArrowSorted()
+            if (sortedBy == SORT_STORE_CODE_BY_ASC) {
+                setSorted(tvStoreCode, false)
+                sortItems(SORT_STORE_CODE_BY_DESC)
+            } else {
+                setSorted(tvStoreCode)
+                sortItems(SORT_STORE_CODE_BY_ASC)
+            }
+        }
+
+        tvStoreName.setOnClickListener {
+            clearArrowSorted()
+            if (sortedBy == SORT_STORE_NAME_BY_ASC) {
+                setSorted(tvStoreName, false)
+                sortItems(SORT_STORE_NAME_BY_DESC)
+            } else {
+                setSorted(tvStoreName)
+                sortItems(SORT_STORE_NAME_BY_ASC)
+            }
+        }
+
+        tvStoreStock.setOnClickListener {
+            clearArrowSorted()
+            if (sortedBy == SORT_STORE_STOCK_BY_ASC) {
+                setSorted(tvStoreStock, false)
+                sortItems(SORT_STORE_STOCK_BY_DESC)
+            } else {
+                setSorted(tvStoreStock)
+                sortItems(SORT_STORE_STOCK_BY_ASC)
+            }
+        }
+    }
+
+    private fun clearArrowSorted() {
+        tvStoreCode.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+        tvStoreName.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+        tvStoreStock.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+    }
+
+    private fun setSorted(view: TextView, isAsc: Boolean = true) {
+        view.setCompoundDrawablesWithIntrinsicBounds(0, 0, if (isAsc) R.drawable.ic_sort_asc else R.drawable.ic_sort_desc, 0)
+    }
+
+    private fun sortItems(sortBy: Int) {
+        this.sortedBy = sortBy
+        when (sortBy) {
+            SORT_STORE_CODE_BY_ASC -> {
+                setupStoreStocks(storeAvailableList.sortedBy { it.sellerCode })
+            }
+
+            SORT_STORE_CODE_BY_DESC -> {
+                setupStoreStocks(storeAvailableList.sortedByDescending { it.sellerCode })
+            }
+
+            SORT_STORE_NAME_BY_ASC -> {
+                setupStoreStocks(storeAvailableList.sortedBy { it.name })
+            }
+
+            SORT_STORE_NAME_BY_DESC -> {
+                setupStoreStocks(storeAvailableList.sortedByDescending { it.name })
+            }
+
+            SORT_STORE_STOCK_BY_ASC -> {
+                setupStoreStocks(storeAvailableList.sortedBy { it.qty })
+            }
+
+            SORT_STORE_STOCK_BY_DESC -> {
+                setupStoreStocks(storeAvailableList.sortedByDescending { it.qty })
+            }
         }
     }
 
     companion object {
+        // sort type
+        const val SORT_NONE = 0
+        const val SORT_STORE_CODE_BY_ASC = 10
+        const val SORT_STORE_CODE_BY_DESC = 11
+        const val SORT_STORE_NAME_BY_ASC = 20
+        const val SORT_STORE_NAME_BY_DESC = 21
+        const val SORT_STORE_STOCK_BY_ASC = 30
+        const val SORT_STORE_STOCK_BY_DESC = 31
+
         fun newInstance(): AvailableFragment {
             val fragment = AvailableFragment()
             val args = Bundle()

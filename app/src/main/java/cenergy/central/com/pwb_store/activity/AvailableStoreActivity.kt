@@ -41,7 +41,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
         handleChangeLanguage()
 
         if (savedInstanceState == null) {
-            retrieveChangeLanguage()
+            retrieveStoreStocks()
         } else {
             val fragmentTransaction = supportFragmentManager.beginTransaction()
             fragmentTransaction
@@ -51,7 +51,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
     }
 
-    private fun retrieveChangeLanguage() {
+    private fun retrieveStoreStocks() {
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getAvailableStore(sku!!, object : ApiResponseCallback<List<StoreAvailable>> {
             override fun success(response: List<StoreAvailable>?) {
@@ -133,7 +133,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
         updateView()
-        retrieveChangeLanguage()
+        retrieveStoreStocks()
     }
 
     override fun getStoreAvailable() = this.storeAvailableList

@@ -8,7 +8,7 @@
     android:padding="8dp">
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/text_store"
+        android:id="@+id/tvStoreCode"
         style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
         android:textStyle="bold" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/text_name"
+        android:id="@+id/tvStoreName"
         style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:textStyle="bold" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/telephone_text_view"
+        android:id="@+id/tvStoreContact"
         style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         android:textStyle="bold" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/text_stock"
+        android:id="@+id/tvStoreStock"
         style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
