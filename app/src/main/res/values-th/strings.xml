@@ -293,8 +293,10 @@
     <string name="free">ว่าง</string>
     <string name="select_payment_types">เลือกวิธีการจ่ายเงิน</string>
     <string name="not_found_payment_methods">ไม่พบวิธีการจ่ายเงิน</string>
-    <string name="fullpayment">บัตรเครดิต (ชำระเงินเต็มจำนวน)</string>
-    <string name="installment">เลือกการผ่อนชำระสินค้า</string>
+    <string name="fullpayment">Credit Card (Full Payment)</string>
+    <string name="installment">Pay by Installment</string>
+    <string name="pay_at_store">Pay at Store</string>
+    <string name="cash_on_delivery">บริการเก็บค่าสินค้าปลายทาง</string>
     <string name="require_tax">คุณต้องการใบกำกับภาษีเต็มรูปแบบหรือไม่</string>
     <string name="company">บริษัท</string>
     <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>
@@ -302,5 +304,5 @@
     <string name="privacy_description">เมื่อคลิก \'ชำระเงิน\' แสดงว่าคุณได้ยอมรับ</string>
     <string name="pay_credit_card_description">จ่ายง่ายๆ ด้วยบัตรเครดิตของคุณ มั่นใจ ปลอดภัยด้วยความปลอดภัย SSL ระดับสูง</string>
     <string name="cod_description">พนักงานของเราจะนำส่งของให้คุณถึงที่ คุณจะได้เห็นสินค้าจริงก่อนชำระเงิน</string>
-    <string name="pay_at_store">จ่ายที่ร้านค้าได้ทันทีหลังจากยืนยันคำสั่งซื้อ</string>
+    <string name="pay_at_store_description">จ่ายที่ร้านค้าได้ทันทีหลังจากยืนยันคำสั่งซื้อ</string>
 </resources>

@@ -292,6 +292,8 @@
     <string name="select_payment_types">Select a payment method</string>
     <string name="not_found_payment_methods">Not found payment method.</string>
     <string name="fullpayment">Credit Card (Full Payment)</string>
+    <string name="pay_at_store">Pay at Store</string>
+    <string name="cash_on_delivery">Cash on Delivery (CoD)</string>
     <string name="installment">Pay by Installment</string>
     <string name="require_tax">Do you require a full tax invoice?</string>
     <string name="company">Company</string>
@@ -300,5 +302,5 @@
     <string name="privacy_description">By clicking on Pay Now, you have agreed to our</string>
     <string name="pay_credit_card_description">Pay securely without sharing your financial information and OTP verification</string>
     <string name="cod_description">Our staff will send the item(s) right to your doorstep so you can see the item(s) first before you purchase it.</string>
-    <string name="pay_at_store">Pay by cash or credit card at the store after purchase.</string>
+    <string name="pay_at_store_description">Pay by cash or credit card at the store after purchase.</string>
 </resources>

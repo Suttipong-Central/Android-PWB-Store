@@ -14,7 +14,7 @@ class InstallmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
     val button: Button = itemView.findViewById(R.id.choose_payment_method)
 
     fun bindView(paymentMethod: PaymentMethod, listener: PaymentTypeClickListener) {
-        title.text = paymentMethod.title
+        title.text = itemView.context.getString(R.string.installment)
         itemView.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
         button.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
     }
