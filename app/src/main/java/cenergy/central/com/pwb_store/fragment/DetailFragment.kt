@@ -30,7 +30,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.calendar_layout.*
 import kotlinx.android.synthetic.main.fragment_detail.view.*
 
 
@@ -142,12 +141,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         if (productImageList.productDetailImageItems.size > 0) {
             Glide.with(Contextor.getInstance().context)
                     .load(productImageList.productDetailImageItems[0].imgUrl)
-                    .placeholder(R.drawable.ic_pwb_logo_detail)
+                    .placeholder(R.drawable.ic_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(ivProductImage)
         } else {
-            ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_pwb_logo_detail) })
+            ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
         }
 
         rvProductImage.layoutManager = LinearLayoutManager(context, LinearLayout.HORIZONTAL, false)

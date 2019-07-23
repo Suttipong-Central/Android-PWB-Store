@@ -68,7 +68,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
             Glide.with(Contextor.getInstance().getContext())
                     .load(extensionCompare.getImageUrl())
                     //.load(Contextor.getInstance().getContext().getString(R.string.url_image) + extensionCompare.getImageUrl())
-                    .placeholder(R.drawable.ic_pwb_logo_detail)
+                    .placeholder(R.drawable.ic_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(imgProduct);
@@ -106,7 +106,7 @@ public class CompareProductViewHolder extends RecyclerView.ViewHolder implements
 
         Glide.with(Contextor.getInstance().getContext())
                 .load(compareProduct.getImageUrl())
-                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .placeholder(R.drawable.ic_placeholder)
                 .crossFade()
                 .fitCenter()
                 .into(imgProduct);

@@ -15,7 +15,7 @@
         android:background="@drawable/border_grey"
         android:contentDescription="@string/product_detail"
         android:padding="6dp"
-        android:src="@drawable/ic_pwb_logo_detail"
+        android:src="@drawable/ic_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/product_name_list_shopping_cart"
         app:layout_constraintStart_toStartOf="parent"
