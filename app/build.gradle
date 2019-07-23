@@ -112,8 +112,8 @@ android {
         rbs {
             applicationId "cenergy.central.com.eordering.rbs"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 1
-            versionName "0.0.1"
+            versionCode 69
+            versionName "1.0.10"
         }
     }
 
