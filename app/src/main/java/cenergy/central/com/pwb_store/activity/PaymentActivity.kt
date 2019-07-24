@@ -283,7 +283,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun startSelectMethod() {
-        val fragment = PaymentSelectMethodFragment.newInstance()
+        val fragment = PaymentSelectMethodFragment.newInstance(deliveryOption.methodCode)
         startFragment(fragment)
     }
 
@@ -412,15 +412,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 mProgressDialog?.dismiss()
-                                if (response != null) {
-                                    if (isUserChatAndShop()){
-                                        selectPaymentTypes(response.paymentMethods)
-                                    } else {
-                                        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-                                    }
-                                } else {
-                                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                                }
+                                handleShippingInfoSuccess(response)
                             }
 
                             override fun failure(error: APIError) {
@@ -434,15 +426,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
                         mProgressDialog?.dismiss()
-                        if (response != null) {
-                            if (isUserChatAndShop()){
-                                selectPaymentTypes(response.paymentMethods)
-                            } else {
-                                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-                            }
-                        } else {
-                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                        }
+                        handleShippingInfoSuccess(response)
                     }
 
                     override fun failure(error: APIError) {
@@ -454,7 +438,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun selectPaymentTypes(paymentMethodsFromAPI: ArrayList<PaymentMethod>) {
+    private fun handleShippingInfoSuccess(response: ShippingInformationResponse?) {
+        if (response != null) {
+            this.paymentMethods = arrayListOf() // clear payment methods list
+            if (isUserChatAndShop()){
+                selectingPaymentType(response.paymentMethods)
+            } else {
+                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+            }
+        } else {
+            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+        }
+    }
+
+    private fun selectingPaymentType(paymentMethodsFromAPI: ArrayList<PaymentMethod>) {
         if(this.paymentMethods.isEmpty()){
             if(paymentMethodsFromAPI.isEmpty()){
                 showFinishActivityDialog("", getString(R.string.not_found_payment_methods))

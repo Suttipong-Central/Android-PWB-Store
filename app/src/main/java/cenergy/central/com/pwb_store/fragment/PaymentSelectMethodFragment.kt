@@ -12,19 +12,25 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
+import cenergy.central.com.pwb_store.model.DeliveryType
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 
 class PaymentSelectMethodFragment : Fragment() {
 
     private lateinit var paymentListener: PaymentProtocol
-    private var paymentMethods: List<PaymentMethod> = listOf()
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
+    private lateinit var selectMethodAdapter: PaymentMethodAdapter
+
+    private var paymentMethods: List<PaymentMethod> = listOf()
+    private var deliveryCode: String = ""
 
     companion object {
-        fun newInstance(): PaymentSelectMethodFragment {
+        private const val ARG_DELIVERY_CODE = "arg_delivery_code"
+        fun newInstance(methodCode: String): PaymentSelectMethodFragment {
             val fragment = PaymentSelectMethodFragment()
             val args = Bundle()
+            args.putString(ARG_DELIVERY_CODE, methodCode)
             fragment.arguments = args
             return fragment
         }
@@ -37,18 +43,47 @@ class PaymentSelectMethodFragment : Fragment() {
         paymentTypeClickListener = context as PaymentTypeClickListener
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            deliveryCode = it.getString(ARG_DELIVERY_CODE, "")
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_payment_select_methods, container, false)
         setupView(rootView)
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        when (DeliveryType.fromString(deliveryCode)) {
+            DeliveryType.STANDARD -> {
+                selectMethodAdapter.paymentMethods = paymentMethods
+            }
+            else -> {
+               hidePaymentCOD()
+            }
+        }
+    }
+
+    private fun hidePaymentCOD() {
+        val filteredPaymentMethod = arrayListOf<PaymentMethod>()
+        // no display COD
+        paymentMethods.forEach {
+            if ( it.code != PaymentMethod.CASH_ON_DELIVERY) {
+                filteredPaymentMethod.add(it)
+            }
+        }
+        selectMethodAdapter.paymentMethods = filteredPaymentMethod
+    }
+
     private fun setupView(rootView: View) {
         recycler = rootView.findViewById(R.id.recycler_select_methods)
-        val selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
+        selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
-        selectMethodAdapter.paymentMethods = paymentMethods
     }
 
 }
