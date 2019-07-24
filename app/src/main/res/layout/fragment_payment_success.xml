@@ -23,8 +23,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
                     android:background="@drawable/green_circle"
                     android:contentDescription="@string/app_name"
                     android:padding="20dp"
@@ -41,7 +41,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_order_success"
-                        android:textSize="32sp" />
+                        android:textSize="26sp" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
                         android:id="@+id/order_number_order_success"
@@ -61,10 +61,10 @@
             android:layout_height="wrap_content"
             android:background="@color/lightGray"
             android:orientation="horizontal"
-            android:paddingBottom="32dp"
-            android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="32dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="32dp"
             android:weightSum="1">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -78,8 +78,8 @@
                 android:id="@+id/staff_description_order_success"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:text="@string/staff_descriptions" />
 
@@ -111,20 +111,41 @@
             </LinearLayout>
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/ivPaymentBarcode"
+            android:layout_width="@dimen/img_qr_code_payment"
+            android:layout_height="@dimen/img_qr_code_payment"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@color/lightGray"
+            android:contentDescription="@string/payment_header"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvPaymentDescription"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            android:text="payment description..."
+            android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/order_info_sub_header_order_success"
                 style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/personal_detail" />
 
             <LinearLayout
@@ -265,8 +286,8 @@
                 style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/store_collection_detail" />
 
             <LinearLayout
@@ -593,18 +614,18 @@
                 style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/order_detail" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                android:paddingEnd="16dp"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
                 android:weightSum="10">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -622,8 +643,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="2"
                     android:text="@string/price"
                     android:textSize="16sp" />
@@ -633,8 +654,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="@string/qty"
                     android:textSize="16sp" />
@@ -644,8 +665,8 @@
                     style="@style/TextAppearance.AppCompat.Medium"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="2"
                     android:text="@string/total"
                     android:textSize="16sp" />
@@ -662,16 +683,16 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp" />
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
 
             <LinearLayout
                 android:id="@+id/amountLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="16dp"
                 android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:visibility="visible">
 
                 <View
@@ -696,10 +717,10 @@
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
                         android:text="@string/total"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline80" />
+                        app:layout_constraintEnd_toStartOf="@+id/guideline80"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
                         android:id="@+id/delivery_price_order_success"
@@ -718,13 +739,13 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        app:layout_constraintTop_toTopOf="parent"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/blackText"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/guideline80"
+                        app:layout_constraintTop_toTopOf="parent"
                         tools:text="4,404" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -748,8 +769,8 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="@color/lightGray"
                 android:padding="8dp">
 
@@ -795,7 +816,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:icon_invisible="true"
-                app:text="@string/finished"/>
+                app:text="@string/finished" />
 
         </LinearLayout>
 

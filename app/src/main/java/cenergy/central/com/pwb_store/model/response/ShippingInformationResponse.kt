@@ -11,12 +11,12 @@ data class ShippingInformationResponse(@SerializedName("payment_methods")
 )
 
 data class PaymentMethod(
-        var code: String? = "",
-        var title: String? = ""
+        var code: String = "",
+        var title: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-            parcel.readString(),
-            parcel.readString()
+            parcel.readString() ?: "",
+            parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

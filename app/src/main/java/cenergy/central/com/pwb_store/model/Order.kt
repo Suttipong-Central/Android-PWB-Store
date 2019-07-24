@@ -1,9 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
-import android.content.Context
 import cenergy.central.com.pwb_store.extensions.formatterUTC
 import cenergy.central.com.pwb_store.extensions.toDate
-import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailDescriptionBus
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -26,26 +24,29 @@ open class Order(
         var branchShipping: Branch? = null,
         var shippingDescription: String = "",
         var baseTotal: Double = 0.0,
-        var shippingAmount: Double = 0.0
+        var shippingAmount: Double = 0.0,
+        var paymentRedirect: String = ""
+
 ) : RealmObject() {
     companion object {
         const val FIELD_ORDER_ID = "orderId"
 
-        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, language: String) : Order {
+        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, language: String, paymentRedirect: String = ""): Order {
             return Order(orderId = orderResponse.orderId!!,
                     createdAt = orderResponse.createdAt.toDate().formatterUTC(language),
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
                     shippingType = orderResponse.shippingType!!,
-                    items = Order.asItems(orderResponse.items),
+                    items = asItems(orderResponse.items),
                     shippingAddress = orderResponse.orderExtension!!.shippingAssignments!![0]!!.shipping!!.shippingAddress!!,
                     billingAddress = orderResponse.billingAddress!!,
                     branchShipping = branchShipping,
                     shippingDescription = orderResponse.shippingDescription,
                     baseTotal = orderResponse.baseTotal,
-                    shippingAmount = orderResponse.shippingAmount)
+                    shippingAmount = orderResponse.shippingAmount,
+                    paymentRedirect = paymentRedirect)
         }
 
-        private fun asItems(items: RealmList<Item>?): RealmList<Item>{
+        private fun asItems(items: RealmList<Item>?): RealmList<Item> {
             return items ?: RealmList()
         }
     }

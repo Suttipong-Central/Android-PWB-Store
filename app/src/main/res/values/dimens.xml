@@ -19,4 +19,7 @@
     <dimen name="raised_button_card_elevation">2dp</dimen>
     <dimen name="raised_button_cardCornerRadius">4dp</dimen>
     <dimen name="common_40_dp">40dp</dimen>
+
+    <!-- Image -->
+    <dimen name="img_qr_code_payment">192dp</dimen>
 </resources>

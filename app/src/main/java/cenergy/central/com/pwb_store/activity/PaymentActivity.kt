@@ -13,6 +13,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -23,7 +24,10 @@ import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
-import cenergy.central.com.pwb_store.manager.*
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.api.OrderApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
@@ -73,7 +77,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("e_ordering",  "Pay at store")
+    private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
     var theOneCardNo: String = ""
 
     // date
@@ -125,7 +129,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun startCheckout(contactNo: String?) {
         // skip?
         if (contactNo == null) {
-            if(currentState == NetworkInfo.State.CONNECTED){
+            if (currentState == NetworkInfo.State.CONNECTED) {
                 membersList = listOf() // clear membersList
                 startBilling()
             } else {
@@ -236,7 +240,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         backPressed()
     }
 
-    private fun startCreatedOrderFragment(){
+    private fun startCreatedOrderFragment() {
         languageButton.visibility = View.VISIBLE
         val cacheCart = ArrayList<CacheCartItem>()
         cacheCart.addAll(cacheCartItems)
@@ -244,11 +248,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         clearCachedCart() // clear cache item
     }
 
-    private fun startSuccessfullyFragment(orderId: String) {
+    private fun startSuccessfullyFragment(orderId: String, urlRedirect: String) {
         languageButton.visibility = View.VISIBLE
         val cacheCart = ArrayList<CacheCartItem>()
         cacheCart.addAll(cacheCartItems)
-        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart))
+        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart, urlRedirect))
         clearCachedCart() // clear cache item
     }
 
@@ -374,8 +378,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun showFinishActivityDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) {
-                    dialog, _ -> dialog.dismiss()
+                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
+                    dialog.dismiss()
                     finish()
                 }
         if (!TextUtils.isEmpty(title)) {
@@ -408,7 +412,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 billingAddress?.sameBilling = 0
                 shippingAddress?.sameBilling = 0
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        billingAddress
+                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 mProgressDialog?.dismiss()
@@ -441,7 +446,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun handleShippingInfoSuccess(response: ShippingInformationResponse?) {
         if (response != null) {
             this.paymentMethods = arrayListOf() // clear payment methods list
-            if (isUserChatAndShop()){
+            if (isUserChatAndShop()) {
                 selectingPaymentType(response.paymentMethods)
             } else {
                 showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
@@ -452,8 +457,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun selectingPaymentType(paymentMethodsFromAPI: ArrayList<PaymentMethod>) {
-        if(this.paymentMethods.isEmpty()){
-            if(paymentMethodsFromAPI.isEmpty()){
+        if (this.paymentMethods.isEmpty()) {
+            if (paymentMethodsFromAPI.isEmpty()) {
                 showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
             } else {
                 this.paymentMethods = paymentMethodsFromAPI
@@ -592,7 +597,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         if (branch != null) {
                             branches.add(branch)
                             response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
-                                if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it) }
+                                if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it)
+                            }
                         } else {
                             response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
                                 branches.add(it)
@@ -721,21 +727,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
         val retailerId = userInformation?.store?.retailerId ?: ""
-        val methodCode = paymentMethod.code ?: ""
-
         val addressInfo = if (billingAddress == null) shippingAddress else billingAddress
-        OrderApi().updateOrder(this, cartId!!, staffId, retailerId, methodCode, email,
-                addressInfo!!, theOneCardNo, object : ApiResponseCallback<String> {
-            override fun success(response: String?) {
+
+        OrderApi().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email,
+                addressInfo!!, theOneCardNo, object : OrderApi.CreateOderCallback {
+            override fun onSuccess(oderId: String?) {
                 runOnUiThread {
-                    if (response != null) {
+                    if (oderId != null) {
                         supportActionBar?.setDisplayHomeAsUpEnabled(false)
                         mToolbar?.setNavigationOnClickListener(null)
-                        if(response == HttpManagerMagento.OPEN_ORDER_CREATED_PAGE){
+                        if (oderId == HttpManagerMagento.OPEN_ORDER_CREATED_PAGE) {
                             startCreatedOrderFragment()
                             mProgressDialog?.dismiss()
                         } else {
-                            getOrder(response)
+                            getOrder(oderId)
                         }
                     } else {
                         mProgressDialog?.dismiss()
@@ -744,7 +749,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 }
             }
 
-            override fun failure(error: APIError) {
+            override fun onSuccessAndRedirect(oderId: String?, url: String) {
+                runOnUiThread {
+                    oderId?.let { getOrder(it, url) }
+                }
+            }
+
+            override fun onFailure(error: APIError) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
                     DialogHelper(this@PaymentActivity).showErrorDialog(error)
@@ -753,8 +764,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    fun getOrder(orderId: String) {
-        startSuccessfullyFragment(orderId)
+    fun getOrder(orderId: String, urlRedirect: String = "") {
+        startSuccessfullyFragment(orderId, urlRedirect)
         mProgressDialog?.dismiss()
     }
 

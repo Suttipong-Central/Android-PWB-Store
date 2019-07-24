@@ -49,6 +49,8 @@ class HttpManagerMagento(context: Context) {
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         defaultHttpClient = OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
+                .followRedirects(false)
+                .followSslRedirects(false)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
                     val request = chain.request().newBuilder().build()
