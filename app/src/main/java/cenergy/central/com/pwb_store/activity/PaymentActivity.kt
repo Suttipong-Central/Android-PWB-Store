@@ -74,6 +74,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
     private val paymentMethod = PaymentMethod("e_ordering",  "Pay at store")
+    var theOneCardNo: String = ""
 
     // date
     private val dateTime = DateTime.now()
@@ -142,7 +143,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         startBilling(pwbMemberIndex)
     }
 
-    override fun onClickedT1CMember(customerId: String) = getT1CMember(customerId)
+    override fun onClickedT1CMember(customerId: String, t1cardNo: String) {
+        theOneCardNo = t1cardNo
+        getT1CMember(customerId)
+    }
     // endregion
 
     // region {@link PaymentBillingListener}
@@ -519,6 +523,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun success(response: Member?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
+                    response.cardNo = theOneCardNo
                     startBilling(response)
                 } else {
                     showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
@@ -723,7 +728,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         val addressInfo = if (billingAddress == null) shippingAddress else billingAddress
         OrderApi().updateOrder(this, cartId!!, staffId, retailerId, methodCode, email,
-                addressInfo!!, object : ApiResponseCallback<String> {
+                addressInfo!!, theOneCardNo, object : ApiResponseCallback<String> {
             override fun success(response: String?) {
                 runOnUiThread {
                     if (response != null) {

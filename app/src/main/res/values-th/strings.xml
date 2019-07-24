@@ -305,4 +305,5 @@
     <string name="pay_credit_card_description">จ่ายง่ายๆ ด้วยบัตรเครดิตของคุณ มั่นใจ ปลอดภัยด้วยความปลอดภัย SSL ระดับสูง</string>
     <string name="cod_description">พนักงานของเราจะนำส่งของให้คุณถึงที่ คุณจะได้เห็นสินค้าจริงก่อนชำระเงิน</string>
     <string name="pay_at_store_description">จ่ายที่ร้านค้าได้ทันทีหลังจากยืนยันคำสั่งซื้อ</string>
+    <string name="t1_member">หมายเลขสมาชิกเดอะวัน</string>
 </resources>

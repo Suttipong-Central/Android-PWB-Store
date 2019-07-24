@@ -38,7 +38,7 @@ data class PaymentInfoBody(
     companion object {
         fun createPaymentInfoBody(cartId: String, email: String, paymentMethod: String,
                                   billingAddress: AddressInformation, staffId: String,
-                                  retailerId: String, theOneCardNo: String = ""): PaymentInfoBody {
+                                  retailerId: String, theOneCardNo: String): PaymentInfoBody {
             val staffBody = QuoteStaffBody(staffId, retailerId)
             val extMethodBody = ExtensionMethodBody(theOneCardNo, staffBody)
             val methodBody = MethodBody(paymentMethod, extMethodBody)

@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 import android.app.Activity
+import android.graphics.drawable.Drawable
 import android.view.inputmethod.InputMethodManager
 
 
@@ -108,5 +109,10 @@ class PowerBuyEditTextBorder : LinearLayout {
     fun showKeyboard(view: View) {
         val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(view, 0)
+    }
+
+    fun setDrawableStart(icon: Int){
+        editText.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+        editText.compoundDrawablePadding = 16
     }
 }

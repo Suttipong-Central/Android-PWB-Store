@@ -14,11 +14,11 @@ import retrofit2.Response
 class OrderApi {
 
     fun updateOrder(context: Context, cartId: String, staffId: String, sellerCode: String, methodCode: String,
-                    email: String, billingAddress: AddressInformation, callback: ApiResponseCallback<String>){
+                    email: String, billingAddress: AddressInformation, theOneCardNo: String, callback: ApiResponseCallback<String>){
         val apiManager = HttpManagerMagento.getInstance(context)
 
-        val paymentMethodBody = PaymentInfoBody.createPaymentInfoBody(cartId = cartId,
-                staffId = staffId, retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = methodCode)
+        val paymentMethodBody = PaymentInfoBody.createPaymentInfoBody(cartId = cartId, staffId = staffId,
+                retailerId = sellerCode, email = email, billingAddress = billingAddress, paymentMethod = methodCode, theOneCardNo = theOneCardNo)
         apiManager.cartService.updateOrder(apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {

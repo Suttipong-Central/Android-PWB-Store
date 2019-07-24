@@ -41,7 +41,7 @@ class MembersAdapter: RecyclerView.Adapter<MembersViewHolder>() {
             T1CMember -> {
                 val member = memberList[position] as MemberResponse
                 holder.bindT1CMemberView(position, member)
-                holder.itemView.setOnClickListener { memberClickListener?.onClickedT1CMember(member.customerId) }
+                holder.itemView.setOnClickListener { memberClickListener?.onClickedT1CMember(member.customerId, member.cards[0].cardNo) }
             }
         }
     }

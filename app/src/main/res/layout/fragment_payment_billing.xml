@@ -98,6 +98,23 @@
                     app:header="@string/email"
                     app:required="true" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:weightSum="2">
+
+                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                    android:id="@+id/t1_member_no_payment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    app:header="@string/t1_member"
+                    app:required="false" />
+            </LinearLayout>
         </LinearLayout>
 
         <View

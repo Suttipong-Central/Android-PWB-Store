@@ -49,6 +49,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
     private lateinit var contactNumberEdt: PowerBuyEditTextBorder
     private lateinit var emailEdt: PowerBuyEditTextBorder
+    private lateinit var theOneEdt: PowerBuyEditTextBorder
     private lateinit var homeNoEdt: PowerBuyEditTextBorder
     private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var homeSoiEdt: PowerBuyEditTextBorder
@@ -464,6 +465,7 @@ class PaymentBillingFragment : Fragment() {
         lastNameEdt.setText(t1cMember.getLastName())
         contactNumberEdt.setText(t1cMember.mobilePhone)
         emailEdt.setText(t1cMember.email)
+        theOneEdt.setText(t1cMember.cardNo)
         homePhoneEdt.setText(t1cMember.homePhone)
 
         // has address?
@@ -512,6 +514,7 @@ class PaymentBillingFragment : Fragment() {
         lastNameEdt = rootView.findViewById(R.id.last_name_payment)
         contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
         emailEdt = rootView.findViewById(R.id.email_payment)
+        theOneEdt = rootView.findViewById(R.id.t1_member_no_payment)
         homeNoEdt = rootView.findViewById(R.id.house_no_payment)
         homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         homeSoiEdt = rootView.findViewById(R.id.soi_payment)
@@ -559,6 +562,9 @@ class PaymentBillingFragment : Fragment() {
 //        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
+
+        //set T1 icon
+        theOneEdt.setDrawableStart(R.drawable.ic_the1)
 
         radioGroup = rootView.findViewById(R.id.radio_group)
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)

@@ -303,4 +303,5 @@
     <string name="pay_credit_card_description">Pay securely without sharing your financial information and OTP verification</string>
     <string name="cod_description">Our staff will send the item(s) right to your doorstep so you can see the item(s) first before you purchase it.</string>
     <string name="pay_at_store_description">Pay by cash or credit card at the store after purchase.</string>
+    <string name="t1_member">T1 member no</string>
 </resources>
