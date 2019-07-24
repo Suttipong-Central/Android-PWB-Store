@@ -14,7 +14,6 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
         const val PAY_AT_STORE = 1
         const val FULL_PAYMENT = 2
         const val INSTALLMENT = 3
-        const val CASH_ON_DELIVERY = 4
         const val EMPTY = 5
     }
 
@@ -37,10 +36,6 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
             INSTALLMENT -> {
                 InstallmentViewHolder(LayoutInflater.from(parent.context)
                         .inflate(R.layout.list_item_pay_with_credite_card, parent, false))
-            }
-            CASH_ON_DELIVERY -> {
-                CashOnDeliveryViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_cash_on_delivery, parent, false))
             }
             else -> {
                 PaymentEmptyViewHolder(LayoutInflater.from(parent.context)
@@ -81,9 +76,6 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
             }
             PaymentMethod.INSTALLMENT -> {
                 INSTALLMENT
-            }
-            PaymentMethod.CASH_ON_DELIVERY -> {
-                CASH_ON_DELIVERY
             }
             else -> {
                 EMPTY

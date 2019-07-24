@@ -58,14 +58,16 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        when (DeliveryType.fromString(deliveryCode)) {
-            DeliveryType.STANDARD -> {
-                selectMethodAdapter.paymentMethods = paymentMethods
-            }
-            else -> {
-               hidePaymentCOD()
-            }
-        }
+        //TODO later show stand with COD
+//        when (DeliveryType.fromString(deliveryCode)) {
+//            DeliveryType.STANDARD -> {
+//                selectMethodAdapter.paymentMethods = paymentMethods
+//            }
+//            else -> {
+//               hidePaymentCOD()
+//            }
+//        }
+        hidePaymentCOD()
     }
 
     private fun hidePaymentCOD() {
