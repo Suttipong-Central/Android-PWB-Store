@@ -289,6 +289,8 @@
     <string name="product_delivery">Delivery / Warranty / Refund</string>
     <string name="full">FULL</string>
     <string name="free">FREE</string>
+
+    <!-- Payment -->
     <string name="select_payment_types">Select a payment method</string>
     <string name="not_found_payment_methods">Not found payment method.</string>
     <string name="fullpayment">Credit Card (Full Payment)</string>
@@ -304,4 +306,5 @@
     <string name="cod_description">Our staff will send the item(s) right to your doorstep so you can see the item(s) first before you purchase it.</string>
     <string name="pay_at_store_description">Pay by cash or credit card at the store after purchase.</string>
     <string name="t1_member">T1 member no</string>
+    <string name="title_earn_t1c_option">Earn T1 points</string>
 </resources>

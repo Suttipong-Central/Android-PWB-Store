@@ -84,6 +84,7 @@ class PaymentSelectMethodFragment : Fragment() {
     private fun setupView(rootView: View) {
         recycler = rootView.findViewById(R.id.recycler_select_methods)
         selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
+        recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
     }

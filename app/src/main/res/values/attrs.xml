@@ -16,6 +16,7 @@
     <declare-styleable name="PowerBuyEditTextBorder">
         <attr name="header" format="string"/>
         <attr name="required" format="boolean"/>
+        <attr name="pwb_icon" format="reference"/>
     </declare-styleable>
     <declare-styleable name="PowerBuyAutoCompleteTextStroke">
         <attr name="act_header" format="string"/>

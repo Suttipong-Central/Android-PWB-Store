@@ -1,28 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="wrap_content">
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/title_select_methods"
-        style="@style/textCompare"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/select_payment_types"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recycler_select_methods"/>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_select_methods"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/title_select_methods"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-</android.support.constraint.ConstraintLayout>
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tv_earn_t1c_title"
+            style="@style/textHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/title_earn_t1c_option"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_earn_t1c_point"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/border_grey"
+            app:layout_constraintBottom_toTopOf="@+id/title_select_methods"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_earn_t1c_title">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                android:id="@+id/input_the1_card_id"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                app:header="@string/t1_member"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:pwb_icon="@drawable/ic_the1"
+                app:required="false" />
+
+            <Button
+                android:id="@+id/btn_change_the1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="เปลี่ยน"
+                app:layout_constraintBottom_toBottomOf="@+id/input_the1_card_id"
+                app:layout_constraintStart_toEndOf="@+id/input_the1_card_id" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/title_select_methods"
+            style="@style/textHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/select_payment_types"
+            app:layout_constraintBottom_toTopOf="@id/recycler_select_methods"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_earn_t1c_point" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_select_methods"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title_select_methods" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v4.widget.NestedScrollView>

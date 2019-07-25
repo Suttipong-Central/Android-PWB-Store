@@ -1,15 +1,15 @@
 package cenergy.central.com.pwb_store.view
 
+import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.support.design.widget.TextInputEditText
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
-import android.app.Activity
-import android.graphics.drawable.Drawable
-import android.view.inputmethod.InputMethodManager
 
 
 class PowerBuyEditTextBorder : LinearLayout {
@@ -20,6 +20,7 @@ class PowerBuyEditTextBorder : LinearLayout {
     private var required = false
     private var textHeader = ""
     private var textEditText = ""
+    private var iconAtStart: Drawable? = null
 
     constructor(context: Context) : super(context) {
         prepareView()
@@ -52,8 +53,9 @@ class PowerBuyEditTextBorder : LinearLayout {
                 .obtainStyledAttributes(attrs, R.styleable.PowerBuyEditTextBorder, 0, 0)
 
         //Get attribute values
-        textHeader = typedArray.getString(R.styleable.PowerBuyEditTextBorder_header)
+        textHeader = typedArray.getString(R.styleable.PowerBuyEditTextBorder_header) ?: ""
         required = typedArray.getBoolean(R.styleable.PowerBuyEditTextBorder_required, false)
+        iconAtStart = typedArray.getDrawable(R.styleable.PowerBuyEditTextBorder_pwb_icon)
 
         typedArray.recycle()
 
@@ -70,10 +72,15 @@ class PowerBuyEditTextBorder : LinearLayout {
             requiredField?.visibility = View.GONE
         }
         editText.setText(textEditText)
+
+        // set icon
+        iconAtStart?.let {
+            setDrawableStart(it)
+        }
     }
 
     fun getText(): String {
-        return if(editText.text != null) {
+        return if (editText.text != null) {
             this.editText.text.toString()
         } else {
             ""
@@ -111,8 +118,13 @@ class PowerBuyEditTextBorder : LinearLayout {
         inputMethodManager.showSoftInput(view, 0)
     }
 
-    fun setDrawableStart(icon: Int){
+    fun setDrawableStart(icon: Int) {
         editText.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+        editText.compoundDrawablePadding = 16
+    }
+
+    fun setDrawableStart(icon: Drawable) {
+        editText.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
         editText.compoundDrawablePadding = 16
     }
 }

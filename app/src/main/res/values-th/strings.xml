@@ -291,6 +291,8 @@
     <string name="product_delivery">การจัดส่ง / รับประกัน / คืนเงิน</string>
     <string name="full">ไม่ว่าง</string>
     <string name="free">ว่าง</string>
+
+    <!-- Payment-->
     <string name="select_payment_types">เลือกวิธีการจ่ายเงิน</string>
     <string name="not_found_payment_methods">ไม่พบวิธีการจ่ายเงิน</string>
     <string name="fullpayment">Credit Card (Full Payment)</string>
@@ -306,4 +308,6 @@
     <string name="cod_description">พนักงานของเราจะนำส่งของให้คุณถึงที่ คุณจะได้เห็นสินค้าจริงก่อนชำระเงิน</string>
     <string name="pay_at_store_description">จ่ายที่ร้านค้าได้ทันทีหลังจากยืนยันคำสั่งซื้อ</string>
     <string name="t1_member">หมายเลขสมาชิกเดอะวัน</string>
+    <string name="title_earn_t1c_option">รับคะแนน T1</string>
+
 </resources>
