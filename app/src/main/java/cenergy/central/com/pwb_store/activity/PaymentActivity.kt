@@ -77,7 +77,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
+    private val paymentMethod = PaymentMethod("payatstore", "Pay at store")
     var theOneCardNo: String = ""
 
     // date
