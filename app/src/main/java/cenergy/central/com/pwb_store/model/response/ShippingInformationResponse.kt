@@ -39,7 +39,7 @@ data class PaymentMethod(
 
         const val CASH_ON_DELIVERY = "cashondelivery"
         const val FULL_PAYMENT = "fullpaymentredirect"
-        const val PAY_AT_STORE = "e_ordering"
+        const val PAY_AT_STORE = "payatstore"
         const val INSTALLMENT = "p2c2p_ipp"
     }
 }
