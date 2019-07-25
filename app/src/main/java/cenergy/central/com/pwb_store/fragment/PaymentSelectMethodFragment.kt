@@ -8,16 +8,20 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
+import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.model.DeliveryType
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import kotlinx.android.synthetic.main.widget_network_view.*
 
 class PaymentSelectMethodFragment : Fragment() {
 
     private lateinit var paymentListener: PaymentProtocol
+    private lateinit var changeT1: Button
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
@@ -68,6 +72,13 @@ class PaymentSelectMethodFragment : Fragment() {
 //            }
 //        }
         hidePaymentCOD()
+        handleClickChangeT1()
+    }
+
+    private fun handleClickChangeT1() {
+        changeT1.setOnClickListener {
+            ChangeTheOneDialogFragment.newInstance().show(fragmentManager, "dialog")
+        }
     }
 
     private fun hidePaymentCOD() {
@@ -82,11 +93,11 @@ class PaymentSelectMethodFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
+        changeT1 = rootView.findViewById(R.id.btn_change_the1)
         recycler = rootView.findViewById(R.id.recycler_select_methods)
         selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
     }
-
 }
