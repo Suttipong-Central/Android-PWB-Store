@@ -151,9 +151,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         startBilling(pwbMemberIndex)
     }
 
-    override fun onClickedT1CMember(customerId: String, t1cardNo: String) {
-        theOneCardNo = t1cardNo
-        getT1CMember(customerId)
+    override fun onClickedT1CMember(member: MemberResponse) {
+        theOneCardNo = member.cards[0].cardNo
+        getT1CMember(member.customerId)
     }
     // endregion
 
@@ -176,11 +176,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         getMembersT1C(mobile)
     }
 
-    override fun onSelectedT1Member(t1cardNo: String) {
+    override fun onSelectedT1Member(the1Member: MemberResponse) {
         if (currentFragment is PaymentSelectMethodFragment) {
-            (currentFragment as PaymentSelectMethodFragment).updateT1MemberInput(t1cardNo)
+            (currentFragment as PaymentSelectMethodFragment).updateT1MemberInput(the1Member)
             //update t1 card no.
-            theOneCardNo = t1cardNo
+            theOneCardNo = the1Member.cards[0].cardNo
         }
     }
     // endregion

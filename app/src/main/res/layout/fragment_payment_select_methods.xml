@@ -43,6 +43,16 @@
                 app:pwb_icon="@drawable/ic_the1"
                 app:required="false" />
 
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tv_the1_member_name"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/input_the1_card_id"
+                app:layout_constraintTop_toBottomOf="@+id/input_the1_card_id" />
+
             <Button
                 android:id="@+id/btn_change_the1"
                 android:layout_width="wrap_content"

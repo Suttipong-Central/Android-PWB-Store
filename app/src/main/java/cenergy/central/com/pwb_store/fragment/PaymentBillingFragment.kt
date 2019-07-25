@@ -464,7 +464,7 @@ class PaymentBillingFragment : Fragment() {
         firstNameEdt.setText(t1cMember.getFirstName())
         lastNameEdt.setText(t1cMember.getLastName())
         contactNumberEdt.setText(t1cMember.mobilePhone)
-        emailEdt.setText(t1cMember.email)
+        emailEdt.setText(t1cMember.email ?: "")
         theOneEdt.setText(t1cMember.cardNo)
         homePhoneEdt.setText(t1cMember.homePhone)
 

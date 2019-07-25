@@ -3,6 +3,12 @@ package cenergy.central.com.pwb_store.manager
 import android.annotation.SuppressLint
 import android.content.Context
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.Constants.Companion.CENTRAL_HOST_NAME
+import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_ACCESS_KEY
+import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_REGION
+import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_SECRET_KEY
+import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_SERVICE_NAME
+import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_X_API_KEY
 import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Member
@@ -48,7 +54,7 @@ class HttpMangerSiebel(context: Context) {
                 .build()
 
         retrofit = Retrofit.Builder()
-                .baseUrl(HOST_NAME)
+                .baseUrl(CENTRAL_HOST_NAME)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build()
@@ -116,14 +122,6 @@ class HttpMangerSiebel(context: Context) {
     }
 
     companion object {
-        //        //Specific Client
-        private const val CLIENT_SERVICE_NAME = "execute-api"
-        private const val CLIENT_REGION = "ap-southeast-1"
-        private const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        private const val HOST_NAME = "https://api.central.tech"
-        private const val CLIENT_ACCESS_KEY = "AKIAJK27ORQKY42QRFWQ"
-        private const val CLIENT_SECRET_KEY = "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"
-
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpMangerSiebel? = null
 

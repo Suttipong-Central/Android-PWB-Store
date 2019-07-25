@@ -14,16 +14,17 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.model.DeliveryType
+import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-import kotlinx.android.synthetic.main.widget_network_view.*
+import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class PaymentSelectMethodFragment : Fragment() {
 
     private lateinit var paymentProtocol: PaymentProtocol
     private lateinit var inputT1CardId: PowerBuyEditTextBorder
     private lateinit var btnChangeT1: Button
+    private lateinit var tvThe1MemberName: PowerBuyTextView
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
@@ -99,6 +100,7 @@ class PaymentSelectMethodFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
+        tvThe1MemberName = rootView.findViewById(R.id.tv_the1_member_name)
         inputT1CardId = rootView.findViewById(R.id.input_the1_card_id)
         btnChangeT1 = rootView.findViewById(R.id.btn_change_the1)
         recycler = rootView.findViewById(R.id.recycler_select_methods)
@@ -110,7 +112,10 @@ class PaymentSelectMethodFragment : Fragment() {
         inputT1CardId.setEnableInput(false)
     }
 
-    fun updateT1MemberInput(cardNo: String) {
-        inputT1CardId.setText(cardNo)
+    fun updateT1MemberInput(the1Member: MemberResponse) {
+        inputT1CardId.setText(the1Member.cards[0].cardNo)
+
+        tvThe1MemberName.visibility = View.VISIBLE
+        tvThe1MemberName.text = the1Member.getDisplayName()
     }
 }

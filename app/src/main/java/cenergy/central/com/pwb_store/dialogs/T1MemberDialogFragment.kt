@@ -44,7 +44,7 @@ class T1MemberDialogFragment : DialogFragment(), MemberClickListener {
 
         membersList = paymentProtocol?.getMembers() ?: arrayListOf()
         val recycler = rootView.recycler_view_members
-        val membersAdapter = MembersAdapter()
+        val membersAdapter = MembersAdapter(showDetail = true)
         membersAdapter.setOnMemberClickListener(this)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = membersAdapter
@@ -56,8 +56,8 @@ class T1MemberDialogFragment : DialogFragment(), MemberClickListener {
         // nothing
     }
 
-    override fun onClickedT1CMember(customerId: String, t1cardNo: String) {
-        listener?.onSelectedT1Member(t1cardNo)
+    override fun onClickedT1CMember(member: MemberResponse) {
+        listener?.onSelectedT1Member(member)
         dialog.dismiss()
     }
     // endregion

@@ -9,7 +9,7 @@ import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.model.PwbMember
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
-class MembersAdapter: RecyclerView.Adapter<MembersViewHolder>() {
+class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adapter<MembersViewHolder>() {
 
     var memberList: List<Any> = listOf()
         set(value) {
@@ -25,7 +25,7 @@ class MembersAdapter: RecyclerView.Adapter<MembersViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MembersViewHolder {
         return MembersViewHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_item_members, parent, false))
+                .inflate(R.layout.list_item_members, parent, false), showDetail)
     }
 
     override fun getItemCount(): Int {
@@ -41,7 +41,7 @@ class MembersAdapter: RecyclerView.Adapter<MembersViewHolder>() {
             T1CMember -> {
                 val member = memberList[position] as MemberResponse
                 holder.bindT1CMemberView(position, member)
-                holder.itemView.setOnClickListener { memberClickListener?.onClickedT1CMember(member.customerId, member.cards[0].cardNo) }
+                holder.itemView.setOnClickListener { memberClickListener?.onClickedT1CMember(member) }
             }
         }
     }

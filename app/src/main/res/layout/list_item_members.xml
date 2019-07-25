@@ -43,6 +43,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/member_name_list_members" />
+        app:layout_constraintTop_toBottomOf="@id/the1_card_number" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/the1_card_number"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/member_name_list_members"
+        app:layout_constraintTop_toBottomOf="@+id/member_name_list_members" />
 
 </android.support.constraint.ConstraintLayout>
