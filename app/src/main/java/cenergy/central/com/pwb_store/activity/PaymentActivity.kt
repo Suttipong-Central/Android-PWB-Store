@@ -13,10 +13,11 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.fragment.*
@@ -40,6 +41,7 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
@@ -47,7 +49,8 @@ import org.joda.time.DateTime
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypeClickListener {
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypeClickListener,
+        PaymentT1Listener {
 
     var mToolbar: Toolbar? = null
 
@@ -78,7 +81,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
     private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
-    var theOneCardNo: String = ""
+    private var theOneCardNo: String = ""
 
     // date
     private val dateTime = DateTime.now()
@@ -86,6 +89,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var month = dateTime.monthOfYear
 
     companion object {
+        private const val TAG = "PaymentActivity"
         fun intent(context: Context) {
             val intent = Intent(context, PaymentActivity::class.java)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
@@ -162,6 +166,22 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun setBillingAddressInfo(billingAddress: AddressInformation) {
         this.billingAddress = billingAddress
+    }
+    // endregion
+
+    // region {@link PaymentT1Listener}
+    override fun onChangingT1Member(mobile: String) {
+        Log.d(TAG, mobile)
+        showProgressDialog()
+        getMembersT1C(mobile)
+    }
+
+    override fun onSelectedT1Member(t1cardNo: String) {
+        if (currentFragment is PaymentSelectMethodFragment) {
+            (currentFragment as PaymentSelectMethodFragment).updateT1MemberInput(t1cardNo)
+            //update t1 card no.
+            theOneCardNo = t1cardNo
+        }
     }
     // endregion
 
@@ -495,28 +515,54 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun getMembersT1C(mobile: String) {
-        HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ", object : ApiResponseCallback<List<MemberResponse>> {
-            override fun success(response: List<MemberResponse>?) {
-                mProgressDialog?.dismiss()
-                if (response != null && response.isNotEmpty()) {
-                    this@PaymentActivity.membersList = response
-                    startMembersFragment()
-                } else {
-                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
-                }
-            }
+        HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ",
+                object : ApiResponseCallback<List<MemberResponse>> {
+                    override fun success(response: List<MemberResponse>?) {
+                        mProgressDialog?.dismiss()
 
-            override fun failure(error: APIError) {
-                if (!isFinishing) {
-                    mProgressDialog?.dismiss()
-                    if (error.errorCode == null) {
-                        showAlertDialog("", getString(R.string.not_connected_network))
-                    } else {
-                        showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                        // is PaymentCheckOutFragment?
+                        if (currentFragment is PaymentCheckOutFragment) {
+                            if (response != null && response.isNotEmpty()) {
+                                this@PaymentActivity.membersList = response
+                                startMembersFragment()
+                            } else {
+                                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                            }
+                        }
+
+                        // is PaymentSelectMethodFragment
+                        if (currentFragment is PaymentSelectMethodFragment) {
+                            if (response != null && response.isNotEmpty()) {
+                                this@PaymentActivity.membersList = response
+                                Log.d(TAG, "${response.size}")
+                                T1MemberDialogFragment.newInstance().show(supportFragmentManager,
+                                        T1MemberDialogFragment.TAG_FRAGMENT)
+                            } else {
+                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                            }
+                        }
                     }
-                }
-            }
-        })
+
+                    override fun failure(error: APIError) {
+                        if (!isFinishing) {
+                            mProgressDialog?.dismiss()
+
+                            if (error.errorCode == null) {
+                                showAlertDialog("", getString(R.string.not_connected_network))
+                            } else {
+                                // is PaymentCheckOutFragment?
+                                if (currentFragment is PaymentCheckOutFragment) {
+                                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                                }
+
+                                // is PaymentSelectMethodFragment
+                                if (currentFragment is PaymentSelectMethodFragment) {
+                                    this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                                }
+                            }
+                        }
+                    }
+                })
     }
 
     private fun getT1CMember(customerId: String) {
@@ -799,6 +845,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getSelectedBranch(): Branch? = this.branch
 
     override fun getPaymentMethods(): List<PaymentMethod> = this.paymentMethods
+
+    override fun getT1CardNumber(): String = this.theOneCardNo
     // endregion
 
     // region {@link StorePickUpListener}

@@ -16,12 +16,14 @@ import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.model.DeliveryType
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import kotlinx.android.synthetic.main.widget_network_view.*
 
 class PaymentSelectMethodFragment : Fragment() {
 
-    private lateinit var paymentListener: PaymentProtocol
-    private lateinit var changeT1: Button
+    private lateinit var paymentProtocol: PaymentProtocol
+    private lateinit var inputT1CardId: PowerBuyEditTextBorder
+    private lateinit var btnChangeT1: Button
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
@@ -42,8 +44,8 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        paymentListener = context as PaymentProtocol
-        paymentMethods = paymentListener.getPaymentMethods()
+        paymentProtocol = context as PaymentProtocol
+        paymentMethods = paymentProtocol.getPaymentMethods()
         paymentTypeClickListener = context as PaymentTypeClickListener
     }
 
@@ -71,12 +73,16 @@ class PaymentSelectMethodFragment : Fragment() {
 //               hidePaymentCOD()
 //            }
 //        }
+        // set t1 card no.
+        val t1cardNumber = paymentProtocol.getT1CardNumber()
+        inputT1CardId.setText(t1cardNumber)
+
         hidePaymentCOD()
         handleClickChangeT1()
     }
 
     private fun handleClickChangeT1() {
-        changeT1.setOnClickListener {
+        btnChangeT1.setOnClickListener {
             ChangeTheOneDialogFragment.newInstance().show(fragmentManager, "dialog")
         }
     }
@@ -93,11 +99,18 @@ class PaymentSelectMethodFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
-        changeT1 = rootView.findViewById(R.id.btn_change_the1)
+        inputT1CardId = rootView.findViewById(R.id.input_the1_card_id)
+        btnChangeT1 = rootView.findViewById(R.id.btn_change_the1)
         recycler = rootView.findViewById(R.id.recycler_select_methods)
         selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
+
+        inputT1CardId.setEnableInput(false)
+    }
+
+    fun updateT1MemberInput(cardNo: String) {
+        inputT1CardId.setText(cardNo)
     }
 }

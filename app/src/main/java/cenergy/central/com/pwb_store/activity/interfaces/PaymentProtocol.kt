@@ -24,4 +24,5 @@ interface PaymentProtocol {
     fun getSelectedBranch(): Branch?
     fun getPWBMemberByIndex(index: Int): PwbMember?
     fun getPaymentMethods(): List<PaymentMethod>
+    fun getT1CardNumber(): String
 }

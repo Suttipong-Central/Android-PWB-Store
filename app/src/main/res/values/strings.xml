@@ -307,4 +307,6 @@
     <string name="pay_at_store_description">Pay by cash or credit card at the store after purchase.</string>
     <string name="t1_member">T1 member no</string>
     <string name="title_earn_t1c_option">Earn T1 points</string>
+    <string name="issue">issue</string>
+    <string name="information">Information</string>
 </resources>

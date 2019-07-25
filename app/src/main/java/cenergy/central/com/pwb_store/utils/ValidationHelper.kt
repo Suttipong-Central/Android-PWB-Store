@@ -109,6 +109,10 @@ class ValidationHelper(private val mContext: Context) {
     }
 
     fun validThaiPhoneNumber(phoneNumber: String): String? {
+        if (phoneNumber.isBlank()) {
+            return mContext.getString(R.string.error_form_empty_data)
+        }
+
         val prefixNumber = phoneNumber.substring(0, 2)
         if (isEmptyData(phoneNumber)) {
             return mContext.getString(R.string.error_form_empty_data)
