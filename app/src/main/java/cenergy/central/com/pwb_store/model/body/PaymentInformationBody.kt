@@ -53,7 +53,7 @@ data class PaymentInfoBody(
         fun createPaymentInfoBody(cartId: String, customerEmail: String, paymentMethod: PaymentMethod,
                                   billingAddress: AddressInformation, staffId: String,
                                   retailerId: String, theOneCardNo: String = ""): PaymentInfoBody {
-            val staffBody = if (paymentMethod.isPayWithCreditCard()) null else QuoteStaffBody(staffId, retailerId)
+            val staffBody = QuoteStaffBody(staffId, retailerId)
             val extMethodBody = ExtensionMethodBody(theOneCardNo = theOneCardNo, quoteStaffBody = staffBody,
                     customerEmail = customerEmail, customerName = "${billingAddress.firstname} ${billingAddress.lastname}",
                     customerPhone = billingAddress.telephone)
