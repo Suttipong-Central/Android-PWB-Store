@@ -309,7 +309,7 @@
     <string name="pay_at_store_description">จ่ายที่ร้านค้าได้ทันทีหลังจากยืนยันคำสั่งซื้อ</string>
     <string name="t1_member">หมายเลขสมาชิกเดอะวัน</string>
     <string name="title_earn_t1c_option">รับคะแนน T1</string>
-    <string name="issue">เปลี่ยน</string>
+    <string name="t1_change">เปลี่ยน</string>
     <string name="information">ข้อมูล</string>
 
 </resources>

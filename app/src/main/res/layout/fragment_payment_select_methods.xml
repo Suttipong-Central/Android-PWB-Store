@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/issue"
+                android:text="@string/t1_change"
                 android:layout_marginStart="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/input_the1_card_id"
                 app:layout_constraintStart_toEndOf="@+id/input_the1_card_id" />
