@@ -27,8 +27,11 @@
 
     <color name="textDefaultColor">@color/cdsRed</color>
     <color name="cursorColor">@color/cdsRed</color>
+    <color name="textStaffColor">@color/cdsRed</color>
 
     <color name="categoryColor">#F4893F</color>
+
+    <color name="tabCalendarColor">@color/colorAccent</color>
 
     <!-- select branch page -->
     <color name="textHeaderBranchDetail">@color/cdsRed</color>

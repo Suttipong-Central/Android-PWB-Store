@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -60,7 +59,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         // get image from cache
         Glide.with(itemView.context)
                 .load(cacheCartItem.imageUrl)
-                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .placeholder(R.drawable.ic_placeholder)
                 .crossFade()
                 .fitCenter()
                 .into(productImage)

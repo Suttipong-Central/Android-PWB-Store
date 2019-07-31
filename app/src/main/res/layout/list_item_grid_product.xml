@@ -28,7 +28,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="10dp"
-            android:src="@drawable/ic_pwb_logo_detail"
+            android:src="@drawable/ic_placeholder"
             android:contentDescription="@string/product_detail" />
 
         <LinearLayout

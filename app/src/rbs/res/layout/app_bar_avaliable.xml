@@ -48,12 +48,12 @@
             <!--android:src="@drawable/ic_search_bar"-->
             <!--/>-->
 
-        <!--<cenergy.central.com.pwb_store.view.LanguageButton-->
-            <!--android:id="@+id/switch_language_button"-->
-            <!--android:layout_width="96dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="end|center_vertical"-->
-            <!--android:layout_margin="8dp" />-->
+        <cenergy.central.com.pwb_store.view.LanguageButton
+            android:id="@+id/switch_language_button"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_margin="8dp" />
 
     </android.support.v7.widget.Toolbar>
 </android.support.design.widget.AppBarLayout>

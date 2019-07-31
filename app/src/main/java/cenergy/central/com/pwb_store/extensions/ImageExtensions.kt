@@ -13,7 +13,7 @@ fun ImageView.setImage(@DrawableRes res: Int) {
 fun ImageView.setImageUrl(url: String) {
     Glide.with(context)
             .load(url)
-            .placeholder(R.drawable.ic_pwb_logo_detail)
+            .placeholder(R.drawable.ic_placeholder)
             .fitCenter()
             .into(this)
 }
@@ -21,7 +21,7 @@ fun ImageView.setImageUrl(url: String) {
 fun ImageView.setImageUrl(context: Context, url: String) {
     Glide.with(context)
             .load(url)
-            .placeholder(R.drawable.ic_pwb_logo_detail)
+            .placeholder(R.drawable.ic_placeholder)
             .crossFade()
             .fitCenter()
             .into(this)

@@ -7,9 +7,15 @@ class Constants {
     companion object {
 
         // region magento
-        const val BASE_URL_MAGENTO = "https://staging-mdc.robinson.co.th"
-        const val CLIENT_MAGENTO = "Bearer 8nifiryyf2j1pvvmi9tiuj2x4u7m0l9q"
-        const val PWB_HOST_NAME = "staging-mdc.robinson.co.th"
+//        const val BASE_URL_MAGENTO = "https://staging-mdc.robinson.co.th"
+//        const val CLIENT_MAGENTO = "Bearer 8nifiryyf2j1pvvmi9tiuj2x4u7m0l9q"
+//        const val PWB_HOST_NAME = "staging-mdc.robinson.co.th"
+        // endregion
+
+        // region magento
+        const val BASE_URL_MAGENTO = "https://staging-mdc.powerbuy.co.th"
+        const val PWB_HOST_NAME = "staging-mdc.powerbuy.co.th"
+        const val CLIENT_MAGENTO = "Bearer ngvids7tnggs94sm81k8a3oxjgl9cd16"
         // endregion
 
         // region central

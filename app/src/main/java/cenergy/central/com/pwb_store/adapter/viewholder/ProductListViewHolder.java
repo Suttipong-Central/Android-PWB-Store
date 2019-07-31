@@ -40,7 +40,7 @@ public class ProductListViewHolder extends RecyclerView.ViewHolder {
 
         Glide.with(Contextor.getInstance().getContext())
                 .load(product.getImageUrl())
-                .placeholder(R.drawable.ic_pwb_logo_detail)
+                .placeholder(R.drawable.ic_placeholder)
                 .crossFade()
                 .fitCenter()
                 .into(mImageView);
