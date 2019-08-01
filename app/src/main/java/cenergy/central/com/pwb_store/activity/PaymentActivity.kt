@@ -166,7 +166,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
                         "", "", "")
-                createShippingInformation(null, subscribeCheckOut)
+                createShippingInformation(false, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -206,14 +206,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun createBookingHomeDelivery(periodTimeSlot: PeriodTimeSlotBody, slot: Slot, shippingDate: String) {
         val bookingShippingSlot = BookingShippingSlotBody.bookingShippingSlotBody(
-                productHDLList, shippingAddress!!.subAddress!!.district, shippingAddress!!.subAddress!!.subDistrict,
-                shippingAddress!!.region, shippingAddress!!.postcode!!, periodTimeSlot, customDetail)
+                productHDLList, shippingAddress?.subAddress?.district
+                ?: "", shippingAddress?.subAddress?.subDistrict ?: "",
+                shippingAddress?.region ?: "", shippingAddress?.postcode
+                ?: "", periodTimeSlot, customDetail)
         HttpManagerHDL.getInstance().createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
             override fun success(response: BookingNumberResponse?) {
                 if (response != null) {
                     val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
                             shippingDate, slot.id.toString(), slot.description)
-                    createShippingInformation(null, subscribeCheckOut)
+                    createShippingInformation(false, subscribeCheckOut)
                 } else {
                     mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
@@ -398,11 +400,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun createShippingInformation(storeAddress: AddressInformation?, subscribeCheckOut: SubscribeCheckOut) {
+    private fun createShippingInformation(isClickAndCollect: Boolean, subscribeCheckOut: SubscribeCheckOut) {
         if (cartId != null && shippingAddress != null) {
-            if (storeAddress != null) { // is shipping at store?
-                billingAddress?.sameBilling = 0
-                shippingAddress?.sameBilling = 0
+            if (isClickAndCollect) { // is shipping at store?
+                if (branch == null) {
+                    return
+                }
+                val storeAddress = AddressInformation.createBranchAddress(branch!!)
                 HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
                         billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
@@ -628,9 +632,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
         val period = PeriodBody.createPeriod(year, month)
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
-                province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
-                period = period, customDetail = customDetail)
+                district = shippingAddress?.subAddress?.district ?: "", subDistrict = shippingAddress?.subAddress?.subDistrict ?: "",
+                province = shippingAddress?.region ?: "", postalId = shippingAddress?.postcode
+                ?: "", period = period, customDetail = customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
                 if (response != null) {
@@ -684,8 +688,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             period = PeriodBody.createPeriod(year, month)
         }
         val shippingSlotBody = ShippingSlotBody.createShippingSlotBody(productHDLs = productHDLList,
-                district = shippingAddress!!.subAddress!!.district, subDistrict = shippingAddress!!.subAddress!!.subDistrict,
-                province = shippingAddress!!.region, postalId = shippingAddress!!.postcode!!,
+                district = shippingAddress?.subAddress?.district?: "", subDistrict = shippingAddress?.subAddress?.subDistrict?:"",
+                province = shippingAddress?.region?:"", postalId = shippingAddress?.postcode?:"",
                 period = period, customDetail = customDetail)
         HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
             override fun success(response: ShippingSlotResponse?) {
@@ -803,7 +807,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, "",
                         "", "", storePickup)
                 // store shipping this case can be anything
-                createShippingInformation(shippingAddress, subscribeCheckOut)
+                createShippingInformation(true, subscribeCheckOut)
             }
         }
     }

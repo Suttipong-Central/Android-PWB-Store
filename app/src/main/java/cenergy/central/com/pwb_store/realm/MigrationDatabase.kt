@@ -6,7 +6,7 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 6
+        const val SCHEMA_VERSION = 7
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -166,6 +166,34 @@ class MigrationDatabase : RealmMigration {
             realm.schema.get("SubAddress")?.apply {
                 // add addressLine for street value**
                 addField("addressLine", String::class.java).setNullable("addressLine", false)
+            }
+        }
+
+        if (oldVersion < 7) {
+            // Update Branch model
+            realm.schema.get("Branch")?.apply {
+                // Update attributes name address to street
+                renameField("address", "street")
+                addField("region", String::class.java).setNullable("region", false)
+                addField("regionId", Int::class.java)
+                addField("regionCode", String::class.java).setNullable("regionCode", false)
+            }
+
+            // Update SubAddress model
+            realm.schema.get("SubAddress")?.apply {
+                //set SubAddress can be null every attributes
+                setNullable("mobile", true)
+                setNullable("houseNumber", true)
+                setNullable("building", true)
+                setNullable("soi", true)
+                setNullable("t1cNo", true)
+                setNullable("district", true)
+                setNullable("subDistrict", true)
+                setNullable("postcode", true)
+                setNullable("districtId", true)
+                setNullable("subDistrictId", true)
+                setNullable("postcodeId", true)
+                setNullable("addressLine", true)
             }
         }
     }

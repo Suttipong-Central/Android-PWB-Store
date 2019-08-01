@@ -54,14 +54,10 @@ data class PickupLocation(var id: String = "",
                           var extension: PickupExtension
 ) {
     fun asBranch(): Branch {
-        return Branch(storeId = id, address = getFullAddress(), city = extension.pickupAddressInfo.region,
-                phone = telephone
-                        ?: "", postcode = postcode, storeName = name, centralStoreCode = code,
+        return Branch(storeId = id, street = address, city = extension.pickupAddressInfo.region,
+                phone = telephone ?: "", postcode = postcode, storeName = name, centralStoreCode = code,
                 latitude = latitude, longitude = longitude)
     }
-
-    private fun getFullAddress(): String = "$address, ${extension.pickupAddressInfo.subDistrict}, " +
-            "${extension.pickupAddressInfo.district}, ${extension.pickupAddressInfo.region}, $postcode"
 }
 
 data class PickupExtension(@SerializedName("additional_address_info")

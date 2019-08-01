@@ -944,10 +944,19 @@ class HttpManagerMagento(context: Context) {
                                         for (s in 0 until street.length()) {
                                             txtStreet += street.getString(s)
                                         }
-                                        branch.address = "$txtStreet, ${branch.city}, ${branch.postcode}"
+                                        branch.street = txtStreet
                                         val coordinatesObj = addressObj.getJSONObject("coordinates")
                                         branch.latitude = coordinatesObj.getString("latitude")
                                         branch.longitude = coordinatesObj.getString("longitude")
+                                        if (addressObj.has("region")){
+                                            branch.region = addressObj.getString("region")
+                                        }
+                                        if (addressObj.has("region_id")){
+                                            branch.regionId = addressObj.getInt("region_id")
+                                        }
+                                        if (addressObj.has("region_code")){
+                                            branch.regionCode = addressObj.getString("region_code")
+                                        }
                                     }
 
                                     if (extensionObj.has("opening_hours")) {
@@ -975,6 +984,9 @@ class HttpManagerMagento(context: Context) {
                                                 }
                                                 "contact_fax" -> {
                                                     branch.fax = ctmAttr.getString("value") ?: ""
+                                                }
+                                                "contact_mail" -> {
+                                                    branch.email = ctmAttr.getString("value") ?: ""
                                                 }
                                             }
                                         }

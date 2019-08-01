@@ -6,7 +6,7 @@ import io.realm.RealmObject
 open class Branch(
         @SerializedName("storepickup_id")
         var storeId: String = "",
-        var address: String = "",
+        var street: String = "",
         var state: String = "",
         var city: String = "",
         @SerializedName("country_id")
@@ -30,4 +30,14 @@ open class Branch(
         var attrSetName: String = "",
         var createdAt: String = "",
         var updatedAt: String = "",
-        var fax: String = ""): RealmObject()
+        var fax: String = "",
+        var region: String = "",
+        @SerializedName("region_id")
+        var regionId: Int = 0,
+        @SerializedName("region_code")
+        var regionCode: String = ""): RealmObject()
+{
+        fun getBranchAddress(): String {
+                return "$street, $city, $postcode"
+        }
+}
