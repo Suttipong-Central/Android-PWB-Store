@@ -7,6 +7,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.Category
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import kotlin.math.roundToInt
 
 fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
     val paymentType = arrayListOf<String>()
@@ -31,6 +32,11 @@ fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
         }
     }
     return paymentMethodFilter
+}
+
+fun Int.dpToPx(context: Context): Int{
+    val density = context.resources.displayMetrics.density
+    return (this.toFloat() * density).roundToInt()
 }
 
 fun List<PaymentMethod>.getMethodTitle(): List<String> {

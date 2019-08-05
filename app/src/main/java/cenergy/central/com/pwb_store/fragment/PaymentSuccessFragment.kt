@@ -22,6 +22,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
+import cenergy.central.com.pwb_store.dialogs.BarcodeDialogFragment
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -232,8 +233,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         val billingAddress = order.billingAddress ?: throw IllegalArgumentException("Billing address must not be null")
 
         updateLabel()
-        //TODO: LATER - display qr code
-//        setupBarcodeView(order)
+        setupBarcodeView(order)
 
         orderProductListAdapter.listItems = order.items
         //Setup order number
@@ -321,6 +321,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             tvPaymentDescription.visibility = View.VISIBLE
             val bitmapBarcode = BarcodeUtils.createQRCode(order.paymentRedirect)
             ivPaymentBarcode.setImageBitmap(bitmapBarcode)
+            ivPaymentBarcode.setOnClickListener {
+                BarcodeDialogFragment.newInstance(order.paymentRedirect).show(fragmentManager, "dialog")
+            }
         } else {
             tvPaymentDescription.visibility = View.GONE
             ivPaymentBarcode.visibility = View.GONE
@@ -334,6 +337,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             rootView.findViewById<PowerBuyTextView>(R.id.next_step_order_success).text = getString(R.string.next_step)
             rootView.findViewById<PowerBuyTextView>(R.id.staff_description_order_success).text = getString(R.string.staff_descriptions)
             rootView.findViewById<PowerBuyTextView>(R.id.for_staff_order_success).text = getString(R.string.for_staff)
+            rootView.findViewById<PowerBuyTextView>(R.id.tvPaymentDescription).text = getString(R.string.payment_description)
             rootView.findViewById<PowerBuyTextView>(R.id.order_info_sub_header_order_success).text = getString(R.string.personal_detail)
             rootView.findViewById<PowerBuyTextView>(R.id.order_date_order_success).text = getString(R.string.order_date)
             rootView.findViewById<PowerBuyTextView>(R.id.name_order_success).text = getString(R.string.customer_name)
