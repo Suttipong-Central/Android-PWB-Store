@@ -32,6 +32,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import com.google.gson.GsonBuilder
+
+
 
 class HttpManagerMagento(context: Context) {
 
@@ -57,9 +60,10 @@ class HttpManagerMagento(context: Context) {
                 .addInterceptor(interceptor)
                 .build()
 
+        val gson = GsonConverterFactory.create(GsonBuilder().serializeNulls().create())
         retrofit = Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL_MAGENTO)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(gson)
                 .client(defaultHttpClient)
                 .build()
 
