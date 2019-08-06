@@ -804,8 +804,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
                 val storePickup = StorePickup(branch.storeId.toInt())
-                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, "",
-                        "", "", storePickup)
+                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
+                        null, null, storePickup)
                 // store shipping this case can be anything
                 createShippingInformation(true, subscribeCheckOut)
             }

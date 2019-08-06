@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 class SubscribeCheckOut(
         @SerializedName("subscribecheckout")
         var checkout: String = "",
-        var shippingDate: String = "",
-        var shippingSlotInDay: String = "",
-        var shippingSlotDescription: String = "",
+        var shippingDate: String? = null,
+        var shippingSlotInDay: String? = null,
+        var shippingSlotDescription: String? = null,
         @SerializedName("pickup_store")
         var storePickup: StorePickup? = null
 )
