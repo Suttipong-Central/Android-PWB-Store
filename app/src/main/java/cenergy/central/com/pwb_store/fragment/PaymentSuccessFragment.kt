@@ -440,8 +440,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             if (!subAddress.building.isNullOrEmpty()) {
                 text += subAddress.building + ", "
             }
-            if (address.street != null && address.street!![0] != null && address.street!![0]!!.isNotBlank()) {
-                text += address.street!![0] + ", "
+            if (!subAddress.addressLine.isNullOrEmpty()) {
+                text += subAddress.addressLine  + ", "
             }
             if (!subAddress.subDistrict.isNullOrEmpty()) {
                 text += subAddress.subDistrict + ", "
