@@ -20,6 +20,7 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
@@ -32,11 +33,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
-import com.google.gson.GsonBuilder
 
 
-
-class HttpManagerMagento(context: Context) {
+class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     private var retrofit: Retrofit
     var defaultHttpClient: OkHttpClient
@@ -60,7 +59,7 @@ class HttpManagerMagento(context: Context) {
                 .addInterceptor(interceptor)
                 .build()
 
-        val gson = GsonConverterFactory.create(GsonBuilder().serializeNulls().create())
+        val gson = if (isSerializeNull) GsonConverterFactory.create(GsonBuilder().serializeNulls().create()) else GsonConverterFactory.create()
         retrofit = Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL_MAGENTO)
                 .addConverterFactory(gson)
@@ -79,6 +78,12 @@ class HttpManagerMagento(context: Context) {
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
+
+        fun getInstance(context: Context, isSerializeNull: Boolean): HttpManagerMagento {
+            if (instance == null)
+                instance = HttpManagerMagento(context, isSerializeNull)
+            return instance as HttpManagerMagento
+        }
 
         fun getInstance(context: Context): HttpManagerMagento {
             if (instance == null)

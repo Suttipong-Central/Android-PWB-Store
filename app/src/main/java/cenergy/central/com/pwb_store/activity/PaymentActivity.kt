@@ -165,7 +165,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             EXPRESS, STANDARD -> {
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
-                        "", "", "")
+                        null, null, null)
                 createShippingInformation(false, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
@@ -407,7 +407,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     return
                 }
                 val storeAddress = AddressInformation.createBranchAddress(branch!!)
-                HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, storeAddress,
+                HttpManagerMagento(this, true).createShippingInformation(cartId!!, storeAddress,
                         billingAddress ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
