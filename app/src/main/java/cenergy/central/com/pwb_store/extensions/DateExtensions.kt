@@ -22,7 +22,6 @@ fun Date.toDateText(): String {
 
 fun String.toDate(): Date {
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-    formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.parse(this)
 }
 
