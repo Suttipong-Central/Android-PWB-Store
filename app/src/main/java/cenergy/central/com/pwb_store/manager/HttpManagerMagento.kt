@@ -10,10 +10,7 @@ import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.manager.service.CartService
-import cenergy.central.com.pwb_store.manager.service.MemberService
-import cenergy.central.com.pwb_store.manager.service.ProductService
-import cenergy.central.com.pwb_store.manager.service.UserService
+import cenergy.central.com.pwb_store.manager.service.*
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
@@ -43,6 +40,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     private val preferenceManager by lazy { cenergy.central.com.pwb_store.manager.preferences.PreferenceManager(context) }
 
     var cartService: CartService
+    var hdlService: HDLService
 
     private lateinit var userToken: String
 
@@ -67,7 +65,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 .build()
 
         cartService = retrofit.create(CartService::class.java)
-
+        hdlService = retrofit.create(HDLService::class.java)
     }
 
     companion object {

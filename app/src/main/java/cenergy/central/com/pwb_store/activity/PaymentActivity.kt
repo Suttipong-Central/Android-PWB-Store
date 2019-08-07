@@ -26,6 +26,7 @@ import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
+import cenergy.central.com.pwb_store.manager.api.HomeDeliveryApi
 import cenergy.central.com.pwb_store.manager.api.OrderApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
@@ -34,11 +35,9 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
-import cenergy.central.com.pwb_store.model.body.PeriodTimeSlotBody
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
-import cenergy.central.com.pwb_store.model.response.Slot
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
@@ -77,6 +76,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
     private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
+    private var shippingSlot: ShippingSlot? = null
 
     // date
     private val dateTime = DateTime.now()
@@ -169,7 +169,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 showProgressDialog()
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
                         null, null, null)
-                createShippingInformation(false, subscribeCheckOut)
+                handleCreateShippingInformation(false, subscribeCheckOut)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -202,36 +202,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     // region {@link HomeDeliveryListener}
     override fun onPaymentClickListener(shippingSlot: ShippingSlot, date: Int, month: Int, year: Int, shippingDate: String) {
-        //TODO-HDL:  create Booking
-        Log.d("ShippingSlot", shippingSlot.getTimeDescription())
-//        val periodTimeSlot = PeriodTimeSlotBody.createPeriod(year, month, date, slot.id)
-//        createBookingHomeDelivery(periodTimeSlot, shippingSlot, shippingDate)
-    }
+        if (shippingAddress == null) return
 
-    private fun createBookingHomeDelivery(periodTimeSlot: PeriodTimeSlotBody, slot: Slot, shippingDate: String) {
-        //TODO-HDL:  Change to new api
-//        val bookingShippingSlot = BookingShippingSlotBody.bookingShippingSlotBody(
-//                productHDLList, shippingAddress?.subAddress?.district
-//                ?: "", shippingAddress?.subAddress?.subDistrict ?: "",
-//                shippingAddress?.region ?: "", shippingAddress?.postcode
-//                ?: "", periodTimeSlot, customDetail)
-//        HttpManagerHDL.getInstance().createBooking(bookingShippingSlot, object : ApiResponseCallback<BookingNumberResponse> {
-//            override fun success(response: BookingNumberResponse?) {
-//                if (response != null) {
-//                    val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
-//                            shippingDate, slot.id.toString(), slot.description)
-//                    createShippingInformation(false, subscribeCheckOut)
-//                } else {
-//                    mProgressDialog?.dismiss()
-//                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-//                }
-//            }
-//
-//            override fun failure(error: APIError) {
-//                mProgressDialog?.dismiss()
-//                DialogHelper(this@PaymentActivity).showErrorDialog(error)
-//            }
-//        })
+        showProgressDialog()
+        this.shippingSlot = shippingSlot // set shipping slot
+        val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
+                shippingDate, shippingSlot.slotExtension.daySlotId.toString(),
+                shippingSlot.getTimeDescription())
+
+        handleCreateShippingInformation(false, subscribeCheckOut)
     }
     // endregion
 
@@ -405,47 +384,49 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun createShippingInformation(isClickAndCollect: Boolean, subscribeCheckOut: SubscribeCheckOut) {
+    private fun handleCreateShippingInformation(isClickAndCollect: Boolean, subscribeCheckOut: SubscribeCheckOut) {
         if (cartId != null && shippingAddress != null) {
-            if (isClickAndCollect) { // is shipping at store?
-                if (branch == null) {
-                    return
-                }
-                val storeAddress = AddressInformation.createBranchAddress(branch!!)
-                HttpManagerMagento(this, true).createShippingInformation(cartId!!, storeAddress,
-                        billingAddress
-                                ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
-                        object : ApiResponseCallback<ShippingInformationResponse> {
-                            override fun success(response: ShippingInformationResponse?) {
-                                mProgressDialog?.dismiss()
-                                if (response != null) {
-                                    if (isUserChatAndShop()) {
-                                        selectPaymentTypes(response.paymentMethods)
-                                    } else {
-                                        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-                                    }
-                                } else {
-                                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                                }
-                            }
+            when (val type = DeliveryType.fromString(this.deliveryOption.methodCode)) {
+                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, subscribeCheckOut)
+                else -> createShippingInfor(type, subscribeCheckOut)
+            }
+        }
+    }
 
-                            override fun failure(error: APIError) {
-                                mProgressDialog?.dismiss()
-                                DialogHelper(this@PaymentActivity).showErrorDialog(error)
-                            }
-                        })
-            } else {
-                HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
-                        billingAddress ?: shippingAddress!!, subscribeCheckOut,
-                        deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
+    private fun createShippingInfor(type: DeliveryType?, subscribeCheckOut: SubscribeCheckOut) {
+        type ?: return // type null?
+        HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
+                billingAddress ?: shippingAddress!!, subscribeCheckOut,
+                deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
+            override fun success(response: ShippingInformationResponse?) {
+                mProgressDialog?.dismiss()
+                if (response != null) {
+                    handleShippingInforSuccess(type, response.paymentMethods)
+                } else {
+                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+            }
+        })
+    }
+
+    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, subscribeCheckOut: SubscribeCheckOut) {
+        if (branch == null || type == null) {
+            return
+        }
+        val storeAddress = AddressInformation.createBranchAddress(branch!!)
+        HttpManagerMagento(this, true).createShippingInformation(cartId!!, storeAddress,
+                billingAddress
+                        ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
                         mProgressDialog?.dismiss()
                         if (response != null) {
-                            if (isUserChatAndShop()) {
-                                selectPaymentTypes(response.paymentMethods)
-                            } else {
-                                showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-                            }
+                            handleShippingInforSuccess(type, response.paymentMethods)
                         } else {
                             showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                         }
@@ -456,7 +437,41 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         DialogHelper(this@PaymentActivity).showErrorDialog(error)
                     }
                 })
-            }
+    }
+
+    private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
+        if (type == HOME) {
+            createBookingHomeDelivery(paymentMethods)
+            return
+        }
+
+        // TODO: remove function verify user chatandshop
+        if (isUserChatAndShop()) {
+            selectPaymentTypes(paymentMethods)
+        } else {
+            showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+        }
+    }
+
+    private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
+        //TODO-HDL:  Change to new api
+        showProgressDialog()
+        shippingSlot?.let {
+            HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
+                override fun success(response: ShippingSlot?) {
+                    // TODO: remove function verify user chatandshop
+                    if (isUserChatAndShop()) {
+                        selectPaymentTypes(paymentMethods)
+                    } else {
+                        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    mProgressDialog?.dismiss()
+                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                }
+            })
         }
     }
 
@@ -553,6 +568,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         override fun success(response: List<DeliveryOption>?) {
                             mProgressDialog?.dismiss()
                             if (response != null) {
+                                this@PaymentActivity.shippingSlot = null // clear shipping slot
                                 deliveryOptionsList = response
                                 startDeliveryOptions()
                             } else {
@@ -716,7 +732,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
                         null, null, storePickup)
                 // store shipping this case can be anything
-                createShippingInformation(true, subscribeCheckOut)
+                handleCreateShippingInformation(true, subscribeCheckOut)
             }
         }
     }
