@@ -480,6 +480,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
                 override fun success(response: ShippingSlot?) {
                     // TODO: remove function verify user chatandshop
+                    mProgressDialog?.dismiss()
                     if (isUserChatAndShop()) {
                         selectPaymentTypes(paymentMethods)
                     } else {
