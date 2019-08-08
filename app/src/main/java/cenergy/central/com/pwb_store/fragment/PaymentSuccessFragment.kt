@@ -301,7 +301,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             val branchShipping = order.branchShipping
             if (branchShipping != null) {
                 branch.text = branchShipping.storeName
-                address.text = branchShipping.address
+                address.text = branchShipping.getBranchAddress()
                 tel.text = branchShipping.phone
                 openToday.text = branchShipping.description
             }
@@ -460,22 +460,22 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         var text = ""
         val subAddress = address.subAddress
         if (subAddress != null) {
-            if (subAddress.houseNumber.isNotBlank()) {
+            if (!subAddress.houseNumber.isNullOrEmpty()) {
                 text += subAddress.houseNumber + ", "
             }
-            if (subAddress.soi.isNotBlank()) {
+            if (!subAddress.soi.isNullOrEmpty()) {
                 text += subAddress.soi + ", "
             }
-            if (subAddress.building.isNotBlank()) {
+            if (!subAddress.building.isNullOrEmpty()) {
                 text += subAddress.building + ", "
             }
-            if (address.street != null && address.street!![0] != null && address.street!![0]!!.isNotBlank()) {
-                text += address.street!![0] + ", "
+            if (!subAddress.addressLine.isNullOrEmpty()) {
+                text += subAddress.addressLine  + ", "
             }
-            if (subAddress.subDistrict.isNotBlank()) {
+            if (!subAddress.subDistrict.isNullOrEmpty()) {
                 text += subAddress.subDistrict + ", "
             }
-            if (subAddress.district.isNotBlank()) {
+            if (!subAddress.district.isNullOrEmpty()) {
                 text += subAddress.district + ", "
             }
         }

@@ -44,7 +44,7 @@ open class AddressInformation(
                     houseNumber = homeNo,
                     building = homeBuilding,
                     soi = homeSoi,
-                    t1cNo = "",
+                    t1cNo = null,
                     district = homeDistrict,
                     subDistrict = homeSubDistrict,
                     postcode = homePostalCode,
@@ -58,7 +58,7 @@ open class AddressInformation(
                     regionId = provinceId,
                     regionCode = provinceCode,
                     countryId = countryId,
-                    street = RealmList(homeRoad),
+                    street = RealmList("n/a"),
                     postcode = homePostalCode,
                     firstname = firstName,
                     lastname = lastName,
@@ -68,6 +68,38 @@ open class AddressInformation(
                     company = company,
                     vatId = vatId,
                     sameBilling = sameBilling)
+        }
+
+        fun createBranchAddress(branch: Branch): AddressInformation{
+            val subAddress = SubAddress(
+                    mobile = null,
+                    houseNumber = null,
+                    building = null,
+                    soi = null,
+                    t1cNo = null,
+                    district = null,
+                    subDistrict = null,
+                    postcode = null,
+                    districtId = null,
+                    subDistrictId = null,
+                    postcodeId = null,
+                    addressLine = null)
+            return AddressInformation(
+                    city = branch.city,
+                    region = "",
+                    regionId = branch.regionId.toString(),
+                    regionCode = branch.regionCode,
+                    countryId = branch.countryId,
+                    street = RealmList("n/a"),
+                    postcode = branch.postcode,
+                    firstname = branch.storeName,
+                    lastname = branch.sellerCode,
+                    email = branch.email,
+                    telephone = "",
+                    subAddress = subAddress,
+                    company = "",
+                    vatId = "",
+                    sameBilling = null)
         }
     }
 

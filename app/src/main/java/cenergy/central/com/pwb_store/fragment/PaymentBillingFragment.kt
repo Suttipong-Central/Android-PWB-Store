@@ -260,7 +260,7 @@ class PaymentBillingFragment : Fragment() {
             homeNoEdt.setText(shippingAddress!!.subAddress?.houseNumber ?: "")
             homeBuildingEdit.setText(shippingAddress!!.subAddress?.building ?: "")
             homeSoiEdt.setText(shippingAddress!!.subAddress?.soi ?: "")
-            homeRoadEdt.setText(shippingAddress!!.street?.get(0) ?: "")
+            homeRoadEdt.setText(shippingAddress!!.subAddress?.addressLine ?: "")
             homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
 
             // has input about vat?
@@ -342,7 +342,7 @@ class PaymentBillingFragment : Fragment() {
         billingHomeNoEdt.setText(billingAddress.subAddress?.houseNumber ?: "")
         billingHomeBuildingEdit.setText(billingAddress.subAddress?.building ?: "")
         billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
-        billingHomeRoadEdt.setText(billingAddress.street?.get(0) ?: "")
+        billingHomeRoadEdt.setText(billingAddress.subAddress?.addressLine ?: "")
 
         // has input about vat?
         val vatId = billingAddress.vatId

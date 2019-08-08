@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.dialogs.adapter.viewholder.TimeSlotViewHolder
 import cenergy.central.com.pwb_store.dialogs.interfaces.TimeSlotClickListener
-import cenergy.central.com.pwb_store.model.response.Slot
+import cenergy.central.com.pwb_store.model.ShippingSlot
 
-class TimeSlotAdapter(val slot: List<Slot>, private val timeSlotClickListener: TimeSlotClickListener?): RecyclerView.Adapter<TimeSlotViewHolder>() {
+class TimeSlotAdapter(private val shippingSlots: List<ShippingSlot>,
+                      private val timeSlotClickListener: TimeSlotClickListener?): RecyclerView.Adapter<TimeSlotViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeSlotViewHolder {
         return TimeSlotViewHolder(LayoutInflater.from(parent.context)
@@ -16,11 +17,11 @@ class TimeSlotAdapter(val slot: List<Slot>, private val timeSlotClickListener: T
     }
 
     override fun getItemCount(): Int {
-        return slot.size
+        return shippingSlots.size
     }
 
     override fun onBindViewHolder(holder: TimeSlotViewHolder, position: Int) {
-        holder.bindView(slot[position], timeSlotClickListener)
+        holder.bindView(shippingSlots[position], timeSlotClickListener)
     }
 
 }

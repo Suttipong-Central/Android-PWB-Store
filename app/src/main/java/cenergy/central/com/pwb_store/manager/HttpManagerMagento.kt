@@ -10,16 +10,14 @@ import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.manager.service.CartService
-import cenergy.central.com.pwb_store.manager.service.MemberService
-import cenergy.central.com.pwb_store.manager.service.ProductService
-import cenergy.central.com.pwb_store.manager.service.UserService
+import cenergy.central.com.pwb_store.manager.service.*
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
@@ -33,7 +31,8 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class HttpManagerMagento(context: Context) {
+
+class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     private var retrofit: Retrofit
     var defaultHttpClient: OkHttpClient
@@ -41,6 +40,7 @@ class HttpManagerMagento(context: Context) {
     private val preferenceManager by lazy { cenergy.central.com.pwb_store.manager.preferences.PreferenceManager(context) }
 
     var cartService: CartService
+    var hdlService: HDLService
 
     private lateinit var userToken: String
 
@@ -59,14 +59,15 @@ class HttpManagerMagento(context: Context) {
                 .addInterceptor(interceptor)
                 .build()
 
+        val gson = if (isSerializeNull) GsonConverterFactory.create(GsonBuilder().serializeNulls().create()) else GsonConverterFactory.create()
         retrofit = Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL_MAGENTO)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(gson)
                 .client(defaultHttpClient)
                 .build()
 
         cartService = retrofit.create(CartService::class.java)
-
+        hdlService = retrofit.create(HDLService::class.java)
     }
 
     companion object {
@@ -77,6 +78,12 @@ class HttpManagerMagento(context: Context) {
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
+
+        fun getInstance(context: Context, isSerializeNull: Boolean): HttpManagerMagento {
+            if (instance == null)
+                instance = HttpManagerMagento(context, isSerializeNull)
+            return instance as HttpManagerMagento
+        }
 
         fun getInstance(context: Context): HttpManagerMagento {
             if (instance == null)
@@ -946,10 +953,19 @@ class HttpManagerMagento(context: Context) {
                                         for (s in 0 until street.length()) {
                                             txtStreet += street.getString(s)
                                         }
-                                        branch.address = "$txtStreet, ${branch.city}, ${branch.postcode}"
+                                        branch.street = txtStreet
                                         val coordinatesObj = addressObj.getJSONObject("coordinates")
                                         branch.latitude = coordinatesObj.getString("latitude")
                                         branch.longitude = coordinatesObj.getString("longitude")
+                                        if (addressObj.has("region")){
+                                            branch.region = addressObj.getString("region")
+                                        }
+                                        if (addressObj.has("region_id")){
+                                            branch.regionId = addressObj.getInt("region_id")
+                                        }
+                                        if (addressObj.has("region_code")){
+                                            branch.regionCode = addressObj.getString("region_code")
+                                        }
                                     }
 
                                     if (extensionObj.has("opening_hours")) {
@@ -977,6 +993,9 @@ class HttpManagerMagento(context: Context) {
                                                 }
                                                 "contact_fax" -> {
                                                     branch.fax = ctmAttr.getString("value") ?: ""
+                                                }
+                                                "contact_mail" -> {
+                                                    branch.email = ctmAttr.getString("value") ?: ""
                                                 }
                                             }
                                         }

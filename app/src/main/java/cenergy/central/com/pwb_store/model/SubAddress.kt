@@ -5,21 +5,21 @@ import io.realm.RealmObject
 
 open class SubAddress(
         @SerializedName("tel_mobile")
-        var mobile: String = "",
+        var mobile: String? = "",
         @SerializedName("house_no")
-        var houseNumber: String = "",
-        var building: String = "",
-        var soi: String = "",
+        var houseNumber: String? = "",
+        var building: String? = "",
+        var soi: String? = "",
         @SerializedName("t1c_no")
-        var t1cNo: String = "",
-        var district: String = "",
-        var subDistrict: String = "",
-        var postcode: String = "",
+        var t1cNo: String? = "",
+        var district: String? = "",
+        var subDistrict: String? = "",
+        var postcode: String? = "",
         @SerializedName("district_id")
-        var districtId: String = "",
+        var districtId: String? = "",
         @SerializedName("subdistrict_id")
-        var subDistrictId: String = "",
+        var subDistrictId: String? = "",
         @SerializedName("postcode_id")
-        var postcodeId: String = "",
+        var postcodeId: String? = "",
         @SerializedName("address_line")
-        var addressLine: String = "") : RealmObject()
+        var addressLine: String? = "") : RealmObject()

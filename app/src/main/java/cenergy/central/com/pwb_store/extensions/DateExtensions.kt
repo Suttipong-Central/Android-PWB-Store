@@ -15,8 +15,18 @@ fun Date.formatterUTC(defaultLanguage: String): String {
     return dateFormatter.format(this)
 }
 
+fun Date.toDateText(): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+    return formatter.format(this)
+}
+
 fun String.toDate(): Date {
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+    return formatter.parse(this)
+}
+
+fun String.toDate(format: String): Date {
+    val formatter = SimpleDateFormat(format, Locale.ENGLISH)
     formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.parse(this)
 }

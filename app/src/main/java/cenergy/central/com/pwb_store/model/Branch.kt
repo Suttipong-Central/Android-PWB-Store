@@ -1,12 +1,13 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.realm.RealmController
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 
 open class Branch(
         @SerializedName("storepickup_id")
         var storeId: String = "",
-        var address: String = "",
+        var street: String = "",
         var state: String = "",
         var city: String = "",
         @SerializedName("country_id")
@@ -30,4 +31,19 @@ open class Branch(
         var attrSetName: String = "",
         var createdAt: String = "",
         var updatedAt: String = "",
-        var fax: String = ""): RealmObject()
+        var fax: String = "",
+        var region: String = "",
+        @SerializedName("region_id")
+        var regionId: Int = 0,
+        @SerializedName("region_code")
+        var regionCode: String = "") : RealmObject() {
+
+    fun getBranchAddress(): String {
+        return if (regionId != 0) {
+            val provinceData = RealmController.getInstance().getProvince(regionId.toString())
+            "$street, $city, ${provinceData.defaultName} $postcode"
+        } else {
+             "$street, $city, $postcode"
+        }
+    }
+}
