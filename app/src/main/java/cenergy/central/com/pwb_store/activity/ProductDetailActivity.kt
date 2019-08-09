@@ -97,10 +97,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_UPDATE_LANGUAGE) {
-            // check add button
-            product?.let { checkDisableAddProductButton(it) }
+        // check add button
+        product?.let { checkDisableAddProductButton(it) }
 
+        if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             // check language
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
