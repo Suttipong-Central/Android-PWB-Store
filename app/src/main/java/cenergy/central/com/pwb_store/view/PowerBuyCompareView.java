@@ -15,15 +15,11 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.robinhood.ticker.TickerUtils;
 import com.robinhood.ticker.TickerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.model.BundleSavedState;
 import cenergy.central.com.pwb_store.model.CompareCount;
@@ -89,7 +85,7 @@ public class PowerBuyCompareView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onShoppingBagClick(v);
+                    mListener.onCompareClickListener(v);
                 }
             }
         });
@@ -275,6 +271,6 @@ public class PowerBuyCompareView extends FrameLayout {
     }
 
     public interface OnClickListener {
-        void onShoppingBagClick(View view);
+        void onCompareClickListener(View view);
     }
 }

@@ -178,7 +178,8 @@
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
-    <string name="added_to_cart">Added this item to your shopping cart.</string>
+    <string name="added_to_cart">This product has been added to your shopping cart.</string>
+    <string name="added_to_compare">This product has been added to compare products.</string>
 
     <!-- Cart -->
     <string name="title_confirm_delete_item">Are you sure to remove this item from your cart?</string>

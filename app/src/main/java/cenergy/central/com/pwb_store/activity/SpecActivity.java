@@ -196,7 +196,7 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
     }
 
     @Override
-    public void onShoppingBagClick(View view) {
+    public void onCompareClickListener(View view) {
         Intent intent = new Intent(this, CompareActivity.class);
         ActivityCompat.startActivity(this, intent,
                 ActivityOptionsCompat

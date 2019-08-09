@@ -44,10 +44,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // widget view
     private var progressDialog: ProgressDialog? = null
     lateinit var mToolbar: Toolbar
-    lateinit var mBuyCompareView: PowerBuyCompareView
-    lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
-    lateinit var tvNotFound: TextView
-    lateinit var containerGroupView: ConstraintLayout
+    private lateinit var mBuyCompareView: PowerBuyCompareView
+    private lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
+    private lateinit var tvNotFound: TextView
+    private lateinit var containerGroupView: ConstraintLayout
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
 
@@ -131,7 +131,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         }
 
         // setup badge
-        mBuyCompareView.visibility = View.GONE
+        mBuyCompareView.setListener(this)
         mBuyShoppingCartView.setListener(this)
     }
 
@@ -166,6 +166,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     override fun getProduct(): Product? = product
 
     override fun addProductToCompare(product: Product?) {
+        //TODO Add to compare
 //        product?.let { addToCompare(it) }
         showAlertDialog(getString(R.string.developing_system_compare))
     }
@@ -193,12 +194,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // endregion
 
     // region {@link PowerBuyCompareView.OnClickListener}
-    override fun onShoppingBagClick(view: View) {
-        val intent = Intent(this, CompareActivity::class.java)
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
-                        .toBundle())
+    override fun onCompareClickListener(view: View) {
+        //TODO Add to compare
+//        val intent = Intent(this, CompareActivity::class.java)
+//        ActivityCompat.startActivity(this, intent,
+//                ActivityOptionsCompat
+//                        .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
+//                        .toBundle())
     }
     // endregion
 
@@ -342,6 +344,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         }
     }
 
+    //TODO ADD to compare
     // region action compare product
 //    private fun addToCompare(product: Product) {
 //        showProgressDialog()
@@ -362,13 +365,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 //            }
 //        }
 //    }
-
+//
 //    private fun saveCompareProduct(product: Product) {
 //        database.saveCompareProduct(product, object : DatabaseListener {
 //            override fun onSuccessfully() {
 //                dismissProgressDialog()
 //                updateCompareBadge()
-//                Toast.makeText(this@ProductDetailActivity, "Generate compare complete.", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this@ProductDetailActivity, "${getString(R.string.added_to_compare)}.", Toast.LENGTH_SHORT).show()
 //            }
 //
 //            override fun onFailure(error: Throwable) {
@@ -488,7 +491,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun disableAddToCartButton(disable: Boolean = true) {
-        Log.d("ProductDetail", "disable add to cart button")
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
         if (fragment != null && fragment is DetailFragment) {
             fragment.disableAddToCartButton(disable)

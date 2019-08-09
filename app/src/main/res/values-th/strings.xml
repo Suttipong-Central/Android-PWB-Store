@@ -179,6 +179,7 @@
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
     <string name="added_to_cart">สินค้านี้ถูกเพิ่มลงรถเข็นแล้ว</string>
+    <string name="added_to_compare">สินค้านี้ถูกเพิ่มในการเปรียบเทียบสินค้าแล้ว</string>
 
     <!-- Cart -->
     <string name="title_confirm_delete_item">คุณต้องการลบสินค้าชิ้นนี้ออกจากรถเข็น?</string>
