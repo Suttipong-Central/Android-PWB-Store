@@ -26,7 +26,8 @@
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@mipmap/ic_launcher"/>
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@string/app_name" />
 
         <cenergy.central.com.pwb_store.view.LanguageButton
             android:id="@+id/switch_language_button"
@@ -44,7 +45,7 @@
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_search_bar"
             android:background="?android:attr/selectableItemBackground"
-            />
+            android:contentDescription="@string/app_name" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyCompareView
             android:id="@+id/button_compare"

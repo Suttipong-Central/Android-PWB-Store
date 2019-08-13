@@ -41,6 +41,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     var cartService: CartService
     var hdlService: HDLService
+    var compareService: CompareService
 
     private lateinit var userToken: String
 
@@ -68,6 +69,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
         cartService = retrofit.create(CartService::class.java)
         hdlService = retrofit.create(HDLService::class.java)
+        compareService = retrofit.create(CompareService::class.java)
     }
 
     companion object {
