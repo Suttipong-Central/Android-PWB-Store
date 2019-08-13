@@ -181,11 +181,16 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     @Subscribe
     public void onEvent(CompareMenuBus compareMenuBus) {
-        Intent intent = new Intent(this, CompareActivity.class);
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(compareMenuBus.getView(), 0, 0, compareMenuBus.getView().getWidth(), compareMenuBus.getView().getHeight())
-                        .toBundle());
+        if (database.getCompareProducts().size() > 0 ){
+            Intent intent = new Intent(this, CompareActivity.class);
+            ActivityCompat.startActivityForResult(this, intent,
+                    REQUEST_UPDATE_LANGUAGE, ActivityOptionsCompat
+                            .makeScaleUpAnimation(compareMenuBus.getView(), 0, 0,
+                                    compareMenuBus.getView().getWidth(), compareMenuBus.getView().getHeight())
+                            .toBundle());
+        } else {
+            showAlertDialog("", getString(R.string.please_add_compare));
+        }
     }
 
     @Override
