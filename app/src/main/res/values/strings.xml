@@ -311,4 +311,5 @@
     <string name="information">Information</string>
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>
+    <string name="please_add_compare">Compare product is empty, plase add product to compare</string>
 </resources>

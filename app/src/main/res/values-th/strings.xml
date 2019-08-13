@@ -313,5 +313,6 @@
     <string name="information">ข้อมูล</string>
     <string name="close">ปิด</string>
     <string name="payment_description">แสกนโค้ดเพื่อชำระเงินสำหรับคำสั่งซื้อนี้</string>
+    <string name="please_add_compare">ไม่มีสินค้าในการเปรียบเทียบสินค้า กรุณาเพิ่มสินค้าเพื่อเปรียบเทียบสินค้า</string>
 
 </resources>
