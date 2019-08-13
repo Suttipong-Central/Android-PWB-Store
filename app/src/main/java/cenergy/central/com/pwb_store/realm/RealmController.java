@@ -136,7 +136,9 @@ public class RealmController {
             @Override
             public void execute(@NonNull Realm realm) {
                 RealmResults<CompareProduct> realmCompareProducts = realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findAll();
-                realmCompareProducts.deleteAllFromRealm();
+                if (realmCompareProducts != null) {
+                    realmCompareProducts.deleteAllFromRealm();
+                }
             }
         });
 

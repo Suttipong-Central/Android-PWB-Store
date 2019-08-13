@@ -82,9 +82,7 @@ public class SpecFragment extends Fragment {
                 String id = checkPrimary();
                 if (id.equalsIgnoreCase(mRealmProductDetail.getProductCode())){
                     mProgressDialog.dismiss();
-                    showAlertDialog(getContext().getResources().getString(R.string.alert_compare)
-                            + "" + mRealmProductDetail.getProductName() + "" +
-                            getContext().getResources().getString(R.string.alert_compare_yes));
+                    showAlertDialog(getString(R.string.format_alert_compare, mRealmProductDetail.getProductName()));
                 }else {
                     insertCompare();
                 }

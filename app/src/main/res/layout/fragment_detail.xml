@@ -238,11 +238,11 @@
         android:layout_marginEnd="16dp"
         android:layout_weight="1"
         android:completionThreshold="1"
-        app:act_header="@string/size"
         android:visibility="gone"
+        app:act_header="@string/size"
         app:act_required="false"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/inputProductShade"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/line1" />
 
@@ -253,14 +253,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:visibility="gone"
         android:layout_weight="1"
         android:completionThreshold="1"
+        android:visibility="gone"
         app:act_header="@string/shade"
         app:act_required="false"
+        app:layout_constraintBottom_toTopOf="@id/groupActionButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
-        app:layout_constraintBottom_toTopOf="@id/groupActionButton"
         app:layout_constraintTop_toBottomOf="@+id/inputProductSize" />
 
     <LinearLayout
@@ -281,37 +281,49 @@
             android:id="@+id/addToCartButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:text="@string/add_to_cart"/>
+            app:text="@string/add_to_cart" />
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/layoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:orientation="horizontal">
 
             <cenergy.central.com.pwb_store.view.PowerBuyIconButton
                 android:id="@+id/availableStoreButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
                 android:layout_marginBottom="8dp"
-                android:layout_weight="1"
                 app:btn_default="true"
-                app:text="@string/product_available"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline50"
+                app:layout_constraintTop_toTopOf="parent"
+                app:text="@string/product_available" />
 
-            <cenergy.central.com.pwb_store.view.PowerBuyIconButton
-                android:id="@+id/addToCompareButton"
-                android:layout_width="0dp"
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline50"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
-                app:btn_default="true"
-                app:text="@string/product_compare"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5"/>
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/compareCheckBox"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:theme="@style/CompareCheckBoxTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:text="@string/compare"
+                app:layout_constraintVertical_weight="1"
+                app:layout_constraintBottom_toBottomOf="@+id/availableStoreButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/availableStoreButton"
+                app:layout_constraintTop_toTopOf="@+id/availableStoreButton" />
+        </android.support.constraint.ConstraintLayout>
     </LinearLayout>
     <!-- endregion -->
 

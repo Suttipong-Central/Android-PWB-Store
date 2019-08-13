@@ -11,10 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -26,6 +23,7 @@ import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
 import cenergy.central.com.pwb_store.model.body.OptionBody
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -47,7 +45,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var tvNormalPrice: PowerBuyTextView
     private lateinit var addItemButton: PowerBuyIconButton
     private lateinit var storeButton: PowerBuyIconButton
-    private lateinit var compareButton: PowerBuyIconButton
+    private lateinit var compareCheckBox: CheckBox
 
     private lateinit var productSizeSelect: PowerBuyAutoCompleteTextStroke
     private lateinit var productShadeSelect: PowerBuyAutoCompleteTextStroke
@@ -79,10 +77,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         when (view.id) {
             R.id.availableStoreButton -> {
                 productDetailListener.onDisplayAvailableStore(product)
-            }
-
-            R.id.addToCompareButton -> {
-                productDetailListener.addProductToCompare(product)
             }
 
             R.id.addToCartButton -> {
@@ -124,9 +118,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice = rootView.findViewById(R.id.txt_regular)
         addItemButton = rootView.findViewById(R.id.addToCartButton)
         storeButton = rootView.findViewById(R.id.availableStoreButton)
-        compareButton = rootView.findViewById(R.id.addToCompareButton)
+        compareCheckBox = rootView.findViewById(R.id.compareCheckBox)
 
-        when(BuildConfig.FLAVOR){
+        when (BuildConfig.FLAVOR) {
             "cds" -> rootView.layoutButton.visibility = View.GONE
         }
 
@@ -225,9 +219,18 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         storeButton.setImageDrawable(R.drawable.ic_store)
         storeButton.setOnClickListener(this)
 
-        // setup add to compare button
-        compareButton.setImageDrawable(R.drawable.ic_compare_bar)
-        compareButton.setOnClickListener(this)
+        // setup add to compare check box
+        updateCompareCheckBox()
+        compareCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            productDetailListener.addProductToCompare(product, isChecked)
+        }
+    }
+
+    fun updateCompareCheckBox() {
+        if (product != null) {
+            val compareProduct = RealmController.getInstance().getCompareProduct(product!!.sku)
+            compareCheckBox.isChecked = compareProduct != null
+        }
     }
 
     private fun showSpecialPrice(unit: String, product: Product) {
@@ -251,7 +254,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.setEnableStrikeThrough(false)
     }
 
-    fun disableAddToCartButton(isDisable: Boolean = true){
+    fun disableAddToCartButton(isDisable: Boolean = true) {
         addItemButton.setButtonDisable(isDisable)
     }
 }

@@ -74,6 +74,10 @@
         <item name="colorAccent">@color/defaultButtonColor</item>
     </style>
 
+    <style name="CompareCheckBoxTheme" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="colorAccent">@color/inStockColor</item>
+    </style>
+
     <style name="RaisedButton">
         <item name="android:minWidth">@dimen/raised_button_min_width</item>
         <item name="android:minHeight">@dimen/raised_button_min_height</item>

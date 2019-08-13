@@ -14,7 +14,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
@@ -92,13 +91,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         updateCompareBadge()
         updateShoppingCartBadge()
 
-        product?.let { checkDisableAddProductButton(it)}
+        product?.let { checkDisableAddProductButton(it) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // check add button
         product?.let { checkDisableAddProductButton(it) }
+
+        // check compare product
+        checkCompareProduct()
 
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             // check language
@@ -165,10 +167,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // region product ProductDetailProtocol
     override fun getProduct(): Product? = product
 
-    override fun addProductToCompare(product: Product?) {
-        //TODO Add to compare
-//        product?.let { addToCompare(it) }
-        showAlertDialog(getString(R.string.developing_system_compare))
+    override fun addProductToCompare(product: Product?, isCompare: Boolean) {
+        product ?: return
+
+        if (isCompare) {
+            addToCompare(product)
+        } else {
+            removeFromCompare(product)
+        }
     }
 
     override fun addProductToCart(product: Product?) {
@@ -195,12 +201,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     // region {@link PowerBuyCompareView.OnClickListener}
     override fun onCompareClickListener(view: View) {
-        //TODO Add to compare
-//        val intent = Intent(this, CompareActivity::class.java)
-//        ActivityCompat.startActivity(this, intent,
-//                ActivityOptionsCompat
-//                        .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
-//                        .toBundle())
+        val intent = Intent(this, CompareActivity::class.java)
+        ActivityCompat.startActivityForResult(this, intent, REQUEST_UPDATE_LANGUAGE,
+                ActivityOptionsCompat
+                        .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
+                        .toBundle())
     }
     // endregion
 
@@ -264,7 +269,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkHDLOption(product: Product) {
-        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>>{
+        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>> {
             override fun success(response: List<DeliveryInfo>?) {
                 product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
                 dismissProgressDialog()
@@ -316,6 +321,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         mBuyCompareView.updateCartCount(count)
     }
 
+    private fun updateCompareBadge(count: Int) {
+        mBuyCompareView.updateCartCount(count)
+    }
+
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
@@ -344,42 +353,51 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         }
     }
 
-    //TODO ADD to compare
     // region action compare product
-//    private fun addToCompare(product: Product) {
-//        showProgressDialog()
-//        val count = database.compareProducts.size
-//        Log.d(TAG, "" + count)
-//        if (count >= 4) {
-//            dismissProgressDialog()
-//            showAlertDialog(getString(R.string.alert_count))
-//        } else {
-//            val compareProduct = database.getCompareProduct(product.sku)
-//            if (compareProduct != null) {
-//                dismissProgressDialog()
-//                showAlertDialog(getString(R.string.alert_compare)
-//                        + "" + compareProduct.name + "" + getString(R.string.alert_compare_yes))
-//            } else {
-//                // store compare product to database
-//                saveCompareProduct(product)
-//            }
-//        }
-//    }
-//
-//    private fun saveCompareProduct(product: Product) {
-//        database.saveCompareProduct(product, object : DatabaseListener {
-//            override fun onSuccessfully() {
-//                dismissProgressDialog()
-//                updateCompareBadge()
-//                Toast.makeText(this@ProductDetailActivity, "${getString(R.string.added_to_compare)}.", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onFailure(error: Throwable) {
-//                dismissProgressDialog()
-//                Log.d(TAG, "" + error.message)
-//            }
-//        })
-//    }
+    private fun addToCompare(product: Product) {
+        showProgressDialog()
+        val count = database.compareProducts.size
+        Log.d(TAG, "" + count)
+        if (count >= 4) {
+            dismissProgressDialog()
+            showAlertDialog(getString(R.string.alert_count))
+        } else {
+            val compareProduct = database.getCompareProduct(product.sku)
+            // is added?
+            if (compareProduct != null) {
+                dismissProgressDialog()
+                showAlertDialog(getString(R.string.format_alert_compare, compareProduct.name))
+            } else {
+                // store compare product to database
+                saveCompareProduct(product)
+            }
+        }
+    }
+
+    private fun saveCompareProduct(product: Product) {
+        database.saveCompareProduct(product, object : DatabaseListener {
+            override fun onSuccessfully() {
+                dismissProgressDialog()
+                updateCompareBadge()
+                Toast.makeText(this@ProductDetailActivity, "${getString(R.string.added_to_compare)}.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(error: Throwable) {
+                dismissProgressDialog()
+                Log.d(TAG, "" + error.message)
+            }
+        })
+    }
+
+    private fun removeFromCompare(product: Product) {
+        showProgressDialog()
+        val count = database.compareProducts.size
+        if (count >= 1) {
+            val compareProducts = database.deleteCompareProduct(product.sku)
+            updateCompareBadge(compareProducts?.size ?: 0)
+        }
+        dismissProgressDialog()
+    }
     // end region
 
     // region action add product to cart
@@ -495,6 +513,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         if (fragment != null && fragment is DetailFragment) {
             fragment.disableAddToCartButton(disable)
         }
+    }
+
+    private fun checkCompareProduct() {
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+        (fragment as DetailFragment).updateCompareCheckBox()
     }
 
     private fun clearCart() {
