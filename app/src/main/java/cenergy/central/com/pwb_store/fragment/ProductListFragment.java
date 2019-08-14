@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
@@ -493,7 +494,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             } else {
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("category_id", categoryId, "eq"));
             }
-            filterGroupsList.add(FilterGroups.Companion.createFilterGroups("stock.salable", "1", "eq"));
+            if (BuildConfig.FLAVOR != "cds") {
+                filterGroupsList.add(FilterGroups.Companion.createFilterGroups("stock.salable", "1", "eq"));
+            }
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("status", "1", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("visibility", "4", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("price", "0", "gt"));
