@@ -6,6 +6,8 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
+import cenergy.central.com.pwb_store.adapter.CompareDetailAdapter;
+import cenergy.central.com.pwb_store.adapter.CompareProductAdapter;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
@@ -23,7 +25,7 @@ public class CompareItemDetailViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void setViewHolder(CompareDetailItem compareDetailItem){
-        detailItem.setText(compareDetailItem.getType());
+    public void setViewHolder(CompareDetailAdapter.CompareItem item){
+        detailItem.setText(item.getDetail());
     }
 }
