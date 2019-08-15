@@ -13,4 +13,8 @@ class CompareProductResponse(
 class CompareItem(
         val sku: String = "",
         val value: String = ""
-)
+) {
+    companion object {
+        const val COMPARE_ITEM_SHORT_DESCRIPTION_CODE = "short_description"
+    }
+}

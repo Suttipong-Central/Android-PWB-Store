@@ -8,10 +8,9 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderDetailViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareItemDetailViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareNotShowSpecViewHolder
-import cenergy.central.com.pwb_store.model.CompareDetail
-import cenergy.central.com.pwb_store.model.CompareDetailItem
 import cenergy.central.com.pwb_store.model.IViewType
 import cenergy.central.com.pwb_store.model.ViewType
+import cenergy.central.com.pwb_store.model.response.CompareItem.Companion.COMPARE_ITEM_SHORT_DESCRIPTION_CODE
 import java.util.*
 import kotlin.Comparator
 
@@ -77,8 +76,9 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     compareItems.order.indexOf(o1.sku).compareTo(compareItems.order.indexOf(o2.sku))
                 })
 
-                it.items.forEach {
-                    items.add(CompareItem(it.value, VIEW_TYPE_ID_COMPARE_ITEM))
+                it.items.forEachIndexed { index, compareItem ->
+                    // short description? html
+                    items.add(CompareItem(compareItem.value,it.code == COMPARE_ITEM_SHORT_DESCRIPTION_CODE, VIEW_TYPE_ID_COMPARE_ITEM))
                 }
             }
         }
@@ -95,5 +95,5 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     data class CompareTitleItem(val title: String = "", var mViewType: Int) : ViewType(mViewType)
 
-    data class CompareItem(val detail: String = "", var mViewType: Int) : ViewType(mViewType)
+    data class CompareItem(val detail: String = "", var isHTML: Boolean = false, var mViewType: Int) : ViewType(mViewType)
 }
