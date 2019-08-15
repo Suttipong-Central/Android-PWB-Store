@@ -8,5 +8,5 @@ import cenergy.central.com.pwb_store.model.CompareProduct
  */
 
 interface CompareItemListener {
-    fun onClickShoppingCart(compareProduct: CompareProduct)
+    fun onClickAddToCart(compareProduct: CompareProduct)
 }

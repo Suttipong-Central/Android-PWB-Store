@@ -47,13 +47,13 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         val item = items[position]
         when (item.viewTypeId) {
             VIEW_TYPE_ID_COMPARE_HEADER -> if (item is CompareTitleItem && holder is CompareHeaderDetailViewHolder) {
-                holder.setViewHolder(item)
+                holder.bind(item)
             }
             VIEW_TYPE_ID_COMPARE_ITEM -> if (item is CompareItem && holder is CompareItemDetailViewHolder) {
-                holder.setViewHolder(item)
+                holder.bind(item)
             }
             VIEW_TYPE_ID_CANNOT_SHOW_SPEC -> if (holder is CompareNotShowSpecViewHolder) {
-                holder.bindView()
+                holder.bind()
             }
         }
     }
@@ -68,7 +68,7 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         if (compareItems.compareProducts.isEmpty()) {
             items.add(VIEW_TYPE_CANNOT_SHOW_SPEC)
         } else {
-            compareItems.compareProducts.forEach { it ->
+            compareItems.compareProducts.forEach {
                 // add header
                 items.add(CompareTitleItem(it.label, VIEW_TYPE_ID_COMPARE_HEADER))
 
@@ -76,7 +76,7 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     compareItems.order.indexOf(o1.sku).compareTo(compareItems.order.indexOf(o2.sku))
                 })
 
-                it.items.forEachIndexed { index, compareItem ->
+                it.items.forEachIndexed { _, compareItem ->
                     // short description? html
                     items.add(CompareItem(compareItem.value,it.code == COMPARE_ITEM_SHORT_DESCRIPTION_CODE, VIEW_TYPE_ID_COMPARE_ITEM))
                 }

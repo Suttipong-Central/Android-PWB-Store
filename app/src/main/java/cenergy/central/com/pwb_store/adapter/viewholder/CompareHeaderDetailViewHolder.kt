@@ -7,7 +7,7 @@ import kotlinx.android.synthetic.main.list_item_text_header_compare_detail.view.
 
 class CompareHeaderDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val tvLabel = itemView.labelTextView
-    fun setViewHolder(item: CompareDetailAdapter.CompareTitleItem) {
+    fun bind(item: CompareDetailAdapter.CompareTitleItem) {
         tvLabel.text = item.title
     }
 }

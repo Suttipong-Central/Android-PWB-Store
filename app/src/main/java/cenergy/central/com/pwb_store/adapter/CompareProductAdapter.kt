@@ -16,7 +16,7 @@ import cenergy.central.com.pwb_store.model.ViewType
 import cenergy.central.com.pwb_store.model.response.CompareProductResponse
 
 
-class CompareProductAdapter(private val mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val listener: CompareItemListener = mContext as CompareItemListener
     private val items = ArrayList<IViewType>()
 
@@ -75,13 +75,10 @@ class CompareProductAdapter(private val mContext: Context) : RecyclerView.Adapte
         items.add(VIEW_TYPE_COMPARE_HEADER)
         items.add(compareList)
         items.add(compareListProduct)
-//        compareListProduct.viewTypeId = VIEW_TYPE_ID_SHOPPING_CART
-//        items.add(compareListProduct)
         notifyDataSetChanged()
     }
 
     companion object {
-        private val TAG = CompareProductAdapter::class.java.simpleName
         //Static Members
         private const val VIEW_TYPE_ID_PRODUCT_LIST = 0
         private const val VIEW_TYPE_ID_COMPARE_HEADER = 1
@@ -89,7 +86,6 @@ class CompareProductAdapter(private val mContext: Context) : RecyclerView.Adapte
         private const val VIEW_TYPE_ID_SHOPPING_CART = 3
 
         private val VIEW_TYPE_COMPARE_HEADER = ViewType(VIEW_TYPE_ID_COMPARE_HEADER)
-        private val VIEW_TYPE_SHOPPING_CART = ViewType(VIEW_TYPE_ID_SHOPPING_CART)
     }
 
     data class ProductItem(val products: List<CompareProduct>, var viewType: Int) : ViewType(viewType)

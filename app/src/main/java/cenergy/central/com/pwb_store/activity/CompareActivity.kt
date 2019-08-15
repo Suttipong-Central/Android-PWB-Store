@@ -69,9 +69,8 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
-
+        showProgressDialog()
         initView()
-
         retrieveCompareProduct()
     }
 
@@ -89,12 +88,14 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
 //                    showFinishDialog(getString(R.string.please_add_compare))
 //                }
                 startCompareFragment()
+                dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
                 //TODO check response later
 //                showFinishDialog(error.errorMessage ?: getString(R.string.some_thing_wrong))
                 startCompareFragment()
+                dismissProgressDialog()
             }
         })
     }
@@ -201,7 +202,8 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     }
 
     // region {@link {Implement CompareItemListener}
-    override fun onClickShoppingCart(compareProduct: CompareProduct) {
+    override fun onClickAddToCart(compareProduct: CompareProduct) {
+        showProgressDialog()
         val cartId = preferenceManager.cartId
         if (cartId != null) {
             addProductToCart(cartId, compareProduct)
@@ -228,13 +230,11 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     }
 
     private fun addProductToCart(cartId: String, compareProduct: CompareProduct) {
-        showProgressDialog()
         val cartItemBody = CartItemBody.create(cartId, compareProduct.sku, arrayListOf())
         HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
                 runOnUiThread {
                     saveCartItem(response, compareProduct)
-                    dismissProgressDialog()
                 }
             }
 
@@ -252,6 +252,7 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     private fun saveCartItem(cartItem: CartItem?, compareProduct: CompareProduct) {
         database.saveCartItem(CacheCartItem.asCartItem(cartItem!!, compareProduct), object : DatabaseListener {
             override fun onSuccessfully() {
+                dismissProgressDialog()
                 updateShoppingCartBadge()
                 Toast.makeText(this@CompareActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
             }
@@ -289,15 +290,6 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
                 }
         builder.show()
     }
-//
-//    private fun showFinishDialog(message: String) {
-//        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-//                .setMessage(message)
-//                .setPositiveButton(getString(R.string.ok_alert)) { _, _ ->
-//                    finish()
-//                }
-//        builder.show()
-//    }
 
     private fun dismissProgressDialog() {
         if (!isFinishing && progressDialog != null && progressDialog!!.isShowing) {

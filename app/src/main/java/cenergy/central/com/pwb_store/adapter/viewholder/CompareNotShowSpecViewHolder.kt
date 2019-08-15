@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 
 class CompareNotShowSpecViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-    fun bindView(){
-
+    fun bind(){
     }
 }
