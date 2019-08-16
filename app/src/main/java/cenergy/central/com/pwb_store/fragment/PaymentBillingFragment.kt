@@ -87,12 +87,13 @@ class PaymentBillingFragment : Fragment() {
 
     // data
     private lateinit var preferenceManager: PreferenceManager
+    private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
-    private lateinit var paymentProtocol: PaymentProtocol
+    private var t1cNumber: String = ""
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
     private var member: Member? = null
@@ -193,6 +194,7 @@ class PaymentBillingFragment : Fragment() {
         cartItemList = paymentProtocol.getItems()
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
+        t1cNumber = paymentProtocol.getT1CardNumber()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -257,6 +259,7 @@ class PaymentBillingFragment : Fragment() {
             lastNameEdt.setText(shippingAddress!!.lastname)
             contactNumberEdt.setText(shippingAddress!!.telephone)
             emailEdt.setText(shippingAddress!!.email)
+            theOneEdt.setText(t1cNumber)
             homeNoEdt.setText(shippingAddress!!.subAddress?.houseNumber ?: "")
             homeBuildingEdit.setText(shippingAddress!!.subAddress?.building ?: "")
             homeSoiEdt.setText(shippingAddress!!.subAddress?.soi ?: "")
@@ -338,7 +341,6 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt.setText(billingAddress.firstname)
         billingLastNameEdt.setText(billingAddress.lastname)
         billingContactNumberEdt.setText(billingAddress.telephone)
-//        billingEmailEdt.setText(billingAddress.email)
         billingHomeNoEdt.setText(billingAddress.subAddress?.houseNumber ?: "")
         billingHomeBuildingEdit.setText(billingAddress.subAddress?.building ?: "")
         billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
@@ -669,12 +671,16 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
+        val t1cNumber = theOneEdt.getText()
         if (isSameBilling) {
             if (!hasEmptyInput()) {
                 // setup value
                 val shippingAddress = createShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.setShippingAddressInfo(shippingAddress)
+                paymentBillingListener?.saveAddressInformation(
+                        shippingAddress = shippingAddress,
+                        billingAddress = null,
+                        t1cNumber = t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
                 showAlertDialog("", resources.getString(R.string.fill_in_important_information))
@@ -685,8 +691,10 @@ class PaymentBillingFragment : Fragment() {
                 val billingAddress = createBilling(IS_NOT_SAME_BILLING)
                 val shippingAddress = createShipping(IS_NOT_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.setBillingAddressInfo(billingAddress)
-                paymentBillingListener?.setShippingAddressInfo(shippingAddress)
+                paymentBillingListener?.saveAddressInformation(
+                        shippingAddress = shippingAddress,
+                        billingAddress = billingAddress,
+                        t1cNumber = t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
                 showAlertDialog("", resources.getString(R.string.fill_in_important_information))

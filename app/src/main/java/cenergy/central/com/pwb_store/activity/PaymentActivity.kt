@@ -153,14 +153,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // endregion
 
     // region {@link PaymentBillingListener}
-    override fun setShippingAddressInfo(shippingAddress: AddressInformation) {
+    override fun saveAddressInformation(shippingAddress: AddressInformation,
+                                        billingAddress: AddressInformation?, t1cNumber: String) {
         showProgressDialog()
         this.shippingAddress = shippingAddress
-        cartId?.let { getDeliveryOptions(it) } // request delivery options
-    }
-
-    override fun setBillingAddressInfo(billingAddress: AddressInformation) {
         this.billingAddress = billingAddress
+        this.theOneCardNo = t1cNumber
+        cartId?.let { getDeliveryOptions(it) } // request delivery options
     }
     // endregion
 
@@ -818,7 +817,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentBillingFragment) {
-            this.shippingAddress = null
+            resetData()
             if (this.membersList.isNotEmpty() || this.pwbMembersList.isNotEmpty()) {
                 startMembersFragment()
             } else {
@@ -844,6 +843,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             finish()
             return
         }
+    }
+
+    private fun resetData() {
+        this.shippingAddress = null
+        this.billingAddress = null
+        this.theOneCardNo = ""
     }
 
     private fun hideKeyboard() {
