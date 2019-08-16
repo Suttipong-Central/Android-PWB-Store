@@ -58,7 +58,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
     private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
     private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
-//    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
+    //    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeNoEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var billingHomeSoiEdt: PowerBuyEditTextBorder
@@ -562,6 +562,8 @@ class PaymentBillingFragment : Fragment() {
 //        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
+        theOneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        theOneEdt.setTextLength(10)
 
         //set T1 icon
         theOneEdt.setDrawableStart(R.drawable.ic_the1)
