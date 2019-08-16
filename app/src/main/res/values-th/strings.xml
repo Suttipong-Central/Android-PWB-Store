@@ -335,4 +335,6 @@
     <string name="label_stock_stores_offline"><u>สาขาอื่น</u></string>
     <string name="share_payment_link"><u>แชร์ลิ้งค์จ่ายเงิน</u></string>
     <string name="error_tax_invalid">กรุณาระบุตัวเลขขั้นต่ำ 13 ตัวอักษร</string>
+
+    <string name="the_1_error">หมายเลข T1 ต้องมีความยาว 10 หลัก และเป็นตัวเลขเท่านั้น</string>
 </resources>

@@ -4,11 +4,9 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputType
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -91,13 +89,13 @@ class PaymentBillingFragment : Fragment() {
 
     // data
     private lateinit var preferenceManager: PreferenceManager
+    private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
     private lateinit var cartTotal: CartTotalResponse
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
-    private lateinit var paymentProtocol: PaymentProtocol
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
     private var member: Member? = null
@@ -127,6 +125,7 @@ class PaymentBillingFragment : Fragment() {
     private var isSameBilling = true
     private var isRequireTaxInvoice = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
+    private var t1cNumber = ""
 
     // shipping data address
     private var provinceList = listOf<Province>()
@@ -201,6 +200,7 @@ class PaymentBillingFragment : Fragment() {
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
         checkoutType = paymentProtocol.getCheckType()
+        t1cNumber = paymentProtocol.getT1CardNumber()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -573,6 +573,9 @@ class PaymentBillingFragment : Fragment() {
 
         //set T1 icon
         theOneEdt.setDrawableStart(R.drawable.ic_the1)
+        theOneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        theOneEdt.setTextLength(10)
+
         radioGroup = rootView.findViewById(R.id.radio_group)
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
 
@@ -684,14 +687,15 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
+        val t1cNumber = theOneEdt.getText()
         if (checkoutType == CheckoutType.NORMAL) {
-            checkoutNormal()
+            checkoutNormal(t1cNumber)
         } else {
             if (!hasEmptyInput()) {
                 // setup shipping address
                 val shippingAddress = createShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.setBillingAddressWithIspu(shippingAddress)
+                paymentBillingListener?.setBillingAddressWithIspu(shippingAddress, t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
                 activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
@@ -699,13 +703,13 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun checkoutNormal() {
+    private fun checkoutNormal(t1cNumber: String) {
         if (isSameBilling) {
             if (!hasEmptyInput()) {
                 // setup value
                 val shippingAddress = createShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.setShippingAddressInfo(shippingAddress)
+                paymentBillingListener?.saveAddressInformation(shippingAddress, null, t1cNumber = t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
                 activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
@@ -717,8 +721,7 @@ class PaymentBillingFragment : Fragment() {
                 val billingAddress = createBilling(IS_NOT_SAME_BILLING)
                 val shippingAddress = createShipping(IS_NOT_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.setBillingAddressInfo(billingAddress)
-                paymentBillingListener?.setShippingAddressInfo(shippingAddress)
+                paymentBillingListener?.saveAddressInformation(shippingAddress, billingAddress, t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
                 activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
@@ -811,13 +814,14 @@ class PaymentBillingFragment : Fragment() {
         districtInput.setError(validator.validText(districtInput.getText()))
         subDistrictInput.setError(validator.validText(subDistrictInput.getText()))
         postcodeInput.setError(validator.validText(postcodeInput.getText()))
+        theOneEdt.setError(validator.validTheOne(theOneEdt.getText()))
 
         taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
 
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice())
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || theOneEdt.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {

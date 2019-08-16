@@ -334,4 +334,7 @@
     <string name="label_stock_stores_offline"><u>Other Stores</u></string>
     <string name="share_payment_link"><u>Share payment link</u></string>
     <string name="error_tax_invalid">Please enter minimum length of 13 characters, number only</string>
+
+    <string name="the_1_error">T1 number must be 10 digits and number only</string>
+
 </resources>

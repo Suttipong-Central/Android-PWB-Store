@@ -206,18 +206,17 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // endregion
 
     // region {@link PaymentBillingListener}
-    override fun setShippingAddressInfo(shippingAddress: AddressInformation) {
+    override fun saveAddressInformation(shippingAddress: AddressInformation, billingAddress: AddressInformation?, t1cNumber: String) {
         showProgressDialog()
         this.shippingAddress = shippingAddress
+        this.billingAddress = billingAddress
+        this.theOneCardNo = t1cNumber
         cartId?.let { getDeliveryOptions(it) } // request delivery options
     }
 
-    override fun setBillingAddressInfo(billingAddress: AddressInformation) {
-        this.billingAddress = billingAddress
-    }
-
-    override fun setBillingAddressWithIspu(billingAddress: AddressInformation) {
+    override fun setBillingAddressWithIspu(billingAddress: AddressInformation, t1cNumber: String) {
         this.shippingAddress = billingAddress // sent only address box 1
+        this.theOneCardNo = t1cNumber
         createOrderWithIspu()
     }
     // endregion
@@ -1084,7 +1083,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentBillingFragment) {
-            this.shippingAddress = null
+            resetData()
             if (this.membersList.isNotEmpty() || this.eOrderingMembers.isNotEmpty()) {
                 startMembersFragment()
             } else {
@@ -1114,6 +1113,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             finish()
             return
         }
+    }
+
+    private fun resetData() {
+        this.shippingAddress = null
+        this.billingAddress = null
+        this.theOneCardNo = ""
     }
 
     private fun hideBackButton() {

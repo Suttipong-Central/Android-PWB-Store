@@ -285,6 +285,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             tvPaymentDescription.visibility = View.VISIBLE
             ivPaymentBarcode.visibility = View.VISIBLE
             shareButton.visibility = View.VISIBLE
+            layoutHowToDoNext.visibility = View.GONE
             val bitmapBarcode = BarcodeUtils.createQRCode(order.paymentRedirect)
             ivPaymentBarcode.setImageBitmap(bitmapBarcode)
             ivPaymentBarcode.setOnClickListener {

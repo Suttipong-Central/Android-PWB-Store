@@ -129,12 +129,22 @@ class ValidationHelper(private val context: Context) {
     }
 
     fun validTax(taxId: String): String? {
-        if (isEmptyData(taxId)){
+        if (isEmptyData(taxId)) {
             return context.getString(R.string.error_form_empty_data)
-        } else if (taxId.length < MIN_TAX_ID){
+        } else if (taxId.length < MIN_TAX_ID) {
             return context.getString(R.string.error_tax_invalid)
         }
         return null
+    }
+
+    fun validTheOne(theOne: String) : String?{
+        return if (!isEmptyData(theOne)){
+            if (theOne.length == THE_ONE_NUMBER_LENGTH){
+                null
+            } else {
+                context.getString(R.string.the_1_error)
+            }
+        } else null
     }
 
     companion object {
@@ -142,6 +152,7 @@ class ValidationHelper(private val context: Context) {
         private const val MIN_PHONE_NUMBER = 10
         private const val MIN_TAX_ID = 13
         private const val MIN_PASSPORT_LENGTH = 5
+        private const val THE_ONE_NUMBER_LENGTH = 10
         private const val LANGUAGE_THAI = "th"
         private const val LANGUAGE_ENGLISH = "en"
 
