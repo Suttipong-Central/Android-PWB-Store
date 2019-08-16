@@ -1,8 +1,10 @@
 package cenergy.central.com.pwb_store.adapter
 
+import android.content.Context
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderDetailViewHolder
@@ -11,6 +13,8 @@ import cenergy.central.com.pwb_store.adapter.viewholder.CompareNotShowSpecViewHo
 import cenergy.central.com.pwb_store.model.IViewType
 import cenergy.central.com.pwb_store.model.ViewType
 import cenergy.central.com.pwb_store.model.response.CompareItem.Companion.COMPARE_ITEM_SHORT_DESCRIPTION_CODE
+import kotlinx.android.synthetic.main.item_compare_price.view.*
+import kotlinx.android.synthetic.main.item_compare_rating.view.*
 import java.util.*
 import kotlin.Comparator
 
@@ -39,6 +43,12 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             VIEW_TYPE_ID_COMPARE_ITEM -> CompareItemDetailViewHolder(
                     inflater.inflate(R.layout.list_item_text_compare_detail, parent, false)
             )
+            VIEW_TYPE_ID_COMPARE_PRICE_ITEM -> ComparePriceItemViewHolder(
+                    inflater.inflate(R.layout.item_compare_price, parent, false)
+            )
+            VIEW_TYPE_ID_COMPARE_RATING_ITEM -> CompareRatingItemViewHolder(
+                    inflater.inflate(R.layout.item_compare_rating, parent, false)
+            )
             else -> throw Exception("Invalid viewType")
         }
     }
@@ -50,6 +60,12 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 holder.bind(item)
             }
             VIEW_TYPE_ID_COMPARE_ITEM -> if (item is CompareItem && holder is CompareItemDetailViewHolder) {
+                holder.bind(item)
+            }
+            VIEW_TYPE_ID_COMPARE_PRICE_ITEM -> if (item is CompareItem && holder is ComparePriceItemViewHolder) {
+                holder.bind(item)
+            }
+            VIEW_TYPE_ID_COMPARE_RATING_ITEM -> if (item is CompareItem && holder is CompareRatingItemViewHolder) {
                 holder.bind(item)
             }
             VIEW_TYPE_ID_CANNOT_SHOW_SPEC -> if (holder is CompareNotShowSpecViewHolder) {
@@ -64,21 +80,38 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return items[position].viewTypeId
     }
 
-    fun setCompareDetail(compareItems: CompareProductAdapter.CompareItem) {
+    fun setCompareDetail(context: Context, compareItems: CompareProductAdapter.CompareItem) {
         if (compareItems.compareProducts.isEmpty()) {
             items.add(VIEW_TYPE_CANNOT_SHOW_SPEC)
         } else {
+            // setup sku order
+            val skuOrder = arrayListOf<String>()
+            compareItems.products.mapTo(skuOrder, { it.sku })
+
+            // add header price
+            items.add(CompareTitleItem(context.getString(R.string.price), VIEW_TYPE_ID_COMPARE_HEADER))
+            // add products price
+            compareItems.products.forEach {
+                items.add(CompareItem(it.getProductPrice(), false, VIEW_TYPE_ID_COMPARE_PRICE_ITEM))
+            }
+            // add header price
+            items.add(CompareTitleItem(context.getString(R.string.rating), VIEW_TYPE_ID_COMPARE_HEADER))
+            // add products rating
+            compareItems.products.forEach {
+                items.add(CompareItem(it.rating.toString(), false, VIEW_TYPE_ID_COMPARE_RATING_ITEM))
+            }
+
             compareItems.compareProducts.forEach {
                 // add header
                 items.add(CompareTitleItem(it.label, VIEW_TYPE_ID_COMPARE_HEADER))
-
                 it.items.sortWith(Comparator { o1, o2 ->
-                    compareItems.order.indexOf(o1.sku).compareTo(compareItems.order.indexOf(o2.sku))
+                    skuOrder.indexOf(o1.sku).compareTo(skuOrder.indexOf(o2.sku))
                 })
 
                 it.items.forEachIndexed { _, compareItem ->
                     // short description? html
-                    items.add(CompareItem(compareItem.value,it.code == COMPARE_ITEM_SHORT_DESCRIPTION_CODE, VIEW_TYPE_ID_COMPARE_ITEM))
+                    items.add(CompareItem(compareItem.value, it.code == COMPARE_ITEM_SHORT_DESCRIPTION_CODE,
+                            VIEW_TYPE_ID_COMPARE_ITEM))
                 }
             }
         }
@@ -89,6 +122,8 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private const val VIEW_TYPE_ID_COMPARE_HEADER = 0
         private const val VIEW_TYPE_ID_COMPARE_ITEM = 1
         private const val VIEW_TYPE_ID_CANNOT_SHOW_SPEC = 2
+        private const val VIEW_TYPE_ID_COMPARE_PRICE_ITEM = 3
+        private const val VIEW_TYPE_ID_COMPARE_RATING_ITEM = 4
 
         private val VIEW_TYPE_CANNOT_SHOW_SPEC = ViewType(VIEW_TYPE_ID_CANNOT_SHOW_SPEC)
     }
@@ -96,4 +131,19 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     data class CompareTitleItem(val title: String = "", var mViewType: Int) : ViewType(mViewType)
 
     data class CompareItem(val detail: String = "", var isHTML: Boolean = false, var mViewType: Int) : ViewType(mViewType)
+
+    inner class ComparePriceItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvProductPrice = itemView.tvProductPrice
+
+        fun bind(item: CompareItem) {
+            tvProductPrice.text = item.detail
+        }
+    }
+
+    inner class CompareRatingItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ratting = itemView.rating
+        fun bind(item: CompareItem) {
+            ratting.rating = item.detail.toFloat()
+        }
+    }
 }

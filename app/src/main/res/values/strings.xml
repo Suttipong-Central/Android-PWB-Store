@@ -62,6 +62,7 @@
     <string name="compare_header">Compare products</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="rating">Ratings</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>

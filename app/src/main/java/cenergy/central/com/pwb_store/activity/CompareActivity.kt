@@ -80,20 +80,11 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         CompareAPI().retrieveCompareProduct(this, getSKUs(), object : ApiResponseCallback<List<CompareProductResponse>>{
             override fun success(response: List<CompareProductResponse>?) {
                 compareProductDetailList = response?: arrayListOf()
-                //TODO Use this response to make list detail compare product
-                //TODO check response later
-//                if(response != null && response.isNotEmpty()){
-//                    startCompareFragment()
-//                } else {
-//                    showFinishDialog(getString(R.string.please_add_compare))
-//                }
                 startCompareFragment()
                 dismissProgressDialog()
             }
 
             override fun failure(error: APIError) {
-                //TODO check response later
-//                showFinishDialog(error.errorMessage ?: getString(R.string.some_thing_wrong))
                 startCompareFragment()
                 dismissProgressDialog()
             }

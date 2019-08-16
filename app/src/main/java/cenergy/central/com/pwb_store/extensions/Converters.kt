@@ -7,6 +7,9 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.Category
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
@@ -64,4 +67,9 @@ fun Parcel.createLongList() : List<Long> {
         output.add(readLong())
     }
     return output
+}
+
+fun Double.toPriceDisplay(): String {
+    val price = NumberFormat.getInstance(Locale.getDefault()).format(this)
+    return "฿ $price"
 }

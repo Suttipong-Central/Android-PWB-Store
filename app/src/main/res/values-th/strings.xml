@@ -62,6 +62,7 @@
     <string name="compare_header">เปรียบเทียบสินค้า</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="rating">ความนิยม</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>

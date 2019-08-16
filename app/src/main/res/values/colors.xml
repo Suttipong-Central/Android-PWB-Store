@@ -25,6 +25,7 @@
 
     <!-- Compare -->
     <color name="headDetail">#f2f2f2</color>
+    <color name="rattingColor">#FFC107</color>
 
     <!-- Product Detail -->
     <color name="graySelect">#909090</color>

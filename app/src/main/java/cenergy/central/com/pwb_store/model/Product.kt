@@ -29,6 +29,7 @@ class Product(
         var viewTypeID: Int = 0,
         var attributeID: Int = 0,
         var status: Int = 1,
+        var rating: Int? = 0,
         var paymentMethod: String = "",
         var isHDL: Boolean = false,
         @SerializedName("extension_attributes")

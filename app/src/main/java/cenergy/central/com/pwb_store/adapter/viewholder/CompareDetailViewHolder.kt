@@ -22,7 +22,7 @@ class CompareDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
         compareItemRecyclerView.addItemDecoration(SpacesItemDecoration(0, LinearLayoutManager.VERTICAL))
         compareItemRecyclerView.layoutManager = layoutManager
         compareItemRecyclerView.adapter = compareDetailAdapter
-        compareDetailAdapter.setCompareDetail(item)
+        compareDetailAdapter.setCompareDetail(context, item)
         compareItemRecyclerView.isNestedScrollingEnabled = false
     }
 }

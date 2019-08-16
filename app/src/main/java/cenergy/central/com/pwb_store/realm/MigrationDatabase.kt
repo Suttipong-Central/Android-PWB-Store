@@ -6,7 +6,7 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 8
+        const val SCHEMA_VERSION = 9
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -203,6 +203,19 @@ class MigrationDatabase : RealmMigration {
                 // add payment redirect
                 addField("paymentRedirect", String::class.java)
                         .setNullable("paymentRedirect", false)
+            }
+        }
+
+        if (oldVersion < 9) {
+            // Update Product for get rating
+            realm.schema.get("Product")?.apply {
+                // add rating
+                addField("rating", Int::class.java)
+            }
+
+            realm.schema.get("CompareProduct")?.apply {
+                // add rating
+                addField("rating", Int::class.java)
             }
         }
     }

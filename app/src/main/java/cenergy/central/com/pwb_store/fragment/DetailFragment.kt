@@ -233,6 +233,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
+    fun unCheckCompareCheckBox() {
+        compareCheckBox.isChecked = false
+    }
+
     private fun showSpecialPrice(unit: String, product: Product) {
         if (product.specialPrice > 0) {
             if (product.price != product.specialPrice) {

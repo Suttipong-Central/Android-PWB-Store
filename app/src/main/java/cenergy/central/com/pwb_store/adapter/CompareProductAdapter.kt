@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
@@ -66,11 +67,8 @@ class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerVi
     }
 
     fun updateCompareProducts(products: List<CompareProduct>, compare: List<CompareProductResponse>) {
-
         val compareList = ProductItem(products, VIEW_TYPE_ID_PRODUCT_LIST)
-        val skuOrder = arrayListOf<String>()
-        products.mapTo(skuOrder, { it.sku })
-        val compareListProduct = CompareItem(compare, skuOrder, VIEW_TYPE_ID_COMPARE_DETAIL)
+        val compareListProduct = CompareItem(compare, products, VIEW_TYPE_ID_COMPARE_DETAIL)
         items.clear()
         items.add(VIEW_TYPE_COMPARE_HEADER)
         items.add(compareList)
@@ -90,5 +88,5 @@ class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerVi
 
     data class ProductItem(val products: List<CompareProduct>, var viewType: Int) : ViewType(viewType)
 
-    data class CompareItem(val compareProducts: List<CompareProductResponse>, val order: ArrayList<String>, var viewType: Int) : ViewType(viewType)
+    data class CompareItem(val compareProducts: List<CompareProductResponse>, val products: List<CompareProduct>, var viewType: Int) : ViewType(viewType)
 }

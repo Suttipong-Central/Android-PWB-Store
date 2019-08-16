@@ -26,7 +26,6 @@ class CompareFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context != null) {
-            //TODO Use this List to make compare product detail
             listener = context as CompareProtocol
             compareProductDetailList = listener.getCompareProductDetailList()
         }

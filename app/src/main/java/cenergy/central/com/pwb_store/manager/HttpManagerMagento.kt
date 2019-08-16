@@ -475,6 +475,14 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 
+                        // get rating
+                        if (extensionObj.has("overall_rating")) {
+                            val ratingObj = extensionObj.getJSONObject("overall_rating")
+                            if (ratingObj.has("rating") && !ratingObj.isNull("rating")) {
+                                product.rating = ratingObj.getInt("rating")
+                            }
+                        }
+
                         // get product specification
                         if (extensionObj.has("specification_attributes")) {
                             val specAttrs = extensionObj.getJSONArray("specification_attributes")

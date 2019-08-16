@@ -359,6 +359,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         val count = database.compareProducts.size
         if (count >= 4) {
             dismissProgressDialog()
+            unCheckCompareProduct()
             showAlertDialog(getString(R.string.alert_count))
         } else {
             val compareProduct = database.getCompareProduct(product.sku)
@@ -517,6 +518,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun checkCompareProduct() {
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
         (fragment as DetailFragment).updateCompareCheckBox()
+    }
+
+    private fun unCheckCompareProduct() {
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+        (fragment as DetailFragment).unCheckCompareCheckBox()
     }
 
     private fun clearCart() {

@@ -7,7 +7,8 @@ fun List<CompareProductResponse>.getDetailList(): List<CompareProductResponse> {
     this.forEach { compareProductResponse ->
         var isAdd = false
         compareProductResponse.items.forEach {
-            if (it.value != "N/A") {
+            val text = it.value.toLowerCase()
+            if ( text != "n/a" && text != "no" && text != "ไม่") {
                 isAdd = true
             }
         }
