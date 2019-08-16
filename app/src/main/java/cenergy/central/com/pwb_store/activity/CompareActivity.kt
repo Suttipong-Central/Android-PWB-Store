@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.activity
 
-import android.app.ProgressDialog
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -30,18 +29,17 @@ import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.response.CompareProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import kotlinx.android.synthetic.main.activity_compare.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCartView.OnClickListener, CompareProtocol{
+class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCartView.OnClickListener, CompareProtocol {
 
     private lateinit var mToolbar: Toolbar
     private lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
-    private var progressDialog: ProgressDialog? = null
     private val database = RealmController.getInstance()
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
@@ -77,9 +75,9 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     override fun getCompareProductDetailList() = compareProductDetailList
 
     private fun retrieveCompareProduct() {
-        CompareAPI().retrieveCompareProduct(this, getSKUs(), object : ApiResponseCallback<List<CompareProductResponse>>{
+        CompareAPI().retrieveCompareProduct(this, getSKUs(), object : ApiResponseCallback<List<CompareProductResponse>> {
             override fun success(response: List<CompareProductResponse>?) {
-                compareProductDetailList = response?: arrayListOf()
+                compareProductDetailList = response ?: arrayListOf()
                 startCompareFragment()
                 dismissProgressDialog()
             }
@@ -96,10 +94,10 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         database.compareProducts.forEach {
             productSKUs.add(it.sku)
         }
-       return productSKUs.joinToString(",")
+        return productSKUs.joinToString(",")
     }
 
-    private fun startCompareFragment(){
+    private fun startCompareFragment() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, CompareFragment.newInstance())
@@ -182,14 +180,7 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     }
 
     private fun showProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = DialogUtils.createProgressDialog(this)
-            progressDialog!!.show()
-        } else {
-            if (!progressDialog!!.isShowing) {
-                progressDialog!!.show()
-            }
-        }
+        loadingProgressBar?.visibility = View.VISIBLE
     }
 
     // region {@link {Implement CompareItemListener}
@@ -283,8 +274,6 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     }
 
     private fun dismissProgressDialog() {
-        if (!isFinishing && progressDialog != null && progressDialog!!.isShowing) {
-            progressDialog!!.dismiss()
-        }
+        loadingProgressBar?.visibility = View.INVISIBLE
     }
 }
