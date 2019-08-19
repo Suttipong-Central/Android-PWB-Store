@@ -514,11 +514,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertCheckPayment(title: String, message: String, paymentMethods: PaymentMethod) {
+    private fun showAlertCheckPayment(title: String, message: String, paymentMethod: PaymentMethod) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
-                    updateOrder(paymentMethods)
+                    updateOrder(paymentMethod)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
@@ -843,8 +843,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun onSuccess(oderId: String?) {
                 runOnUiThread {
                     if (oderId != null) {
-                        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                        mToolbar?.setNavigationOnClickListener(null)
+                        hideBackButton()
                         if (oderId == HttpManagerMagento.OPEN_ORDER_CREATED_PAGE) {
                             startCreatedOrderFragment()
                             mProgressDialog?.dismiss()
@@ -860,7 +859,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun onSuccessAndRedirect(oderId: String?, url: String) {
                 runOnUiThread {
-                    oderId?.let { getOrder(it, url) }
+                    oderId?.let {
+                        hideBackButton()
+                        getOrder(it, url)
+                    }
                 }
             }
 
@@ -1078,6 +1080,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             finish()
             return
         }
+    }
+
+    private fun hideBackButton() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        mToolbar?.setNavigationOnClickListener(null)
     }
 
     private fun hideKeyboard() {

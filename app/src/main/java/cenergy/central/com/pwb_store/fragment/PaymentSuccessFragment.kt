@@ -297,7 +297,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 intent.type = "text/plain"
                 startActivity(intent)
             }
+            layoutHowToDoNext.visibility = View.GONE
         } else {
+            layoutHowToDoNext.visibility = View.VISIBLE
             tvPaymentDescription.visibility = View.GONE
             ivPaymentBarcode.visibility = View.GONE
             shareButton.visibility = View.GONE

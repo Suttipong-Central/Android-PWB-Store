@@ -57,6 +57,7 @@
         </android.support.v7.widget.CardView>
 
         <LinearLayout
+            android:id="@+id/layoutHowToDoNext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/lightGray"
@@ -119,17 +120,19 @@
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/payment_description"/>
+            android:text="@string/payment_description"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/ivPaymentBarcode"
             android:layout_width="@dimen/img_qr_code_payment"
             android:layout_height="@dimen/img_qr_code_payment"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_marginTop="16dp"
             android:background="@color/lightGray"
             android:contentDescription="@string/payment_header"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:visibility="gone"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/shareButton"
@@ -139,7 +142,7 @@
             android:text="@string/share_payment_link"
             android:textColor="@color/colorPrimary"
             android:layout_gravity="center"
-            android:contentDescription="@string/app_name"/>
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"
