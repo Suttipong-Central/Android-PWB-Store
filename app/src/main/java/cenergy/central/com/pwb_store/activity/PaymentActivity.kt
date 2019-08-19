@@ -82,7 +82,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
 
-
     companion object {
         private const val TAG = "PaymentActivity"
         fun intent(context: Context) {
@@ -385,11 +384,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertCheckPayment(title: String, message: String, paymentMethods: PaymentMethod) {
+    private fun showAlertCheckPayment(title: String, message: String, paymentMethod: PaymentMethod) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
-                    updateOrder(paymentMethods)
+                    updateOrder(paymentMethod)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()

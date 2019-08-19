@@ -324,9 +324,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             ivPaymentBarcode.setOnClickListener {
                 BarcodeDialogFragment.newInstance(order.paymentRedirect).show(fragmentManager, "dialog")
             }
+            layoutHowToDoNext.visibility = View.GONE
         } else {
             tvPaymentDescription.visibility = View.GONE
             ivPaymentBarcode.visibility = View.GONE
+            layoutHowToDoNext.visibility = View.VISIBLE
         }
     }
 
