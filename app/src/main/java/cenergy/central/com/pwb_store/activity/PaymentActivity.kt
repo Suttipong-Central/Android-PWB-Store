@@ -703,8 +703,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun onSuccess(oderId: String?) {
                 runOnUiThread {
                     if (oderId != null) {
-                        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                        mToolbar?.setNavigationOnClickListener(null)
+                        hideBackButton()
                         if (oderId == HttpManagerMagento.OPEN_ORDER_CREATED_PAGE) {
                             startCreatedOrderFragment()
                             mProgressDialog?.dismiss()
@@ -720,7 +719,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun onSuccessAndRedirect(oderId: String?, url: String) {
                 runOnUiThread {
-                    oderId?.let { getOrder(it, url) }
+                    oderId?.let {
+                        hideBackButton()
+                        getOrder(it, url)
+                    }
                 }
             }
 
@@ -849,6 +851,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.shippingAddress = null
         this.billingAddress = null
         this.theOneCardNo = ""
+    }
+
+    private fun hideBackButton() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        mToolbar?.setNavigationOnClickListener(null)
     }
 
     private fun hideKeyboard() {
