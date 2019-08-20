@@ -319,12 +319,12 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         if (order.paymentRedirect.isNotBlank()) {
             ivPaymentBarcode.visibility = View.VISIBLE
             tvPaymentDescription.visibility = View.VISIBLE
+            layoutHowToDoNext.visibility = View.GONE
             val bitmapBarcode = BarcodeUtils.createQRCode(order.paymentRedirect)
             ivPaymentBarcode.setImageBitmap(bitmapBarcode)
             ivPaymentBarcode.setOnClickListener {
                 BarcodeDialogFragment.newInstance(order.paymentRedirect).show(fragmentManager, "dialog")
             }
-            layoutHowToDoNext.visibility = View.GONE
         } else {
             tvPaymentDescription.visibility = View.GONE
             ivPaymentBarcode.visibility = View.GONE

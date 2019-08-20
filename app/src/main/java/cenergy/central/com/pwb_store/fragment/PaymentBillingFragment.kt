@@ -786,11 +786,12 @@ class PaymentBillingFragment : Fragment() {
         districtInput.setError(validator.validText(districtInput.getText()))
         subDistrictInput.setError(validator.validText(subDistrictInput.getText()))
         postcodeInput.setError(validator.validText(postcodeInput.getText()))
+        theOneEdt.setError(validator.validTheOne(theOneEdt.getText()))
 
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice())
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || theOneEdt.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {

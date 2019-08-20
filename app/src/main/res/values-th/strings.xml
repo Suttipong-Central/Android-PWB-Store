@@ -315,5 +315,5 @@
     <string name="close">ปิด</string>
     <string name="payment_description">แสกนโค้ดเพื่อชำระเงินสำหรับคำสั่งซื้อนี้</string>
     <string name="please_add_compare">ไม่มีสินค้าในการเปรียบเทียบสินค้า กรุณาเพิ่มสินค้าเพื่อเปรียบเทียบสินค้า</string>
-
+    <string name="the_1_error">หมายเลข T1 ต้องมีความยาว 10 หลัก และเป็นตัวเลขเท่านั้น</string>
 </resources>

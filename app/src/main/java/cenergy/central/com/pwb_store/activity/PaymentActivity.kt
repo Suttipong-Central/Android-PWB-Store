@@ -152,8 +152,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // endregion
 
     // region {@link PaymentBillingListener}
-    override fun saveAddressInformation(shippingAddress: AddressInformation,
-                                        billingAddress: AddressInformation?, t1cNumber: String) {
+    override fun saveAddressInformation(shippingAddress: AddressInformation, billingAddress: AddressInformation?, t1cNumber: String) {
         showProgressDialog()
         this.shippingAddress = shippingAddress
         this.billingAddress = billingAddress

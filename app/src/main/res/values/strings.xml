@@ -312,5 +312,6 @@
     <string name="information">Information</string>
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>
-    <string name="please_add_compare">Compare product is empty, plase add product to compare</string>
+    <string name="please_add_compare">Compare product is empty, please add product to compare</string>
+    <string name="the_1_error">T1 number must be 10 digits and number only</string>
 </resources>

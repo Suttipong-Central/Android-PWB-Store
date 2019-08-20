@@ -128,10 +128,21 @@ class ValidationHelper(private val mContext: Context) {
         return data == null || data.trim { it <= ' ' } == ""
     }
 
+    fun validTheOne(theOne: String) : String?{
+        return if (!isEmptyData(theOne)){
+            if (theOne.length == THE_ONE_NUMBER_LENGTH){
+                null
+            } else {
+                mContext.getString(R.string.the_1_error)
+            }
+        } else null
+    }
+
     companion object {
         private const val MIN_PASSWORD_LENGTH = 9
         private const val MIN_PHONE_NUMBER = 10
         private const val MIN_PASSPORT_LENGTH = 5
+        private const val THE_ONE_NUMBER_LENGTH = 10
         private const val LANGUAGE_THAI = "th"
         private const val LANGUAGE_ENGLISH = "en"
 
