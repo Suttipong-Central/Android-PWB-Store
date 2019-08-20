@@ -143,6 +143,8 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class CompareRatingItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ratting = itemView.rating
         fun bind(item: CompareItem) {
+            ratting.isEnabled = false
+            ratting.setOnClickListener { /*do nothing*/ }
             ratting.rating = item.detail.toFloat()
         }
     }

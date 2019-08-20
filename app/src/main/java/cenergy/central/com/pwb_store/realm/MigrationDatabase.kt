@@ -169,6 +169,7 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
+        // app version 1.0.10.2
         if (oldVersion < 7) {
             // Update Branch model
             realm.schema.get("Branch")?.apply {
@@ -197,6 +198,7 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
+        // app version 1.1.0
         if (oldVersion < 8) {
             // Update Order model
             realm.schema.get("Order")?.apply {
@@ -206,6 +208,7 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
+        // app version 1.2.0
         if (oldVersion < 9) {
             // Update Product for get rating
             realm.schema.get("Product")?.apply {
@@ -217,6 +220,8 @@ class MigrationDatabase : RealmMigration {
                 // add rating
                 addField("rating", Int::class.java)
             }
+
+            
         }
     }
 }

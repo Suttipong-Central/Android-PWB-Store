@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
@@ -26,6 +27,11 @@ class ProductItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                 .fitCenter()
                 .into(imgProduct)
         tvProductName.text = compareProduct.name
+
+        btnAddToCart.isEnabled = compareProduct.inStock
+        btnAddToCart.background = ContextCompat.getDrawable(itemView.context,
+                if (compareProduct.inStock) R.drawable.button_primary else R.drawable.button_unselected)
+
         layout.setOnClickListener { EventBus.getDefault().post(CompareDetailBus(compareProduct, true, layout)) }
         btnCancel.setOnClickListener { EventBus.getDefault().post(CompareDeleteBus(compareProduct, true)) }
         btnAddToCart.setOnClickListener { listener.onClickAddToCart(compareProduct) }

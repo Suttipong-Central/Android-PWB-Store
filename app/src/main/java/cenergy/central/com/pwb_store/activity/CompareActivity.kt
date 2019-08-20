@@ -13,6 +13,7 @@ import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.CompareProtocol
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
+import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.CompareFragment
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -43,6 +44,7 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     private val database = RealmController.getInstance()
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
+    private var compareProducts: List<CompareProduct> = arrayListOf()
     private var compareProductDetailList: List<CompareProductResponse> = arrayListOf()
 
     @Subscribe
@@ -67,14 +69,15 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
-        showProgressDialog()
         initView()
         retrieveCompareProduct()
     }
 
+    override fun getCompateProducts(): List<CompareProduct> = compareProducts
     override fun getCompareProductDetailList() = compareProductDetailList
 
     private fun retrieveCompareProduct() {
+        showProgressDialog()
         CompareAPI().retrieveCompareProduct(this, getSKUs(), object : ApiResponseCallback<List<CompareProductResponse>> {
             override fun success(response: List<CompareProductResponse>?) {
                 compareProductDetailList = response ?: arrayListOf()
@@ -90,8 +93,11 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     }
 
     private fun getSKUs(): String {
+        // update compare product list
+        compareProducts = database.compareProducts
+
         val productSKUs = arrayListOf<String>()
-        database.compareProducts.forEach {
+        compareProducts.forEach {
             productSKUs.add(it.sku)
         }
         return productSKUs.joinToString(",")
@@ -100,7 +106,7 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     private fun startCompareFragment() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
-                .replace(R.id.container, CompareFragment.newInstance())
+                .replace(R.id.container, CompareFragment.newInstance(), CompareFragment.tag)
                 .commit()
     }
 
@@ -155,12 +161,16 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
+
+            if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
+                retrieveCompareProduct()
+            }
         }
     }
 
     override fun onShoppingCartClick(view: View) {
         if (database.cacheCartItems!!.size > 0) {
-            ShoppingCartActivity.startActivity(this, view, preferenceManager.cartId)
+            ShoppingCartActivity.startActivity(this, preferenceManager.cartId)
         } else {
             showAlertDialog("", resources.getString(R.string.not_have_products_in_cart))
         }
@@ -232,17 +242,31 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     }
 
     private fun saveCartItem(cartItem: CartItem?, compareProduct: CompareProduct) {
-        database.saveCartItem(CacheCartItem.asCartItem(cartItem!!, compareProduct), object : DatabaseListener {
+        cartItem ?: return
+        database.saveCartItem(CacheCartItem.asCartItem(cartItem, compareProduct), object : DatabaseListener {
             override fun onSuccessfully() {
                 dismissProgressDialog()
                 updateShoppingCartBadge()
-                Toast.makeText(this@CompareActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@CompareActivity, getString(R.string.added_to_cart),
+                        Toast.LENGTH_SHORT).show()
+
+                updateCompareList(compareProduct)
             }
 
             override fun onFailure(error: Throwable) {
                 showAlertDialog("", error.message ?: getString(R.string.some_thing_wrong))
             }
         })
+    }
+
+    private fun updateCompareList(compareProduct: CompareProduct) {
+        // is no have in stock? force update
+        if (!this@CompareActivity.isProductInStock(compareProduct)) {
+            val fragment = supportFragmentManager.findFragmentByTag(CompareFragment.tag)
+            if (fragment != null) {
+                (fragment as CompareFragment).updateCompareList()
+            }
+        }
     }
 
     private fun updateShoppingCartBadge() {

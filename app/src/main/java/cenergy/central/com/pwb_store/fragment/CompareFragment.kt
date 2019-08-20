@@ -11,22 +11,26 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.CompareProtocol
 import cenergy.central.com.pwb_store.adapter.CompareProductAdapter
 import cenergy.central.com.pwb_store.extensions.getDetailList
+import cenergy.central.com.pwb_store.extensions.isProductInStock
+import cenergy.central.com.pwb_store.model.CompareProduct
 import cenergy.central.com.pwb_store.model.response.CompareProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import kotlinx.android.synthetic.main.fragment_compare.*
 
 class CompareFragment : Fragment() {
 
-    private var mAdapter: CompareProductAdapter? = null
+    private var compareProductAdapter: CompareProductAdapter? = null
 
     private val database = RealmController.getInstance()
     private lateinit var listener: CompareProtocol
     private var compareProductDetailList: List<CompareProductResponse> = arrayListOf()
+    private var compareProducts: List<CompareProduct> = arrayListOf()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context != null) {
             listener = context as CompareProtocol
+            compareProducts = listener.getCompateProducts()
             compareProductDetailList = listener.getCompareProductDetailList()
         }
     }
@@ -37,15 +41,27 @@ class CompareFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mAdapter = context?.let { CompareProductAdapter(it) }
+        compareProductAdapter = context?.let { CompareProductAdapter(it) }
         compareRecyclerView.layoutManager = LinearLayoutManager(context)
-        compareRecyclerView.adapter = mAdapter
+        compareRecyclerView.adapter = compareProductAdapter
 
-        val compareProducts = database.compareProducts
-        mAdapter?.updateCompareProducts(compareProducts, compareProductDetailList.getDetailList())
+        updateCompareList()
+    }
+
+    // check product in strock
+    private fun investigateProductInStock() {
+        compareProducts.forEach {
+            it.inStock = context.isProductInStock(it)
+        }
+    }
+
+    fun updateCompareList() {
+        investigateProductInStock() // update product stock
+        compareProductAdapter?.updateCompareProducts(compareProducts, compareProductDetailList.getDetailList())
     }
 
     companion object {
+        const val tag = "CompareFragment"
         fun newInstance(): CompareFragment {
             val fragment = CompareFragment()
             val args = Bundle()
