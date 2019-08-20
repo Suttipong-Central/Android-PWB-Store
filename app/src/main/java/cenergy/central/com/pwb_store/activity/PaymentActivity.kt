@@ -82,7 +82,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
 
-
     companion object {
         private const val TAG = "PaymentActivity"
         fun intent(context: Context) {
@@ -153,14 +152,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // endregion
 
     // region {@link PaymentBillingListener}
-    override fun setShippingAddressInfo(shippingAddress: AddressInformation) {
+    override fun saveAddressInformation(shippingAddress: AddressInformation,
+                                        billingAddress: AddressInformation?, t1cNumber: String) {
         showProgressDialog()
         this.shippingAddress = shippingAddress
-        cartId?.let { getDeliveryOptions(it) } // request delivery options
-    }
-
-    override fun setBillingAddressInfo(billingAddress: AddressInformation) {
         this.billingAddress = billingAddress
+        this.theOneCardNo = t1cNumber
+        cartId?.let { getDeliveryOptions(it) } // request delivery options
     }
     // endregion
 
@@ -386,11 +384,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertCheckPayment(title: String, message: String, paymentMethods: PaymentMethod) {
+    private fun showAlertCheckPayment(title: String, message: String, paymentMethod: PaymentMethod) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
-                    updateOrder(paymentMethods)
+                    updateOrder(paymentMethod)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
@@ -704,8 +702,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun onSuccess(oderId: String?) {
                 runOnUiThread {
                     if (oderId != null) {
-                        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                        mToolbar?.setNavigationOnClickListener(null)
+                        hideBackButton()
                         if (oderId == HttpManagerMagento.OPEN_ORDER_CREATED_PAGE) {
                             startCreatedOrderFragment()
                             mProgressDialog?.dismiss()
@@ -721,7 +718,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             override fun onSuccessAndRedirect(oderId: String?, url: String) {
                 runOnUiThread {
-                    oderId?.let { getOrder(it, url) }
+                    oderId?.let {
+                        hideBackButton()
+                        getOrder(it, url)
+                    }
                 }
             }
 
@@ -818,7 +818,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentBillingFragment) {
-            this.shippingAddress = null
+            resetData()
             if (this.membersList.isNotEmpty() || this.pwbMembersList.isNotEmpty()) {
                 startMembersFragment()
             } else {
@@ -844,6 +844,17 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             finish()
             return
         }
+    }
+
+    private fun resetData() {
+        this.shippingAddress = null
+        this.billingAddress = null
+        this.theOneCardNo = ""
+    }
+
+    private fun hideBackButton() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        mToolbar?.setNavigationOnClickListener(null)
     }
 
     private fun hideKeyboard() {
