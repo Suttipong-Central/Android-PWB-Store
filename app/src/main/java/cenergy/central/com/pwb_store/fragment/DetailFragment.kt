@@ -18,6 +18,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
+import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
@@ -224,6 +225,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         compareCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             productDetailListener.addProductToCompare(product, isChecked)
         }
+
+        // check disable product
+        disableAddToCartButton(!context.isProductInStock(product))
     }
 
     fun updateCompareCheckBox() {

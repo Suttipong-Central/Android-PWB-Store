@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
@@ -90,15 +91,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         super.onResume()
         updateCompareBadge()
         updateShoppingCartBadge()
-
-        product?.let { checkDisableAddProductButton(it) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // check add button
-        product?.let { checkDisableAddProductButton(it) }
-
         // check compare product
         checkCompareProduct()
 
@@ -106,6 +102,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             // check language
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
+            }
+
+            if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
+                product?.let { checkDisableAddProductButton(it) }
             }
         }
     }
@@ -301,8 +301,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
         tvNotFound.visibility = View.INVISIBLE
         containerGroupView.visibility = View.VISIBLE
-
-        checkDisableAddProductButton(product) // Check disable add product button
     }
 
     private fun updateShoppingCartBadge() {
@@ -492,20 +490,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkDisableAddProductButton(product: Product) {
-        runOnUiThread {
-            val productInCart = database.getCacheCartItemBySKU(product.sku)
-            val productQty = product.extension?.stokeItem?.qty ?: 0
-
-            if (productInCart != null && productInCart.qty!! >= productQty) {
-                disableAddToCartButton()
-            } else if (productInCart == null && productQty <= 0) {
-                disableAddToCartButton()
-            }
-
-            if (productInCart == null && productQty > 0) {
-                disableAddToCartButton(false)
-            }
-        }
+        disableAddToCartButton(!isProductInStock(product))
     }
 
     private fun disableAddToCartButton(disable: Boolean = true) {
