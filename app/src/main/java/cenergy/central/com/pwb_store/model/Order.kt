@@ -2,17 +2,11 @@ package cenergy.central.com.pwb_store.model
 
 import android.content.Context
 import cenergy.central.com.pwb_store.extensions.toOrderDateTime
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-
-/**
- * Created by Anuphap Suwannamas on 31/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
 open class Order(
         @PrimaryKey
@@ -27,19 +21,19 @@ open class Order(
         var shippingDescription: String = "",
         var baseTotal: Double = 0.0,
         var shippingAmount: Double = 0.0,
-        var paymentRedirect: String = ""
-
+        var paymentRedirect: String = "",
+        var t1cEarnCardNumber: String = ""
 ) : RealmObject() {
 
     fun getDisplayTimeCreated(context: Context): String {
         val language = PreferenceManager(context).getDefaultLanguage()
-       return createdAt.toOrderDateTime(language)
+        return createdAt.toOrderDateTime(language)
     }
 
     companion object {
         const val FIELD_ORDER_ID = "orderId"
 
-        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, paymentRedirect: String = ""): Order {
+        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, paymentRedirect: String = "", theOneNumber: String = ""): Order {
             return Order(orderId = orderResponse.orderId!!,
                     createdAt = orderResponse.createdAt,
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
@@ -51,7 +45,8 @@ open class Order(
                     shippingDescription = orderResponse.shippingDescription,
                     baseTotal = orderResponse.baseTotal,
                     shippingAmount = orderResponse.shippingAmount,
-                    paymentRedirect = paymentRedirect)
+                    paymentRedirect = paymentRedirect,
+                    t1cEarnCardNumber = theOneNumber)
         }
 
         private fun asItems(items: RealmList<Item>?): RealmList<Item> {

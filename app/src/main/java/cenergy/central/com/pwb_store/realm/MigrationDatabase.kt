@@ -221,7 +221,10 @@ class MigrationDatabase : RealmMigration {
                 addField("rating", Int::class.java)
             }
 
-            
+            realm.schema.get("Order")?.apply {
+                // add t1cEarnCardNumber
+                addField("t1cEarnCardNumber", String::class.java)
+            }
         }
     }
 }
