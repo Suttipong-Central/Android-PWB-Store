@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.extensions
 
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,7 +21,13 @@ fun String.toOrderDateTime(defaultLanguage: String): String {
     val dateFormatter = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale(defaultLanguage))
     val timezone = TimeZone.getTimeZone("GMT+7").id
     dateFormatter.timeZone = TimeZone.getTimeZone(timezone)
-    return dateFormatter.format(this.toDate("dd MMM yyyy, HH:mm:ss"))
+
+    // old data we save with "dd MMM yyyy, HH:mm:ss" :(
+    return try {
+        dateFormatter.format(this.toDate())
+    } catch (e: Exception) {
+        dateFormatter.format(this.toDate("dd MMM yyyy, HH:mm:ss"))
+    }
 }
 
 fun Date.toDateText(): String {
