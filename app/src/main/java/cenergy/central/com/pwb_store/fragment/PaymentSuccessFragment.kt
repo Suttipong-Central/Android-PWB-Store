@@ -24,6 +24,9 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.BarcodeDialogFragment
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
+import cenergy.central.com.pwb_store.extensions.formatterUTC
+import cenergy.central.com.pwb_store.extensions.toDate
+import cenergy.central.com.pwb_store.extensions.toOrderDateTime
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -42,8 +45,6 @@ import java.text.NumberFormat
 import java.util.*
 
 class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
-
-    private var preferenceManager: PreferenceManager? = null
     // widget view
     private lateinit var recycler: RecyclerView
     private lateinit var orderNumber: PowerBuyTextView
@@ -125,7 +126,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        preferenceManager = PreferenceManager(context)
         try {
             paymentListener = context as PaymentProtocol
             deliveryType = paymentListener.getSelectedDeliveryType()
@@ -139,7 +139,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        preferenceManager = context?.let { PreferenceManager(it) }
         arguments?.let {
             orderId = it.getString(ARG_ORDER_ID)
             cacheOrderId = it.getString(ARG_CACHE_ORDER_ID)
@@ -240,7 +239,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
         //Setup customer
-        orderDate.text = order.createdAt
+        orderDate.text = context?.let { order.getDisplayTimeCreated(it) }
         email.text = shippingAddress.email
         contactNo.text = shippingAddress.telephone
         finishButton.setOnClickListener {
@@ -430,7 +429,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
             // save order to local database
             val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress,
-                    language = preferenceManager?.getDefaultLanguage()?: AppLanguage.TH.key,
                     paymentRedirect = urlRedirect)
 
             database.saveOrder(order, object : DatabaseListener{

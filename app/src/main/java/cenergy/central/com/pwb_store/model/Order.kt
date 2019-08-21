@@ -1,7 +1,9 @@
 package cenergy.central.com.pwb_store.model
 
-import cenergy.central.com.pwb_store.extensions.formatterUTC
-import cenergy.central.com.pwb_store.extensions.toDate
+import android.content.Context
+import cenergy.central.com.pwb_store.extensions.toOrderDateTime
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -28,12 +30,18 @@ open class Order(
         var paymentRedirect: String = ""
 
 ) : RealmObject() {
+
+    fun getDisplayTimeCreated(context: Context): String {
+        val language = PreferenceManager(context).getDefaultLanguage()
+       return createdAt.toOrderDateTime(language)
+    }
+
     companion object {
         const val FIELD_ORDER_ID = "orderId"
 
-        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, language: String, paymentRedirect: String = ""): Order {
+        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, paymentRedirect: String = ""): Order {
             return Order(orderId = orderResponse.orderId!!,
-                    createdAt = orderResponse.createdAt.toDate().formatterUTC(language),
+                    createdAt = orderResponse.createdAt,
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
                     shippingType = orderResponse.shippingType!!,
                     items = asItems(orderResponse.items),
