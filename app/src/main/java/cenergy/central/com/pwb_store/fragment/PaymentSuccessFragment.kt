@@ -245,11 +245,23 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         finishButton.setOnClickListener {
             finishThisPage()
         }
+        name.text = billingAddress.getDisplayName()
+        tvBillingName.text = billingAddress.getDisplayName()
+        tvBillingAddress.text = getAddress(billingAddress)
+        if(billingAddress.sameBilling == SAME_BILLING){
+            billingEmailLayout.visibility = View.GONE
+            billingTelephoneLayout.visibility = View.GONE
+        } else {
+            billingEmailLayout.visibility = View.VISIBLE
+            billingTelephoneLayout.visibility = View.VISIBLE
+            val billingEmail = billingAddress.email
+            tvBillingEmail.text = if (billingEmail.isBlank()) shippingAddress.email else billingEmail
+            tvBillingTelephone.text = billingAddress.telephone
+        }
 
         // setup shipping address or pickup at store
         if (order.shippingType != DeliveryType.STORE_PICK_UP.methodCode) {
             deliveryLayout.visibility = View.VISIBLE
-            billingAddressLayout.visibility = View.VISIBLE
             deliveryInfoLayout.visibility = View.VISIBLE
             amountLayout.visibility = View.VISIBLE
             storeAddressLayout.visibility = View.GONE
@@ -272,29 +284,12 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 DeliveryType.HOME -> getString(R.string.home_delivery_desc)
                 else -> ""
             }
-
-            tvBillingName.text = billingAddress.getDisplayName()
-            tvBillingAddress.text = getAddress(billingAddress)
-            if(billingAddress.sameBilling == SAME_BILLING){
-                billingEmailLayout.visibility = View.GONE
-                billingTelephoneLayout.visibility = View.GONE
-            } else {
-                billingEmailLayout.visibility = View.VISIBLE
-                billingTelephoneLayout.visibility = View.VISIBLE
-                val billingEmail = billingAddress.email
-                tvBillingEmail.text = if (billingEmail.isBlank()) shippingAddress.email else billingEmail
-                tvBillingTelephone.text = billingAddress.telephone
-            }
         } else {
             deliveryLayout.visibility = View.GONE
-            billingAddressLayout.visibility = View.GONE
             deliveryInfoLayout.visibility = View.GONE
             amountLayout.visibility = View.GONE
             storeAddressLayout.visibility = View.VISIBLE
             customerNameLayout.visibility = View.VISIBLE
-
-            name.text = billingAddress.getDisplayName()
-
             tvShippingHeader.text = getString(R.string.store_collection_detail)
 
             val branchShipping = order.branchShipping
