@@ -189,6 +189,18 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         builder.show()
     }
 
+    private fun showOKAlertDialog(message: String) {
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.ok_alert)) { _, _ ->
+                    clearAllCompareProducts()
+                }
+                .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+        builder.show()
+    }
+
     private fun showProgressDialog() {
         loadingProgressBar?.visibility = View.VISIBLE
     }
@@ -203,7 +215,24 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
             retrieveCart(compareProduct)
         }
     }
+
+    override fun onClearAllProductCompare() {
+        if (getSKUs().isNotEmpty()){
+            showOKAlertDialog(getString(R.string.text_comfirm_clear_all))
+        }
+    }
     // endregion
+
+    private fun clearAllCompareProducts(){
+        database.deleteAllCompareProduct()
+        val fragment = supportFragmentManager.findFragmentByTag(CompareFragment.tag)
+        if (fragment != null) {
+            fragment as CompareFragment
+            fragment.compareProducts = arrayListOf()
+            fragment.compareProductDetailList = arrayListOf()
+            fragment.updateCompareList()
+        }
+    }
 
     private fun retrieveCart(compareProduct: CompareProduct) {
         showProgressDialog()

@@ -153,12 +153,7 @@ public class RealmController {
 
     public void deleteAllCompareProduct() {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(CompareProduct.class).findAll().deleteAllFromRealm();
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.where(CompareProduct.class).findAll().deleteAllFromRealm());
     }
 
     public CompareProduct getCompareProduct(String sku) {

@@ -22,10 +22,9 @@ class CompareFragment : Fragment() {
 
     private var compareProductAdapter: CompareProductAdapter? = null
 
-    private val database = RealmController.getInstance()
     private lateinit var listener: CompareProtocol
-    private var compareProductDetailList: List<CompareProductResponse> = arrayListOf()
-    private var compareProducts: List<CompareProduct> = arrayListOf()
+    var compareProductDetailList: List<CompareProductResponse> = arrayListOf()
+    var compareProducts: List<CompareProduct> = arrayListOf()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)

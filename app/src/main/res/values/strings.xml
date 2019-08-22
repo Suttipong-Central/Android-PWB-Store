@@ -315,4 +315,6 @@
     <string name="payment_description">Scan QR code to pay for this order.</string>
     <string name="please_add_compare">Compare product is empty, please add product to compare</string>
     <string name="the_1_error">T1 number must be 10 digits and number only</string>
+    <string name="clear_all">Clear all</string>
+    <string name="text_comfirm_clear_all">Do you want to remove all products from compare list?</string>
 </resources>

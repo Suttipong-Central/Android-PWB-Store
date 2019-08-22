@@ -2,7 +2,6 @@ package cenergy.central.com.pwb_store.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
@@ -20,6 +19,7 @@ import cenergy.central.com.pwb_store.model.response.CompareProductResponse
 class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val listener: CompareItemListener = mContext as CompareItemListener
     private val items = ArrayList<IViewType>()
+    private var products: List<CompareProduct> = arrayListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -57,6 +57,10 @@ class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerVi
             VIEW_TYPE_ID_COMPARE_DETAIL -> if (item is CompareItem && holder is CompareDetailViewHolder) {
                 holder.bind(item)
             }
+            VIEW_TYPE_ID_COMPARE_HEADER -> {
+                holder as CompareHeaderViewHolder
+                holder.setViewHolder(products.isEmpty(), listener)
+            }
         }
     }
 
@@ -67,6 +71,7 @@ class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerVi
     }
 
     fun updateCompareProducts(products: List<CompareProduct>, compare: List<CompareProductResponse>) {
+        this.products = products
         val compareList = ProductItem(products, VIEW_TYPE_ID_PRODUCT_LIST)
         val compareListProduct = CompareItem(compare, products, VIEW_TYPE_ID_COMPARE_DETAIL)
         items.clear()
