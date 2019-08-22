@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Robinson Staging</string>
+    <string name="app_name" translatable="false">E-Ordering</string>
     <string name="watermark_business" translatable="false">Robinson</string>
     <string name="watermark_environment" translatable="false">Release</string>
 </resources>
