@@ -29,7 +29,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.fragment_detail.view.*
 
 
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
@@ -77,7 +76,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.availableStoreButton -> {
-                productDetailListener.onDisplayAvailableStore(product)
+                if (!storeButton.isDisable) {
+                    productDetailListener.onDisplayAvailableStore(product)
+                }
             }
 
             R.id.addToCartButton -> {
@@ -122,7 +123,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         compareCheckBox = rootView.findViewById(R.id.compareCheckBox)
 
         when (BuildConfig.FLAVOR) {
-            "cds" -> rootView.layoutButton.visibility = View.GONE
+            "cds", "rbs" -> storeButton.setButtonDisable(true)
         }
 
         productSizeSelect = rootView.findViewById(R.id.inputProductSize)

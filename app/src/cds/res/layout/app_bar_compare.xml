@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--TODO: Refactor this code-->
 <android.support.design.widget.AppBarLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -30,15 +31,12 @@
             android:src="@drawable/ic_cds_primary"
             android:contentDescription="@string/app_name" />
 
-        <ImageView
-            android:id="@+id/search_button"
-            android:layout_width="wrap_content"
+        <cenergy.central.com.pwb_store.view.LanguageButton
+            android:id="@+id/switch_language_button"
+            android:layout_width="96dp"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_search_bar"
-            android:contentDescription="@string/app_name" />
+            android:layout_gravity="end|center_vertical"
+            android:layout_margin="8dp" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
             android:id="@+id/shopping_cart_compare"
