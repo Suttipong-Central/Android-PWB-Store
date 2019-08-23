@@ -224,6 +224,7 @@ class MigrationDatabase : RealmMigration {
             realm.schema.get("Order")?.apply {
                 // add t1cEarnCardNumber
                 addField("t1cEarnCardNumber", String::class.java)
+                        .setNullable("t1cEarnCardNumber", false)
             }
         }
     }
