@@ -1309,7 +1309,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     fun getLanguage(): String {
         val language = preferenceManager.getDefaultLanguage()
         return when (BuildConfig.FLAVOR) {
-            "cds" -> "cds_$language"
+            "cds","rbs" -> "cds_$language"
             else -> language
         }
     }

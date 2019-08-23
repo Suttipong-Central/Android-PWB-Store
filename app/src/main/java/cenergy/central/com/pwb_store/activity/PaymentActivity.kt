@@ -633,7 +633,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun getStoresDelivery(deliveryOption: DeliveryOption) {
         this.branches = arrayListOf() // clear branch list
         when (BuildConfig.FLAVOR) {
-            "cds" -> {
+            "cds","rbs" -> {
                 handlePickupLocationList(deliveryOption.extension.pickupLocations)
             }
             else -> loadBranches()

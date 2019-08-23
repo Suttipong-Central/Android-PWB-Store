@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -18,15 +17,10 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jetbrains.annotations.NotNull;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.helpers.DialogHelper;
-import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
-import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Store;
 import cenergy.central.com.pwb_store.model.User;
 import cenergy.central.com.pwb_store.model.UserInformation;
@@ -35,7 +29,6 @@ import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton;
-
 
 @SuppressWarnings("unused")
 public class LoginFragment extends Fragment implements TextWatcher, View.OnClickListener {
@@ -58,7 +51,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_login, container, false);
         initInstances(rootView, savedInstanceState);
         return rootView;
@@ -75,16 +68,18 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     private void showAlertDialog(String title, String message) {
-        if(getContext() != null){
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
-                    .setMessage(message)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
-            if (!TextUtils.isEmpty(title)) {
-                builder.setTitle(title);
-            }
-            builder.show();
+        if (!TextUtils.isEmpty(title)) {
+            builder.setTitle(title);
         }
+        builder.show();
     }
 
     private void showProgressDialog() {
@@ -106,9 +101,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -116,13 +109,11 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
-    }
+    public void afterTextChanged(Editable s) { }
 
     private void checkLogin() {
         if(getContext() != null){
-            if (mEditTextUserName.getText() != null && mEditTextPassword.getText() != null &&
-                    !mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
+            if (!mEditTextUserName.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
                 username = mEditTextUserName.getText().toString();
                 password = mEditTextPassword.getText().toString();
                 mLoginButton.setButtonDisable(false);
@@ -145,45 +136,32 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
 
     private void login() {
         if (getContext() != null) {
-            HttpManagerMagento.Companion.getInstance(getContext()).userLogin(username, password,
-                    new ApiResponseCallback<UserInformation>() {
-                        @Override
-                        public void success(@org.jetbrains.annotations.Nullable UserInformation response) {
-                            if (response != null) {
-                                if (checkUserLogin(response)) {
-                                    dismissDialog();
-                                    EventBus.getDefault().post(new LoginSuccessBus(true));
-                                } else {
-                                    dismissDialog();
-                                    showAlertDialog("", getString(R.string.some_thing_wrong));
-                                    userLogout();
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void failure(@NotNull APIError error) {
-                            dismissDialog();
-                            if(getContext() != null){
-                                new DialogHelper(getContext()).showErrorLoginDialog(error);
-                            }
-                        }
-                    });
+            // TODO Call Login API and remove realm go to use it in magento manager
+            RealmController database = RealmController.getInstance();
+
+            //TODO: Mock up data will delete soon
+            User user = new User(0, "", "0", 223L,
+                    "chuan@central.tech", "", "", 1, "");
+            Store store = new Store();
+            store.setStoreId(223L);
+            store.setStoreCode("");
+            store.setStoreName("");
+            store.setRetailerId("");
+
+            // save user token
+            database.saveUserToken( new UserToken(""));
+            // save user information
+            UserInformation userInformation = new UserInformation( 0,  user, store);
+            database.saveUserInformation(userInformation);
+
+            dismissDialog();
+            EventBus.getDefault().post(new LoginSuccessBus(true));
         }
     }
 
-//    private Boolean checkUserLogin(UserResponse userResponse){
-//        return  userResponse.getUser().getStaffId() != null && !userResponse.getUser().getStaffId().equals("")
-//                && !userResponse.getUser().getStaffId().equals("0") && userResponse.getUser().getStoreId() != null
-//                && userResponse.getUser().getStoreId() != 0 && userResponse.getStore() != null
-//                && userResponse.getStore().getPostalCode() != null && userResponse.getStore().getStoreId() != null
-//                && userResponse.getStore().getStoreId() != 0;
-//    }
-
-    private Boolean checkUserLogin(UserInformation userInformation){
-        return userInformation.getStore() != null && userInformation.getUser() != null &&
-                userInformation.getUser().getStaffId() != null && !userInformation.getUser().getStaffId().equals("") &&
-                !userInformation.getUser().getStaffId().equals("0") && !userInformation.getStore().getRetailerId().equals("");
+    private void userLogout() {
+        clearData();
     }
 
     private void clearData() {
@@ -192,10 +170,6 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
             preferenceManager.userLogout();
             RealmController.getInstance().userLogout();
         }
-    }
-
-    private void userLogout() {
-        clearData();
     }
 
     private void dismissDialog() {

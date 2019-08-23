@@ -494,7 +494,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             } else {
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("category_id", categoryId, "eq"));
             }
-            if (BuildConfig.FLAVOR != "cds") {
+            if (BuildConfig.FLAVOR == "pwb") {
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("stock.salable", "1", "eq"));
             }
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("status", "1", "eq"));

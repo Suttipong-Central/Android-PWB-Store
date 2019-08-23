@@ -22,9 +22,9 @@ class CompareHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
             clearAllButton.setOnClickListener(null)
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                clearAllButton.setTextColor(itemView.context.resources.getColor(R.color.colorPrimary))
+                clearAllButton.setTextColor(itemView.context.resources.getColor(R.color.primaryButtonColor))
             } else {
-                clearAllButton.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorPrimary))
+                clearAllButton.setTextColor(ContextCompat.getColor(itemView.context, R.color.primaryButtonColor))
             }
             clearAllButton.setOnClickListener { listener.onClearAllProductCompare() }
         }
