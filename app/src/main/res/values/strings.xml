@@ -50,7 +50,7 @@
     <string name="product_code">Product Code: </string>
     <string name="the_1_card">Redeem your point %1$,d points</string>
     <string name="format_alert_compare">Has been added %s</string>
-    <string name="alert_count">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
+    <string name="alert_count">You have reached the maximum number of items to compare. Please refine your selection.</string>
     <string name="alert_stock">สินค้าไม่มีในคลังสินค้า</string>
     <string name="add_to_cart">Add to cart</string>
     <string name="tab_promotion">Promotion</string>
