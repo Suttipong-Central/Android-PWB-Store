@@ -197,11 +197,11 @@ public class SpecActivity extends AppCompatActivity implements PowerBuyCompareVi
 
     @Override
     public void onCompareClickListener(View view) {
-        Intent intent = new Intent(this, CompareActivity.class);
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
-                        .toBundle());
+//        Intent intent = new Intent(this, CompareActivity.class);
+//        ActivityCompat.startActivity(this, intent,
+//                ActivityOptionsCompat
+//                        .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
+//                        .toBundle());
     }
 
     private void showAlertDialog(String message, final boolean shouldCloseActivity) {

@@ -201,11 +201,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     // region {@link PowerBuyCompareView.OnClickListener}
     override fun onCompareClickListener(view: View) {
-        val intent = Intent(this, CompareActivity::class.java)
-        ActivityCompat.startActivityForResult(this, intent, REQUEST_UPDATE_LANGUAGE,
-                ActivityOptionsCompat
-                        .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
-                        .toBundle())
+        CompareActivity.startCompareActivity(this, view)
     }
     // endregion
 

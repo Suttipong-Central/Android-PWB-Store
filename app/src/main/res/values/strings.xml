@@ -63,6 +63,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="rating">Ratings</string>
+    <string name="add_more_to_compare">Add more product to compare.</string>
+    <string name="can_not_show_spec">You have no Items to compare.</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>
@@ -210,7 +212,6 @@
     <string name="product">Product</string>
     <string name="sort">Sort by</string>
     <string name="regular_price">Normal Price: </string>
-    <string name="can_not_show_spec">Sorry, the product info is temporary unavailable.</string>
     <string name="user_logout">Do you want to logout?</string>
     <string name="shopping">Continue shopping</string>
     <string name="please_select_date">Please choose delivery date</string>

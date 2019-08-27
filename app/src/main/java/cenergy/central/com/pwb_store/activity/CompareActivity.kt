@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -13,7 +14,9 @@ import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.CompareProtocol
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
+import cenergy.central.com.pwb_store.extensions.getCompareProducts
 import cenergy.central.com.pwb_store.extensions.isProductInStock
+import cenergy.central.com.pwb_store.extensions.showAlertDialog
 import cenergy.central.com.pwb_store.fragment.CompareFragment
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -46,6 +49,20 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     private lateinit var networkStateView: NetworkStateView
     private var compareProducts: List<CompareProduct> = arrayListOf()
     private var compareProductDetailList: List<CompareProductResponse> = arrayListOf()
+
+    companion object{
+        fun startCompareActivity(activity: Activity, view: View){
+            val compareSize = activity.getCompareProducts()
+            if(compareSize > 1){
+                val intent = Intent(activity, CompareActivity::class.java)
+                ActivityCompat.startActivityForResult(activity, intent, REQUEST_UPDATE_LANGUAGE, ActivityOptionsCompat
+                        .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
+                        .toBundle())
+            } else {
+                activity.showAlertDialog(activity.getString(R.string.add_more_to_compare))
+            }
+        }
+    }
 
     @Subscribe
     fun onEvent(compareDetailBus: CompareDetailBus) {
@@ -155,13 +172,11 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             // check language
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
-
             if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
                 retrieveCompareProduct()
             }

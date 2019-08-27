@@ -65,6 +65,8 @@
     <string name="rating">ความนิยม</string>
     <string name="clear_all">ลบทั้งหมด</string>
     <string name="text_comfirm_clear_all">ต้องการลบสินค้าทั้งหมดออกจากหน้าเปรียบเทียบใช่หรือไม่</string>
+    <string name="add_more_to_compare">เลือกสินค้าเพิ่มเพื่อเปรียบเทียบ</string>
+    <string name="can_not_show_spec">โปรดเลือกสินค้าที่ต้องการเปรียบเทียบ</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>
@@ -212,7 +214,6 @@
     <string name="product">สินค้า</string>
     <string name="sort">เรียง</string>
     <string name="regular_price">ราคาปกติ: </string>
-    <string name="can_not_show_spec">ไม่สามารถแสดงลักษณะของสินค้าได้ในขณะนี้</string>
     <string name="user_logout">คุณต้องการจะออกจากระบบใช่หรือไม่</string>
     <string name="shopping">ช้อปต่อ</string>
     <string name="please_select_date">กรุณาเลือกวันที่คุณต้องการ</string>
