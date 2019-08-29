@@ -303,7 +303,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, fragment)
-                .commit()
+                .commitAllowingStateLoss()
     }
 
     private fun initView() {
