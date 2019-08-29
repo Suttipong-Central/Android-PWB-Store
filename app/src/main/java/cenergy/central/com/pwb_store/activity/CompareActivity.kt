@@ -124,7 +124,7 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, CompareFragment.newInstance(), CompareFragment.tag)
-                .commit()
+                .commitAllowingStateLoss()
     }
 
     private fun initView() {
