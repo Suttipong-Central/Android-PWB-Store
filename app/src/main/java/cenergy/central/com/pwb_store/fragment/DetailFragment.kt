@@ -21,6 +21,8 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
+import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
+import cenergy.central.com.pwb_store.extensions.set2HourBadge
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
@@ -40,6 +42,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     // widget view
     private lateinit var ivProductImage: ImageView
+    private lateinit var badgeTwoHour: ImageView
     private lateinit var rvProductImage: RecyclerView
     private lateinit var tvProductName: TextView
     private lateinit var tvProductCode: TextView
@@ -120,6 +123,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         rvProductImage = rootView.findViewById(R.id.rvProductImage)
         tvProductName = rootView.findViewById(R.id.tvProductName)
         tvProductCode = rootView.findViewById(R.id.txt_view_product_code)
+        badgeTwoHour = rootView.findViewById(R.id.badge_2h)
         tvTitleSpecialPrice = rootView.findViewById(R.id.txt_name_price)
         tvSpecialPrice = rootView.findViewById(R.id.txt_sale_price)
         tvNormalPrice = rootView.findViewById(R.id.txt_regular)
@@ -166,6 +170,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             showSpecialPrice(unit, product)
         } else {
             hideSpecialPrice()
+        }
+
+        if (product.isTwoHourProduct()){
+            badgeTwoHour.set2HourBadge()
+        } else {
+            badgeTwoHour.setImageDrawable(null)
         }
 
         val configOptions = product.extension?.productConfigOptions

@@ -325,6 +325,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         for (i in 0 until productArray.length()) {
                             val productObj = productArray.getJSONObject(i)
                             val product = Product()
+                            val productExtension = ProductExtension()
+                            val stockItem = StockItem()
                             val productFilter = ProductFilter()
                             val filterItem = arrayListOf<FilterItem>()
 
@@ -346,6 +348,21 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                 product.image = productObj.getString("image")
                             }
 
+                            val extensionObj = productObj.getJSONObject("extension_attributes")
+                            val stockObject = extensionObj.getJSONObject("stock_item")
+                            stockItem.productId = stockObject.getLong("product_id")
+                            stockItem.stockId = stockObject.getLong("stock_id")
+                            if (!stockObject.isNull("qty")) {
+                                stockItem.qty = stockObject.getInt("qty")
+                            }
+                            stockItem.isInStock = stockObject.getBoolean("is_in_stock")
+                            stockItem.maxQTY = stockObject.getInt("max_sale_qty")
+                            if (extensionObj.has("ispu_salable")){
+                                stockItem.is2HProduct = extensionObj.getBoolean("ispu_salable")
+                            }
+                            productExtension.stokeItem = stockItem // add stockItem to productExtension
+                            product.extension = productExtension // set productExtension to product
+
                             val attrArray = productObj.getJSONArray("custom_attributes")
                             for (j in 0 until attrArray.length()) {
                                 when (attrArray.getJSONObject(j).getString("attribute_code")) {
@@ -365,6 +382,18 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                     "special_to_date" -> {
                                         if (!attrArray.getJSONObject(j).isNull("value")) {
                                             product.specialToDate = attrArray.getJSONObject(j).getString("value")
+                                        }
+                                    }
+
+                                    "payment_methods" -> {
+                                        if (!attrArray.getJSONObject(j).isNull("value")) {
+                                            product.paymentMethod = attrArray.getJSONObject(j).getString("value")
+                                        }
+                                    }
+
+                                    "shipping_methods" -> {
+                                        if (!attrArray.getJSONObject(j).isNull("value")) {
+                                            product.shippingMethods = attrArray.getJSONObject(j).getString("value")
                                         }
                                     }
                                 }
@@ -469,6 +498,9 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                         stockItem.isInStock = stockObject.getBoolean("is_in_stock")
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
+                        if (extensionObj.has("ispu_salable")){
+                            stockItem.is2HProduct = extensionObj.getBoolean("ispu_salable")
+                        }
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 
                         // get product specification
@@ -581,8 +613,12 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                     productExtension.barcode = customAttr.getString("value")
                                 }
 
-                                "payment_method" -> {
+                                "payment_methods" -> {
                                     product.paymentMethod = customAttr.getString("value")
+                                }
+
+                                "shipping_methods" -> {
+                                    product.shippingMethods = customAttr.getString("value")
                                 }
                             }
                             // set value to product specifications

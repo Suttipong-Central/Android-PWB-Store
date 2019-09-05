@@ -72,6 +72,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
     private static final String ARG_IS_SORTING = "ARG_IS_SORTING";
 
+    private static final String PRODUCT_2H_FIELD = "expr-p";
+    private static final String PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))";
+
     //View Members
     ObservableRecyclerView mRecyclerView;
     private PowerBuyTextView productCount;
@@ -493,7 +496,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             } else {
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("category_id", categoryId, "eq"));
             }
-            filterGroupsList.add(FilterGroups.Companion.createFilterGroups("stock.salable", "1", "eq"));
+            filterGroupsList.add(FilterGroups.Companion.createFilterGroups(PRODUCT_2H_FIELD, PRODUCT_2H_VALUE, "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("status", "1", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("visibility", "4", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("price", "0", "gt"));

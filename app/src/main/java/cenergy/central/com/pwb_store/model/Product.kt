@@ -29,6 +29,7 @@ class Product(
         var viewTypeID: Int = 0,
         var attributeID: Int = 0,
         var status: Int = 1,
+        var shippingMethods: String = "",
         var paymentMethod: String = "",
         var isHDL: Boolean = false,
         @SerializedName("extension_attributes")
@@ -113,6 +114,8 @@ class Product(
     }
 
     companion object {
+        const val PRODUCT_TWO_HOUR = "storepickup_ispu"
+
         fun asProduct(product: ProductSearch): Product{
             return Product(id = product.id!!, sku = product.sku!!, price = product.price!!,
                     name = product.name!!, image = product.thumbnail?: "", brand = product.brand!!)
