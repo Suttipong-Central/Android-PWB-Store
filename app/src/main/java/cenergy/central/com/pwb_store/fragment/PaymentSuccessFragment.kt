@@ -409,7 +409,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
                 override fun onFailure(error: Throwable) {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", "" + error.message)
+                    showAlertDialog("", error.message?: resources.getString(R.string.some_thing_wrong))
                 }
             })
         } else {
@@ -420,7 +420,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun failure(error: APIError) {
         mProgressDialog?.dismiss()
-        showAlertDialog("", error.errorMessage)
+        showAlertDialog("", error.errorMessage?: resources.getString(R.string.some_thing_wrong))
     }
     //endregion
 
