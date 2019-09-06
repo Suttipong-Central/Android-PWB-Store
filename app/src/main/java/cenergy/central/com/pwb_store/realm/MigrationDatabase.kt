@@ -169,6 +169,7 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
+        // app version 1.0.10.2
         if (oldVersion < 7) {
             // Update Branch model
             realm.schema.get("Branch")?.apply {

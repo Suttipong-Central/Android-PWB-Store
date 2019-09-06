@@ -14,11 +14,11 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
@@ -91,21 +91,21 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         super.onResume()
         updateCompareBadge()
         updateShoppingCartBadge()
-
-        product?.let { checkDisableAddProductButton(it)}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
-            // check add button
-            product?.let { checkDisableAddProductButton(it) }
-
             // check language
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
         }
+
+        if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
+            product?.let { checkDisableAddProductButton(it) }
+        }
+
     }
 
     private fun bindView() {
@@ -262,7 +262,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkHDLOption(product: Product) {
-        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>>{
+        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>> {
             override fun success(response: List<DeliveryInfo>?) {
                 product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
                 dismissProgressDialog()
@@ -294,8 +294,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
         tvNotFound.visibility = View.INVISIBLE
         containerGroupView.visibility = View.VISIBLE
-
-        checkDisableAddProductButton(product) // Check disable add product button
     }
 
     private fun updateShoppingCartBadge() {
@@ -471,20 +469,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkDisableAddProductButton(product: Product) {
-        runOnUiThread {
-            val productInCart = database.getCacheCartItemBySKU(product.sku)
-            val productQty = product.extension?.stokeItem?.qty ?: 0
-
-            if (productInCart != null && productInCart.qty!! >= productQty) {
-                disableAddToCartButton()
-            } else if (productInCart == null && productQty <= 0) {
-                disableAddToCartButton()
-            }
-
-            if (productInCart == null && productQty > 0) {
-                disableAddToCartButton(false)
-            }
-        }
+        disableAddToCartButton(!isProductInStock(product))
     }
 
     private fun disableAddToCartButton(disable: Boolean = true) {

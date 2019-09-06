@@ -21,6 +21,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
+import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
 import cenergy.central.com.pwb_store.extensions.set2HourBadge
 import cenergy.central.com.pwb_store.extensions.setImageUrl
@@ -32,7 +33,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.calendar_layout.*
 import kotlinx.android.synthetic.main.fragment_detail.view.*
 
 
@@ -131,8 +131,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         storeButton = rootView.findViewById(R.id.availableStoreButton)
         compareButton = rootView.findViewById(R.id.addToCompareButton)
 
-        when(BuildConfig.FLAVOR){
-            "cds" -> rootView.layoutButton.visibility = View.GONE
+        when (BuildConfig.FLAVOR) {
+            "cds", "rbs" -> rootView.layoutButton.visibility = View.GONE
         }
 
         productSizeSelect = rootView.findViewById(R.id.inputProductSize)
@@ -172,7 +172,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
-        if (product.isTwoHourProduct()){
+        if (product.isTwoHourProduct()) {
             badgeTwoHour.set2HourBadge()
         } else {
             badgeTwoHour.setImageDrawable(null)
@@ -225,12 +225,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
         // setup add item button
         addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
-        if (product.extension?.stokeItem?.isInStock == true) {
-            addItemButton.setButtonDisable(false)
-            addItemButton.setOnClickListener(this)
-        } else {
-            disableAddToCartButton()
-        }
+        // check disable product
+        disableAddToCartButton(!context.isProductInStock(product))
 
         // setup available store button
         storeButton.setImageDrawable(R.drawable.ic_store)
@@ -262,7 +258,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.setEnableStrikeThrough(false)
     }
 
-    fun disableAddToCartButton(isDisable: Boolean = true){
-        addItemButton.setButtonDisable(isDisable)
+    fun disableAddToCartButton(isDisable: Boolean = true) {
+        if (isDisable) {
+            addItemButton.setButtonDisable(isDisable)
+        } else {
+            addItemButton.setButtonDisable(false)
+            addItemButton.setOnClickListener(this)
+        }
     }
 }

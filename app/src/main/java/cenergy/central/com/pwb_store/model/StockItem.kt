@@ -15,7 +15,7 @@ data class StockItem(
         @SerializedName("is_in_stock")
         var isInStock: Boolean = false,
         @SerializedName("max_sale_qty")
-        var maxQTY: Int? = 1,
+        var maxQTY: Int? = 0,
         var is2HProduct: Boolean = false) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readValue(Long::class.java.classLoader) as? Long,
