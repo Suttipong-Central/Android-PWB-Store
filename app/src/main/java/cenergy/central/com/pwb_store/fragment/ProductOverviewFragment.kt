@@ -152,6 +152,7 @@ class ProductOverviewFragment : Fragment() {
         setupOnClick()
 
         overview.setupForDescription()
+        infoWebView.setupForDescription()
     }
 
     private fun setupOnClick() {
