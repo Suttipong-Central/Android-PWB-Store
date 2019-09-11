@@ -12,8 +12,18 @@ class Constants {
         const val PWB_HOST_NAME = "backend.powerbuy.co.th"
         // endregion
 
+        const val CONTENT_TYPE = "Content-Type"
+        const val APPTICATION_JSON = "application/json"
+
+        // datalake
+        const val DATALAKE_HOST_NAME = "datalake-api.powerbuy.co.th"
+        const val DATALAKE_X_SUBJECT_ID_HEADER = "x-subject-id"
+        const val DATALAKE_X_SUBJECT_ID_VALUE = "base64"
+        const val DATALAKE_X_API_KEY_HEADER = "x-api-key"
+        const val DATALAKE_X_API_KEY_VALUE = "4tsGla4Avj6ZyIL86O08h94B7DObJSHS4eIYdEgY"
+        // end region datalake
+
         // region central
-        // UAT
         const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"
         const val CLIENT_SERVICE_NAME = "execute-api"
         const val CLIENT_REGION = "ap-southeast-1"

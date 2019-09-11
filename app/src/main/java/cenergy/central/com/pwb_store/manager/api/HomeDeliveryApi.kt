@@ -29,7 +29,6 @@ class HomeDeliveryApi {
             override fun onFailure(call: Call<ShippingSlot>, t: Throwable) {
                 callback.failure(APIError(t))
             }
-
         })
     }
 }

@@ -287,10 +287,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 TAG_DETAIL_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerOverview,
                 ProductOverviewFragment(),
-                TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
+                TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
                 ProductExtensionFragment(),
-                TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
+                TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
 
         tvNotFound.visibility = View.INVISIBLE
         containerGroupView.visibility = View.VISIBLE
