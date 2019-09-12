@@ -299,4 +299,10 @@
     <string name="company">บริษัท</string>
     <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>
     <string name="created_order">สร้างคำสั่งซื้อแล้ว</string>
+
+    <!-- Stock Indicator -->
+    <string name="label_stock_availability">สต๊อกสินค้า</string>
+    <string name="label_stock_online">ออนไลน์</string>
+    <string name="label_stock_store_offline">สาขานี้</string>
+    <string name="label_stock_stores_offline">สาขาอื่น</string>
 </resources>

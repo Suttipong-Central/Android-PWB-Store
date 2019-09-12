@@ -38,11 +38,16 @@
     <color name="lightGray2">#bfbfbf</color>
     <color name="passwordIconColor">#FF9A9A9A</color>
     <color name="highlightRow">#F4F4F4</color>
+    <color name="primaryTextColor">@color/colorPrimary</color>
 
     <!-- Network state-->
     <color name="network_disconnected">#D0021B</color>
     <color name="network_connecting">#F4893F</color>
     <color name="network_connected">#5DA807</color>
+
+    <!-- Online indicator-->
+    <color name="in_stock_color">#5DA807</color>
+    <color name="out_of_stock_color">#D0021B</color>
 
     <!-- Language toggle-->
     <color name="transparent">#00ffffff</color>

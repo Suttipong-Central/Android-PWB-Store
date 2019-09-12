@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,18 +22,20 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
-import cenergy.central.com.pwb_store.extensions.isProductInStock
-import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
-import cenergy.central.com.pwb_store.extensions.set2HourBadge
-import cenergy.central.com.pwb_store.extensions.setImageUrl
+import cenergy.central.com.pwb_store.extensions.*
+import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
+import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.fragment_detail.*
 import kotlinx.android.synthetic.main.fragment_detail.view.*
 
 
@@ -69,13 +72,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_detail, container, false)
-        setupView(rootView)
-        return rootView
+        return inflater.inflate(R.layout.fragment_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupView(view)
         product?.let { initDetail(it) }
     }
 
@@ -131,8 +133,18 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         storeButton = rootView.findViewById(R.id.availableStoreButton)
         compareButton = rootView.findViewById(R.id.addToCompareButton)
 
+        // is pwb?
         when (BuildConfig.FLAVOR) {
-            "cds", "rbs" -> rootView.layoutButton.visibility = View.GONE
+            "pwb" -> {
+                stockIndicatorLoading.show()
+                rootView.layoutButton.visibility = View.VISIBLE
+                loadStockData(product)
+            }
+            else -> {
+                rootView.layoutButton.visibility = View.GONE
+                stockIndicatorView.visibility = View.GONE
+                stockIndicatorLoading.dismiss()
+            }
         }
 
         productSizeSelect = rootView.findViewById(R.id.inputProductSize)
@@ -265,5 +277,61 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             addItemButton.setButtonDisable(false)
             addItemButton.setOnClickListener(this)
         }
+    }
+
+    private fun loadStockData(product: Product?) {
+        if (product == null) {
+            stockIndicatorLoading.dismiss()
+            return
+        }
+
+        stockIndicatorLoading.show()
+        context?.let {
+            HttpManagerMagento.getInstance(it).getAvailableStore(product.sku,
+                    object : ApiResponseCallback<List<StoreAvailable>> {
+
+                        override fun success(response: List<StoreAvailable>?) {
+                            activity?.runOnUiThread {
+                                handleStockSuccess(response)
+                                stockIndicatorLoading.dismiss()
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            Log.e(TAG, "getAvailableStore: ${error.errorMessage}")
+                            activity?.runOnUiThread {
+                                handleStockFailure()
+                                stockIndicatorLoading.dismiss()
+                            }
+                        }
+                    })
+        }
+    }
+
+    private fun handleStockFailure() {
+        product?.let {
+            val inStock = context.isProductInStock(it)
+            stockIndicatorView.setState(hasOnline = inStock, hasStoreOffline = false, hasStoresOffline = false)
+        } ?: run {
+            stockIndicatorView.setState() // default was false
+        }
+        stockIndicatorView.visibility = View.VISIBLE
+    }
+
+    private fun handleStockSuccess(response: List<StoreAvailable>?) {
+        response?.let {
+            val inStock = if (product != null) context.isProductInStock(product!!) else false
+            val stockAvailability = it.getStockAvailability()
+            stockIndicatorView.setState(hasOnline = inStock,
+                    hasStoreOffline = stockAvailability.first,
+                    hasStoresOffline = stockAvailability.second)
+        } ?: run {
+            handleStockFailure()
+        }
+        stockIndicatorView.visibility = View.VISIBLE
+    }
+
+    companion object {
+        private const val TAG = "DetailFragment"
     }
 }

@@ -297,4 +297,10 @@
     <string name="company">Company</string>
     <string name="tax_id">Tax ID/ID no.</string>
     <string name="created_order">Order is Created</string>
+
+    <!-- Stock Indicator -->
+    <string name="label_stock_availability">Stock Availability</string>
+    <string name="label_stock_online">Online</string>
+    <string name="label_stock_store_offline">Current Store</string>
+    <string name="label_stock_stores_offline">Other Stores</string>
 </resources>
