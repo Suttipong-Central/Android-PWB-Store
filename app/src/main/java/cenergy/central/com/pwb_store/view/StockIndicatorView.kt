@@ -36,6 +36,10 @@ class StockIndicatorView @JvmOverloads constructor(
         stockStoresOffline?.setCompoundDrawablesWithIntrinsicBounds(getIcon(hasStoresOffline), 0, 0 ,0)
     }
 
+    fun setOnClickOtherStores(onClickListener: OnClickListener) {
+        stockStoresOffline?.setOnClickListener(onClickListener)
+    }
+
     private fun getIcon(inStock: Boolean): Int {
        return if (inStock) R.drawable.shape_circle_green else R.drawable.shape_circle_red
     }

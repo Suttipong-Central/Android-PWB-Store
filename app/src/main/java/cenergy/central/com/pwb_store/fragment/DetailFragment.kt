@@ -137,6 +137,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         when (BuildConfig.FLAVOR) {
             "pwb" -> {
                 stockIndicatorLoading.show()
+                stockIndicatorView.setOnClickOtherStores(View.OnClickListener {
+                    productDetailListener.onDisplayAvailableStore(product)
+                })
                 rootView.layoutButton.visibility = View.VISIBLE
                 loadStockData(product)
             }
