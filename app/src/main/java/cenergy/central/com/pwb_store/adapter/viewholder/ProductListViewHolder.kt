@@ -50,6 +50,8 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         } else {
             badge2H.setImageDrawable(null)
         }
+        //TODO Show badge two hour later
+        badge2H.visibility = View.GONE
     }
 
     private fun showSpecialPrice() {

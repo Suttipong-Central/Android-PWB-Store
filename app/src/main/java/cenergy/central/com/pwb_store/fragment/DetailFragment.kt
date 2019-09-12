@@ -189,6 +189,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         } else {
             badgeTwoHour.setImageDrawable(null)
         }
+        //TODO Show badge two hour later
+        badgeTwoHour.visibility = View.GONE
 
         val configOptions = product.extension?.productConfigOptions
         if (product.typeId == "configurable" && configOptions != null) {

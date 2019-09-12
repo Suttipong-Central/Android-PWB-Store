@@ -101,7 +101,7 @@ class ProductExtensionFragment : Fragment() {
     }
 
     fun startChildFragment(fragment: Fragment) {
-        fragmentManager?.beginTransaction()?.replace(R.id.extensionContainer, fragment)?.commit()
+        childFragmentManager.beginTransaction().replace(R.id.extensionContainer, fragment).commitAllowingStateLoss()
     }
 
     companion object {
