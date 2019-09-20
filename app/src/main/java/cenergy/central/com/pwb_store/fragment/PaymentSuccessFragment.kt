@@ -231,7 +231,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         //Setup customer
         orderDate.text = order.createdAt
         email.text = shippingAddress.email
-        contactNo.text = shippingAddress.telephone
+        contactNo.text = billingAddress.telephone
         finishButton.setOnClickListener {
             finishThisPage()
         }

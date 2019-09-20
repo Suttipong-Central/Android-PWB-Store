@@ -43,11 +43,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     // widget view
     private var progressDialog: ProgressDialog? = null
-    lateinit var mToolbar: Toolbar
-    lateinit var mBuyCompareView: PowerBuyCompareView
-    lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
-    lateinit var tvNotFound: TextView
-    lateinit var containerGroupView: ConstraintLayout
+    private lateinit var mToolbar: Toolbar
+    private lateinit var mBuyCompareView: PowerBuyCompareView
+    private lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
+    private lateinit var tvNotFound: TextView
+    private lateinit var containerGroupView: ConstraintLayout
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
 
@@ -283,14 +283,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
         // setup
         supportFragmentManager.beginTransaction().replace(R.id.containerDetail,
-                DetailFragment(),
-                TAG_DETAIL_FRAGMENT).commitAllowingStateLoss()
+                DetailFragment(), TAG_DETAIL_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerOverview,
-                ProductOverviewFragment(),
-                TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
+                ProductOverviewFragment(), TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
-                ProductExtensionFragment(),
-                TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
+                ProductExtensionFragment(), TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
 
         tvNotFound.visibility = View.INVISIBLE
         containerGroupView.visibility = View.VISIBLE
