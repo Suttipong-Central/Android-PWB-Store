@@ -61,7 +61,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     private lateinit var sizeAdepter: ProductOptionAdepter
     private lateinit var shadeAdepter: ProductOptionAdepter
-    var configItemOptions: ArrayList<OptionBody> = arrayListOf()
+    private var configItemOptions: ArrayList<OptionBody> = arrayListOf()
     var optionSize: OptionBody? = null
     var optionShade: OptionBody? = null
 
@@ -192,8 +192,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         } else {
             badgeTwoHour.setImageDrawable(null)
         }
-        //TODO Show badge two hour later
-        badgeTwoHour.visibility = View.GONE
 
         val configOptions = product.extension?.productConfigOptions
         if (product.typeId == "configurable" && configOptions != null) {
