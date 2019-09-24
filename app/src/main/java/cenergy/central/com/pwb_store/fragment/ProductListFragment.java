@@ -37,7 +37,6 @@ import cenergy.central.com.pwb_store.helpers.DialogHelper;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI;
-import cenergy.central.com.pwb_store.manager.api.SearchProductsAPI;
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
@@ -157,19 +156,20 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         Category categoryLv3 = productFilterItemBus.getProductFilterItem();
         int clickPosition = productFilterItemBus.getPosition();
         if (categoryLv3 != null && clickPosition != 0) {
-            Log.d(TAG, "productFilterItemBus" + categoryLv3.getId());
             title = categoryLv3.getDepartmentName();
             categoryId = categoryLv3.getId();
-            mPowerBuyPopupWindow.updateSingleProductFilterItem(categoryLv3);
+            // Don't update because categoryLv3 is Header
+//            mPowerBuyPopupWindow.updateSingleProductFilterItem(categoryLv3);
         } else  {
-            Log.d(TAG, "productFilterItemBus -> clear filter");
             // clear filter
             title = categoryLv2.getDepartmentName();
             categoryId = categoryLv2.getId();
         }
         resetPage();
         retrieveProductList();
-        Log.d(TAG, "productFilterItemBus" + isDoneFilter);
+        if(mPowerBuyPopupWindow.isShowing()){
+            mPowerBuyPopupWindow.dismiss();
+        }
     }
 
     @Subscribe
@@ -187,7 +187,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         sortName = sortingItem.getSlug();
         sortType = sortingItem.getValue();
         retrieveProductList();
-        mPowerBuyPopupWindow.updateSingleSortingItem(sortingItemBus.getSortingItem());
+        mPowerBuyPopupWindow.updateSingleSortingItem(sortingItem);
+        if(mPowerBuyPopupWindow.isShowing()){
+            mPowerBuyPopupWindow.dismiss();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -490,17 +493,23 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     }
 
     private void retrieveProductList() {
-        if (isSearch) {
-            getProductsFromSearch();
-        } else {
-            getProducts();
-        }
+//        if (isSearch) {
+//            getProductsFromSearch();
+//        } else {
+//            getProducts();
+//        }
+
+        getProducts();
     }
 
     private void getProducts(){
         if (getContext() != null){
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
-            filterGroupsList.add(FilterGroups.Companion.createFilterGroups("category_id", categoryId, "eq"));
+            if (isSearch){
+                filterGroupsList.add(FilterGroups.Companion.createFilterGroups("search_term", keyWord, "eq"));
+            } else {
+                filterGroupsList.add(FilterGroups.Companion.createFilterGroups("category_id", categoryId, "eq"));
+            }
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups(PRODUCT_2H_FIELD, PRODUCT_2H_VALUE, "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("status", "1", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("visibility", "4", "eq"));
@@ -541,33 +550,33 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         }
     }
 
-    private void getProductsFromSearch(){
-        if (getContext() != null) {
-            SearchProductsAPI.retrieveProductsFromSearch(getContext(), PER_PAGE, getNextPage(), PRODUCT_2H_FIELD,
-                    PRODUCT_2H_VALUE, keyWord, sortName, sortType, new ApiResponseCallback<ProductResponse>() {
-                        @Override
-                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> updateProductList(response));
-                            }
-                        }
-
-                        @Override
-                        public void failure(@NotNull APIError error) {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    layoutProgress.setVisibility(View.GONE);
-                                    mProgressDialog.dismiss();
-                                    // show error dialog
-                                    if (getContext() != null) {
-                                        new DialogHelper(getContext()).showErrorDialog(error);
-                                    }
-                                });
-                            }
-                        }
-                    });
-        }
-    }
+//    private void getProductsFromSearch(){
+//        if (getContext() != null) {
+//            SearchProductsAPI.retrieveProductsFromSearch(getContext(), PER_PAGE, getNextPage(), PRODUCT_2H_FIELD,
+//                    PRODUCT_2H_VALUE, keyWord, sortName, sortType, new ApiResponseCallback<ProductResponse>() {
+//                        @Override
+//                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+//                            if (getActivity() != null) {
+//                                getActivity().runOnUiThread(() -> updateProductList(response));
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void failure(@NotNull APIError error) {
+//                            if (getActivity() != null) {
+//                                getActivity().runOnUiThread(() -> {
+//                                    layoutProgress.setVisibility(View.GONE);
+//                                    mProgressDialog.dismiss();
+//                                    // show error dialog
+//                                    if (getContext() != null) {
+//                                        new DialogHelper(getContext()).showErrorDialog(error);
+//                                    }
+//                                });
+//                            }
+//                        }
+//                    });
+//        }
+//    }
 
     private void updateProductList(ProductResponse response) {
         productResponse = response;
@@ -612,9 +621,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             if (mProgressDialog != null && !mProgressDialog.isShowing()) {
                 showProgressDialog();
             }
-//        if (mPowerBuyPopupWindow.isShowing()) {
-//            mPowerBuyPopupWindow.dismiss();
-//        }
+        if (mPowerBuyPopupWindow.isShowing()) {
+            mPowerBuyPopupWindow.dismiss();
+        }
             retrieveProductList();
             mPowerBuyPopupWindow.updateSingleBrandFilterItem(filterItem);
         } else  {
