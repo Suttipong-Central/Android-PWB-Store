@@ -58,6 +58,7 @@
     <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
     <string name="size">ไซต์:</string>
     <string name="shade">สี:</string>
+    <string name="add_two_hour_item">รับที่ร้านใน 2 ชม.</string>
 
     <!-- Compare -->
     <string name="compare_header">เปรียบเทียบสินค้า</string>

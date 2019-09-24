@@ -53,6 +53,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var tvSpecialPrice: TextView
     private lateinit var tvNormalPrice: PowerBuyTextView
     private lateinit var addItemButton: PowerBuyIconButton
+    private lateinit var addTwoHourButton: PowerBuyIconButton
     private lateinit var storeButton: PowerBuyIconButton
     private lateinit var compareButton: PowerBuyIconButton
 
@@ -130,6 +131,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvSpecialPrice = rootView.findViewById(R.id.txt_sale_price)
         tvNormalPrice = rootView.findViewById(R.id.txt_regular)
         addItemButton = rootView.findViewById(R.id.addToCartButton)
+        addTwoHourButton = rootView.findViewById(R.id.addTwoHourToCartButton)
         storeButton = rootView.findViewById(R.id.availableStoreButton)
         compareButton = rootView.findViewById(R.id.addToCompareButton)
 
@@ -242,6 +244,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
         // check disable product
         disableAddToCartButton(!context.isProductInStock(product))
+
+        addTwoHourButton.setImageDrawable(R.drawable.ic_two_hour_pick_up)
 
         // setup available store button
         storeButton.setImageDrawable(R.drawable.ic_store)
