@@ -470,7 +470,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun disableAddToCartButton(disable: Boolean = true) {
-        Log.d("ProductDetail", "disable add to cart button")
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
         if (fragment != null && fragment is DetailFragment) {
             fragment.disableAddToCartButton(disable)

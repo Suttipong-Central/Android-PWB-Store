@@ -337,8 +337,12 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                         stockItem.isInStock = stockObject.getBoolean("is_in_stock")
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
+                        stockItem.minQTY = stockObject.getInt("min_sale_qty")
                         if (extensionObj.has("ispu_salable")){
                             stockItem.is2HProduct = extensionObj.getBoolean("ispu_salable")
+                        }
+                        if (extensionObj.has("salable")){
+                            stockItem.isSalable = extensionObj.getBoolean("salable")
                         }
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 

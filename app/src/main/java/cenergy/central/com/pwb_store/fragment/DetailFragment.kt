@@ -246,11 +246,13 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
         // setup add item button
         addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
+        hideAddToCartButton(product.isSalable())
         // check disable product
         disableAddToCartButton(!context.isProductInStock(product))
 
         addTwoHourButton.setImageDrawable(R.drawable.ic_two_hour_pick_up)
         addTwoHourButton.setOnClickListener(this)
+        hideAddTwoHourItemButton(product.isTwoHourProduct())
 
         // setup available store button
         storeButton.setImageDrawable(R.drawable.ic_store)
@@ -288,6 +290,22 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         } else {
             addItemButton.setButtonDisable(false)
             addItemButton.setOnClickListener(this)
+        }
+    }
+
+    private fun hideAddToCartButton(isSalable: Boolean = true) {
+        if (isSalable) {
+            addItemButton.visibility = View.VISIBLE
+        } else {
+            addItemButton.visibility = View.GONE
+        }
+    }
+
+    private fun hideAddTwoHourItemButton(isTwoHour: Boolean = true) {
+        if (isTwoHour && BuildConfig.FLAVOR == "pwb") {
+            addTwoHourButton.visibility = View.VISIBLE
+        } else {
+            addTwoHourButton.visibility = View.GONE
         }
     }
 
