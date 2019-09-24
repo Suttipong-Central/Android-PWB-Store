@@ -112,6 +112,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                     }
                 }
             }
+
+            R.id.addTwoHourToCartButton -> {
+                // TODO open select branch page
+            }
         }
     }
 
@@ -246,6 +250,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         disableAddToCartButton(!context.isProductInStock(product))
 
         addTwoHourButton.setImageDrawable(R.drawable.ic_two_hour_pick_up)
+        addTwoHourButton.setOnClickListener(this)
 
         // setup available store button
         storeButton.setImageDrawable(R.drawable.ic_store)
