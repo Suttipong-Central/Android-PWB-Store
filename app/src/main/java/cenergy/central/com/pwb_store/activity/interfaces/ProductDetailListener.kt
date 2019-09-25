@@ -8,6 +8,7 @@ interface ProductDetailListener {
 
     fun addProductToCompare(product: Product?)
     fun addProductToCart(product: Product?)
+    fun addProduct2HrsToCart(product: Product?)
     fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>)
 
     fun onDisplayAvailableStore(product: Product?)

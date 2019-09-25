@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.interfaces
 
-import cenergy.central.com.pwb_store.model.Branch
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 /**
  * Created by Anuphap Suwannamas on 13/9/2018 AD.
@@ -8,5 +8,5 @@ import cenergy.central.com.pwb_store.model.Branch
  */
 
 interface StoreClickListener {
-    fun onItemClicked(branch: Branch)
+    fun onItemClicked(branchResponse: BranchResponse)
 }

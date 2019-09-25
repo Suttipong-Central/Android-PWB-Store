@@ -115,6 +115,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
             R.id.addTwoHourToCartButton -> {
                 // TODO open select branch page
+                onAddToCartBy2Hrs()
             }
         }
     }
@@ -359,6 +360,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             handleStockFailure()
         }
         stockIndicatorView.visibility = View.VISIBLE
+    }
+
+    private fun onAddToCartBy2Hrs() {
+        productDetailListener.addProduct2HrsToCart(product)
     }
 
     companion object {

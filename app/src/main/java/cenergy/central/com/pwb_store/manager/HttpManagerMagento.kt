@@ -69,7 +69,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     companion object {
         //Specific Header
-        private const val HEADER_AUTHORIZATION = "Authorization"
+        const val HEADER_AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"
         const val OPEN_ORDER_CREATED_PAGE = "OpenOrderCreatedPage"
 
@@ -787,118 +787,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     }
     // endregion
 
-    // region store
-    fun getBranches(callback: ApiResponseCallback<List<Branch>>) {
-        val httpUrl = HttpUrl.Builder()
-                .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("rest/${getLanguage()}/V1/storepickup/stores/sts")
-                .build()
-        val request = Request.Builder()
-                .url(httpUrl)
-                .build()
-
-        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
-                if (response != null) {
-                    val data = response.body()
-                    val branches = arrayListOf<Branch>()
-                    try {
-                        val arrayObj = JSONArray(data?.string())
-                        for (i in 0 until arrayObj.length()) {
-                            val itemObj = arrayObj.getJSONObject(i)
-                            if (itemObj.has("store")) {
-                                val storeObj = itemObj.getJSONObject("store")
-                                val branch = Branch() // new Branch
-                                branch.storeId = storeObj.getString("id")
-                                branch.storeName = storeObj.getString("name")
-                                branch.isActive = if (storeObj.getBoolean("is_active")) 1 else 0
-                                branch.sellerCode = storeObj.getString("seller_code")
-                                branch.createdAt = storeObj.getString("created_at")
-                                branch.updatedAt = storeObj.getString("updated_at")
-                                branch.attrSetName = storeObj.getString("attribute_set_name")
-
-                                // field extension_attributes
-                                if (storeObj.has("extension_attributes")) {
-                                    val extensionObj = storeObj.getJSONObject("extension_attributes")
-                                    if (extensionObj.has("address")) {
-                                        val addressObj = extensionObj.getJSONObject("address")
-                                        branch.city = addressObj.getString("city")
-                                        branch.postcode = addressObj.getString("postcode")
-                                        val street = addressObj.getJSONArray("street")
-                                        var txtStreet = ""
-                                        for (s in 0 until street.length()) {
-                                            txtStreet += street.getString(s)
-                                        }
-                                        branch.street = txtStreet
-                                        val coordinatesObj = addressObj.getJSONObject("coordinates")
-                                        branch.latitude = coordinatesObj.getString("latitude")
-                                        branch.longitude = coordinatesObj.getString("longitude")
-                                        if (addressObj.has("region")){
-                                            branch.region = addressObj.getString("region")
-                                        }
-                                        if (addressObj.has("region_id")){
-                                            branch.regionId = addressObj.getInt("region_id")
-                                        }
-                                        if (addressObj.has("region_code")){
-                                            branch.regionCode = addressObj.getString("region_code")
-                                        }
-                                    }
-
-                                    if (extensionObj.has("opening_hours")) {
-                                        val openingArray = extensionObj.getJSONArray("opening_hours")
-                                        val calendar = Calendar.getInstance()
-                                        val day = calendar.get(Calendar.DAY_OF_WEEK) - 1 // index of opening_hours
-                                        if (openingArray.length() > 0 && day < openingArray.length()) {
-                                            val openItemArray = openingArray.getJSONArray(day)
-                                            val startTime = openItemArray.getJSONObject(0).getString("start_time")
-                                            val endTime = openItemArray.getJSONObject(0).getString("end_time")
-                                            branch.description = "$startTime - $endTime"
-                                        }
-                                    }
-                                }
-
-                                // field custom_attributes
-                                if (storeObj.has("custom_attributes")) {
-                                    val customAttrArray = storeObj.getJSONArray("custom_attributes")
-                                    for (m in 0 until customAttrArray.length()) {
-                                        val ctmAttr = customAttrArray.getJSONObject(m)
-                                        if (ctmAttr.has("name")) {
-                                            when (ctmAttr.getString("name")) {
-                                                "contact_phone" -> {
-                                                    branch.phone = ctmAttr.getString("value") ?: ""
-                                                }
-                                                "contact_fax" -> {
-                                                    branch.fax = ctmAttr.getString("value") ?: ""
-                                                }
-                                                "contact_mail" -> {
-                                                    branch.email = ctmAttr.getString("value") ?: ""
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                branches.add(branch) // add branch
-                            }
-                        }
-                        callback.success(branches)
-                    } catch (e: Exception) {
-                        callback.failure(APIError(e))
-                        Log.e("JSON Parser", "Error parsing data $e")
-                    }
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-                response?.close()
-            }
-
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback.failure(APIError(e))
-            }
-        })
-    }
-    // endregion
-
     // region get PWB Customer
     fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<PwbMember>>) {
         val httpUrl = HttpUrl.Builder()
@@ -1179,5 +1067,18 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             "cds" -> "cds_$language"
             else -> language
         }
+    }
+
+    fun createRequestHttps(path: String): Request {
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments(path)
+                .build()
+
+        return Request.Builder()
+                .url(httpUrl)
+                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .build()
     }
 }

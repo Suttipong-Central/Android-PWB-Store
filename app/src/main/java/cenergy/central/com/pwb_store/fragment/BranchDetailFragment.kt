@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -11,7 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.model.Branch
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class BranchDetailFragment : Fragment() {
     private lateinit var tvStoreSelect: TextView
@@ -55,7 +54,8 @@ class BranchDetailFragment : Fragment() {
         return rootView
     }
 
-    fun updateBranchDetail(branch: Branch) {
+    fun updateBranchDetail(branchResponse: BranchResponse) {
+        val branch = branchResponse.branch
         tvTitle.text = branch.storeName
         tvAddress.text = branch.getBranchAddress()
         tvContract.text = if (branch.phone.isNotBlank()) branch.phone else "-"

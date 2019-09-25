@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.manager.service
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
-import cenergy.central.com.pwb_store.model.response.BranchResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import retrofit2.Call
@@ -33,7 +32,7 @@ interface CartService {
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-//    @POST("/rest/{lang}/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
+    //    @POST("/rest/{lang}/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
     @POST("/rest/{lang}/V1/guest-carts/{cartId}/estimate-shipping-methods")
     fun getOrderDeliveryOptions(@Path("lang") language: String,
                                 @Path("cartId") cartId: String,
@@ -61,9 +60,4 @@ interface CartService {
             @Header("Authorization") token: String,
             @Path("lang") language: String,
             @Path("orderId") orderId: String): Call<OrderResponse>
-
-    @GET("/rest/{lang}/all/V1/headless/storepickup")
-    fun getBranches(@Path("lang") language: String,
-                    @Query("searchCriteria[sortOrders][0][field]") orderBy: String,
-                    @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
 }

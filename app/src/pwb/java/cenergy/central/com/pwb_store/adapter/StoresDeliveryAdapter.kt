@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.adapter.viewholder.StoresViewHolder
-import cenergy.central.com.pwb_store.model.Branch
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedIndex: Int? = null
-    var branches = listOf<Branch?>()
+    var items = listOf<BranchResponse>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -30,23 +30,24 @@ class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Ada
     }
 
     override fun getItemCount(): Int {
-        return branches.size
+        return items.size
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (branches[position] != null) VIEW_ITEM else VIEW_LOADING
+        return VIEW_ITEM
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is StoresViewHolder) {
-            val branch = branches[position]
-            holder.bindView(branch!!)
+            val item = items[holder.adapterPosition]
+            val branch = item.branch
+            holder.bindView(branch)
             holder.itemView.setOnClickListener {
-                selectedIndex = position
+                selectedIndex = holder.adapterPosition
                 notifyDataSetChanged()
-                listener.onItemClicked(branch)
+                listener.onItemClicked(item)
             }
-            if (selectedIndex == position) {
+            if (selectedIndex == holder.adapterPosition) {
                 holder.storeName.setTextColor(ContextCompat.getColor(holder.itemView.context,
                         R.color.powerBuyPurple))
             } else {

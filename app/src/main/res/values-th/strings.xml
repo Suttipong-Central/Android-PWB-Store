@@ -234,6 +234,7 @@
     <string name="error_form_name_en">Invalid name</string>
     <string name="error_verify_otp_time_out">ขออภัยการเชื่อมต่อผิดพลาด</string>
     <string name="delivery">การจัดส่ง</string>
+    <string name="delivery_2hr_pickup">ร้านที่สามารถรับของได้ใน 2 ชม.</string>
     <string name="select_store_title">เลือกสาขาที่ต้องการรับสินค้า</string>
     <string name="store_address">ที่อยู่สาขา</string>
     <string name="telephone_number">หมายเลขโทรศัพท์</string>

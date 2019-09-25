@@ -174,6 +174,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         product?.let { startAddToCart(it, arrayListOf()) }
     }
 
+    override fun addProduct2HrsToCart(product: Product?) {
+        product?.let { startPaymentBy2Hr(it) }
+    }
+
+    private fun startPaymentBy2Hr(product: Product) {
+        PaymentActivity.startActivity(this, product.sku)
+    }
+
     override fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>) {
         product?.let { startAddToCart(it, listOptionsBody) }
 

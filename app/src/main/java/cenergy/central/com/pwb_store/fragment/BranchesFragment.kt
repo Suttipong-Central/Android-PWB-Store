@@ -12,12 +12,12 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.StoresDeliveryAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.model.Branch
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class BranchesFragment : Fragment(), StoreClickListener {
 
     private val storesAdapter = StoresDeliveryAdapter(this)
-    private var branches: ArrayList<Branch> = arrayListOf()
+    private var items: ArrayList<BranchResponse> = arrayListOf()
     private lateinit var storesRecycler: RecyclerView
     private var listener: StorePickUpListener? = null
 
@@ -48,17 +48,17 @@ class BranchesFragment : Fragment(), StoreClickListener {
         storesRecycler = rootView.findViewById(R.id.recycler_view_list_stores)
         storesRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         storesRecycler.adapter = storesAdapter
-        storesAdapter.branches = branches
+        storesAdapter.items = items
     }
 
-    fun updateBranches(branches: ArrayList<Branch>, totalBranch: Int) {
-        this.branches = branches
-        storesAdapter.branches = branches
+    fun updateBranches(items: ArrayList<BranchResponse>) {
+        this.items = items
+        storesAdapter.items = items
     }
 
     // region {@link StoreClickListener.onItemClicked}
-    override fun onItemClicked(branch: Branch) {
-        listener?.onUpdateStoreDetail(branch)
+    override fun onItemClicked(branchResponse: BranchResponse) {
+        listener?.onUpdateStoreDetail(branchResponse)
     }
     // endregion
 
