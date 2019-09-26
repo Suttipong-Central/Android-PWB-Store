@@ -75,16 +75,23 @@ class BranchApi {
 
         for (i in 0 until arrayObj.length()) {
             val itemObj = arrayObj.getJSONObject(i)
-            if (itemObj.has("store")) {
-                val sourceItem = SourceItem() // new source item
-                val sourceItemObj = itemObj.getJSONObject("source_item")
-                sourceItem.sku = sourceItemObj.getString("sku")
-                if (sourceItemObj.has("quantity") && !sourceItemObj.isNull("quantity")) {
-                    sourceItem.quantity = sourceItemObj.getInt("quantity")
-                }
-                sourceItem.status = sourceItemObj.getInt("status")
 
-                val branch = Branch() // new Branch
+            // For store ispu
+            var sourceItem: SourceItem? = SourceItem() // new source item
+            if (itemObj.has("source_item")) {
+                val sourceItemObj = itemObj.getJSONObject("source_item")
+                sourceItem?.sku = sourceItemObj.getString("sku")
+                if (sourceItemObj.has("quantity") && !sourceItemObj.isNull("quantity")) {
+                    sourceItem?.quantity = sourceItemObj.getInt("quantity")
+                }
+                sourceItem?.status = sourceItemObj.getInt("status")
+            } else {
+                sourceItem = null
+            }
+
+            // For store sts&ispu
+            val branch = Branch() // new Branch
+            if (itemObj.has("store")) {
                 val storeObj = itemObj.getJSONObject("store")
                 branch.storeId = storeObj.getString("id")
                 branch.storeName = storeObj.getString("name")
@@ -132,6 +139,11 @@ class BranchApi {
                             branch.description = "$startTime - $endTime"
                         }
                     }
+
+                    // ispu delivery description
+                    if (extensionObj.has("ispu_promise_delivery")) {
+                        branch.ispuDelivery = extensionObj.getString("ispu_promise_delivery") ?: ""
+                    }
                 }
 
                 // field custom_attributes
@@ -154,8 +166,8 @@ class BranchApi {
                         }
                     }
                 }
-                branchResponses.add(BranchResponse(sourceItem, branch)) // add branch response
             }
+            branchResponses.add(BranchResponse(sourceItem, branch)) // add branch response
         }
         return branchResponses
     }

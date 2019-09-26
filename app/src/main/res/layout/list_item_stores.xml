@@ -7,9 +7,9 @@
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/store_name"
+        style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/line_store"

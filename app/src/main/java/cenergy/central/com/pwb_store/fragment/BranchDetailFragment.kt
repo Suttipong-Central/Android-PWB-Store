@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 
@@ -54,14 +55,17 @@ class BranchDetailFragment : Fragment() {
         return rootView
     }
 
-    fun updateBranchDetail(branchResponse: BranchResponse) {
+    fun updateBranchDetail(branchResponse: BranchResponse, checkoutType: CheckoutType) {
         val branch = branchResponse.branch
         tvTitle.text = branch.storeName
         tvAddress.text = branch.getBranchAddress()
         tvContract.text = if (branch.phone.isNotBlank()) branch.phone else "-"
         tvOpenStore.text = if (branch.description.isNotBlank()) branch.description else "-"
         selectedButton.setOnClickListener {
-            listener?.onSelectedStore(branch)
+            when(checkoutType) {
+                CheckoutType.NORMAL -> listener?.onSelectedStore(branch)
+                CheckoutType.ISPU -> listener?.addProduct2hToCart(branchResponse)
+            }
         }
         showContentView()
     }

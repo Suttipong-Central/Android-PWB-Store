@@ -11,4 +11,5 @@ import cenergy.central.com.pwb_store.model.response.BranchResponse
 interface StorePickUpListener {
     fun onUpdateStoreDetail(branch: BranchResponse)
     fun onSelectedStore(branch: Branch)
+    fun addProduct2hToCart(branchResponse: BranchResponse)
 }

@@ -6,7 +6,7 @@ import io.realm.RealmMigration
 class MigrationDatabase : RealmMigration {
 
     companion object {
-        const val SCHEMA_VERSION = 7
+        const val SCHEMA_VERSION = 8
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -195,6 +195,15 @@ class MigrationDatabase : RealmMigration {
                 setNullable("subDistrictId", true)
                 setNullable("postcodeId", true)
                 setNullable("addressLine", true)
+            }
+        }
+
+        // app version 1.0.13
+        if (oldVersion < 8){
+            // Update Branch model
+            realm.schema.get("Branch")?.apply {
+                // Add ispuDelivery 'ispu_promise_delivery'
+                addField("ispuDelivery", String::class.java)
             }
         }
     }

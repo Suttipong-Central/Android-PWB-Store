@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import kotlinx.android.synthetic.main.fragment_delivery_stores.*
@@ -17,19 +18,17 @@ class DeliveryStorePickUpFragment : Fragment() {
     private var items: ArrayList<BranchResponse> = arrayListOf()
     private val branchesFragment = BranchesFragment.newInstance()
     private val branchDetailFragment = BranchDetailFragment.newInstance()
-    private var checkoutType = CHECKOUT_STS
+    private var checkoutType = CheckoutType.NORMAL
 
     companion object {
         const val TAG_FRAGMENT_STORES = "fragment_stores"
         const val TAG_FRAGMENT_STORE_DETAIL = "fragment_store_detail"
         private const val ARG_CHECKOUT_TPYE = "arg_checkout_type"
-        private const val CHECKOUT_ISPU = "product_ispu"
-        private const val CHECKOUT_STS = "product_sts"
 
         fun newInstance(is2hrProduct: Boolean = false): DeliveryStorePickUpFragment {
             val fragment = DeliveryStorePickUpFragment()
             val args = Bundle()
-            args.putString(ARG_CHECKOUT_TPYE, if (is2hrProduct) CHECKOUT_ISPU else CHECKOUT_STS)
+            args.putString(ARG_CHECKOUT_TPYE, if (is2hrProduct) CheckoutType.ISPU.name else CheckoutType.NORMAL.name)
             fragment.arguments = args
             return fragment
         }
@@ -43,7 +42,11 @@ class DeliveryStorePickUpFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkoutType = arguments?.getString(ARG_CHECKOUT_TPYE) ?: CHECKOUT_STS
+        val arg = arguments?.getString(ARG_CHECKOUT_TPYE)
+        checkoutType = when (arg) {
+            CheckoutType.ISPU.name -> CheckoutType.ISPU
+            else -> CheckoutType.NORMAL
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -62,11 +65,11 @@ class DeliveryStorePickUpFragment : Fragment() {
     }
 
     fun updateStoreDetail(branchResponse: BranchResponse) {
-        branchDetailFragment.updateBranchDetail(branchResponse)
+        branchDetailFragment.updateBranchDetail(branchResponse, this.checkoutType)
     }
 
     private fun setupView() {
-        titleTextView.text = getString(if (checkoutType == CHECKOUT_STS) R.string.delivery else R.string.delivery_2hr_pickup)
-        branchesFragment.updateBranches(items)
+        titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_2hr_pickup)
+        branchesFragment.updateBranches(items, checkoutType)
     }
 }

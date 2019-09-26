@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.adapter.StoresDeliveryAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -51,9 +53,9 @@ class BranchesFragment : Fragment(), StoreClickListener {
         storesAdapter.items = items
     }
 
-    fun updateBranches(items: ArrayList<BranchResponse>) {
+    fun updateBranches(items: ArrayList<BranchResponse>, checkoutType: CheckoutType) {
         this.items = items
-        storesAdapter.items = items
+        storesAdapter.updateItems(checkoutType, items)
     }
 
     // region {@link StoreClickListener.onItemClicked}

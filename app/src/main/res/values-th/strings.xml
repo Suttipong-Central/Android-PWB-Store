@@ -233,6 +233,8 @@
     <string name="error_form_passport_invalid">พาสปอร์ตไม่ถูกต้อง</string>
     <string name="error_form_name_en">Invalid name</string>
     <string name="error_verify_otp_time_out">ขออภัยการเชื่อมต่อผิดพลาด</string>
+
+    <!-- Store -->
     <string name="delivery">การจัดส่ง</string>
     <string name="delivery_2hr_pickup">ร้านที่สามารถรับของได้ใน 2 ชม.</string>
     <string name="select_store_title">เลือกสาขาที่ต้องการรับสินค้า</string>
@@ -261,6 +263,7 @@
     <string name="staff_descriptions_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
     <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
     <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
+    <string name="format_store_ispu_delivery">สั่งตอนนี้ รับได้ที่สาขา ตั้งเเต่ %s</string>
 
     <!-- Network state -->
     <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>

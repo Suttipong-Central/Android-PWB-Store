@@ -202,6 +202,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun checkoutWithProduct2hr(productSku: String?) {
         productSku ?: finish()
 
+        showProgressDialog()
         BranchApi().getBranchesISPU(this, productSku!!,
                 object : ApiResponseCallback<List<BranchResponse>> {
                     override fun success(response: List<BranchResponse>?) {
@@ -216,7 +217,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     }
 
                     override fun failure(error: APIError) {
-
+                        mProgressDialog?.dismiss()
                     }
                 })
     }
@@ -775,6 +776,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             }
         }
     }
+
+    override fun addProduct2hToCart(branchResponse: BranchResponse) {
+        //TODO: Add product with store to cart
+        Log.d("Payment", "add product with store to cart!!")
+        Log.d("Payment", "sku: $productSku, store -> ${branchResponse.branch.sellerCode}")
+    }
     // endregion
 
     private fun getSpecialSKUList(): List<Long>? {
@@ -785,7 +792,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {
-            startDeliveryOptions()
+            // is state of checkout with product 2h?
+            if (productSku != null) {
+                finish()
+            } else {
+                startDeliveryOptions()
+            }
             return
         }
 
@@ -841,4 +853,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
+}
+
+enum class CheckoutType {
+    NORMAL, ISPU
 }
