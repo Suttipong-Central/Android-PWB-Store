@@ -220,6 +220,8 @@
     <string name="shopping_delete"><u>Delete</u></string>
     <string name="t1_points">Earn %d points with your The 1</string>
     <string name="check_out">Checkout</string>
+    <string name="empty_value">Please enter quantity to order</string>
+    <string name="exceeds_maximum">Input quantity exceeds maximum number</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>

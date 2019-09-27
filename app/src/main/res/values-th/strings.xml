@@ -220,6 +220,8 @@
     <string name="shopping_delete"><u>ลบ</u></string>
     <string name="t1_points">เมื่อซื้อ รับคะแนนเดอะวัน %d คะแนน</string>
     <string name="check_out">สั่งซื้อ</string>
+    <string name="empty_value">โปรดระบุจำนวนที่ต้องการซื้อ</string>
+    <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
