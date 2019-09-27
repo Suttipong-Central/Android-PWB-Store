@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity.interfaces
 
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import cenergy.central.com.pwb_store.model.response.MemberResponse
@@ -24,4 +25,5 @@ interface PaymentProtocol {
     fun getSelectedBranch(): Branch?
     fun getPWBMemberByIndex(index: Int): PwbMember?
     fun getPaymentMethods(): List<PaymentMethod>
+    fun getCheckType(): CheckoutType
 }

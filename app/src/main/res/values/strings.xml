@@ -220,6 +220,7 @@
     <string name="shopping_delete"><u>Delete</u></string>
     <string name="t1_points">Earn %d points with your The 1</string>
     <string name="check_out">Checkout</string>
+    <string name="format_shopping_cart_ispu">Pick up from %s at</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>
@@ -263,7 +264,7 @@
     <string name="staff_descriptions_dialog">1. Please ask customer to go to cashier\n2. Show order confirmation screen to cashier\n3. When customer already paid, ask cashier to login to powerbuy.co.th/bonjour\n4. Go to that order then click at "Paid" button to complete process</string>
     <string name="product_not_have_delivery">This item is excluding installation service.</string>
     <string name="cannot_get_shipping_slot">Sorry, data is temporary unavailable.</string>
-    <string name="format_store_ispu_delivery">Order now, pick up in-store From %s</string>
+    <string name="format_store_ispu_delivery">Order now, pick up in-store\nFrom %s</string>
 
     <!-- Network state -->
     <string name="network_connect_error">No internet</string>

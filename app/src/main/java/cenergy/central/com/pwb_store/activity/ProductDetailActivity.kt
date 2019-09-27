@@ -179,7 +179,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun startPaymentBy2Hr(product: Product) {
-        PaymentActivity.startActivity(this, product.sku)
+        PaymentActivity.startActivity(this, product)
     }
 
     override fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>) {

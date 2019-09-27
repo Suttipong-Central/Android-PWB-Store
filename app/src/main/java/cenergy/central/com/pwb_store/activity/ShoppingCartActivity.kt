@@ -29,6 +29,7 @@ import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.*
+import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -138,8 +139,23 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
+    private fun update2hDelivery() {
+        // is Checkout ISPU?
+        val cacheCartItems = database.cacheCartItems
+        if (cacheCartItems != null && cacheCartItems.isNotEmpty() &&
+                cacheCartItems[0].branch != null) {
+            val item = cacheCartItems[0]
+            cartDescriptionTextView.visibility = View.VISIBLE
+            cartDescriptionTextView.text = getString(R.string.format_shopping_cart_ispu,
+                    item.branch?.ispuDelivery)
+        } else {
+            cartDescriptionTextView.visibility = View.GONE
+        }
+    }
+
     private fun updateTitle(count: Int) {
         title.text = getString(R.string.format_header_cart_items, count.toString())
+        update2hDelivery()
     }
 
     private fun showProgressDialog() {
@@ -189,6 +205,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun forceUpdateView() {
+        update2hDelivery()
+
         backToShopButton.setText(getString(R.string.shopping))
         paymentButton.setText(getString(R.string.check_out))
 

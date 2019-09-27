@@ -1,8 +1,10 @@
 package cenergy.central.com.pwb_store.activity
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -41,7 +43,10 @@ import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
+import cenergy.central.com.pwb_store.utils.CartUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
@@ -78,20 +83,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var paymentMethods = listOf<PaymentMethod>()
     private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
     private var shippingSlot: ShippingSlot? = null
-    // data product 2hr
-    private var productSku: String? = null
+    // data product 2h
+    private var product2h: Product? = null
+    private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
     companion object {
-        private const val EXTRA_PRODUCT_2HR_SKU = "product_2hr_sku"
+        private const val EXTRA_PRODUCT_2H = "product_2h"
 
         fun intent(context: Context) {
             val intent = Intent(context, PaymentActivity::class.java)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-        fun startActivity(context: Context, sku: String) {
+        fun startActivity(context: Context, product: Product) {
             val intent = Intent(context, PaymentActivity::class.java)
-            intent.putExtra(EXTRA_PRODUCT_2HR_SKU, sku)
+            intent.putExtra(EXTRA_PRODUCT_2H, product)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
@@ -111,10 +117,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
 
-        if (intent.hasExtra(EXTRA_PRODUCT_2HR_SKU)) {
-            this.productSku = intent.getStringExtra(EXTRA_PRODUCT_2HR_SKU)
-            checkoutWithProduct2hr(this.productSku)
+        if (intent.hasExtra(EXTRA_PRODUCT_2H)) {
+            this.product2h = intent.getParcelableExtra(EXTRA_PRODUCT_2H)
+            this.checkoutType = CheckoutType.ISPU
+            checkoutWithProduct2hr(this.product2h!!)
         } else {
+            this.checkoutType = CheckoutType.NORMAL
             standardCheckout()
         }
     }
@@ -199,24 +207,55 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         getCartItems()
     }
 
-    private fun checkoutWithProduct2hr(productSku: String?) {
-        productSku ?: finish()
-
+    private fun checkoutWithProduct2hr(product: Product) {
         showProgressDialog()
-        BranchApi().getBranchesISPU(this, productSku!!,
-                object : ApiResponseCallback<List<BranchResponse>> {
-                    override fun success(response: List<BranchResponse>?) {
-                        if (response != null) {
-                            branches.clear()
-                            branches.addAll(response)
-                            val fragment = DeliveryStorePickUpFragment.newInstance(true)
-                            startFragment(fragment)
+        if (database.provinces != null && database.provinces.isNotEmpty()) {
+            BranchApi().getBranchesISPU(this, product.sku,
+                    object : ApiResponseCallback<List<BranchResponse>> {
+                        override fun success(response: List<BranchResponse>?) {
+                            if (response != null) {
+                                branches.clear()
+                                branches.addAll(response)
+                                val fragment = DeliveryStorePickUpFragment.newInstance(true)
+                                startFragment(fragment)
+                            }
+
+                            mProgressDialog?.dismiss()
                         }
 
-                        mProgressDialog?.dismiss()
+                        override fun failure(error: APIError) {
+                            showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                    DialogInterface.OnClickListener { dialog, which ->
+                                        dialog?.dismiss()
+                                        finish()
+                                    })
+                        }
+                    })
+        } else {
+            loadProvinceData()
+        }
+    }
+
+    /*
+    * If no have province must force download province data
+    * because in Branch detail page have to display about address
+    * */
+    private fun loadProvinceData() {
+        showProgressDialog()
+
+        HttpManagerMagento.getInstance(this).getProvinces(true,
+                object : ApiResponseCallback<List<Province>> {
+                    override fun success(response: List<Province>?) {
+                        // JUST FOR OPEN STORE PICK PAGE WITH PRODUCT 2H
+                        product2h?.let { checkoutWithProduct2hr(it) }
                     }
 
                     override fun failure(error: APIError) {
+                        showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    dialog?.dismiss()
+                                    finish()
+                                })
                         mProgressDialog?.dismiss()
                     }
                 })
@@ -754,6 +793,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getSelectedBranch(): Branch? = this.branch
 
     override fun getPaymentMethods(): List<PaymentMethod> = this.paymentMethods
+
+    override fun getCheckType(): CheckoutType = this.checkoutType
     // endregion
 
     // region {@link StorePickUpListener}
@@ -779,8 +820,26 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun addProduct2hToCart(branchResponse: BranchResponse) {
         //TODO: Add product with store to cart
-        Log.d("Payment", "add product with store to cart!!")
-        Log.d("Payment", "sku: $productSku, store -> ${branchResponse.branch.sellerCode}")
+        product2h?.let {
+            CartUtils(this).addProduct2hToCart(it, branchResponse, object : AddProductToCartCallback {
+                override fun onSuccessfully() {
+                    ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                }
+
+                override fun forceClearCart() {
+                    //TODO: show dialog for clear cart
+                }
+
+                override fun onFailure(messageError: String) {
+                    showCommonDialog(messageError)
+                }
+
+                override fun onFailure(dialog: Dialog) {
+                    dialog.show()
+                }
+
+            })
+        }
     }
     // endregion
 
@@ -793,7 +852,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {
             // is state of checkout with product 2h?
-            if (productSku != null) {
+            if (product2h != null) {
                 finish()
             } else {
                 startDeliveryOptions()

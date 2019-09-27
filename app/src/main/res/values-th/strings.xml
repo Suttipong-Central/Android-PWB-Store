@@ -220,6 +220,7 @@
     <string name="shopping_delete"><u>ลบ</u></string>
     <string name="t1_points">เมื่อซื้อ รับคะแนนเดอะวัน %d คะแนน</string>
     <string name="check_out">สั่งซื้อ</string>
+    <string name="format_shopping_cart_ispu">รับที่สาขาตั้งเเต่ %s ที่</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
@@ -263,7 +264,7 @@
     <string name="staff_descriptions_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
     <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
     <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
-    <string name="format_store_ispu_delivery">สั่งตอนนี้ รับได้ที่สาขา ตั้งเเต่ %s</string>
+    <string name="format_store_ispu_delivery">สั่งตอนนี้ รับได้ที่สาขา\nตั้งเเต่ %s</string>
 
     <!-- Network state -->
     <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>
