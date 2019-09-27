@@ -247,8 +247,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // setup add item button
         addItemButton.setImageDrawable(R.drawable.ic_shopping_cart)
         hideAddToCartButton(product.isSalable())
+        addItemButton.setOnClickListener(this)
         // check disable product
-        disableAddToCartButton(!context.isProductInStock(product))
+//        disableAddToCartButton(!context.isProductInStock(product))
 
         addTwoHourButton.setImageDrawable(R.drawable.ic_two_hour_pick_up)
         addTwoHourButton.setOnClickListener(this)
@@ -284,14 +285,14 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.setEnableStrikeThrough(false)
     }
 
-    fun disableAddToCartButton(isDisable: Boolean = true) {
-        if (isDisable) {
-            addItemButton.setButtonDisable(isDisable)
-        } else {
-            addItemButton.setButtonDisable(false)
-            addItemButton.setOnClickListener(this)
-        }
-    }
+//    fun disableAddToCartButton(isDisable: Boolean = true) {
+//        if (isDisable) {
+//            addItemButton.setButtonDisable(isDisable)
+//        } else {
+//            addItemButton.setButtonDisable(false)
+//            addItemButton.setOnClickListener(this)
+//        }
+//    }
 
     private fun hideAddToCartButton(isSalable: Boolean = true) {
         if (isSalable) {

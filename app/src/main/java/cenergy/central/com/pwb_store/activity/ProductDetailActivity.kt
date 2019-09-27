@@ -18,7 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
-import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
@@ -101,11 +100,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
         }
-
-        if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
-            product?.let { checkDisableAddProductButton(it) }
-        }
-
+//        if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
+//            product?.let { checkDisableAddProductButton(it) }
+//        }
     }
 
     private fun bindView() {
@@ -428,7 +425,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
                 Toast.makeText(this@ProductDetailActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
-                checkDisableAddProductButton(product)
+//                checkDisableAddProductButton(product)
             }
 
             override fun onFailure(error: Throwable) {
@@ -465,16 +462,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         builder.show()
     }
 
-    private fun checkDisableAddProductButton(product: Product) {
-        disableAddToCartButton(!isProductInStock(product))
-    }
+//    private fun checkDisableAddProductButton(product: Product) {
+//        disableAddToCartButton(!isProductInStock(product))
+//    }
 
-    private fun disableAddToCartButton(disable: Boolean = true) {
-        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-        if (fragment != null && fragment is DetailFragment) {
-            fragment.disableAddToCartButton(disable)
-        }
-    }
+//    private fun disableAddToCartButton(disable: Boolean = true) {
+//        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+//        if (fragment != null && fragment is DetailFragment) {
+//            fragment.disableAddToCartButton(disable)
+//        }
+//    }
 
     private fun clearCart() {
         database.deleteAllCacheCartItem()
