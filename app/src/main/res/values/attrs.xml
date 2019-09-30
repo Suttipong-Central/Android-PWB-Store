@@ -20,6 +20,7 @@
     <declare-styleable name="PowerBuyAutoCompleteTextStroke">
         <attr name="act_header" format="string"/>
         <attr name="act_required" format="boolean"/>
+        <attr name="hide_header" format="boolean"/>
     </declare-styleable>
     <declare-styleable name="PowerBuyBackButton">
         <attr name="disable" format="boolean"/>

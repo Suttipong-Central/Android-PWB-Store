@@ -222,6 +222,8 @@
     <string name="check_out">สั่งซื้อ</string>
     <string name="format_shopping_cart_ispu">รับที่สาขาตั้งเเต่ %s ที่</string>
     <string name="btn_complete_order">สั่งซื้อสินค้า</string>
+    <string name="empty_value">โปรดระบุจำนวนที่ต้องการซื้อ</string>
+    <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>

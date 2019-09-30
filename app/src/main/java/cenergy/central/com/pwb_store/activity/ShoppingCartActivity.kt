@@ -320,7 +320,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                DialogHelper(this@ShoppingCartActivity).showErrorDialog(error)
+                showAlertDialog("", getString(R.string.exceeds_maximum))
+                getCartItem()
             }
         })
     }
