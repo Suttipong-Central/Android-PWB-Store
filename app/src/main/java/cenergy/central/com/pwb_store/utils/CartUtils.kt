@@ -77,7 +77,7 @@ class CartUtils(private val context: Context) {
             CartItemBody.create(cartId, product, branchResponse!!)
         } else{
             // normal
-            CartItemBody.create(cartId, product.sku, options)
+            CartItemBody.create(cartId, product, options)
         }
         HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {

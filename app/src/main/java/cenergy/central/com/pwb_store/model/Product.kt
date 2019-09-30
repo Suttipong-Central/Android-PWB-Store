@@ -132,6 +132,14 @@ class Product(
         }
     }
 
+    fun getMinSaleQty(): Int{
+        return if (extension?.stokeItem?.minQTY != null && extension!!.stokeItem!!.minQTY!! > 0){
+            extension!!.stokeItem!!.minQTY!!
+        } else {
+            1 // default qty is 1 when min sale qty is null or min sale qty < 1
+        }
+    }
+
     fun setProductImageList(productImageList: ProductDetailImage) {
         this.productImageList = productImageList
     }
