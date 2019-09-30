@@ -10,11 +10,11 @@ import java.util.jar.Attributes
 
 data class CartItemBody(var cartItem: CartBody? = null) {
     companion object {
-        fun create(cartId: String, sku: String, listOptionsBody: ArrayList<OptionBody>): CartItemBody {
+        fun create(cartId: String, sku: String, minSaleQty: Int, listOptionsBody: ArrayList<OptionBody>): CartItemBody {
             return if (listOptionsBody.isNotEmpty()) {
-                CartItemBody(CartBody(cartId, sku, 1, ProductOptionBody(OptionExtensionBody(listOptionsBody)))) // default add qty 1
+                CartItemBody(CartBody(cartId, sku, minSaleQty, ProductOptionBody(OptionExtensionBody(listOptionsBody)))) // default add qty 1
             } else {
-                CartItemBody(CartBody(cartId, sku, 1)) // default add qty 1
+                CartItemBody(CartBody(cartId, sku, minSaleQty)) // default add qty 1
             }
         }
     }

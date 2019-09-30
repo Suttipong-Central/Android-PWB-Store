@@ -400,7 +400,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun addProductToCart(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>) {
-        val cartItemBody = CartItemBody.create(cartId, product.sku, listOptionsBody)
+        val cartItemBody = if (product.extension?.stokeItem?.minQTY != null && product.extension!!.stokeItem!!.minQTY!! > 0) {
+            // add to cart by product min sale qty
+            CartItemBody.create(cartId, product.sku, product.extension!!.stokeItem!!.minQTY!!, listOptionsBody)
+        } else {
+            // add to cart by default is 1 when min sale qty = null or min sale qty <= 0
+            CartItemBody.create(cartId, product.sku, 1, listOptionsBody)
+        }
         HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
             override fun success(response: CartItem?) {
                 runOnUiThread {
