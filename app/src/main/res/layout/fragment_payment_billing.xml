@@ -114,6 +114,7 @@
             android:orientation="vertical">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/shipping_label_text_view"
                 style="@style/textSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -321,6 +322,7 @@
             android:background="@color/lightGray" />
 
         <LinearLayout
+            android:id="@+id/billing_option_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

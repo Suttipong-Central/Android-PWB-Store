@@ -221,6 +221,7 @@
     <string name="t1_points">Earn %d points with your The 1</string>
     <string name="check_out">Checkout</string>
     <string name="format_shopping_cart_ispu">Pick up from %s at</string>
+    <string name="btn_complete_order">Complete Order</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>

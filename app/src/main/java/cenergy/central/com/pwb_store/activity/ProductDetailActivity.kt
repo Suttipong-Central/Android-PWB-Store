@@ -65,7 +65,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
 
-        // get intent
+        // get startPayment
         val mIntent = intent
         val extras = mIntent.extras
         if (extras != null) {
@@ -179,7 +179,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun startPaymentBy2Hr(product: Product) {
-        PaymentActivity.startActivity(this, product)
+        PaymentActivity.startSelectStore(this, product)
     }
 
     override fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>) {

@@ -23,7 +23,17 @@ class DeliveryOption(
         var priceExcludeTax: String = "",
         @SerializedName("price_incl_tax")
         var priceIncludeTax: String = ""
-)
+) {
+    companion object {
+       fun getStorePickupIspu() : DeliveryOption {
+           return DeliveryOption(carrierCode = "storepickup",
+                   methodCode = "ispu",
+                   carrierTitle = "Store Pickup",
+                   methodTitle = "2 Hours Pickup",
+                   extension = DeliveryExtension())
+       }
+    }
+}
 
 data class DeliveryExtension(@SerializedName("pickup_locations")
                              var pickupLocations: List<PickupLocation> = arrayListOf(),

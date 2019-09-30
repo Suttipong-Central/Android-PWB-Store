@@ -5,7 +5,8 @@ import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
-import cenergy.central.com.pwb_store.extensions.*
+import cenergy.central.com.pwb_store.extensions.asPostcode
+import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -15,9 +16,10 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import okhttp3.*
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
 import org.json.JSONObject
@@ -165,18 +167,18 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     private fun getStoreLocation(user: User, sellerCode: String, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveStoreLocation(getLanguage(), sellerCode,"seller_code").enqueue(object : Callback<StoreLocationResponse>{
+        userService.retrieveStoreLocation(getLanguage(), sellerCode, "seller_code").enqueue(object : Callback<StoreLocationResponse> {
             override fun onResponse(call: Call<StoreLocationResponse>, response: Response<StoreLocationResponse>?) {
-                if (response?.body() != null){
+                if (response?.body() != null) {
                     val storeLocation = response.body()?.items?.firstOrNull()
                     val store = Store()
                     store.retailerId = sellerCode
-                    if(storeLocation != null){
+                    if (storeLocation != null) {
                         store.storeId = storeLocation.id.toLong()
                         store.storeName = storeLocation.name
-                        store.province = storeLocation.extension?.address?.region?: ""
-                        store.district = storeLocation.extension?.address?.city?: ""
-                        store.postalCode = storeLocation.extension?.address?.postcode?: ""
+                        store.province = storeLocation.extension?.address?.region ?: ""
+                        store.district = storeLocation.extension?.address?.city ?: ""
+                        store.postalCode = storeLocation.extension?.address?.postcode ?: ""
                     }
 
                     // save user token
@@ -338,10 +340,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         stockItem.isInStock = stockObject.getBoolean("is_in_stock")
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
                         stockItem.minQTY = stockObject.getInt("min_sale_qty")
-                        if (extensionObj.has("ispu_salable")){
+                        if (extensionObj.has("ispu_salable")) {
                             stockItem.is2HProduct = extensionObj.getBoolean("ispu_salable")
                         }
-                        if (extensionObj.has("salable")){
+                        if (extensionObj.has("salable")) {
                             stockItem.isSalable = extensionObj.getBoolean("salable")
                         }
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
@@ -403,11 +405,11 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                             val type = galleryArray.getJSONObject(i).getString("media_type")
                             val label = galleryArray.getJSONObject(i).getString("label")
                             var position = 0
-                            if(!galleryArray.getJSONObject(i).isNull("position")){
+                            if (!galleryArray.getJSONObject(i).isNull("position")) {
                                 position = galleryArray.getJSONObject(i).getInt("position")
                             }
                             var disabled = false
-                            if(!galleryArray.getJSONObject(i).isNull("disabled")){
+                            if (!galleryArray.getJSONObject(i).isNull("disabled")) {
                                 disabled = galleryArray.getJSONObject(i).getBoolean("disabled")
                             }
                             val file = galleryArray.getJSONObject(i).getString("file")
@@ -505,11 +507,11 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun getDeliveryInformation(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>){
+    fun getDeliveryInformation(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getDeliveryInfo(getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>>{
+        productService.getDeliveryInfo(getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>> {
             override fun onResponse(call: Call<List<DeliveryInfo>>, response: Response<List<DeliveryInfo>>) {
-                if (response.body() != null){
+                if (response.body() != null) {
                     callback.success(response.body())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -542,24 +544,24 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                     try {
                         val storeAvailableArray = JSONArray(data?.string())
-                        for (i in 0 until storeAvailableArray.length()){
+                        for (i in 0 until storeAvailableArray.length()) {
                             val storeAvailable = StoreAvailable()
                             val storeAvailableObject = storeAvailableArray.getJSONObject(i)
-                            if(storeAvailableObject.has("source_item")){
+                            if (storeAvailableObject.has("source_item")) {
                                 val sourceObject = storeAvailableObject.getJSONObject("source_item")
-                                if (sourceObject.has("quantity")){
+                                if (sourceObject.has("quantity")) {
                                     storeAvailable.qty = sourceObject.getInt("quantity")
                                 }
                             }
-                            if(storeAvailableObject.has("store")){
+                            if (storeAvailableObject.has("store")) {
                                 val storeObject = storeAvailableObject.getJSONObject("store")
-                                if (storeObject.has("name")){
+                                if (storeObject.has("name")) {
                                     storeAvailable.name = storeObject.getString("name")
                                 }
-                                if (storeObject.has("seller_code")){
+                                if (storeObject.has("seller_code")) {
                                     storeAvailable.sellerCode = storeObject.getString("seller_code")
                                 }
-                                if (storeObject.has("custom_attributes")){
+                                if (storeObject.has("custom_attributes")) {
                                     val attrArray = storeObject.getJSONArray("custom_attributes")
                                     for (j in 0 until attrArray.length()) {
                                         when (attrArray.getJSONObject(j).getString("name")) {

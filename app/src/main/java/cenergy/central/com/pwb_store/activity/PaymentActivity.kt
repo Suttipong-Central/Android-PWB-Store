@@ -88,16 +88,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
     companion object {
-        private const val EXTRA_PRODUCT_2H = "product_2h"
+        private const val EXTRA_PRODUCT_2H = "extra_product_2h"
+        private const val EXTRA_CHECK_OUT_ISPU = "extra_check_out_ispu"
 
-        fun intent(context: Context) {
+        fun startCheckout(context: Context, isISPU: Boolean = false) {
             val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, isISPU)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-        fun startActivity(context: Context, product: Product) {
+        fun startSelectStore(context: Context, product: Product) {
             val intent = Intent(context, PaymentActivity::class.java)
             intent.putExtra(EXTRA_PRODUCT_2H, product)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
@@ -117,12 +120,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
 
+        // is start select store with product 2h?
         if (intent.hasExtra(EXTRA_PRODUCT_2H)) {
             this.product2h = intent.getParcelableExtra(EXTRA_PRODUCT_2H)
             this.checkoutType = CheckoutType.ISPU
             checkoutWithProduct2hr(this.product2h!!)
         } else {
-            this.checkoutType = CheckoutType.NORMAL
+            val isISPU = intent.getBooleanExtra(EXTRA_CHECK_OUT_ISPU, false)
+            this.checkoutType = if (isISPU) CheckoutType.ISPU else CheckoutType.NORMAL
             standardCheckout()
         }
     }
@@ -175,6 +180,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun setBillingAddressInfo(billingAddress: AddressInformation) {
         this.billingAddress = billingAddress
+    }
+
+    override fun setBillingAddressWithIspu(billingAddress: AddressInformation) {
+        this.shippingAddress = billingAddress // sent only address box 1
+        createOrderWithIspu()
     }
     // endregion
 
@@ -237,7 +247,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     /*
-    * If no have province must force download province data
+    * If no have provinces data must force download province data
     * because in Branch detail page have to display about address
     * */
     private fun loadProvinceData() {
@@ -498,8 +508,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             return
         }
         val storeAddress = AddressInformation.createBranchAddress(branch!!)
-        HttpManagerMagento(this, true).createShippingInformation(cartId!!, storeAddress,
-                billingAddress
+        HttpManagerMagento(this, true)
+                .createShippingInformation(cartId!!, storeAddress, billingAddress
                         ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                 object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
@@ -842,6 +852,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
     // endregion
+
+    private fun createOrderWithIspu() {
+        val cacheCartItems = database.cacheCartItems
+        val item = cacheCartItems.find { it.branch != null }
+        if (item != null) {
+            this.branch = item.branch
+            this.deliveryOption = DeliveryOption.getStorePickupIspu() // create DeliveryOption Store Pickup ISPU
+
+            val storePickup = StorePickup(this.branch!!.storeId.toInt())
+            val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
+                    null, null, storePickup)
+            createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
+        }
+    }
 
     private fun getSpecialSKUList(): List<Long>? {
         return this.specialSKUList

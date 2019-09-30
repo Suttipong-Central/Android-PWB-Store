@@ -221,6 +221,7 @@
     <string name="t1_points">เมื่อซื้อ รับคะแนนเดอะวัน %d คะแนน</string>
     <string name="check_out">สั่งซื้อ</string>
     <string name="format_shopping_cart_ispu">รับที่สาขาตั้งเเต่ %s ที่</string>
+    <string name="btn_complete_order">สั่งซื้อสินค้า</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>

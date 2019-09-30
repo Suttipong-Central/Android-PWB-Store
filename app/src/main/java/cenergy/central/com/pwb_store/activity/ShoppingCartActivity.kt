@@ -54,6 +54,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var unit: String = ""
     private val database = RealmController.getInstance()
     private var hasChangingData: Boolean = false
+    private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -148,7 +149,9 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             cartDescriptionTextView.visibility = View.VISIBLE
             cartDescriptionTextView.text = getString(R.string.format_shopping_cart_ispu,
                     item.branch?.ispuDelivery)
+            checkoutType = CheckoutType.ISPU
         } else {
+            checkoutType = CheckoutType.NORMAL
             cartDescriptionTextView.visibility = View.GONE
         }
     }
@@ -275,7 +278,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         if (cartItemList.isNotEmpty()) {
             paymentButton.setButtonDisable(false)
             paymentButton.setOnClickListener {
-                PaymentActivity.intent(this)
+                PaymentActivity.startCheckout(this, checkoutType == CheckoutType.ISPU)
             }
         } else {
             paymentButton.setButtonDisable(true)
@@ -334,7 +337,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         } else {
             Log.d("On updateItem", "CartItem null.")
         }
-
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
