@@ -18,7 +18,7 @@ class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bindView(order: Order) {
         orderNumber.text = "${itemView.context.resources.getString(R.string.order_number)} ${order.orderId}"
-        orderDate.text = "${itemView.context.resources.getString(R.string.order_date_history)} ${order.createdAt}"
+        orderDate.text = "${itemView.context.getString(R.string.order_date_history)} ${order.getDisplayTimeCreated(itemView.context)}"
         orderMember.text = "${itemView.context.resources.getString(R.string.name_user_order)} ${order.memberName}"
     }
 }

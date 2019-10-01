@@ -10,9 +10,31 @@ fun Date.formatter(): String {
 
 fun Date.formatterUTC(defaultLanguage: String): String {
     val dateFormatter = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale(defaultLanguage))
-    val timezone = TimeZone.getTimeZone("GMT+7").id
-    dateFormatter.timeZone = TimeZone.getTimeZone(timezone)
+    dateFormatter.timeZone = TimeZone.getDefault()
     return dateFormatter.format(this)
+}
+
+// Format of Order success page
+fun String.toOrderDateTime(defaultLanguage: String): String {
+    val dateFormatter = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale(defaultLanguage))
+    dateFormatter.timeZone = TimeZone.getDefault()
+
+    // old data we save with "dd MMM yyyy, HH:mm:ss" :(
+    return try {
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        dateFormatter.format(formatter.parse(this))
+    } catch (e: Exception) {
+        dateFormatter.format(getLegacyOrderDate(this))
+    }
+}
+
+private fun getLegacyOrderDate(s: String): Date {
+    return try {
+        s.toDate("dd MMM yyyy, HH:mm:ss", "en")
+    } catch (e: Exception) {
+        s.toDate("dd MMM yyyy, HH:mm:ss", "TH")
+    }
 }
 
 fun Date.toDateText(): String {
@@ -25,8 +47,8 @@ fun String.toDate(): Date {
     return formatter.parse(this)
 }
 
-fun String.toDate(format: String): Date {
-    val formatter = SimpleDateFormat(format, Locale.ENGLISH)
+fun String.toDate(format: String, locale: String): Date {
+    val formatter = SimpleDateFormat(format, Locale(locale))
     formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.parse(this)
 }

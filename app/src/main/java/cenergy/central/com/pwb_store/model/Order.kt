@@ -1,9 +1,8 @@
 package cenergy.central.com.pwb_store.model
 
 import android.content.Context
-import cenergy.central.com.pwb_store.extensions.formatterUTC
-import cenergy.central.com.pwb_store.extensions.toDate
-import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailDescriptionBus
+import cenergy.central.com.pwb_store.extensions.toOrderDateTime
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -28,12 +27,18 @@ open class Order(
         var baseTotal: Double = 0.0,
         var shippingAmount: Double = 0.0
 ) : RealmObject() {
+
+    fun getDisplayTimeCreated(context: Context): String {
+        val language = PreferenceManager(context).getDefaultLanguage()
+        return createdAt.toOrderDateTime(language)
+    }
+
     companion object {
         const val FIELD_ORDER_ID = "orderId"
 
-        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, language: String) : Order {
+        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?): Order {
             return Order(orderId = orderResponse.orderId!!,
-                    createdAt = orderResponse.createdAt.toDate().formatterUTC(language),
+                    createdAt = orderResponse.createdAt,
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
                     shippingType = orderResponse.shippingType!!,
                     items = Order.asItems(orderResponse.items),
@@ -45,7 +50,7 @@ open class Order(
                     shippingAmount = orderResponse.shippingAmount)
         }
 
-        private fun asItems(items: RealmList<Item>?): RealmList<Item>{
+        private fun asItems(items: RealmList<Item>?): RealmList<Item> {
             return items ?: RealmList()
         }
     }
