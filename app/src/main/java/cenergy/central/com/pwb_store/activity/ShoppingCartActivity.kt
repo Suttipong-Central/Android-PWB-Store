@@ -25,6 +25,7 @@ import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -55,6 +56,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private val database = RealmController.getInstance()
     private var hasChangingData: Boolean = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
+    private var branch: Branch? = null
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -135,6 +137,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         updateTitle(0) // default title
 
         forceUpdateView()
+
+        // setup store name
+        storeNameTextView.setOnClickListener {
+            //TODO: set onclick store name
+        }
+
         backToShopButton.setOnClickListener {
             finishShippingCart()
         }
@@ -149,10 +157,13 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             cartDescriptionTextView.visibility = View.VISIBLE
             cartDescriptionTextView.text = getString(R.string.format_shopping_cart_ispu,
                     item.branch?.ispuDelivery)
-            checkoutType = CheckoutType.ISPU
+            storeNameTextView.text = item.branch?.storeName ?: ""
+            this.checkoutType = CheckoutType.ISPU
+            this.branch = item.branch
         } else {
             checkoutType = CheckoutType.NORMAL
             cartDescriptionTextView.visibility = View.GONE
+            this.branch = null
         }
     }
 
@@ -312,18 +323,19 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         hasChangingData = true
 
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, object : ApiResponseCallback<CartItem> {
-            override fun success(response: CartItem?) {
-                saveCartItemInLocal(response)
-                getCartItem()
-            }
+        HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch,
+                object : ApiResponseCallback<CartItem> {
+                    override fun success(response: CartItem?) {
+                        saveCartItemInLocal(response)
+                        getCartItem()
+                    }
 
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                showAlertDialog("", getString(R.string.exceeds_maximum))
-                getCartItem()
-            }
-        })
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", getString(R.string.exceeds_maximum))
+                        getCartItem()
+                    }
+                })
     }
 
     private fun deleteItemInLocal(itemId: Long) {

@@ -40,15 +40,28 @@
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/cartDescriptionTextView"
-            android:visibility="gone"
             style="@style/TextAppearance.AppCompat.Medium"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            tools:text="@string/format_shopping_cart_ispu"
-            app:layout_constraintTop_toBottomOf="@+id/txt_header_shopping_cart" />
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="@+id/txt_header_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/txt_header_shopping_cart"
+            tools:text="@string/format_shopping_cart_ispu" />
 
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/storeNameTextView"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTextColor"
+            android:layout_marginStart="@dimen/margin_padding_small"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@+id/cartDescriptionTextView"
+            app:layout_constraintTop_toBottomOf="@+id/txt_header_shopping_cart"
+            tools:text="Store" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_shopping_cart"
