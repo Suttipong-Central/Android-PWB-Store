@@ -38,10 +38,8 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
-import cenergy.central.com.pwb_store.model.response.BranchResponse
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
 import cenergy.central.com.pwb_store.utils.CartUtils
@@ -67,6 +65,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private val database = RealmController.getInstance()
     private var cartId: String? = null
     private var cartItemList: List<CartItem> = listOf()
+    private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
     private var pwbMembersList: List<PwbMember> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
@@ -399,12 +398,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun getCartItems() {
-        preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+        cacheCartItems[0].cartId?.let { cartId ->
+            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
                 override fun success(response: List<CartItem>?) {
-                    mProgressDialog?.dismiss()
                     if (response != null) {
                         cartItemList = response
+                        getItemTotal(cartId)
                     }
                 }
 
@@ -414,6 +413,24 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 }
             })
         }
+    }
+
+    fun getItemTotal(cartId: String){
+        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse>{
+            override fun success(response: CartTotalResponse?) {
+                mProgressDialog?.dismiss()
+                if (response != null) {
+                    cartTotal = response
+                } else {
+                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+            }
+        })
     }
 
     fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
@@ -776,6 +793,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // region {@link PaymentProtocol}
     override fun getItems(): List<CartItem> = this.cartItemList
 
+    override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
+
     override fun getPWBMembers(): List<PwbMember> = this.pwbMembersList
 
     override fun getPWBMemberByIndex(index: Int): PwbMember? {
@@ -833,7 +852,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         product2h?.let {
             CartUtils(this).addProduct2hToCart(it, branchResponse, object : AddProductToCartCallback {
                 override fun onSuccessfully() {
-                    ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                    ShoppingCartActivity.startActivity(this@PaymentActivity, database.cacheCartItems[0].cartId)
                 }
 
                 override fun forceClearCart() {
@@ -847,7 +866,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 override fun onFailure(dialog: Dialog) {
                     dialog.show()
                 }
-
             })
         }
     }

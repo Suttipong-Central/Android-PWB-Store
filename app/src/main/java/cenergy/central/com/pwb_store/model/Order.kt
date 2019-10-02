@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.model
 import android.content.Context
 import cenergy.central.com.pwb_store.extensions.toOrderDateTime
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -25,7 +26,9 @@ open class Order(
         var branchShipping: Branch? = null,
         var shippingDescription: String = "",
         var baseTotal: Double = 0.0,
-        var shippingAmount: Double = 0.0
+        var shippingAmount: Double = 0.0,
+        var discountPrice: Double = 0.0,
+        var total: Double = 0.0
 ) : RealmObject() {
 
     fun getDisplayTimeCreated(context: Context): String {
@@ -47,7 +50,9 @@ open class Order(
                     branchShipping = branchShipping,
                     shippingDescription = orderResponse.shippingDescription,
                     baseTotal = orderResponse.baseTotal,
-                    shippingAmount = orderResponse.shippingAmount)
+                    shippingAmount = orderResponse.shippingAmount,
+                    discountPrice = orderResponse.discount,
+                    total =  orderResponse.total)
         }
 
         private fun asItems(items: RealmList<Item>?): RealmList<Item> {

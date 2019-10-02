@@ -16,9 +16,11 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
@@ -27,13 +29,14 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.utils.CartUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.*
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
-import kotlin.math.roundToInt
 
 class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
@@ -44,6 +47,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var backToShopButton: PowerBuyBackButton
     private lateinit var paymentButton: PowerBuyIconButton
     private lateinit var searchImageView: ImageView
+    private lateinit var layoutDiscountPrice: LinearLayout
+    private lateinit var discountPrice: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var title: PowerBuyTextView
     private lateinit var tvT1: PowerBuyTextView
@@ -125,6 +130,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         mToolbar = findViewById(R.id.toolbar)
         searchImageView = findViewById(R.id.search_button)
         recycler = findViewById(R.id.recycler_view_shopping_cart)
+        layoutDiscountPrice = findViewById(R.id.layout_discount_shopping_cart)
+        discountPrice = findViewById(R.id.txt_discount_shopping_cart)
         totalPrice = findViewById(R.id.txt_total_price_shopping_cart)
         tvT1 = findViewById(R.id.txt_t1_shopping_cart)
         title = findViewById(R.id.txt_header_shopping_cart)
@@ -182,12 +189,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     //region {@link implement ShoppingCartAdapter.ShoppingCartListener }
-    override fun onDeleteItem(cartId: String, itemId: Long) {
-        deleteItem(cartId, itemId)
+    override fun onDeleteItem(itemId: Long) {
+        deleteItem(itemId)
     }
 
-    override fun onUpdateItem(cartId: String, itemId: Long, qty: Int) {
-        updateItem(cartId, itemId, qty)
+    override fun onUpdateItem(itemId: Long, qty: Int) {
+        updateItem(itemId, qty)
     }
     //end region
 
@@ -229,11 +236,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun getCartItem() {
-        HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
+        CartUtils(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
             override fun success(response: List<CartItem>?) {
                 if (response != null) {
-                    updateViewShoppingCart(response)
-                    mProgressDialog?.dismiss()
+                    getCartTotal(response)
                 } else {
                     mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
@@ -242,46 +248,47 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                if (error.errorCode == null) {
-                    showAlertDialog("", getString(R.string.not_connected_network))
-                } else {
-                    when (error.errorCode) {
-                        "408", "404" -> {
-                            showAlertDialog("", getString(R.string.server_not_found))
-                        }
-                        APIError.INTERNAL_SERVER_ERROR.toString() -> {
-                            clearCart()
-                            finish()
-                        }
-                        else -> showAlertDialog("", getString(R.string.some_thing_wrong))
-                    }
-                }
+                displayError(error)
             }
         })
     }
 
-    private fun updateViewShoppingCart(response: List<CartItem>) {
-        cartItemList = response
+    private fun getCartTotal(cartItems: List<CartItem>){
+        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse>{
+            override fun success(response: CartTotalResponse?) {
+                mProgressDialog?.dismiss()
+                if (response != null) {
+                    updateViewShoppingCart(cartItems, response)
+                } else {
+                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                displayError(error)
+            }
+
+        })
+    }
+
+    private fun updateViewShoppingCart(cartItems: List<CartItem>, shoppingCartResponse: CartTotalResponse) {
+        cartItemList = cartItems
         shoppingCartAdapter.cartItemList = cartItemList
 
-        var sum = 0
-        for (item in cartItemList) {
-            sum += item.qty ?: 0
-        }
-        updateTitle(sum)
-
-        var totalOfItems = 0.0
-        cartItemList.forEach { cartItem ->
-            val item = database.getCacheCartItem(cartItem.id)
-            if (item != null) {
-                totalOfItems += cartItem.qty!! * cartItem.price!!
-            }
-        }
-        val vat = totalOfItems * 0.07
-        val total = (totalOfItems + vat).roundToInt()
+        updateTitle(shoppingCartResponse.qty)
+        val total = shoppingCartResponse.totalPrice
         val t1Points = (total - (total % 50)) / 50
+        val discount = shoppingCartResponse.discountPrice.toStringDiscount()
+        if (discount > 0) {
+            layoutDiscountPrice.visibility = View.VISIBLE
+            discountPrice.text = getDisplayDiscount(unit, discount.toString())
+        } else {
+            layoutDiscountPrice.visibility = View.GONE
+        }
+
         totalPrice.text = getDisplayPrice(unit, total.toString())
-        tvT1.text = resources.getString(R.string.t1_points, t1Points)
+        tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
         checkCanClickPayment()
     }
 
@@ -296,46 +303,48 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun deleteItem(cartId: String, itemId: Long) {
+    private fun deleteItem(itemId: Long) {
         hasChangingData = true
-
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
-            override fun success(response: Boolean?) {
-                if (response == true) {
-                    deleteItemInLocal(itemId)
-                    getCartItem()
-                } else {
-                    Log.d("DeleteItem", "delete fail.")
-                    mProgressDialog?.dismiss()
+        preferenceManager.cartId?.let { cartId ->
+            HttpManagerMagento.getInstance(this).deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
+                override fun success(response: Boolean?) {
+                    if (response == true) {
+                        deleteItemInLocal(itemId)
+                        getCartItem()
+                    } else {
+                        Log.d("DeleteItem", "delete fail.")
+                        mProgressDialog?.dismiss()
+                    }
                 }
-            }
 
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                DialogHelper(this@ShoppingCartActivity).showErrorDialog(error)
-            }
+                override fun failure(error: APIError) {
+                    mProgressDialog?.dismiss()
+                    DialogHelper(this@ShoppingCartActivity).showErrorDialog(error)
+                }
 
-        })
+            })
+        }
     }
 
-    private fun updateItem(cartId: String, itemId: Long, qty: Int) {
+    private fun updateItem(itemId: Long, qty: Int) {
         hasChangingData = true
-
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch,
-                object : ApiResponseCallback<CartItem> {
-                    override fun success(response: CartItem?) {
-                        saveCartItemInLocal(response)
-                        getCartItem()
-                    }
+        preferenceManager.cartId?.let { cartId ->
+            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch,
+                    object : ApiResponseCallback<CartItem> {
+                        override fun success(response: CartItem?) {
+                            saveCartItemInLocal(response)
+                            getCartItem()
+                        }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        showAlertDialog("", getString(R.string.exceeds_maximum))
-                        getCartItem()
-                    }
-                })
+                        override fun failure(error: APIError) {
+                            mProgressDialog?.dismiss()
+                            showAlertDialog("", getString(R.string.exceeds_maximum))
+                            getCartItem()
+                        }
+                    })
+        }
     }
 
     private fun deleteItemInLocal(itemId: Long) {
@@ -357,6 +366,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
+    private fun getDisplayDiscount(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
     private fun showAlertDialog(title: String, message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
@@ -371,5 +385,23 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun clearCart() {
         database.deleteAllCacheCartItem()
         preferenceManager.clearCartId()
+    }
+
+
+    private fun displayError(error: APIError) {
+        if (error.errorCode == null) {
+            showAlertDialog("", getString(R.string.not_connected_network))
+        } else {
+            when (error.errorCode) {
+                "408", "404" -> {
+                    showAlertDialog("", getString(R.string.server_not_found))
+                }
+                APIError.INTERNAL_SERVER_ERROR.toString() -> {
+                    clearCart()
+                    finish()
+                }
+                else -> showAlertDialog("", getString(R.string.some_thing_wrong))
+            }
+        }
     }
 }

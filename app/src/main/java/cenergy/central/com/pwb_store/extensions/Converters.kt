@@ -52,3 +52,7 @@ fun Parcel.createLongList() : List<Long> {
     }
     return output
 }
+
+fun Double.toStringDiscount(): Double{
+    return this.toString().replace("-","").toDouble()
+}

@@ -545,6 +545,32 @@
             android:layout_marginBottom="16dp" />
 
         <LinearLayout
+            android:id="@+id/layout_discount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="6dp"
+            android:orientation="horizontal">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/discount"
+                android:textSize="18sp" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_discount"
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:textColor="@color/dangerColor"
+                android:textSize="18sp"
+                tools:text="4,404" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_total_shopping_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

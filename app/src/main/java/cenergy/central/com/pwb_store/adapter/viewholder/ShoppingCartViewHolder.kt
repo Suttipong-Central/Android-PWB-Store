@@ -81,7 +81,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         qtyAdepter.setCallback(object : QtyAdapter.QtyClickListener{
             override fun onQtyClickListener(qty: Int) {
                 productQty.clearAllFocus()
-                item.id?.let { itemId -> item.cartId?.let { listener?.onUpdateItem(it, itemId, qty) } }
+                item.id?.let { itemId -> listener?.onUpdateItem(itemId, qty) }
             }
         })
         productQty.setOnEnterKeyListener(object : View.OnKeyListener{
@@ -89,7 +89,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
                     productQty.clearAllFocus()
                     if (productQty.getText() != "" && productQty.getText().toInt() > 0) {
-                        item.id?.let { itemId -> item.cartId?.let { listener?.onUpdateItem(it, itemId, productQty.getText().toInt()) } }
+                        item.id?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt()) }
                     } else {
                         productQty.setText(item.qty.toString())
                         showAlertDialog("", itemView.context.getString(R.string.empty_value))
@@ -140,10 +140,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         val builder = AlertDialog.Builder(itemView.context, R.style.AlertDialogTheme)
         builder.setMessage(context.getString(R.string.title_confirm_delete_item))
         builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
-            cartItem.cartId?.let { cartId ->
-                cartItem.id?.let { itemId -> listener?.onDeleteItem(cartId, itemId) }
-                dialog?.dismiss()
-            }
+            cartItem.id?.let { itemId -> listener?.onDeleteItem(itemId) }
+            dialog?.dismiss()
         }
 
         builder.setNegativeButton(context.getString(R.string.no)) { dialog, _ -> dialog?.dismiss() }

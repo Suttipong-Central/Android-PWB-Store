@@ -653,24 +653,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun viewCart(cartId: String, callback: ApiResponseCallback<List<CartItem>>) {
-        val cartService = retrofit.create(CartService::class.java)
-        cartService.viewCart(getLanguage(), cartId).enqueue(object : Callback<List<CartItem>> {
-            override fun onResponse(call: Call<List<CartItem>>, response: Response<List<CartItem>>) {
-                if (response.isSuccessful) {
-                    val cartItemList = response.body()
-                    callback.success(cartItemList)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
-
-            override fun onFailure(call: Call<List<CartItem>>, t: Throwable) {
-                callback.failure(APIError(t))
-            }
-        })
-    }
-
     fun deleteItem(cartId: String, itemId: Long, callback: ApiResponseCallback<Boolean>) {
         val cartService = retrofit.create(CartService::class.java)
         cartService.deleteItem(cartId, itemId).enqueue(object : Callback<Boolean> {

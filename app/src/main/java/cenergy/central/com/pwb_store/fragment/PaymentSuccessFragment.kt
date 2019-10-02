@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
@@ -26,11 +27,13 @@ import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
 import cenergy.central.com.pwb_store.extensions.formatterUTC
 import cenergy.central.com.pwb_store.extensions.toDate
 import cenergy.central.com.pwb_store.extensions.toOrderDateTime
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -45,6 +48,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     // widget view
     private lateinit var recycler: RecyclerView
     private lateinit var orderNumber: PowerBuyTextView
+    private lateinit var discountPrice: PowerBuyTextView
+    private lateinit var discountTitle: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var orderDate: PowerBuyTextView
     private lateinit var name: PowerBuyTextView
@@ -74,7 +79,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var deliveryInfoLayout: LinearLayout
     private lateinit var billingEmailLayout: LinearLayout
     private lateinit var billingTelephoneLayout: LinearLayout
-    private lateinit var amountLayout: LinearLayout
+    private lateinit var amountLayout: ConstraintLayout
     private var mProgressDialog: ProgressDialog? = null
 
     // data
@@ -85,6 +90,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
     private var database = RealmController.getInstance()
     private var cacheOrder: Order? = null
+    private lateinit var cartTotal: CartTotalResponse
 
     // get data activity
     private lateinit var paymentListener: PaymentProtocol
@@ -126,6 +132,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             shippingInfo = paymentListener.getShippingAddress()
             billingInfo = paymentListener.getBillingAddress()
             branchAddress = paymentListener.getSelectedBranch()
+            cartTotal = paymentListener.getCartTotalResponse()
         } catch (e: Exception) {
             Log.d(TAG, e.toString())
         }
@@ -151,6 +158,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         showProgressDialog()
         recycler = rootView.findViewById(R.id.recycler_view_order_detail_list)
         orderNumber = rootView.findViewById(R.id.order_number_order_success)
+        discountPrice = rootView.findViewById(R.id.txt_discount_order_success)
+        discountTitle = rootView.findViewById(R.id.discount_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
         orderDate = rootView.findViewById(R.id.txt_order_date_order_success)
         tvShippingHeader = rootView.findViewById(R.id.shipping_header_order_success)
@@ -299,10 +308,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         // setup total or summary
+        val discount = order.discountPrice.toStringDiscount()
+        if (discount > 0) {
+            discountTitle.visibility = View.VISIBLE
+            discountPrice.visibility = View.VISIBLE
+            discountPrice.text = getDisplayDiscount(unit, discount.toString())
+        } else {
+            discountTitle.visibility = View.GONE
+            discountPrice.visibility = View.GONE
+        }
         totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
-        val amount = (order.baseTotal - order.shippingAmount)
-        tvAmount.text = getDisplayPrice(unit, amount.toString())
         tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
+        tvAmount.text = getDisplayPrice(unit, order.total.toString())
         mProgressDialog?.dismiss()
     }
 
@@ -359,6 +376,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
+    private fun getDisplayDiscount(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
     private fun showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = DialogUtils.createProgressDialog(context)
@@ -400,7 +422,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                     item.isFreebie = true
                 }
             }
-
             // save order to local database
             val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress)
             database.saveOrder(order, object : DatabaseListener{

@@ -24,6 +24,7 @@ import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -31,6 +32,7 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
@@ -65,6 +67,8 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingHomeRoadEdt: PowerBuyEditTextBorder
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
+    private lateinit var layoutDiscountPrice: LinearLayout
+    private lateinit var discountPrice: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
@@ -90,6 +94,7 @@ class PaymentBillingFragment : Fragment() {
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
+    private lateinit var cartTotal: CartTotalResponse
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private lateinit var paymentProtocol: PaymentProtocol
@@ -192,6 +197,7 @@ class PaymentBillingFragment : Fragment() {
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
         cartItemList = paymentProtocol.getItems()
+        cartTotal = paymentProtocol.getCartTotalResponse()
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
         checkoutType = paymentProtocol.getCheckType()
@@ -227,14 +233,14 @@ class PaymentBillingFragment : Fragment() {
         shoppingCartAdapter.cartItemList = this.cartItemList
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-        var total = 0.0
-        cartItemList.forEach {
-            if (database.getCacheCartItem(it.id) != null) {
-                total += it.qty!! * it.price!!
-            }
+        val discount = cartTotal.discountPrice.toStringDiscount()
+        if (discount > 0){
+            layoutDiscountPrice.visibility = View.VISIBLE
+            discountPrice.text = getDisplayDiscount(unit, discount.toString())
+        } else {
+            layoutDiscountPrice.visibility = View.GONE
         }
-        val vat = total * 0.07
-        totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
+        totalPrice.text = getDisplayPrice(unit, cartTotal.totalPrice.toString())
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
@@ -547,6 +553,8 @@ class PaymentBillingFragment : Fragment() {
         billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
+        layoutDiscountPrice = rootView.findViewById(R.id.layout_discount)
+        discountPrice = rootView.findViewById(R.id.txt_discount)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
@@ -840,6 +848,11 @@ class PaymentBillingFragment : Fragment() {
 
     private fun getDisplayPrice(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
+    private fun getDisplayDiscount(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 

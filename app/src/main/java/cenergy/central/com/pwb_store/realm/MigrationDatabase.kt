@@ -202,7 +202,7 @@ class MigrationDatabase : RealmMigration {
         // app version 1.0.13
         if (oldVersion < 8){
             // Update Branch model
-            realm.schema.get("Branch")?.apply {
+            val branchSchema = realm.schema.get("Branch")?.apply {
                 // Add ispuDelivery 'ispu_promise_delivery'
                 addField("ispuDelivery", String::class.java)
             }
@@ -210,7 +210,23 @@ class MigrationDatabase : RealmMigration {
             // Update CacheCartItem model
             realm.schema.get("CacheCartItem")?.apply {
                 // Add branch
-                addField("branch", Branch::class.java)
+                branchSchema?.let {
+                    addRealmObjectField("branch", it)
+                }
+            }
+
+            // Update Order model
+            realm.schema.get("Order")?.apply {
+                // Add discountPrice
+                addField("discountPrice", Double::class.java)
+                addField("total", Double::class.java)
+            }
+
+            // Update OrderResponse model
+            realm.schema.get("OrderResponse")?.apply {
+                // Add discount
+                addField("discount", Double::class.java)
+                addField("total", Double::class.java)
             }
         }
     }
