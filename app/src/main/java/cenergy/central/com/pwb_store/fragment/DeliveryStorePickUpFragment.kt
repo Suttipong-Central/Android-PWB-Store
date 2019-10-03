@@ -56,10 +56,18 @@ class DeliveryStorePickUpFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = LayoutInflater.from(context).inflate(R.layout.fragment_delivery_stores, container, false)
         this.displayItems = getMultiStorePickup()
-        // create fragment branch list
-        childFragmentManager.beginTransaction().replace(R.id.content_branches, branchesFragment, TAG_FRAGMENT_STORES).commit()
-        // create fragment branch detail
-        childFragmentManager.beginTransaction().replace(R.id.content_branch_detail, branchDetailFragment, TAG_FRAGMENT_STORE_DETAIL).commit()
+
+        if (this.items.isEmpty() || this.displayItems.isEmpty()) {
+            groupDisplay.visibility = View.GONE
+            storeListEmpty.visibility = View.VISIBLE
+        } else {
+            // create fragment branch list
+            childFragmentManager.beginTransaction().replace(R.id.content_branches, branchesFragment, TAG_FRAGMENT_STORES).commit()
+            // create fragment branch detail
+            childFragmentManager.beginTransaction().replace(R.id.content_branch_detail, branchDetailFragment, TAG_FRAGMENT_STORE_DETAIL).commit()
+            groupDisplay.visibility = View.VISIBLE
+            storeListEmpty.visibility = View.GONE
+        }
 
         return rootView
     }
@@ -75,7 +83,7 @@ class DeliveryStorePickUpFragment : Fragment() {
 
     private fun setupView() {
         titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_2hr_pickup)
-        branchesFragment.updateBranches(this.displayItems , checkoutType)
+        branchesFragment.updateBranches(this.displayItems, checkoutType)
     }
 
     /*
