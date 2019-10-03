@@ -215,14 +215,15 @@ class MigrationDatabase : RealmMigration {
             }
 
             // Add StorePickupList model
-            realm.schema.get("StorePickupList")?.apply {
+            realm.schema.create("StorePickupList")?.apply {
                 addField("sku", String::class.java)
                         .addPrimaryKey("sku")
-                        .setNullable("regionCode", false)
-                // Add branch
+                        .setNullable("sku", false)
+                // Add list branch
                 branchSchema?.let {
-                    addRealmObjectField("branch", it)
+                    addRealmListField("stores", it)
                 }
+
             }
 
             // Update Order model
