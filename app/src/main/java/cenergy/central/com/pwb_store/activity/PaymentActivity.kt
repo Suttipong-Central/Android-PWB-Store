@@ -838,7 +838,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-                val storePickup = StorePickup(branch.storeId.toInt())
+                val storePickup = StorePickup(branch.storeId)
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
                         null, null, storePickup)
                 // store shipping this case can be anything
@@ -883,7 +883,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             this.branch = item.branch
             this.deliveryOption = DeliveryOption.getStorePickupIspu() // create DeliveryOption Store Pickup ISPU
 
-            val storePickup = StorePickup(this.branch!!.storeId.toInt())
+            val storePickup = StorePickup(this.branch!!.storeId)
             val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
                     null, null, storePickup)
             createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)

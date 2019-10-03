@@ -14,5 +14,5 @@ class SubscribeCheckOut(
 
 class StorePickup(
         @SerializedName("store_id")
-        var storeId: Int
+        var storeId: String
 )

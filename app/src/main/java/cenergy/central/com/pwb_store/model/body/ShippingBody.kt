@@ -15,7 +15,7 @@ data class ShippingBody(@SerializedName("addressInformation")
 data class AddressInformationBody(@SerializedName("shipping_address")
                                   var shippingAddress: AddressInformation,
                                   @SerializedName("billing_address")
-                                  var billingAddress: AddressInformation,
+                                  var billingAddress: AddressInformation? = null,
                                   @SerializedName("shipping_method_code")
                                   var methodCode: String,
                                   @SerializedName("shipping_carrier_code")

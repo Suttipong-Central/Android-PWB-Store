@@ -717,12 +717,13 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     }
 
     fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation,
-                                  subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption, callback: ApiResponseCallback<ShippingInformationResponse>) {
+                                  subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption,
+                                  callback: ApiResponseCallback<ShippingInformationResponse>) {
 
         val cartService = retrofit.create(CartService::class.java)
 
         // clone shipping address and clear tax information
-        val newShoppingAddress = AddressInformation(
+        val newShippingAddress = AddressInformation(
                 city = shippingAddress.city,
                 region = shippingAddress.region,
                 regionId = shippingAddress.regionId,
@@ -739,7 +740,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 company = "",
                 vatId = "")
 
-        val addressInformationBody = AddressInformationBody(newShoppingAddress, billingAddress, deliveryOption.methodCode,
+        val addressInformationBody = AddressInformationBody(newShippingAddress, billingAddress, deliveryOption.methodCode,
                 deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
         cartService.createShippingInformation(getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
@@ -756,6 +757,33 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 callback.failure(APIError(t))
             }
         })
+    }
+
+    fun setSgippingInformation(cartId: String, storeAddress: AddressInformation,
+                               subscribeCheckOut: SubscribeCheckOut,
+                               deliveryOption: DeliveryOption,
+                               callback: ApiResponseCallback<ShippingInformationResponse>) {
+
+        val addressInformationBody = AddressInformationBody(storeAddress, null,
+                deliveryOption.methodCode, deliveryOption.carrierCode, subscribeCheckOut)
+        val shippingBody = ShippingBody(addressInformationBody)
+
+        cartService.createShippingInformation(getLanguage(), cartId, shippingBody)
+                .enqueue(object : Callback<ShippingInformationResponse> {
+                    override fun onResponse(call: Call<ShippingInformationResponse>?,
+                                            response: Response<ShippingInformationResponse>?) {
+                        if (response != null && response.isSuccessful) {
+                            val shippingInformation = response.body()
+                            callback.success(shippingInformation)
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
+                        callback.failure(APIError(t))
+                    }
+                })
     }
 
     fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {

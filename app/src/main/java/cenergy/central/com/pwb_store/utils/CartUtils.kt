@@ -10,15 +10,13 @@ import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
+import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import retrofit2.Call
@@ -121,7 +119,12 @@ class CartUtils(private val context: Context) {
         HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {
                     override fun success(response: CartItem?) {
-                        response?.let { saveCartItem(context, it, product, branchResponse) }
+                        if (branchResponse != null) {
+                            response?.let { setShippingAddress(cartId, it, product, branchResponse!!) }
+                        } else {
+                            // product normal
+                            response?.let { saveCartItem(it, product, branchResponse) }
+                        }
                     }
 
                     override fun failure(error: APIError) {
@@ -134,7 +137,27 @@ class CartUtils(private val context: Context) {
                 })
     }
 
-    private fun saveCartItem(context: Context, cartItem: CartItem, product: Product,
+    private fun setShippingAddress(cartId: String, cartItem: CartItem, product: Product,
+                                   branchResponse: BranchResponse) {
+        val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
+        val storePickup = StorePickup(branchResponse.branch.storeId)
+        val subscribeCheckOut = SubscribeCheckOut("", null,
+                null, null, storePickup)
+
+        HttpManagerMagento.getInstance(context).setSgippingInformation(cartId,
+                storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
+                object : ApiResponseCallback<ShippingInformationResponse> {
+                    override fun success(response: ShippingInformationResponse?) {
+                        saveCartItem(cartItem, product, branchResponse)
+                    }
+
+                    override fun failure(error: APIError) {
+                        callback?.onFailure(error.errorMessage)
+                    }
+                })
+    }
+
+    private fun saveCartItem(cartItem: CartItem, product: Product,
                              branchResponse: BranchResponse? = null) {
         // create cacheCartItem
         val cacheCartItem = if (branchResponse != null) {
