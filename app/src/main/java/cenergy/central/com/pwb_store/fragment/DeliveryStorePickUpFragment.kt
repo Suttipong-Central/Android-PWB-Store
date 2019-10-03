@@ -9,13 +9,17 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.extensions.getDiff
+import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.response.BranchResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import kotlinx.android.synthetic.main.fragment_delivery_stores.*
 
 class DeliveryStorePickUpFragment : Fragment() {
 
     private var listener: PaymentProtocol? = null
     private var items: ArrayList<BranchResponse> = arrayListOf()
+    private var displayItems: ArrayList<BranchResponse> = arrayListOf()
     private val branchesFragment = BranchesFragment.newInstance()
     private val branchDetailFragment = BranchDetailFragment.newInstance()
     private var checkoutType = CheckoutType.NORMAL
@@ -51,6 +55,7 @@ class DeliveryStorePickUpFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = LayoutInflater.from(context).inflate(R.layout.fragment_delivery_stores, container, false)
+        this.displayItems = getMultiStorePickup()
         // create fragment branch list
         childFragmentManager.beginTransaction().replace(R.id.content_branches, branchesFragment, TAG_FRAGMENT_STORES).commit()
         // create fragment branch detail
@@ -70,6 +75,44 @@ class DeliveryStorePickUpFragment : Fragment() {
 
     private fun setupView() {
         titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_2hr_pickup)
-        branchesFragment.updateBranches(items, checkoutType)
+        branchesFragment.updateBranches(this.displayItems , checkoutType)
+    }
+
+    /*
+    * Logic display store pick up
+    * */
+    private fun getMultiStorePickup(): ArrayList<BranchResponse> {
+        val multiStorePickup = RealmController.getInstance().storePickupLists
+
+        return if (multiStorePickup != null && multiStorePickup.isNotEmpty()) {
+            if (items.isEmpty()) return items // isEmpty?
+
+            val storesList = arrayListOf<List<Branch>>()
+            val stores = arrayListOf<Branch>()
+            items.mapTo(stores, { it.branch })
+
+            // add current store pickup
+            storesList.add(stores)
+
+            // add store pick from cache
+            multiStorePickup.forEach {
+                storesList.add(it.stores)
+            }
+
+            val newItem = arrayListOf<BranchResponse>()
+            val diffStores = storesList.getDiff()
+
+            items.forEach { branchResponse ->
+                val result = diffStores.find { it.storeId == branchResponse.branch.storeId }
+                if (result != null) {
+                    newItem.add(branchResponse)
+                }
+            }
+
+            return newItem
+        } else {
+            items
+        }
+
     }
 }

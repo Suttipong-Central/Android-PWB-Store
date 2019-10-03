@@ -387,11 +387,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun startAddToCart(product: Product, options: ArrayList<OptionBody>) {
         this.product = product
         showProgressDialog()
-//        if (cartId != null) {
-//            addProductToCart(cartId, product, listOptionsBody)
-//        } else {
-//            retrieveCart(product, listOptionsBody)
-//        }
         CartUtils(this).addProductToCart(product, options, object : AddProductToCartCallback{
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
@@ -408,58 +403,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
             override fun onFailure(dialog: Dialog) {
                 if (!isFinishing) { dialog.show() }
-            }
-        })
-    }
-
-    private fun retrieveCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {
-        HttpManagerMagento.getInstance(this).getCart(object : ApiResponseCallback<String?> {
-            override fun success(response: String?) {
-                if (response != null) {
-                    preferenceManager.setCartId(response)
-                    addProductToCart(response, product, listOptionsBody)
-                }
-            }
-
-            override fun failure(error: APIError) {
-                dismissProgressDialog()
-                DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-            }
-        })
-    }
-
-    private fun addProductToCart(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>) {
-        val cartItemBody = CartItemBody.create(cartId, product, listOptionsBody)
-        HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
-            override fun success(response: CartItem?) {
-                runOnUiThread {
-                    saveCartItem(response, product)
-                    dismissProgressDialog()
-                }
-            }
-
-            override fun failure(error: APIError) {
-                dismissProgressDialog()
-                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
-                    showClearCartDialog()
-                } else {
-                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-                }
-            }
-        })
-    }
-
-    private fun saveCartItem(cartItem: CartItem?, product: Product) {
-        database.saveCartItem(CacheCartItem.asCartItem(cartItem!!, product), object : DatabaseListener {
-            override fun onSuccessfully() {
-                updateShoppingCartBadge()
-                Toast.makeText(this@ProductDetailActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
-//                checkDisableAddProductButton(product)
-            }
-
-            override fun onFailure(error: Throwable) {
-                dismissProgressDialog()
-                showAlertDialog("", "" + error.message)
             }
         })
     }

@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.realm
 
-import cenergy.central.com.pwb_store.model.Branch
 import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
@@ -200,7 +199,7 @@ class MigrationDatabase : RealmMigration {
         }
 
         // app version 1.0.13
-        if (oldVersion < 8){
+        if (oldVersion < 8) {
             // Update Branch model
             val branchSchema = realm.schema.get("Branch")?.apply {
                 // Add ispuDelivery 'ispu_promise_delivery'
@@ -209,6 +208,17 @@ class MigrationDatabase : RealmMigration {
 
             // Update CacheCartItem model
             realm.schema.get("CacheCartItem")?.apply {
+                // Add branch
+                branchSchema?.let {
+                    addRealmObjectField("branch", it)
+                }
+            }
+
+            // Add StorePickupList model
+            realm.schema.get("StorePickupList")?.apply {
+                addField("sku", String::class.java)
+                        .addPrimaryKey("sku")
+                        .setNullable("regionCode", false)
                 // Add branch
                 branchSchema?.let {
                     addRealmObjectField("branch", it)

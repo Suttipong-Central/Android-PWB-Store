@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.utils
 import android.app.Dialog
 import android.content.Context
 import android.widget.Toast
-import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
 import cenergy.central.com.pwb_store.helpers.DialogHelper
@@ -19,6 +18,7 @@ import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
+import io.realm.RealmList
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +27,7 @@ class CartUtils(private val context: Context) {
     private val prefManager: PreferenceManager = PreferenceManager(context)
     private var callback: AddProductToCartCallback? = null
     private var branchResponse: BranchResponse? = null
+    private var branchResponses: List<BranchResponse>? = null
     private var options: ArrayList<OptionBody> = arrayListOf()
     private var language = prefManager.getDefaultLanguage()
 
@@ -41,6 +42,7 @@ class CartUtils(private val context: Context) {
         val cartId = prefManager.cartId
         this.options = options
         this.branchResponse = null // force no have branch
+        this.branchResponses = null
 
         if (cartId != null) {
             requestAddToCart(cartId, product)
@@ -50,8 +52,10 @@ class CartUtils(private val context: Context) {
     }
 
     fun addProduct2hToCart(product: Product, branchResponse: BranchResponse,
+                           branchResponses: List<BranchResponse>,
                            callback: AddProductToCartCallback) {
         this.branchResponse = branchResponse
+        this.branchResponses = branchResponses
         this.callback = callback
 
         val cartId = prefManager.cartId
@@ -160,24 +164,38 @@ class CartUtils(private val context: Context) {
     private fun saveCartItem(cartItem: CartItem, product: Product,
                              branchResponse: BranchResponse? = null) {
         // create cacheCartItem
-        val cacheCartItem = if (branchResponse != null) {
-            CacheCartItem.asCartItem(cartItem, product, branchResponse)
+        if (branchResponse != null) {
+            val cacheCartItem = CacheCartItem.asCartItem(cartItem, product, branchResponse)
+            // Save Store Pick up
+            val stores = RealmList<Branch>()
+            this.branchResponses?.mapTo(stores, { it.branch })
+            RealmController.getInstance().saveCartItem(cacheCartItem, StorePickupList(product.sku, stores),
+                    object : DatabaseListener {
+                        override fun onSuccessfully() {
+                            Toast.makeText(context, context.getString(R.string.added_to_cart),
+                                    Toast.LENGTH_SHORT).show()
+                            callback?.onSuccessfully()
+                        }
+
+                        override fun onFailure(error: Throwable) {
+                            error.message?.let { callback?.onFailure(it) }
+                        }
+                    })
         } else {
-            CacheCartItem.asCartItem(cartItem, product)
+            val cacheCartItem = CacheCartItem.asCartItem(cartItem, product)
+            RealmController.getInstance().saveCartItem(cacheCartItem,
+                    object : DatabaseListener {
+                        override fun onSuccessfully() {
+                            Toast.makeText(context, context.getString(R.string.added_to_cart),
+                                    Toast.LENGTH_SHORT).show()
+                            callback?.onSuccessfully()
+                        }
+
+                        override fun onFailure(error: Throwable) {
+                            error.message?.let { callback?.onFailure(it) }
+                        }
+                    })
         }
-
-        RealmController.getInstance().saveCartItem(cacheCartItem,
-                object : DatabaseListener {
-                    override fun onSuccessfully() {
-                        Toast.makeText(context, context.getString(R.string.added_to_cart),
-                                Toast.LENGTH_SHORT).show()
-                        callback?.onSuccessfully()
-                    }
-
-                    override fun onFailure(error: Throwable) {
-                        error.message?.let { callback?.onFailure(it) }
-                    }
-                })
     }
 
     fun viewCart(cartId: String, callback: ApiResponseCallback<CartResponse>) {

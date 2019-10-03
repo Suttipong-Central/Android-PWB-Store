@@ -40,6 +40,7 @@ import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.*
+import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
 import cenergy.central.com.pwb_store.utils.CartUtils
@@ -48,6 +49,7 @@ import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
+import io.realm.RealmList
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -415,8 +417,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    fun getItemTotal(cartId: String){
-        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse>{
+    fun getItemTotal(cartId: String) {
+        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
             override fun success(response: CartTotalResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
@@ -528,21 +530,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         HttpManagerMagento(this, true)
                 .createShippingInformation(cartId!!, storeAddress, billingAddress
                         ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
-                object : ApiResponseCallback<ShippingInformationResponse> {
-                    override fun success(response: ShippingInformationResponse?) {
-                        mProgressDialog?.dismiss()
-                        if (response != null) {
-                            handleShippingInforSuccess(type, response.paymentMethods)
-                        } else {
-                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                        }
-                    }
+                        object : ApiResponseCallback<ShippingInformationResponse> {
+                            override fun success(response: ShippingInformationResponse?) {
+                                mProgressDialog?.dismiss()
+                                if (response != null) {
+                                    handleShippingInforSuccess(type, response.paymentMethods)
+                                } else {
+                                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                }
+                            }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
-                    }
-                })
+                            override fun failure(error: APIError) {
+                                mProgressDialog?.dismiss()
+                                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                            }
+                        })
     }
 
     private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
@@ -851,7 +853,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         //TODO: Add product with store to cart
         showProgressDialog()
         product2h?.let {
-            CartUtils(this).addProduct2hToCart(it, branchResponse, object : AddProductToCartCallback {
+            CartUtils(this).addProduct2hToCart(it, branchResponse, branches,
+                    object : AddProductToCartCallback {
                 override fun onSuccessfully() {
                     mProgressDialog?.dismiss()
                     ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
