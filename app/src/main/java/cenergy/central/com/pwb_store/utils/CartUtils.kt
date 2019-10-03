@@ -2,9 +2,9 @@ package cenergy.central.com.pwb_store.utils
 
 import android.app.Dialog
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -96,25 +96,22 @@ class CartUtils(private val context: Context) {
             requestAddToCart(cartId, product, cartItemBody)
         } else {
             // is product ispu
-            when (product.isTwoHourProduct()) {
-                true -> {
-                    if (cacheCartItems.hasProduct2h()) {
-                        val body = CartItemBody.create(cartId, product, branchResponse!!)  // ispu
-                        requestAddToCart(cartId, product, body)
-                    } else {
-                        clearCartAndRecreateCart(product)
-                    }
+            if (branchResponse != null) {
+                if (cacheCartItems.hasProduct2h()) {
+                    val body = CartItemBody.create(cartId, product, branchResponse!!)  // ispu
+                    requestAddToCart(cartId, product, body)
+                } else {
+                    clearCartAndRecreateCart(product)
                 }
-                else -> {
-                    // product normal
-                    if (cacheCartItems.hasProduct2h()) {
-                        clearCartAndRecreateCart(product)
-                    } else {
-                        val body = CartItemBody.create(cartId, product, options)  // normal
-                        requestAddToCart(cartId, product, body)
-                    }
+            } else {
+                // product normal
+                if (cacheCartItems.hasProduct2h()) {
+                    clearCartAndRecreateCart(product)
+                } else {
+                    val body = CartItemBody.create(cartId, product, options)  // normal
+                    requestAddToCart(cartId, product, body)
+                }
 
-                }
             }
         }
     }
@@ -231,7 +228,7 @@ class CartUtils(private val context: Context) {
     }
 
     private fun clearCartAndRecreateCart(product: Product) {
-        db.deleteAllCacheCartItem(object : DatabaseListener {
+        RealmController.getInstance().deleteAllCacheCartItem(object : DatabaseListener {
             override fun onSuccessfully() {
                 prefManager.clearCartId()
                 cacheCartItems = db.cacheCartItems
@@ -240,6 +237,8 @@ class CartUtils(private val context: Context) {
 
             override fun onFailure(error: Throwable) {
                 // TODO: handle on create cart
+                Log.d("CartUtils", error.message)
+                callback?.onFailure(error.localizedMessage)
             }
         })
     }

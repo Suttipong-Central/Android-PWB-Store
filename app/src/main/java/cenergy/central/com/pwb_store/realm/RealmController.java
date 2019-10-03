@@ -263,9 +263,9 @@ public class RealmController {
         realm.executeTransactionAsync(it ->
         {
             // Delete Store Pickup List
-            realm.where(StorePickupList.class).findAll().deleteAllFromRealm();
+            it.where(StorePickupList.class).findAll().deleteAllFromRealm();
             // Delete Cache Cart Item
-            realm.where(CacheCartItem.class).findAll().deleteAllFromRealm();
+            it.where(CacheCartItem.class).findAll().deleteAllFromRealm();
         }, () -> {
             if (listener != null) {
                 listener.onSuccessfully();
