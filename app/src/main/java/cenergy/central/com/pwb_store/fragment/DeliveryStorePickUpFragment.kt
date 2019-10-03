@@ -57,17 +57,12 @@ class DeliveryStorePickUpFragment : Fragment() {
         val rootView = LayoutInflater.from(context).inflate(R.layout.fragment_delivery_stores, container, false)
         this.displayItems = getMultiStorePickup()
 
-        if (this.items.isEmpty() || this.displayItems.isEmpty()) {
-            groupDisplay.visibility = View.GONE
-            storeListEmpty.visibility = View.VISIBLE
-        } else {
-            // create fragment branch list
-            childFragmentManager.beginTransaction().replace(R.id.content_branches, branchesFragment, TAG_FRAGMENT_STORES).commit()
-            // create fragment branch detail
-            childFragmentManager.beginTransaction().replace(R.id.content_branch_detail, branchDetailFragment, TAG_FRAGMENT_STORE_DETAIL).commit()
-            groupDisplay.visibility = View.VISIBLE
-            storeListEmpty.visibility = View.GONE
-        }
+        // create fragment branch list
+        childFragmentManager.beginTransaction().replace(R.id.content_branches,
+                branchesFragment, TAG_FRAGMENT_STORES).commitAllowingStateLoss()
+        // create fragment branch detail
+        childFragmentManager.beginTransaction().replace(R.id.content_branch_detail,
+                branchDetailFragment, TAG_FRAGMENT_STORE_DETAIL).commitAllowingStateLoss()
 
         return rootView
     }
@@ -82,6 +77,16 @@ class DeliveryStorePickUpFragment : Fragment() {
     }
 
     private fun setupView() {
+
+        if (this.items.isEmpty() || this.displayItems.isEmpty()) {
+            groupDisplay.visibility = View.GONE
+            storeListEmpty.visibility = View.VISIBLE
+        } else {
+
+            groupDisplay.visibility = View.VISIBLE
+            storeListEmpty.visibility = View.GONE
+        }
+
         titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_2hr_pickup)
         branchesFragment.updateBranches(this.displayItems, checkoutType)
     }
