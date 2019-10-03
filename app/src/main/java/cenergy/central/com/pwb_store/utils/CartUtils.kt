@@ -5,6 +5,7 @@ import android.content.Context
 import android.widget.Toast
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -31,6 +32,10 @@ class CartUtils(private val context: Context) {
     private var options: ArrayList<OptionBody> = arrayListOf()
     private var language = prefManager.getDefaultLanguage()
 
+    // data
+    private val db = RealmController.getInstance()
+    private var cacheCartItems = db.cacheCartItems
+
     fun addProductToCart(product: Product,
                          options: ArrayList<OptionBody> = arrayListOf(),
                          callback: AddProductToCartCallback) {
@@ -50,6 +55,7 @@ class CartUtils(private val context: Context) {
                            callback: AddProductToCartCallback) {
         this.branchResponse = branchResponse
         this.callback = callback
+
         val cartId = prefManager.cartId
 
         if (cartId != null) {
@@ -60,7 +66,6 @@ class CartUtils(private val context: Context) {
     }
 
     private fun retrieveCart(product: Product) {
-        val prefManager = PreferenceManager(context)
         HttpManagerMagento.getInstance(context).getCart(object : ApiResponseCallback<String?> {
             override fun success(response: String?) {
                 if (response != null) {
@@ -79,13 +84,40 @@ class CartUtils(private val context: Context) {
     }
 
     private fun requestAddToCart(cartId: String, product: Product) {
-        val cartItemBody = if (branchResponse != null) {
-            // ispu
-            CartItemBody.create(cartId, product, branchResponse!!)
-        } else{
-            // normal
-            CartItemBody.create(cartId, product, options)
+        // is empty cart?
+        if (cacheCartItems == null || cacheCartItems.isEmpty()) {
+            val cartItemBody = if (branchResponse != null) {
+                CartItemBody.create(cartId, product, branchResponse!!)  // ispu
+            } else {
+                CartItemBody.create(cartId, product, options) // normal
+            }
+            requestAddToCart(cartId, product, cartItemBody)
+        } else {
+            // is product ispu
+            when (product.isTwoHourProduct()) {
+                true -> {
+                    if (cacheCartItems.hasProduct2h()) {
+                        val body = CartItemBody.create(cartId, product, branchResponse!!)  // ispu
+                        requestAddToCart(cartId, product, body)
+                    } else {
+                        clearCartAndRecreateCart(product)
+                    }
+                }
+                else -> {
+                    // product normal
+                    if (cacheCartItems.hasProduct2h()) {
+                        clearCartAndRecreateCart(product)
+                    } else {
+                        val body = CartItemBody.create(cartId, product, options)  // normal
+                        requestAddToCart(cartId, product, body)
+                    }
+
+                }
+            }
         }
+    }
+
+    private fun requestAddToCart(cartId: String, product: Product, cartItemBody: CartItemBody) {
         HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {
                     override fun success(response: CartItem?) {
@@ -141,7 +173,7 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotalResponse>){
+    fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotalResponse>) {
         HttpManagerMagento(context).cartService.viewCartTotal(Constants.CLIENT_MAGENTO, language, cartId).enqueue(object : Callback<CartTotalResponse> {
             override fun onResponse(call: Call<CartTotalResponse>, response: Response<CartTotalResponse>) {
                 if (response.body() != null && response.isSuccessful) {
@@ -155,6 +187,29 @@ class CartUtils(private val context: Context) {
                 callback.failure(APIError(t))
             }
         })
+    }
+
+    private fun clearCartAndRecreateCart(product: Product) {
+        db.deleteAllCacheCartItem(object : DatabaseListener {
+            override fun onSuccessfully() {
+                prefManager.clearCartId()
+                cacheCartItems = db.cacheCartItems
+                retrieveCart(product)
+            }
+
+            override fun onFailure(error: Throwable) {
+                // TODO: handle on create cart
+            }
+        })
+    }
+
+    private fun List<CacheCartItem>.hasProduct2h(): Boolean {
+        if (cacheCartItems == null || cacheCartItems.isEmpty()) {
+            return false
+        }
+
+        val item = cacheCartItems.find { it.branch != null }
+        return item != null
     }
 }
 

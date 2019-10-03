@@ -240,28 +240,31 @@ public class RealmController {
             }
         });
     }
+
+    public void deleteAllCacheCartItem(final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(it ->
+                it.where(CacheCartItem.class).findAll().deleteAllFromRealm(), () -> {
+            if (listener != null) {
+                listener.onSuccessfully();
+            }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
+            }
+        });
+    }
     // endregion
 
     // region Order
     public void saveOrder(final Order order, final DatabaseListener listener) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                realm.copyToRealmOrUpdate(order);
+        realm.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(order), () -> {
+            if (listener != null) {
+                listener.onSuccessfully();
             }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                if (listener != null) {
-                    listener.onSuccessfully();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                if (listener != null) {
-                    listener.onFailure(error);
-                }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
             }
         });
     }

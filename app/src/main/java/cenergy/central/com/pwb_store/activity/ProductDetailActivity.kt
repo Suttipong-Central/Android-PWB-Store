@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.NetworkInfo
@@ -31,7 +32,10 @@ import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
+import cenergy.central.com.pwb_store.utils.CartUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
@@ -380,15 +384,32 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // end region
 
     // region action add product to cart
-    private fun startAddToCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {
+    private fun startAddToCart(product: Product, options: ArrayList<OptionBody>) {
         this.product = product
         showProgressDialog()
-        val cartId = preferenceManager.cartId
-        if (cartId != null) {
-            addProductToCart(cartId, product, listOptionsBody)
-        } else {
-            retrieveCart(product, listOptionsBody)
-        }
+//        if (cartId != null) {
+//            addProductToCart(cartId, product, listOptionsBody)
+//        } else {
+//            retrieveCart(product, listOptionsBody)
+//        }
+        CartUtils(this).addProductToCart(product, options, object : AddProductToCartCallback{
+            override fun onSuccessfully() {
+                updateShoppingCartBadge()
+                dismissProgressDialog()
+            }
+
+            override fun forceClearCart() {
+                showClearCartDialog()
+            }
+
+            override fun onFailure(messageError: String) {
+                showCommonDialog(messageError)
+            }
+
+            override fun onFailure(dialog: Dialog) {
+                if (!isFinishing) { dialog.show() }
+            }
+        })
     }
 
     private fun retrieveCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {

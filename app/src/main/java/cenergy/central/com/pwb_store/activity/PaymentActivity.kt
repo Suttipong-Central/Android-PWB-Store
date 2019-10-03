@@ -849,22 +849,27 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun addProduct2hToCart(branchResponse: BranchResponse) {
         //TODO: Add product with store to cart
+        showProgressDialog()
         product2h?.let {
             CartUtils(this).addProduct2hToCart(it, branchResponse, object : AddProductToCartCallback {
-                override fun onSuccessfully() {
-                    ShoppingCartActivity.startActivity(this@PaymentActivity, database.cacheCartItems[0].cartId)
+                override fun onSuccessfully() {       mProgressDialog?.dismiss()
+                    ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                    finish()
                 }
 
                 override fun forceClearCart() {
                     //TODO: show dialog for clear cart
+                    mProgressDialog?.dismiss()
                 }
 
                 override fun onFailure(messageError: String) {
                     showCommonDialog(messageError)
+                    mProgressDialog?.dismiss()
                 }
 
                 override fun onFailure(dialog: Dialog) {
                     dialog.show()
+                    mProgressDialog?.dismiss()
                 }
             })
         }
