@@ -398,11 +398,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun getCartItems() {
-        cacheCartItems[0].cartId?.let { cartId ->
-            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-                override fun success(response: List<CartItem>?) {
+        preferenceManager.cartId?.let { cartId ->
+            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
+                override fun success(response: CartResponse?) {
                     if (response != null) {
-                        cartItemList = response
+                        cartItemList = response.items
                         getItemTotal(cartId)
                     }
                 }
@@ -852,7 +852,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         showProgressDialog()
         product2h?.let {
             CartUtils(this).addProduct2hToCart(it, branchResponse, object : AddProductToCartCallback {
-                override fun onSuccessfully() {       mProgressDialog?.dismiss()
+                override fun onSuccessfully() {
+                    mProgressDialog?.dismiss()
                     ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
                     finish()
                 }

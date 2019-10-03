@@ -69,6 +69,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var tvBillingEmail: PowerBuyTextView
     private lateinit var tvDeliveryInfo: PowerBuyTextView
     private lateinit var tvAmount: TextView
+    private lateinit var shippingTitle: TextView
     private lateinit var tvShippingAmount: TextView
     private lateinit var finishButton: PowerBuyIconButton
     private lateinit var storeAddressLayout: LinearLayout
@@ -79,7 +80,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var deliveryInfoLayout: LinearLayout
     private lateinit var billingEmailLayout: LinearLayout
     private lateinit var billingTelephoneLayout: LinearLayout
-    private lateinit var amountLayout: ConstraintLayout
     private var mProgressDialog: ProgressDialog? = null
 
     // data
@@ -171,6 +171,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvBillingTelephone = rootView.findViewById(R.id.txt_billing_tel_order_success)
         tvBillingEmail = rootView.findViewById(R.id.txt_billing_email_order_success)
         tvDeliveryInfo = rootView.findViewById(R.id.txt_delivery_option_order_success)
+        shippingTitle = rootView.findViewById(R.id.delivery_price_order_success)
         tvShippingAmount = rootView.findViewById(R.id.txt_delivery_price_order_success)
         tvAmount = rootView.findViewById(R.id.txt_total_order_success)
 
@@ -182,7 +183,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         billingTelephoneLayout = rootView.findViewById(R.id.billingTelephoneLayout)
         deliveryLayout = rootView.findViewById(R.id.deliveryLayout)
         staffIconLayout = rootView.findViewById(R.id.staffIconLayout)
-        amountLayout = rootView.findViewById(R.id.amountLayout)
 
         // customer
         name = rootView.findViewById(R.id.txt_name_order_success)
@@ -252,7 +252,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             deliveryLayout.visibility = View.VISIBLE
             billingAddressLayout.visibility = View.VISIBLE
             deliveryInfoLayout.visibility = View.VISIBLE
-            amountLayout.visibility = View.VISIBLE
             storeAddressLayout.visibility = View.GONE
             customerNameLayout.visibility = View.GONE
 
@@ -290,7 +289,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             deliveryLayout.visibility = View.GONE
             billingAddressLayout.visibility = View.GONE
             deliveryInfoLayout.visibility = View.GONE
-            amountLayout.visibility = View.GONE
             storeAddressLayout.visibility = View.VISIBLE
             customerNameLayout.visibility = View.VISIBLE
 
@@ -309,16 +307,13 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
         // setup total or summary
         val discount = order.discountPrice.toStringDiscount()
-        if (discount > 0) {
-            discountTitle.visibility = View.VISIBLE
-            discountPrice.visibility = View.VISIBLE
-            discountPrice.text = getDisplayDiscount(unit, discount.toString())
-        } else {
-            discountTitle.visibility = View.GONE
-            discountPrice.visibility = View.GONE
-        }
-        totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
+        discountTitle.visibility = if (discount > 0) View.VISIBLE else View.GONE
+        discountPrice.visibility = if (discount > 0) View.VISIBLE else View.GONE
+        discountPrice.text = getDisplayDiscount(unit, discount.toString())
+        shippingTitle.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
+        tvShippingAmount.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
         tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
+        totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
         tvAmount.text = getDisplayPrice(unit, order.total.toString())
         mProgressDialog?.dismiss()
     }

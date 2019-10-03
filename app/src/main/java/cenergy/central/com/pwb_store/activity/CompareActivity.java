@@ -136,7 +136,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     @Override
     public void onShoppingCartClick(View view) {
         if (database.getCacheCartItems().size() > 0) {
-            ShoppingCartActivity.Companion.startActivity(this, view, database.getCacheCartItems().get(0).getCartId());
+            ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
         }

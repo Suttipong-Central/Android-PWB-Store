@@ -29,6 +29,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.CartUtils
@@ -62,6 +63,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var hasChangingData: Boolean = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
     private var branch: Branch? = null
+    private var cartResponse: CartResponse? = null
 
     companion object {
         private const val CART_ID = "CART_ID"
@@ -158,13 +160,15 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun update2hDelivery() {
         // is Checkout ISPU?
         val cacheCartItems = database.cacheCartItems
+        val retailer = cartResponse?.extension?.retailer
         if (cacheCartItems != null && cacheCartItems.isNotEmpty() &&
-                cacheCartItems[0].branch != null) {
+                cacheCartItems[0].branch != null && retailer != null) {
             val item = cacheCartItems[0]
             cartDescriptionTextView.visibility = View.VISIBLE
             cartDescriptionTextView.text = getString(R.string.format_shopping_cart_ispu,
-                    item.branch?.ispuDelivery)
-            storeNameTextView.text = item.branch?.storeName ?: ""
+                    retailer.extension!!.deliverlyPromiseIspu ?: "")
+            // store name use from cache follow website
+            storeNameTextView.text = item.branch?.storeName?: ""
             this.checkoutType = CheckoutType.ISPU
             this.branch = item.branch
         } else {
@@ -236,10 +240,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun getCartItem() {
-        CartUtils(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-            override fun success(response: List<CartItem>?) {
+        CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
+            override fun success(response: CartResponse?) {
                 if (response != null) {
-                    getCartTotal(response)
+                    cartResponse = response
+                    getCartTotal()
                 } else {
                     mProgressDialog?.dismiss()
                     showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
@@ -253,12 +258,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         })
     }
 
-    private fun getCartTotal(cartItems: List<CartItem>){
+    private fun getCartTotal(){
         CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse>{
             override fun success(response: CartTotalResponse?) {
                 mProgressDialog?.dismiss()
                 if (response != null) {
-                    updateViewShoppingCart(cartItems, response)
+                    updateViewShoppingCart(response)
                 } else {
                     showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
                 }
@@ -272,24 +277,26 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         })
     }
 
-    private fun updateViewShoppingCart(cartItems: List<CartItem>, shoppingCartResponse: CartTotalResponse) {
-        cartItemList = cartItems
-        shoppingCartAdapter.cartItemList = cartItemList
+    private fun updateViewShoppingCart(shoppingCartResponse: CartTotalResponse) {
+        if (cartResponse != null){
+            cartItemList = cartResponse!!.items
+            shoppingCartAdapter.cartItemList = cartItemList
 
-        updateTitle(shoppingCartResponse.qty)
-        val total = shoppingCartResponse.totalPrice
-        val t1Points = (total - (total % 50)) / 50
-        val discount = shoppingCartResponse.discountPrice.toStringDiscount()
-        if (discount > 0) {
-            layoutDiscountPrice.visibility = View.VISIBLE
-            discountPrice.text = getDisplayDiscount(unit, discount.toString())
-        } else {
-            layoutDiscountPrice.visibility = View.GONE
+            updateTitle(shoppingCartResponse.qty)
+            val total = shoppingCartResponse.totalPrice
+            val t1Points = (total - (total % 50)) / 50
+            val discount = shoppingCartResponse.discountPrice.toStringDiscount()
+            if (discount > 0) {
+                layoutDiscountPrice.visibility = View.VISIBLE
+                discountPrice.text = getDisplayDiscount(unit, discount.toString())
+            } else {
+                layoutDiscountPrice.visibility = View.GONE
+            }
+
+            totalPrice.text = getDisplayPrice(unit, total.toString())
+            tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
+            checkCanClickPayment()
         }
-
-        totalPrice.text = getDisplayPrice(unit, total.toString())
-        tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
-        checkCanClickPayment()
     }
 
     private fun checkCanClickPayment() {

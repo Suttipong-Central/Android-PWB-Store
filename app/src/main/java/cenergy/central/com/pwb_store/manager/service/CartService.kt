@@ -20,14 +20,12 @@ interface CartService {
                    @Path("cartId") cartId: String,
                    @Body cartItemBody: CartItemBody): Call<CartItem>
 
-    @GET("/rest/{lang}/V1/carts/{quoteId}")
-    fun viewCart(@Header("Authorization") token: String,
-                 @Path("lang") language: String,
-                 @Path("quoteId") quoteID: String): Call<CartResponse>
+    @GET("/rest/{lang}/V1/guest-carts/{cartId}")
+    fun viewCart(@Path("lang") language: String,
+                 @Path("cartId") quoteID: String): Call<CartResponse>
 
-    @GET("/rest/{lang}/V1/carts/{cartId}/totals")
-    fun viewCartTotal(@Header("Authorization") token: String,
-                      @Path("lang") language: String,
+    @GET("/rest/{lang}/V1/guest-carts/{cartId}/totals")
+    fun viewCartTotal(@Path("lang") language: String,
                       @Path("cartId") cartId: String): Call<CartTotalResponse>
 
     @DELETE("/rest/V1/guest-carts/{cartId}/items/{itemId}")

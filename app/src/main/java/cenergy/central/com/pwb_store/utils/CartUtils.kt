@@ -180,11 +180,11 @@ class CartUtils(private val context: Context) {
                 })
     }
 
-    fun viewCart(cartId: String, callback: ApiResponseCallback<List<CartItem>>) {
-        HttpManagerMagento(context).cartService.viewCart(Constants.CLIENT_MAGENTO, language, cartId).enqueue(object : Callback<CartResponse> {
+    fun viewCart(cartId: String, callback: ApiResponseCallback<CartResponse>) {
+        HttpManagerMagento(context).cartService.viewCart(language, cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
                 if (response.body() != null && response.isSuccessful) {
-                    callback.success(response.body()!!.items)
+                    callback.success(response.body())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
@@ -197,7 +197,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotalResponse>) {
-        HttpManagerMagento(context).cartService.viewCartTotal(Constants.CLIENT_MAGENTO, language, cartId).enqueue(object : Callback<CartTotalResponse> {
+        HttpManagerMagento(context).cartService.viewCartTotal(language, cartId).enqueue(object : Callback<CartTotalResponse> {
             override fun onResponse(call: Call<CartTotalResponse>, response: Response<CartTotalResponse>) {
                 if (response.body() != null && response.isSuccessful) {
                     callback.success(response.body())
