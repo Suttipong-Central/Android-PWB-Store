@@ -82,14 +82,22 @@ class DeliveryStorePickUpFragment : Fragment() {
     }
 
     private fun setupView() {
-        Log.d("StorePickup", "items, ${items.size},, displayItems, ${displayItems.size}")
-
-        if (this.items.isEmpty() && this.displayItems.isEmpty()) {
-            groupDisplay.visibility = View.GONE
-            storeListEmpty.visibility = View.VISIBLE
+        if (editStorePickup) {
+            if (this.items.isEmpty() && this.displayItems.isEmpty()) {
+                groupDisplay.visibility = View.GONE
+                storeListEmpty.visibility = View.VISIBLE
+            } else {
+                groupDisplay.visibility = View.VISIBLE
+                storeListEmpty.visibility = View.GONE
+            }
         } else {
-            groupDisplay.visibility = View.VISIBLE
-            storeListEmpty.visibility = View.GONE
+            if (this.items.isEmpty() || this.displayItems.isEmpty()) {
+                groupDisplay.visibility = View.GONE
+                storeListEmpty.visibility = View.VISIBLE
+            } else {
+                groupDisplay.visibility = View.VISIBLE
+                storeListEmpty.visibility = View.GONE
+            }
         }
 
         titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_2hr_pickup)
@@ -101,8 +109,6 @@ class DeliveryStorePickUpFragment : Fragment() {
     * */
     private fun getMultiStorePickup(): ArrayList<BranchResponse> {
         val multiStorePickup = RealmController.getInstance().storePickupLists
-        Log.d("StorePickup", "store, ${multiStorePickup.size}")
-
         return if (multiStorePickup != null && multiStorePickup.isNotEmpty()) {
             if (!editStorePickup && items.isEmpty()) return items // is empty and state edit store pickup?
 
@@ -121,8 +127,7 @@ class DeliveryStorePickUpFragment : Fragment() {
             }
 
             val newItem = arrayListOf<BranchResponse>()
-            val diffStores = storesList.getDiff()
-
+            val diffStores = storesList.getDiff().distinctBy { it.storeId }
             if (!editStorePickup) {
                 // State select store pickup
                 items.forEach { branchResponse ->
@@ -143,6 +148,5 @@ class DeliveryStorePickUpFragment : Fragment() {
         } else {
             items
         }
-
     }
 }
