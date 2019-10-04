@@ -55,16 +55,23 @@ class BranchDetailFragment : Fragment() {
         return rootView
     }
 
-    fun updateBranchDetail(branchResponse: BranchResponse, checkoutType: CheckoutType) {
+    fun updateBranchDetail(branchResponse: BranchResponse, checkoutType: CheckoutType,
+                           editStorePickup: Boolean = false) {
         val branch = branchResponse.branch
         tvTitle.text = branch.storeName
         tvAddress.text = branch.getBranchAddress()
         tvContract.text = if (branch.phone.isNotBlank()) branch.phone else "-"
         tvOpenStore.text = if (branch.description.isNotBlank()) branch.description else "-"
         selectedButton.setOnClickListener {
-            when(checkoutType) {
+            when (checkoutType) {
                 CheckoutType.NORMAL -> listener?.onSelectedStore(branch)
-                CheckoutType.ISPU -> listener?.addProduct2hToCart(branchResponse)
+                CheckoutType.ISPU -> {
+                    if (editStorePickup) {
+                        listener?.onProduct2hEditStorePickup(branchResponse)
+                    } else {
+                        listener?.addProduct2hToCart(branchResponse)
+                    }
+                }
             }
         }
         showContentView()

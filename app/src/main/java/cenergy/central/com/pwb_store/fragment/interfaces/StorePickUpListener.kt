@@ -12,4 +12,5 @@ interface StorePickUpListener {
     fun onUpdateStoreDetail(branch: BranchResponse)
     fun onSelectedStore(branch: Branch)
     fun addProduct2hToCart(branchResponse: BranchResponse)
+    fun onProduct2hEditStorePickup(branchResponse: BranchResponse)
 }

@@ -251,6 +251,44 @@ class CartUtils(private val context: Context) {
         val item = cacheCartItems.find { it.branch != null }
         return item != null
     }
+
+    fun editStorePickup(branchResponse: BranchResponse, callback: EditStorePickupCallback) {
+        val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
+        val storePickup = StorePickup(branchResponse.branch.storeId)
+        val subscribeCheckOut = SubscribeCheckOut("", null,
+                null, null, storePickup)
+        val cartId = prefManager.cartId
+        if (cartId != null) {
+            HttpManagerMagento.getInstance(context).setSgippingInformation(cartId,
+                    storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
+                    object : ApiResponseCallback<ShippingInformationResponse> {
+                        override fun success(response: ShippingInformationResponse?) {
+                            editStorePickupInCartItem(branchResponse, callback)
+                        }
+
+                        override fun failure(error: APIError) {
+                            callback.onFailure(error.errorMessage)
+                        }
+                    })
+        } else {
+            callback.onFailure(context.getString(R.string.not_found_data))
+        }
+    }
+
+    private fun editStorePickupInCartItem(branchResponse: BranchResponse,
+                                          callback: EditStorePickupCallback) {
+        RealmController.getInstance().editBranchInCartItem(branchResponse.branch,
+                object : DatabaseListener {
+                    override fun onSuccessfully() {
+                        callback.onSuccessfully()
+                    }
+
+                    override fun onFailure(error: Throwable) {
+                        callback.onFailure(error.localizedMessage)
+                    }
+
+                })
+    }
 }
 
 interface AddProductToCartCallback {
@@ -258,4 +296,9 @@ interface AddProductToCartCallback {
     fun forceClearCart()
     fun onFailure(messageError: String)
     fun onFailure(dialog: Dialog)
+}
+
+interface EditStorePickupCallback {
+    fun onSuccessfully()
+    fun onFailure(messageError: String)
 }

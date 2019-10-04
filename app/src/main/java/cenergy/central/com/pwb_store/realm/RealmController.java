@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.model.Branch;
 import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
@@ -196,6 +197,27 @@ public class RealmController {
         realm.executeTransactionAsync(realm1 -> {
             realm1.copyToRealmOrUpdate(cacheCartItem);
             realm1.copyToRealmOrUpdate(storePickupList);
+        }, () -> {
+            if (listener != null) {
+                Log.d("Database", "stored cart item");
+                listener.onSuccessfully();
+            }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
+            }
+        });
+    }
+
+    public void editBranchInCartItem(final Branch branch, final DatabaseListener listener) {
+        realm.executeTransactionAsync(realm1 -> {
+            RealmResults<CacheCartItem> realmCartItems = realm1.where(CacheCartItem.class)
+                    .sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAll();
+            for (CacheCartItem realmItem : realmCartItems) {
+                CacheCartItem item = realm1.copyFromRealm(realmItem);
+                item.setBranch(branch);
+                realm1.copyToRealmOrUpdate(item);
+            }
         }, () -> {
             if (listener != null) {
                 Log.d("Database", "stored cart item");

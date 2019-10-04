@@ -149,7 +149,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
         // setup store name
         storeNameTextView.setOnClickListener {
-            //TODO: set onclick store name
+            PaymentActivity.startEditStorePickup(this)
+            finish()
         }
 
         backToShopButton.setOnClickListener {

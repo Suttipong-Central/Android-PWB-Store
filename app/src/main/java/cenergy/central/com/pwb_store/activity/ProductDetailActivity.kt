@@ -16,7 +16,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.fragment.DetailFragment
@@ -28,9 +27,7 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.OptionBody
-import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
 import cenergy.central.com.pwb_store.utils.CartUtils
@@ -180,7 +177,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun startPaymentBy2Hr(product: Product) {
-        PaymentActivity.startSelectStore(this, product)
+        PaymentActivity.startSelectStorePickup(this, product)
     }
 
     override fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>) {

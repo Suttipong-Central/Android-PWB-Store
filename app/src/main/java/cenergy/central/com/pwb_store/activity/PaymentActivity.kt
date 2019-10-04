@@ -40,16 +40,11 @@ import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.*
-import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
-import cenergy.central.com.pwb_store.utils.CartUtils
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
-import io.realm.RealmList
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -86,11 +81,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var shippingSlot: ShippingSlot? = null
     // data product 2h
     private var product2h: Product? = null
+    private var isEditStorePickup: Boolean = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
     companion object {
         private const val EXTRA_PRODUCT_2H = "extra_product_2h"
         private const val EXTRA_CHECK_OUT_ISPU = "extra_check_out_ispu"
+        private const val EXTRA_EDIT_STORE_PICKUP = "extra_edit_store_pickup"
 
         fun startCheckout(context: Context, isISPU: Boolean = false) {
             val intent = Intent(context, PaymentActivity::class.java)
@@ -98,10 +95,17 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-        fun startSelectStore(context: Context, product: Product) {
+        fun startSelectStorePickup(context: Context, product: Product) {
             val intent = Intent(context, PaymentActivity::class.java)
             intent.putExtra(EXTRA_PRODUCT_2H, product)
             intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+
+        fun startEditStorePickup(context: Context) {
+            val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
+            intent.putExtra(EXTRA_EDIT_STORE_PICKUP, true)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
@@ -128,9 +132,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             checkoutWithProduct2hr(this.product2h!!)
         } else {
             val isISPU = intent.getBooleanExtra(EXTRA_CHECK_OUT_ISPU, false)
+            isEditStorePickup = intent.getBooleanExtra(EXTRA_EDIT_STORE_PICKUP, false)
             this.checkoutType = if (isISPU) CheckoutType.ISPU else CheckoutType.NORMAL
-            standardCheckout()
+            if (!isEditStorePickup) {
+                standardCheckout()
+            } else {
+                onEditStorePickup()
+            }
         }
+    }
+
+    private fun onEditStorePickup() {
+        mProgressDialog?.dismiss()
+        val fragment = DeliveryStorePickUpFragment.newInstance(is2hrProduct = true,
+                editStorePickup = true)
+        startFragment(fragment)
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
@@ -855,28 +871,45 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         product2h?.let {
             CartUtils(this).addProduct2hToCart(it, branchResponse, branches,
                     object : AddProductToCartCallback {
-                override fun onSuccessfully() {
-                    mProgressDialog?.dismiss()
-                    ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
-                    finish()
-                }
+                        override fun onSuccessfully() {
+                            mProgressDialog?.dismiss()
+                            ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                            finish()
+                        }
 
-                override fun forceClearCart() {
-                    //TODO: show dialog for clear cart
-                    mProgressDialog?.dismiss()
-                }
+                        override fun forceClearCart() {
+                            //TODO: show dialog for clear cart
+                            mProgressDialog?.dismiss()
+                        }
 
-                override fun onFailure(messageError: String) {
-                    showCommonDialog(messageError)
-                    mProgressDialog?.dismiss()
-                }
+                        override fun onFailure(messageError: String) {
+                            showCommonDialog(messageError)
+                            mProgressDialog?.dismiss()
+                        }
 
-                override fun onFailure(dialog: Dialog) {
-                    dialog.show()
-                    mProgressDialog?.dismiss()
-                }
-            })
+                        override fun onFailure(dialog: Dialog) {
+                            dialog.show()
+                            mProgressDialog?.dismiss()
+                        }
+                    })
         }
+    }
+
+    // State Prduct 2h edit store pickup
+    override fun onProduct2hEditStorePickup(branchResponse: BranchResponse) {
+        showProgressDialog()
+        CartUtils(this).editStorePickup(branchResponse, object : EditStorePickupCallback {
+            override fun onSuccessfully() {
+                mProgressDialog?.dismiss()
+                ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                finish()
+            }
+
+            override fun onFailure(messageError: String) {
+                mProgressDialog?.dismiss()
+                showCommonDialog(messageError)
+            }
+        })
     }
     // endregion
 
@@ -903,7 +936,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {
             // is state of checkout with product 2h?
-            if (product2h != null) {
+            if (product2h != null || isEditStorePickup) {
                 finish()
             } else {
                 startDeliveryOptions()
