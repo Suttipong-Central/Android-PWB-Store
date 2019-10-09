@@ -5,7 +5,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
@@ -24,14 +23,9 @@ import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
-import cenergy.central.com.pwb_store.extensions.formatterUTC
-import cenergy.central.com.pwb_store.extensions.toDate
-import cenergy.central.com.pwb_store.extensions.toOrderDateTime
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
@@ -40,7 +34,6 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import java.lang.Exception
 import java.text.NumberFormat
 import java.util.*
 
@@ -261,43 +254,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         // setup shipping address or pickup at store
-        if (order.shippingType != DeliveryType.STORE_PICK_UP.methodCode) {
-            deliveryLayout.visibility = View.VISIBLE
-            deliveryInfoLayout.visibility = View.VISIBLE
-            storeAddressLayout.visibility = View.GONE
-            customerNameLayout.visibility = View.GONE
-
-            tvShippingHeader.text = getString(R.string.delivery_detail)
-            tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
-                DeliveryType.EXPRESS -> getString(R.string.express)
-                DeliveryType.STANDARD -> getString(R.string.standard)
-                DeliveryType.STORE_PICK_UP -> getString(R.string.collect)
-                DeliveryType.HOME -> getString(R.string.home_delivery)
-                else -> ""
-            }
-
-            tvReceiverName.text = shippingAddress.getDisplayName()
-            tvDeliveryAddress.text = getAddress(shippingAddress)
-            tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
-                DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
-                DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
-                DeliveryType.HOME -> getString(R.string.home_delivery_desc)
-                else -> ""
-            }
-        } else {
-            deliveryLayout.visibility = View.GONE
-            deliveryInfoLayout.visibility = View.GONE
-            storeAddressLayout.visibility = View.VISIBLE
-            customerNameLayout.visibility = View.VISIBLE
-            tvShippingHeader.text = getString(R.string.store_collection_detail)
-
-            val branchShipping = order.branchShipping
-            if (branchShipping != null) {
-                branch.text = branchShipping.storeName
-                address.text = branchShipping.getBranchAddress()
-                tel.text = branchShipping.phone
-                openToday.text = branchShipping.description
-            }
+        when (DeliveryType.fromString(order.shippingType)) {
+            DeliveryType.STORE_PICK_UP,
+            DeliveryType.STORE_PICK_UP_ISPU -> setupShippingStorePickupView(order)
+            else ->  setupShipping(order, shippingAddress)
         }
 
         // setup total or summary
@@ -311,6 +271,47 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
         tvAmount.text = getDisplayPrice(unit, order.total.toString())
         mProgressDialog?.dismiss()
+    }
+
+    private fun setupShipping(order: Order, shippingAddress: AddressInformation) {
+        deliveryLayout.visibility = View.VISIBLE
+        deliveryInfoLayout.visibility = View.VISIBLE
+        storeAddressLayout.visibility = View.GONE
+        customerNameLayout.visibility = View.GONE
+
+        tvShippingHeader.text = getString(R.string.delivery_detail)
+        tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
+            DeliveryType.EXPRESS -> getString(R.string.express)
+            DeliveryType.STANDARD -> getString(R.string.standard)
+            DeliveryType.STORE_PICK_UP -> getString(R.string.collect)
+            DeliveryType.HOME -> getString(R.string.home_delivery)
+            else -> ""
+        }
+
+        tvReceiverName.text = shippingAddress.getDisplayName()
+        tvDeliveryAddress.text = getAddress(shippingAddress)
+        tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
+            DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
+            DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
+            DeliveryType.HOME -> getString(R.string.home_delivery_desc)
+            else -> ""
+        }
+    }
+
+    private fun setupShippingStorePickupView(order: Order) {
+        deliveryLayout.visibility = View.GONE
+        deliveryInfoLayout.visibility = View.GONE
+        storeAddressLayout.visibility = View.VISIBLE
+        customerNameLayout.visibility = View.VISIBLE
+        tvShippingHeader.text = getString(R.string.store_collection_detail)
+
+        val branchShipping = order.branchShipping
+        if (branchShipping != null) {
+            branch.text = branchShipping.storeName
+            address.text = branchShipping.getBranchAddress()
+            tel.text = branchShipping.phone
+            openToday.text = branchShipping.description
+        }
     }
 
     private fun updateLabel() {
