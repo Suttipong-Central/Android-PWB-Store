@@ -16,12 +16,15 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.RadioGroup
+import android.widget.TextView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -29,6 +32,7 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
@@ -38,8 +42,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
-import kotlin.math.roundToInt
-
 
 class PaymentBillingFragment : Fragment() {
 
@@ -58,13 +60,14 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
     private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
     private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
-//    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeNoEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var billingHomeSoiEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeRoadEdt: PowerBuyEditTextBorder
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
+    private lateinit var layoutDiscountPrice: LinearLayout
+    private lateinit var discountPrice: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
@@ -90,6 +93,7 @@ class PaymentBillingFragment : Fragment() {
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
     private var cartItemList: List<CartItem> = listOf()
+    private lateinit var cartTotal: CartTotalResponse
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private lateinit var paymentProtocol: PaymentProtocol
@@ -121,6 +125,7 @@ class PaymentBillingFragment : Fragment() {
     private var vatId: String = ""
     private var isSameBilling = true
     private var isRequireTaxInvoice = false
+    private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
     // shipping data address
     private var provinceList = listOf<Province>()
@@ -191,8 +196,10 @@ class PaymentBillingFragment : Fragment() {
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
         cartItemList = paymentProtocol.getItems()
+        cartTotal = paymentProtocol.getCartTotalResponse()
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
+        checkoutType = paymentProtocol.getCheckType()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -225,14 +232,14 @@ class PaymentBillingFragment : Fragment() {
         shoppingCartAdapter.cartItemList = this.cartItemList
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-        var total = 0.0
-        cartItemList.forEach {
-            if (database.getCacheCartItem(it.id) != null) {
-                total += it.qty!! * it.price!!
-            }
+        val discount = cartTotal.discountPrice.toStringDiscount()
+        if (discount > 0){
+            layoutDiscountPrice.visibility = View.VISIBLE
+            discountPrice.text = getDisplayDiscount(unit, discount.toString())
+        } else {
+            layoutDiscountPrice.visibility = View.GONE
         }
-        val vat = total * 0.07
-        totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
+        totalPrice.text = getDisplayPrice(unit, cartTotal.totalPrice.toString())
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
@@ -536,7 +543,6 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
         billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
         billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
-//        billingEmailEdt = rootView.findViewById(R.id.email_billing)
         billingHomeNoEdt = rootView.findViewById(R.id.billing_house_no_payment)
         billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
         billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
@@ -548,6 +554,8 @@ class PaymentBillingFragment : Fragment() {
         billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
+        layoutDiscountPrice = rootView.findViewById(R.id.layout_discount)
+        discountPrice = rootView.findViewById(R.id.txt_discount)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
@@ -559,15 +567,23 @@ class PaymentBillingFragment : Fragment() {
         homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         homePhoneEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-//        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
 
         //set T1 icon
         theOneEdt.setDrawableStart(R.drawable.ic_the1)
-
         radioGroup = rootView.findViewById(R.id.radio_group)
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
+
+        // is checkout type ispu
+        val billingOptionLayout = rootView.findViewById<LinearLayout>(R.id.billing_option_layout)
+        if (this.checkoutType == CheckoutType.ISPU) {
+            val shippingLabel = rootView.findViewById<TextView>(R.id.shipping_label_text_view)
+            billingOptionLayout.visibility = View.GONE
+            billingLayout.visibility = View.GONE
+            shippingLabel.text = getString(R.string.billing_address)
+            deliveryBtn.setText(getString(R.string.btn_complete_order))
+        }
 
         checkRequireTaxInvoice()
         radioTaxGroup.setOnCheckedChangeListener { radioTaxGroup, _ ->
@@ -667,6 +683,22 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
+        if (checkoutType == CheckoutType.NORMAL) {
+            checkoutNormal()
+        } else {
+            if (!hasEmptyInput()) {
+                // setup shipping address
+                val shippingAddress = createShipping(IS_SAME_BILLING)
+                mProgressDialog?.dismiss()
+                paymentBillingListener?.setBillingAddressWithIspu(shippingAddress)
+            } else {
+                mProgressDialog?.dismiss()
+                showAlertDialog("", resources.getString(R.string.fill_in_important_information))
+            }
+        }
+    }
+
+    private fun checkoutNormal() {
         if (isSameBilling) {
             if (!hasEmptyInput()) {
                 // setup value
@@ -822,7 +854,12 @@ class PaymentBillingFragment : Fragment() {
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
-    private fun showAlertDialog(title: String, message: String) {
+    private fun getDisplayDiscount(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
+    private fun showAlertDialog(title: String, message: String) { //TODO: Refactor show alert dialog.
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }

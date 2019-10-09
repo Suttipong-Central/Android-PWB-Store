@@ -58,6 +58,7 @@
     <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
     <string name="size">ไซต์:</string>
     <string name="shade">สี:</string>
+    <string name="add_two_hour_item">รับที่ร้านใน 2 ชม.</string>
 
     <!-- Compare -->
     <string name="compare_header">เปรียบเทียบสินค้า</string>
@@ -219,6 +220,10 @@
     <string name="shopping_delete"><u>ลบ</u></string>
     <string name="t1_points">เมื่อซื้อ รับคะแนนเดอะวัน %d คะแนน</string>
     <string name="check_out">สั่งซื้อ</string>
+    <string name="format_shopping_cart_ispu">รับที่สาขาตั้งเเต่ %s ที่</string>
+    <string name="btn_complete_order">สั่งซื้อสินค้า</string>
+    <string name="empty_value">โปรดระบุจำนวนที่ต้องการซื้อ</string>
+    <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
@@ -232,7 +237,10 @@
     <string name="error_form_passport_invalid">พาสปอร์ตไม่ถูกต้อง</string>
     <string name="error_form_name_en">Invalid name</string>
     <string name="error_verify_otp_time_out">ขออภัยการเชื่อมต่อผิดพลาด</string>
+
+    <!-- Store -->
     <string name="delivery">การจัดส่ง</string>
+    <string name="delivery_2hr_pickup">ร้านที่สามารถรับของได้ใน 2 ชม.</string>
     <string name="select_store_title">เลือกสาขาที่ต้องการรับสินค้า</string>
     <string name="store_address">ที่อยู่สาขา</string>
     <string name="telephone_number">หมายเลขโทรศัพท์</string>
@@ -259,6 +267,8 @@
     <string name="staff_descriptions_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
     <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
     <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
+    <string name="format_store_ispu_delivery">สั่งตอนนี้ รับได้ที่สาขา\nตั้งเเต่ %s</string>
+    <string name="error_store_pickup_empty">ไม่มีสาขาที่มีของครบทุกชิ้นที่คุณเลือก</string>
 
     <!-- Network state -->
     <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>
@@ -314,4 +324,10 @@
     <string name="close">ปิด</string>
     <string name="payment_description">แสกนโค้ดเพื่อชำระเงินสำหรับคำสั่งซื้อนี้</string>
 
+    <!-- Stock Indicator -->
+    <string name="label_stock_availability">สต๊อกสินค้า</string>
+    <string name="label_stock_online">ออนไลน์</string>
+    <string name="label_stock_store_offline">สาขานี้</string>
+    <string name="label_stock_stores_offline"><u>สาขาอื่น</u></string>
+    <string name="discount">ส่วนลด</string>
 </resources>

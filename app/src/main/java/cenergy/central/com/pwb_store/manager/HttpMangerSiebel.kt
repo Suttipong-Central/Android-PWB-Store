@@ -3,12 +3,7 @@ package cenergy.central.com.pwb_store.manager
 import android.annotation.SuppressLint
 import android.content.Context
 import cenergy.central.com.pwb_store.BuildConfig
-import cenergy.central.com.pwb_store.Constants.Companion.CENTRAL_HOST_NAME
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_ACCESS_KEY
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_REGION
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_SECRET_KEY
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_SERVICE_NAME
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_X_API_KEY
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Member
@@ -26,18 +21,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-/**
- * Created by Anuphap Suwannamas on 27/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
+
 class HttpMangerSiebel(context: Context) {
     private var retrofit: Retrofit
 
     init {
         val session = auth()
         val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, CLIENT_SERVICE_NAME,
-                CLIENT_REGION, CLIENT_X_API_KEY)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, Constants.CLIENT_SERVICE_NAME,
+                Constants.CLIENT_REGION, Constants.CLIENT_X_API_KEY)
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         val defaultHttpClient = OkHttpClient.Builder()
@@ -54,7 +46,7 @@ class HttpMangerSiebel(context: Context) {
                 .build()
 
         retrofit = Retrofit.Builder()
-                .baseUrl(CENTRAL_HOST_NAME)
+                .baseUrl(Constants.CENTRAL_HOST_NAME)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build()
@@ -110,8 +102,8 @@ class HttpMangerSiebel(context: Context) {
 
     private fun auth(): Session {
         val auth = Session()
-        auth.accessKey = CLIENT_ACCESS_KEY
-        auth.secretKey = CLIENT_SECRET_KEY
+        auth.accessKey = Constants.CLIENT_ACCESS_KEY
+        auth.secretKey = Constants.CLIENT_SECRET_KEY
 
         return auth
     }

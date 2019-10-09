@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/txt_header_store"
+        android:id="@+id/titleTextView"
         style="@style/textCompare"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_header_store" />
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
     <View
         android:id="@+id/line"
@@ -37,7 +37,7 @@
         android:background="@color/grayTextColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txt_header_store"/>
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -54,5 +54,27 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txt_header_store" />
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
+    <android.support.constraint.Group
+        android:id="@+id/groupDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="line,content_branches,content_branch_detail"/>
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/storeListEmpty"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="16dp"
+        android:visibility="gone"
+        android:text="@string/error_store_pickup_empty"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:typeFaceAsset="RobotoLight.ttf" />
 </android.support.constraint.ConstraintLayout>

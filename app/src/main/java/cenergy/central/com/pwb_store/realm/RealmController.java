@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.model.AddCompare;
+import cenergy.central.com.pwb_store.model.Branch;
 import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
@@ -18,6 +19,7 @@ import cenergy.central.com.pwb_store.model.Order;
 import cenergy.central.com.pwb_store.model.Postcode;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.Province;
+import cenergy.central.com.pwb_store.model.StorePickupList;
 import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
@@ -177,39 +179,73 @@ public class RealmController {
 
     public void saveCartItem(final CacheCartItem cacheCartItem, final DatabaseListener listener) {
         Realm realm = getRealm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                realm.copyToRealmOrUpdate(cacheCartItem);
+        realm.executeTransactionAsync(realm1 -> realm1.copyToRealmOrUpdate(cacheCartItem), () -> {
+            if (listener != null) {
+                Log.d("Database", "stored cart item");
+                listener.onSuccessfully();
             }
-        }, new Realm.Transaction.OnSuccess() {
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
+            }
+        });
+    }
 
-            @Override
-            public void onSuccess() {
-                if (listener != null) {
-                    Log.d("Database", "stored cart item");
-                    listener.onSuccessfully();
-                }
+    public void saveCartItem(final CacheCartItem cacheCartItem, StorePickupList storePickupList,
+                             final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(realm1 -> {
+            realm1.copyToRealmOrUpdate(cacheCartItem);
+            realm1.copyToRealmOrUpdate(storePickupList);
+        }, () -> {
+            if (listener != null) {
+                Log.d("Database", "stored cart item");
+                listener.onSuccessfully();
             }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                if (listener != null) {
-                    listener.onFailure(error);
-                }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
+            }
+        });
+    }
+
+    public void editBranchInCartItem(final Branch branch, final DatabaseListener listener) {
+        realm.executeTransactionAsync(realm1 -> {
+            RealmResults<CacheCartItem> realmCartItems = realm1.where(CacheCartItem.class)
+                    .sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAll();
+            for (CacheCartItem realmItem : realmCartItems) {
+                CacheCartItem item = realm1.copyFromRealm(realmItem);
+                item.setBranch(branch);
+                realm1.copyToRealmOrUpdate(item);
+            }
+        }, () -> {
+            if (listener != null) {
+                Log.d("Database", "stored cart item");
+                listener.onSuccessfully();
+            }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
             }
         });
     }
 
     public void deleteCartItem(final Long itemId) {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                RealmResults<CacheCartItem> realmCompareProducts = realm.where(CacheCartItem.class).equalTo(
-                        CacheCartItem.FIELD_ID, itemId).findAll();
-                realmCompareProducts.deleteAllFromRealm();
+        realm.executeTransaction(realm1 -> {
+            RealmResults<CacheCartItem> items = realm1.where(CacheCartItem.class).equalTo(
+                    CacheCartItem.FIELD_ID, itemId).findAll();
+
+            // Delete Store Pick List
+            if (items.get(0) != null) {
+                String sku = items.get(0).getSku();
+                RealmResults<StorePickupList> storePickupLists = realm1.where(
+                        StorePickupList.class).equalTo(StorePickupList.FIELD_SKU, sku).findAll();
+                storePickupLists.deleteAllFromRealm();
             }
+
+            // Delete Cache Cart Item
+            items.deleteAllFromRealm();
         });
     }
 
@@ -236,43 +272,54 @@ public class RealmController {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                // Delete Store Pickup List
+                realm.where(StorePickupList.class).findAll().deleteAllFromRealm();
+                // Delete Cache Cart Item
                 realm.where(CacheCartItem.class).findAll().deleteAllFromRealm();
+            }
+        });
+    }
+
+    public void deleteAllCacheCartItem(final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(it ->
+        {
+            // Delete Store Pickup List
+            it.where(StorePickupList.class).findAll().deleteAllFromRealm();
+            // Delete Cache Cart Item
+            it.where(CacheCartItem.class).findAll().deleteAllFromRealm();
+        }, () -> {
+            if (listener != null) {
+                listener.onSuccessfully();
+            }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
             }
         });
     }
     // endregion
 
+    // region Store Pickup
+    public List<StorePickupList> getStorePickupLists() {
+        Realm realm = getRealm();
+        RealmResults<StorePickupList> realmCartItems = realm.where(StorePickupList.class).findAll();
+        return realmCartItems == null ? null : realm.copyFromRealm(realmCartItems);
+    }
+    // endregion
+
     // region Order
     public void saveOrder(final Order order, final DatabaseListener listener) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                realm.copyToRealmOrUpdate(order);
+        realm.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(order), () -> {
+            if (listener != null) {
+                listener.onSuccessfully();
             }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                if (listener != null) {
-                    listener.onSuccessfully();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                if (listener != null) {
-                    listener.onFailure(error);
-                }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
             }
         });
     }
-
-//
-//    public void saveOrder(final Order order) {
-//        Realm realm = getRealm();
-//        realm.beginTransaction();
-//        realm.insertOrUpdate(order);
-//        realm.commitTransaction();
-//    }
 
     public List<Order> deleteOrder(final String orderId) {
         Realm realm = getRealm();

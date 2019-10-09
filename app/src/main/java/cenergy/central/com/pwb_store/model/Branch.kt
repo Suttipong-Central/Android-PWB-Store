@@ -36,10 +36,11 @@ open class Branch(
         @SerializedName("region_id")
         var regionId: Int = 0,
         @SerializedName("region_code")
-        var regionCode: String = "") : RealmObject() {
+        var regionCode: String = "",
+        var ispuDelivery: String? = null) : RealmObject() {
 
     fun getBranchAddress(): String {
-        return if (regionId != 0) {
+        return if (regionId != 0) { //TODO: refactor should be have province name with store data
             val provinceData = RealmController.getInstance().getProvince(regionId.toString())
             "$street, $city, ${provinceData.defaultName} $postcode"
         } else {

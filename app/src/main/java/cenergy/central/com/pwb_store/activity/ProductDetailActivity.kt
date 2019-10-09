@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.NetworkInfo
@@ -14,9 +15,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.fragment.DetailFragment
@@ -28,11 +27,12 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.OptionBody
-import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
+import cenergy.central.com.pwb_store.utils.CartUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
@@ -43,11 +43,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     // widget view
     private var progressDialog: ProgressDialog? = null
-    lateinit var mToolbar: Toolbar
-    lateinit var mBuyCompareView: PowerBuyCompareView
-    lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
-    lateinit var tvNotFound: TextView
-    lateinit var containerGroupView: ConstraintLayout
+    private lateinit var mToolbar: Toolbar
+    private lateinit var mBuyCompareView: PowerBuyCompareView
+    private lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
+    private lateinit var tvNotFound: TextView
+    private lateinit var containerGroupView: ConstraintLayout
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
 
@@ -65,7 +65,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
 
-        // get intent
+        // get startPayment
         val mIntent = intent
         val extras = mIntent.extras
         if (extras != null) {
@@ -91,21 +91,19 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         super.onResume()
         updateCompareBadge()
         updateShoppingCartBadge()
-
-        product?.let { checkDisableAddProductButton(it)}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
-            // check add button
-            product?.let { checkDisableAddProductButton(it) }
-
             // check language
             if (getSwitchButton() != null) {
                 getSwitchButton()!!.setDefaultLanguage(preferenceManager.getDefaultLanguage())
             }
         }
+//        if (resultCode == ShoppingCartActivity.RESULT_UPDATE_PRODUCT) {
+//            product?.let { checkDisableAddProductButton(it) }
+//        }
     }
 
     private fun bindView() {
@@ -172,6 +170,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     override fun addProductToCart(product: Product?) {
         product?.let { startAddToCart(it, arrayListOf()) }
+    }
+
+    override fun addProduct2HrsToCart(product: Product?) {
+        product?.let { startPaymentBy2Hr(it) }
+    }
+
+    private fun startPaymentBy2Hr(product: Product) {
+        PaymentActivity.startSelectStorePickup(this, product)
     }
 
     override fun addProductConfigToCart(product: Product?, listOptionsBody: ArrayList<OptionBody>) {
@@ -262,7 +268,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkHDLOption(product: Product) {
-        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>>{
+        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>> {
             override fun success(response: List<DeliveryInfo>?) {
                 product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
                 dismissProgressDialog()
@@ -283,19 +289,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
         // setup
         supportFragmentManager.beginTransaction().replace(R.id.containerDetail,
-                DetailFragment(),
-                TAG_DETAIL_FRAGMENT).commit()
+                DetailFragment(), TAG_DETAIL_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerOverview,
-                ProductOverviewFragment(),
-                TAG_EXTENSION_FRAGMENT).commit()
+                ProductOverviewFragment(), TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
-                ProductExtensionFragment(),
-                TAG_OVERVIEW_FRAGMENT).commit()
+                ProductExtensionFragment(), TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
 
         tvNotFound.visibility = View.INVISIBLE
         containerGroupView.visibility = View.VISIBLE
-
-        checkDisableAddProductButton(product) // Check disable add product button
     }
 
     private fun updateShoppingCartBadge() {
@@ -380,65 +381,25 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // end region
 
     // region action add product to cart
-    private fun startAddToCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {
+    private fun startAddToCart(product: Product, options: ArrayList<OptionBody>) {
         this.product = product
         showProgressDialog()
-        val cartId = preferenceManager.cartId
-        if (cartId != null) {
-            addProductToCart(cartId, product, listOptionsBody)
-        } else {
-            retrieveCart(product, listOptionsBody)
-        }
-    }
-
-    private fun retrieveCart(product: Product, listOptionsBody: ArrayList<OptionBody>) {
-        HttpManagerMagento.getInstance(this).getCart(object : ApiResponseCallback<String?> {
-            override fun success(response: String?) {
-                if (response != null) {
-                    preferenceManager.setCartId(response)
-                    addProductToCart(response, product, listOptionsBody)
-                }
-            }
-
-            override fun failure(error: APIError) {
-                dismissProgressDialog()
-                DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-            }
-        })
-    }
-
-    private fun addProductToCart(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>) {
-        val cartItemBody = CartItemBody.create(cartId, product.sku, listOptionsBody)
-        HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
-            override fun success(response: CartItem?) {
-                runOnUiThread {
-                    saveCartItem(response, product)
-                    dismissProgressDialog()
-                }
-            }
-
-            override fun failure(error: APIError) {
-                dismissProgressDialog()
-                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
-                    showClearCartDialog()
-                } else {
-                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-                }
-            }
-        })
-    }
-
-    private fun saveCartItem(cartItem: CartItem?, product: Product) {
-        database.saveCartItem(CacheCartItem.asCartItem(cartItem!!, product), object : DatabaseListener {
+        CartUtils(this).addProductToCart(product, options, object : AddProductToCartCallback{
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
-                Toast.makeText(this@ProductDetailActivity, getString(R.string.added_to_cart), Toast.LENGTH_SHORT).show()
-                checkDisableAddProductButton(product)
+                dismissProgressDialog()
             }
 
-            override fun onFailure(error: Throwable) {
-                dismissProgressDialog()
-                showAlertDialog("", "" + error.message)
+            override fun forceClearCart() {
+                showClearCartDialog()
+            }
+
+            override fun onFailure(messageError: String) {
+                showCommonDialog(messageError)
+            }
+
+            override fun onFailure(dialog: Dialog) {
+                if (!isFinishing) { dialog.show() }
             }
         })
     }
@@ -470,30 +431,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         builder.show()
     }
 
-    private fun checkDisableAddProductButton(product: Product) {
-        runOnUiThread {
-            val productInCart = database.getCacheCartItemBySKU(product.sku)
-            val productQty = product.extension?.stokeItem?.qty ?: 0
+//    private fun checkDisableAddProductButton(product: Product) {
+//        disableAddToCartButton(!isProductInStock(product))
+//    }
 
-            if (productInCart != null && productInCart.qty!! >= productQty) {
-                disableAddToCartButton()
-            } else if (productInCart == null && productQty <= 0) {
-                disableAddToCartButton()
-            }
-
-            if (productInCart == null && productQty > 0) {
-                disableAddToCartButton(false)
-            }
-        }
-    }
-
-    private fun disableAddToCartButton(disable: Boolean = true) {
-        Log.d("ProductDetail", "disable add to cart button")
-        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-        if (fragment != null && fragment is DetailFragment) {
-            fragment.disableAddToCartButton(disable)
-        }
-    }
+//    private fun disableAddToCartButton(disable: Boolean = true) {
+//        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+//        if (fragment != null && fragment is DetailFragment) {
+//            fragment.disableAddToCartButton(disable)
+//        }
+//    }
 
     private fun clearCart() {
         database.deleteAllCacheCartItem()

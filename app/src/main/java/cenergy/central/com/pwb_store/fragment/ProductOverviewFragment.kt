@@ -8,9 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
-import android.widget.ImageView
-import android.widget.LinearLayout
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductSpecAdapter
@@ -19,27 +16,11 @@ import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.Specification
 import cenergy.central.com.pwb_store.utils.WebViewGetScaleManager
 import kotlinx.android.synthetic.main.fragment_product_overview.*
-import kotlinx.android.synthetic.main.fragment_product_overview.view.*
 
 class ProductOverviewFragment : Fragment() {
     private var productDetailListener: ProductDetailListener? = null
     private var product: Product? = null
 
-    // widget view
-    private lateinit var overviewLayout: LinearLayout
-    private lateinit var overviewWebLayout: LinearLayout
-    private lateinit var specListLayout: LinearLayout
-    private lateinit var overview: WebView
-    private lateinit var specLayout: LinearLayout
-    private lateinit var overviewArrowIcon: ImageView
-    private lateinit var specArrowIcon: ImageView
-    private lateinit var infoLayout: LinearLayout
-    private lateinit var infoWebLayout: LinearLayout
-    private lateinit var infoWebView: WebView
-    private lateinit var infoArrowIcon: ImageView
-    private lateinit var line1: View
-    private lateinit var line2: View
-    private lateinit var line3: View
     private var overviewVisible = false
     private var infoVisible = false
     private var specVisible = false
@@ -57,17 +38,16 @@ class ProductOverviewFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_product_overview, container, false)
-        setupView(rootView)
-        return rootView
+        return inflater.inflate(R.layout.fragment_product_overview, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupProductKeyFeatures()
-        setupProductInfo()
         setupProductSpecification()
+        setupProductInfo()
+        setupProductKeyFeatures()
+        setupTextHeader()
+        setupOnClick()
     }
 
     private fun setupProductSpecification() {
@@ -113,6 +93,7 @@ class ProductOverviewFragment : Fragment() {
             infoLayout.visibility = View.GONE
             line2.visibility = View.GONE
         }
+        infoWebView.setupForDescription()
     }
 
     private fun setupProductKeyFeatures() {
@@ -120,38 +101,20 @@ class ProductOverviewFragment : Fragment() {
             overviewLayout.visibility = View.VISIBLE
             line1.visibility = View.VISIBLE
             val html = style + product?.extension?.shortDescription
-            overview.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
-            overview.setInitialScale(scale)
+            overviewWeb.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+            overviewWeb.setInitialScale(scale)
 
         } else {
             overviewLayout.visibility = View.GONE
             line1.visibility = View.GONE
         }
+        overviewWeb.setupForDescription()
     }
 
-    private fun setupView(rootView: View) {
-        overviewLayout = rootView.findViewById(R.id.overviewLayout)
-        overviewWebLayout = rootView.findViewById(R.id.overviewWebLayout)
-        overview = rootView.findViewById(R.id.overviewWeb)
-        overviewArrowIcon = rootView.findViewById(R.id.overviewArrowIcon)
-        line1 = rootView.findViewById(R.id.line1)
-        specLayout = rootView.findViewById(R.id.specLayout)
-        specListLayout = rootView.findViewById(R.id.specListLayout)
-        specArrowIcon = rootView.findViewById(R.id.specArrowIcon)
-        line3 = rootView.findViewById(R.id.line3)
-        infoLayout = rootView.findViewById(R.id.infoLayout)
-        infoWebLayout = rootView.findViewById(R.id.infowWebLayout)
-        infoWebView = rootView.findViewById(R.id.infoWebView)
-        infoArrowIcon = rootView.findViewById(R.id.infoArrowIcon)
-        line2 = rootView.findViewById(R.id.line2)
-
-        rootView.tvOverviewHeader.text = getString(R.string.product_overview)
-        rootView.tvInfoHeader.text = getString(R.string.product_info)
-        rootView.tvSpecHeader.text = getString(R.string.product_spec)
-
-        setupOnClick()
-
-        overview.setupForDescription()
+    private fun setupTextHeader(){
+        tvOverviewHeader.text = getString(R.string.product_overview)
+        tvInfoHeader.text = getString(R.string.product_info)
+        tvSpecHeader.text = getString(R.string.product_spec)
     }
 
     private fun setupOnClick() {

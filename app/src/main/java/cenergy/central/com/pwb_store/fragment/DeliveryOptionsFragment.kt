@@ -56,7 +56,8 @@ class DeliveryOptionsFragment : Fragment() {
     private fun getDeliveryOptionList(): List<DeliveryOption> {
         val deliveryMethods = arrayListOf<DeliveryOption>()
         deliveryOptions.forEach {
-            if(DeliveryType.fromString(it.methodCode) != null){
+            val type = DeliveryType.fromString(it.methodCode)
+            if( type != null && type.methodCode != "ispu"){
                 deliveryMethods.add(it)
             }
         }

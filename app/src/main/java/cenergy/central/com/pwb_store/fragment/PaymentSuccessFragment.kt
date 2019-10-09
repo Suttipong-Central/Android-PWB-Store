@@ -24,11 +24,11 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.BarcodeDialogFragment
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -42,11 +42,11 @@ import java.text.NumberFormat
 import java.util.*
 
 class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
-
-    private var preferenceManager: PreferenceManager? = null
     // widget view
     private lateinit var recycler: RecyclerView
     private lateinit var orderNumber: PowerBuyTextView
+    private lateinit var discountPrice: PowerBuyTextView
+    private lateinit var discountTitle: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var orderDate: PowerBuyTextView
     private lateinit var name: PowerBuyTextView
@@ -66,6 +66,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var tvBillingEmail: PowerBuyTextView
     private lateinit var tvDeliveryInfo: PowerBuyTextView
     private lateinit var tvAmount: TextView
+    private lateinit var shippingTitle: TextView
     private lateinit var tvShippingAmount: TextView
     private lateinit var finishButton: PowerBuyIconButton
     private lateinit var storeAddressLayout: LinearLayout
@@ -76,7 +77,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var deliveryInfoLayout: LinearLayout
     private lateinit var billingEmailLayout: LinearLayout
     private lateinit var billingTelephoneLayout: LinearLayout
-    private lateinit var amountLayout: LinearLayout
     private var mProgressDialog: ProgressDialog? = null
 
     // data
@@ -88,6 +88,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var database = RealmController.getInstance()
     private var cacheOrder: Order? = null
     private var urlRedirect: String = ""
+    private lateinit var cartTotal: CartTotalResponse
 
     // get data activity
     private lateinit var paymentListener: PaymentProtocol
@@ -125,13 +126,13 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        preferenceManager = PreferenceManager(context)
         try {
             paymentListener = context as PaymentProtocol
             deliveryType = paymentListener.getSelectedDeliveryType()
             shippingInfo = paymentListener.getShippingAddress()
             billingInfo = paymentListener.getBillingAddress()
             branchAddress = paymentListener.getSelectedBranch()
+            cartTotal = paymentListener.getCartTotalResponse()
         } catch (e: Exception) {
             Log.d(TAG, e.toString())
         }
@@ -139,7 +140,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        preferenceManager = context?.let { PreferenceManager(it) }
         arguments?.let {
             orderId = it.getString(ARG_ORDER_ID)
             cacheOrderId = it.getString(ARG_CACHE_ORDER_ID)
@@ -159,6 +159,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         showProgressDialog()
         recycler = rootView.findViewById(R.id.recycler_view_order_detail_list)
         orderNumber = rootView.findViewById(R.id.order_number_order_success)
+        discountPrice = rootView.findViewById(R.id.txt_discount_order_success)
+        discountTitle = rootView.findViewById(R.id.discount_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
         orderDate = rootView.findViewById(R.id.txt_order_date_order_success)
         tvShippingHeader = rootView.findViewById(R.id.shipping_header_order_success)
@@ -170,6 +172,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvBillingTelephone = rootView.findViewById(R.id.txt_billing_tel_order_success)
         tvBillingEmail = rootView.findViewById(R.id.txt_billing_email_order_success)
         tvDeliveryInfo = rootView.findViewById(R.id.txt_delivery_option_order_success)
+        shippingTitle = rootView.findViewById(R.id.txt_delivery_price_order_success)
         tvShippingAmount = rootView.findViewById(R.id.txt_delivery_price_order_success)
         tvAmount = rootView.findViewById(R.id.txt_total_order_success)
 
@@ -181,7 +184,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         billingTelephoneLayout = rootView.findViewById(R.id.billingTelephoneLayout)
         deliveryLayout = rootView.findViewById(R.id.deliveryLayout)
         staffIconLayout = rootView.findViewById(R.id.staffIconLayout)
-        amountLayout = rootView.findViewById(R.id.amountLayout)
 
         // customer
         name = rootView.findViewById(R.id.txt_name_order_success)
@@ -240,78 +242,43 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
 
         //Setup customer
-        orderDate.text = order.createdAt
+        orderDate.text = context?.let { order.getDisplayTimeCreated(it) }
         email.text = shippingAddress.email
-        contactNo.text = shippingAddress.telephone
+        contactNo.text = billingAddress.telephone
         finishButton.setOnClickListener {
             finishThisPage()
         }
+        name.text = billingAddress.getDisplayName()
+        tvBillingName.text = billingAddress.getDisplayName()
+        tvBillingAddress.text = getAddress(billingAddress)
+        if(billingAddress.sameBilling == SAME_BILLING){
+            billingEmailLayout.visibility = View.GONE
+            billingTelephoneLayout.visibility = View.GONE
+        } else {
+            billingEmailLayout.visibility = View.VISIBLE
+            billingTelephoneLayout.visibility = View.VISIBLE
+            val billingEmail = billingAddress.email
+            tvBillingEmail.text = if (billingEmail.isBlank()) shippingAddress.email else billingEmail
+            tvBillingTelephone.text = billingAddress.telephone
+        }
 
         // setup shipping address or pickup at store
-        if (order.shippingType != DeliveryType.STORE_PICK_UP.methodCode) {
-            deliveryLayout.visibility = View.VISIBLE
-            billingAddressLayout.visibility = View.VISIBLE
-            deliveryInfoLayout.visibility = View.VISIBLE
-            amountLayout.visibility = View.VISIBLE
-            storeAddressLayout.visibility = View.GONE
-            customerNameLayout.visibility = View.GONE
-
-            tvShippingHeader.text = getString(R.string.delivery_detail)
-            tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
-                DeliveryType.EXPRESS -> getString(R.string.express)
-                DeliveryType.STANDARD -> getString(R.string.standard)
-                DeliveryType.STORE_PICK_UP -> getString(R.string.collect)
-                DeliveryType.HOME -> getString(R.string.home_delivery)
-                else -> ""
-            }
-
-            tvReceiverName.text = shippingAddress.getDisplayName()
-            tvDeliveryAddress.text = getAddress(shippingAddress)
-            tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
-                DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
-                DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
-                DeliveryType.HOME -> getString(R.string.home_delivery_desc)
-                else -> ""
-            }
-
-            tvBillingName.text = billingAddress.getDisplayName()
-            tvBillingAddress.text = getAddress(billingAddress)
-            if(billingAddress.sameBilling == SAME_BILLING){
-                billingEmailLayout.visibility = View.GONE
-                billingTelephoneLayout.visibility = View.GONE
-            } else {
-                billingEmailLayout.visibility = View.VISIBLE
-                billingTelephoneLayout.visibility = View.VISIBLE
-                val billingEmail = billingAddress.email
-                tvBillingEmail.text = if (billingEmail.isBlank()) shippingAddress.email else billingEmail
-                tvBillingTelephone.text = billingAddress.telephone
-            }
-        } else {
-            deliveryLayout.visibility = View.GONE
-            billingAddressLayout.visibility = View.GONE
-            deliveryInfoLayout.visibility = View.GONE
-            amountLayout.visibility = View.GONE
-            storeAddressLayout.visibility = View.VISIBLE
-            customerNameLayout.visibility = View.VISIBLE
-
-            name.text = billingAddress.getDisplayName()
-
-            tvShippingHeader.text = getString(R.string.store_collection_detail)
-
-            val branchShipping = order.branchShipping
-            if (branchShipping != null) {
-                branch.text = branchShipping.storeName
-                address.text = branchShipping.getBranchAddress()
-                tel.text = branchShipping.phone
-                openToday.text = branchShipping.description
-            }
+        when (DeliveryType.fromString(order.shippingType)) {
+            DeliveryType.STORE_PICK_UP,
+            DeliveryType.STORE_PICK_UP_ISPU -> setupShippingStorePickupView(order)
+            else ->  setupShipping(order, shippingAddress)
         }
 
         // setup total or summary
-        totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
-        val amount = (order.baseTotal - order.shippingAmount)
-        tvAmount.text = getDisplayPrice(unit, amount.toString())
+        val discount = order.discountPrice.toStringDiscount()
+        discountTitle.visibility = if (discount > 0) View.VISIBLE else View.GONE
+        discountPrice.visibility = if (discount > 0) View.VISIBLE else View.GONE
+        discountPrice.text = getDisplayDiscount(unit, discount.toString())
+        shippingTitle.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
+        tvShippingAmount.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
         tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
+        totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
+        tvAmount.text = getDisplayPrice(unit, order.total.toString())
         mProgressDialog?.dismiss()
     }
 
@@ -327,6 +294,47 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         } else {
             tvPaymentDescription.visibility = View.GONE
             ivPaymentBarcode.visibility = View.GONE
+        }
+    }
+
+    private fun setupShipping(order: Order, shippingAddress: AddressInformation) {
+        deliveryLayout.visibility = View.VISIBLE
+        deliveryInfoLayout.visibility = View.VISIBLE
+        storeAddressLayout.visibility = View.GONE
+        customerNameLayout.visibility = View.GONE
+
+        tvShippingHeader.text = getString(R.string.delivery_detail)
+        tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
+            DeliveryType.EXPRESS -> getString(R.string.express)
+            DeliveryType.STANDARD -> getString(R.string.standard)
+            DeliveryType.STORE_PICK_UP -> getString(R.string.collect)
+            DeliveryType.HOME -> getString(R.string.home_delivery)
+            else -> ""
+        }
+
+        tvReceiverName.text = shippingAddress.getDisplayName()
+        tvDeliveryAddress.text = getAddress(shippingAddress)
+        tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
+            DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
+            DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
+            DeliveryType.HOME -> getString(R.string.home_delivery_desc)
+            else -> ""
+        }
+    }
+
+    private fun setupShippingStorePickupView(order: Order) {
+        deliveryLayout.visibility = View.GONE
+        deliveryInfoLayout.visibility = View.GONE
+        storeAddressLayout.visibility = View.VISIBLE
+        customerNameLayout.visibility = View.VISIBLE
+        tvShippingHeader.text = getString(R.string.store_collection_detail)
+
+        val branchShipping = order.branchShipping
+        if (branchShipping != null) {
+            branch.text = branchShipping.storeName
+            address.text = branchShipping.getBranchAddress()
+            tel.text = branchShipping.phone
+            openToday.text = branchShipping.description
         }
     }
 
@@ -362,7 +370,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             rootView.findViewById<PowerBuyTextView>(R.id.qty_recycler_order_success).text = getString(R.string.qty)
             rootView.findViewById<PowerBuyTextView>(R.id.total_recycler_order_success).text = getString(R.string.total)
             rootView.findViewById<PowerBuyTextView>(R.id.total_order_success).text = getString(R.string.total)
-            rootView.findViewById<PowerBuyTextView>(R.id.delivery_price_order_success).text = getString(R.string.delivery_price)
+            rootView.findViewById<PowerBuyTextView>(R.id.txt_delivery_price_order_success).text = getString(R.string.delivery_price)
             rootView.findViewById<PowerBuyTextView>(R.id.total_result_order_success).text = getString(R.string.total_price)
             finishButton.setText(getString(R.string.finished))
         }
@@ -384,6 +392,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
+    private fun getDisplayDiscount(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+    }
+
     private fun showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = DialogUtils.createProgressDialog(context)
@@ -393,10 +406,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
     }
 
-    private fun showAlertDialog(title: String, message: String) {
+    private fun showAlertDialog(title: String, message: String) { //TODO: Refactor show alert dialog.
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
@@ -410,10 +423,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
             response.billingAddress = billingInfo ?: shippingInfo
 
-            if (response.shippingType != DeliveryType.STORE_PICK_UP.toString()) {
-                response.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress = shippingInfo
-            }
-
             // add shipping type
             response.shippingType = deliveryType?.methodCode ?: DeliveryType.STORE_PICK_UP.methodCode
 
@@ -425,12 +434,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                     item.isFreebie = true
                 }
             }
-
             // save order to local database
             val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress,
-                    language = preferenceManager?.getDefaultLanguage()?: AppLanguage.TH.key,
                     paymentRedirect = urlRedirect)
-
             database.saveOrder(order, object : DatabaseListener{
                 override fun onSuccessfully() {
                     updateViewOrder(order)
@@ -438,7 +444,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
                 override fun onFailure(error: Throwable) {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", "" + error.message)
+                    showAlertDialog("", error.message?: resources.getString(R.string.some_thing_wrong))
                 }
             })
         } else {
@@ -449,7 +455,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun failure(error: APIError) {
         mProgressDialog?.dismiss()
-        showAlertDialog("", error.errorMessage)
+        showAlertDialog("", error.errorMessage?: resources.getString(R.string.some_thing_wrong))
     }
     //endregion
 

@@ -46,11 +46,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:layout_marginStart="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:background="@android:color/transparent"
                 android:completionThreshold="1"
-                android:inputType="textNoSuggestions"
                 android:focusable="false"
+                android:textCursorDrawable="@drawable/custom_cursor"
                 android:maxLines="1"
                 android:textSize="18sp" />
         </android.support.design.widget.TextInputLayout>

@@ -37,7 +37,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.adapter.DrawerAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
-import cenergy.central.com.pwb_store.extensions.ConvertersKt;
+import cenergy.central.com.pwb_store.extensions.CommonKt;
 import cenergy.central.com.pwb_store.fragment.CategoryFragment;
 import cenergy.central.com.pwb_store.fragment.ProductListFragment;
 import cenergy.central.com.pwb_store.fragment.SubHeaderProductFragment;
@@ -475,9 +475,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         switch (action) {
             case ACTION_CART: {
                 String cartId = new PreferenceManager(this).getCartId();
-                int count = database.getCacheCartItems().size();
-                if (cartId != null && count > 0) {
-                    ShoppingCartActivity.Companion.startActivity(this, cartId);
+                if (database.getCacheCartItems().size() > 0) {
+                    ShoppingCartActivity.Companion.startActivity(this, getPreferenceManager().getCartId());
                 } else {
                     showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
                 }
@@ -599,7 +598,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
 
     private void handleStartCategoryLv1() {
-        if(ConvertersKt.isSpecial(categoryLv1)){
+        if(CommonKt.isSpecial(categoryLv1)){
             this.categoryLv2 = null; //Clear categoryLv2
             startProductListFragment(categoryLv1);
         } else {

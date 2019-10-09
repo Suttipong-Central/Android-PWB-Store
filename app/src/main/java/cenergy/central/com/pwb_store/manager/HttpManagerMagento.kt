@@ -16,9 +16,10 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import okhttp3.*
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
 import org.json.JSONObject
@@ -72,7 +73,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     companion object {
         //Specific Header
-        private const val HEADER_AUTHORIZATION = "Authorization"
+        const val HEADER_AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"
         const val OPEN_ORDER_CREATED_PAGE = "OpenOrderCreatedPage"
 
@@ -168,18 +169,18 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     private fun getStoreLocation(user: User, sellerCode: String, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveStoreLocation(getLanguage(), sellerCode,"seller_code").enqueue(object : Callback<StoreLocationResponse>{
+        userService.retrieveStoreLocation(getLanguage(), sellerCode, "seller_code").enqueue(object : Callback<StoreLocationResponse> {
             override fun onResponse(call: Call<StoreLocationResponse>, response: Response<StoreLocationResponse>?) {
-                if (response?.body() != null){
+                if (response?.body() != null) {
                     val storeLocation = response.body()?.items?.firstOrNull()
                     val store = Store()
                     store.retailerId = sellerCode
-                    if(storeLocation != null){
+                    if (storeLocation != null) {
                         store.storeId = storeLocation.id.toLong()
                         store.storeName = storeLocation.name
-                        store.province = storeLocation.extension?.address?.region?: ""
-                        store.district = storeLocation.extension?.address?.city?: ""
-                        store.postalCode = storeLocation.extension?.address?.postcode?: ""
+                        store.province = storeLocation.extension?.address?.region ?: ""
+                        store.district = storeLocation.extension?.address?.city ?: ""
+                        store.postalCode = storeLocation.extension?.address?.postcode ?: ""
                     }
 
                     // save user token
@@ -295,137 +296,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     }
 
     // region product
-    fun retrieveProducts(pageSize: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
-                         sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>) {
-        val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
-        val httpUrl = HttpUrl.Builder()
-                .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("rest/catalog-service/${getLanguage()}/V1/products/search")
-                .build()
-
-        val json = Gson().toJson(body)
-        val requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json)
-
-        val request = Request.Builder()
-                .url(httpUrl)
-                .post(requestBody)
-                .build()
-
-        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
-                if (response != null) {
-                    val data = response.body()
-                    val productResponse = ProductResponse()
-                    val products = arrayListOf<Product>()
-                    val filters = arrayListOf<ProductFilter>()
-
-                    try {
-                        val productResponseObject = JSONObject(data?.string())
-                        productResponse.totalCount = productResponseObject.getInt("total_count")
-                        val productArray = productResponseObject.getJSONArray("products")
-                        for (i in 0 until productArray.length()) {
-                            val productObj = productArray.getJSONObject(i)
-                            val product = Product()
-                            val productFilter = ProductFilter()
-                            val filterItem = arrayListOf<FilterItem>()
-
-                            product.id = productObj.getInt("id")
-                            product.sku = productObj.getString("sku")
-                            product.name = productObj.getString("name")
-                            product.price = productObj.getDouble("price")
-                            product.status = productObj.getInt("status")
-
-                            if (productObj.has("brand")) {
-                                product.brand = productObj.getString("brand")
-                            }
-
-                            if (productObj.has("brand_name")) {
-                                product.brand = productObj.getString("brand_name")
-                            }
-
-                            if (!productObj.isNull("image")) {
-                                product.image = productObj.getString("image")
-                            }
-
-                            val attrArray = productObj.getJSONArray("custom_attributes")
-                            for (j in 0 until attrArray.length()) {
-                                when (attrArray.getJSONObject(j).getString("attribute_code")) {
-                                    "special_price" -> {
-                                        if (!attrArray.getJSONObject(j).isNull("value")) {
-                                            val specialPrice = attrArray.getJSONObject(j).getString("value")
-                                            product.specialPrice = if (specialPrice.trim() == "") 0.0 else specialPrice.toDouble()
-                                        }
-                                    }
-
-                                    "special_from_date" -> {
-                                        if (!attrArray.getJSONObject(j).isNull("value")) {
-                                            product.specialFromDate = attrArray.getJSONObject(j).getString("value")
-                                        }
-                                    }
-
-                                    "special_to_date" -> {
-                                        if (!attrArray.getJSONObject(j).isNull("value")) {
-                                            product.specialToDate = attrArray.getJSONObject(j).getString("value")
-                                        }
-                                    }
-                                }
-                            }
-
-                            val filterArray = productResponseObject.getJSONArray("filters")
-                            for (j in 0 until filterArray.length()) {
-                                when (filterArray.getJSONObject(j).getString("attribute_code")) {
-                                    "brand" -> {
-                                        productFilter.name = filterArray.getJSONObject(j).getString("name")
-                                        productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
-                                        productFilter.position = filterArray.getJSONObject(j).getInt("position")
-                                        val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
-                                        for (k in 0 until itemArray.length()) {
-                                            val label = itemArray.getJSONObject(k).getString("label")
-                                            val value = itemArray.getJSONObject(k).getString("value")
-                                            val count = itemArray.getJSONObject(k).getInt("count")
-                                            filterItem.add(FilterItem(label, value, count))
-                                        }
-                                        productFilter.items = filterItem
-                                    }
-                                    "brand_name" -> {
-                                        productFilter.name = filterArray.getJSONObject(j).getString("name")
-                                        productFilter.code = filterArray.getJSONObject(j).getString("attribute_code")
-                                        productFilter.position = filterArray.getJSONObject(j).getInt("position")
-                                        val itemArray = filterArray.getJSONObject(j).getJSONArray("items")
-                                        for (k in 0 until itemArray.length()) {
-                                            val label = itemArray.getJSONObject(k).getString("label")
-                                            val value = itemArray.getJSONObject(k).getString("value")
-                                            val count = itemArray.getJSONObject(k).getInt("count")
-                                            filterItem.add(FilterItem(label, value, count))
-                                        }
-                                        productFilter.items = filterItem
-                                    }
-                                }
-                            }
-                            filters.add(productFilter)
-                            products.add(product)
-                        }
-                        productResponse.products = products
-                        productResponse.filters = filters
-
-                        callback.success(productResponse)
-                    } catch (e: Exception) {
-                        callback.failure(APIError(e))
-                        Log.e("JSON Parser", "Error parsing data $e")
-                    }
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-                response?.close()
-            }
-
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback.failure(APIError(e))
-            }
-        })
-    }
-
     fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
@@ -471,6 +341,13 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                         stockItem.isInStock = stockObject.getBoolean("is_in_stock")
                         stockItem.maxQTY = stockObject.getInt("max_sale_qty")
+                        stockItem.minQTY = stockObject.getInt("min_sale_qty")
+                        if (extensionObj.has("ispu_salable")) {
+                            stockItem.is2HProduct = extensionObj.getBoolean("ispu_salable")
+                        }
+                        if (extensionObj.has("salable")) {
+                            stockItem.isSalable = extensionObj.getBoolean("salable")
+                        }
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 
                         // get product specification
@@ -530,11 +407,11 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                             val type = galleryArray.getJSONObject(i).getString("media_type")
                             val label = galleryArray.getJSONObject(i).getString("label")
                             var position = 0
-                            if(!galleryArray.getJSONObject(i).isNull("position")){
+                            if (!galleryArray.getJSONObject(i).isNull("position")) {
                                 position = galleryArray.getJSONObject(i).getInt("position")
                             }
                             var disabled = false
-                            if(!galleryArray.getJSONObject(i).isNull("disabled")){
+                            if (!galleryArray.getJSONObject(i).isNull("disabled")) {
                                 disabled = galleryArray.getJSONObject(i).getBoolean("disabled")
                             }
                             val file = galleryArray.getJSONObject(i).getString("file")
@@ -583,8 +460,12 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                     productExtension.barcode = customAttr.getString("value")
                                 }
 
-                                "payment_method" -> {
+                                "payment_methods" -> {
                                     product.paymentMethod = customAttr.getString("value")
+                                }
+
+                                "shipping_methods" -> {
+                                    product.shippingMethods = customAttr.getString("value")
                                 }
                             }
                             // set value to product specifications
@@ -628,11 +509,11 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun getDeliveryInformation(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>){
+    fun getDeliveryInformation(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getDeliveryInfo(getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>>{
+        productService.getDeliveryInfo(getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>> {
             override fun onResponse(call: Call<List<DeliveryInfo>>, response: Response<List<DeliveryInfo>>) {
-                if (response.body() != null){
+                if (response.body() != null) {
                     callback.success(response.body())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -665,24 +546,24 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                     try {
                         val storeAvailableArray = JSONArray(data?.string())
-                        for (i in 0 until storeAvailableArray.length()){
+                        for (i in 0 until storeAvailableArray.length()) {
                             val storeAvailable = StoreAvailable()
                             val storeAvailableObject = storeAvailableArray.getJSONObject(i)
-                            if(storeAvailableObject.has("source_item")){
+                            if (storeAvailableObject.has("source_item")) {
                                 val sourceObject = storeAvailableObject.getJSONObject("source_item")
-                                if (sourceObject.has("quantity")){
+                                if (sourceObject.has("quantity")) {
                                     storeAvailable.qty = sourceObject.getInt("quantity")
                                 }
                             }
-                            if(storeAvailableObject.has("store")){
+                            if (storeAvailableObject.has("store")) {
                                 val storeObject = storeAvailableObject.getJSONObject("store")
-                                if (storeObject.has("name")){
+                                if (storeObject.has("name")) {
                                     storeAvailable.name = storeObject.getString("name")
                                 }
-                                if (storeObject.has("seller_code")){
+                                if (storeObject.has("seller_code")) {
                                     storeAvailable.sellerCode = storeObject.getString("seller_code")
                                 }
-                                if (storeObject.has("custom_attributes")){
+                                if (storeObject.has("custom_attributes")) {
                                     val attrArray = storeObject.getJSONArray("custom_attributes")
                                     for (j in 0 until attrArray.length()) {
                                         when (attrArray.getJSONObject(j).getString("name")) {
@@ -774,24 +655,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun viewCart(cartId: String, callback: ApiResponseCallback<List<CartItem>>) {
-        val cartService = retrofit.create(CartService::class.java)
-        cartService.viewCart(getLanguage(), cartId).enqueue(object : Callback<List<CartItem>> {
-            override fun onResponse(call: Call<List<CartItem>>, response: Response<List<CartItem>>) {
-                if (response.isSuccessful) {
-                    val cartItemList = response.body()
-                    callback.success(cartItemList)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
-
-            override fun onFailure(call: Call<List<CartItem>>, t: Throwable) {
-                callback.failure(APIError(t))
-            }
-        })
-    }
-
     fun deleteItem(cartId: String, itemId: Long, callback: ApiResponseCallback<Boolean>) {
         val cartService = retrofit.create(CartService::class.java)
         cartService.deleteItem(cartId, itemId).enqueue(object : Callback<Boolean> {
@@ -809,10 +672,16 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun updateItem(cartId: String, itemId: Long, qty: Int, callback: ApiResponseCallback<CartItem>) {
+    fun updateItem(cartId: String, itemId: Long, qty: Int, branch: Branch? = null,
+                   callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        val item = ItemBody(cartId = cartId, itemId = itemId, qty = qty)
-        val updateItemBody = UpdateItemBody(cartItem = item)
+
+        val updateItemBody =  if (branch != null) {
+            UpdateItemBody.create(cartId, itemId, qty, branch)
+        } else {
+            UpdateItemBody.create(cartId, itemId, qty)
+        }
+
         cartService.updateItem(getLanguage(), cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
@@ -850,12 +719,13 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     }
 
     fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation,
-                                  subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption, callback: ApiResponseCallback<ShippingInformationResponse>) {
+                                  subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption,
+                                  callback: ApiResponseCallback<ShippingInformationResponse>) {
 
         val cartService = retrofit.create(CartService::class.java)
 
         // clone shipping address and clear tax information
-        val newShoppingAddress = AddressInformation(
+        val newShippingAddress = AddressInformation(
                 city = shippingAddress.city,
                 region = shippingAddress.region,
                 regionId = shippingAddress.regionId,
@@ -872,7 +742,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 company = "",
                 vatId = "")
 
-        val addressInformationBody = AddressInformationBody(newShoppingAddress, billingAddress, deliveryOption.methodCode,
+        val addressInformationBody = AddressInformationBody(newShippingAddress, billingAddress, deliveryOption.methodCode,
                 deliveryOption.carrierCode, subscribeCheckOut)
         val shippingBody = ShippingBody(addressInformationBody)
         cartService.createShippingInformation(getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
@@ -891,6 +761,33 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
+    fun setSgippingInformation(cartId: String, storeAddress: AddressInformation,
+                               subscribeCheckOut: SubscribeCheckOut,
+                               deliveryOption: DeliveryOption,
+                               callback: ApiResponseCallback<ShippingInformationResponse>) {
+
+        val addressInformationBody = AddressInformationBody(storeAddress, null,
+                deliveryOption.methodCode, deliveryOption.carrierCode, subscribeCheckOut)
+        val shippingBody = ShippingBody(addressInformationBody)
+
+        cartService.createShippingInformation(getLanguage(), cartId, shippingBody)
+                .enqueue(object : Callback<ShippingInformationResponse> {
+                    override fun onResponse(call: Call<ShippingInformationResponse>?,
+                                            response: Response<ShippingInformationResponse>?) {
+                        if (response != null && response.isSuccessful) {
+                            val shippingInformation = response.body()
+                            callback.success(shippingInformation)
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
+                        callback.failure(APIError(t))
+                    }
+                })
+    }
+
     fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {
         val cartService = retrofit.create(CartService::class.java)
         cartService.getOrder(Constants.CLIENT_MAGENTO, getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
@@ -905,118 +802,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
             override fun onFailure(call: Call<OrderResponse>?, t: Throwable?) {
                 callback.failure(APIError(t))
-            }
-        })
-    }
-    // endregion
-
-    // region store
-    fun getBranches(callback: ApiResponseCallback<List<Branch>>) {
-        val httpUrl = HttpUrl.Builder()
-                .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("rest/${getLanguage()}/V1/storepickup/stores/sts")
-                .build()
-        val request = Request.Builder()
-                .url(httpUrl)
-                .build()
-
-        defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
-                if (response != null) {
-                    val data = response.body()
-                    val branches = arrayListOf<Branch>()
-                    try {
-                        val arrayObj = JSONArray(data?.string())
-                        for (i in 0 until arrayObj.length()) {
-                            val itemObj = arrayObj.getJSONObject(i)
-                            if (itemObj.has("store")) {
-                                val storeObj = itemObj.getJSONObject("store")
-                                val branch = Branch() // new Branch
-                                branch.storeId = storeObj.getString("id")
-                                branch.storeName = storeObj.getString("name")
-                                branch.isActive = if (storeObj.getBoolean("is_active")) 1 else 0
-                                branch.sellerCode = storeObj.getString("seller_code")
-                                branch.createdAt = storeObj.getString("created_at")
-                                branch.updatedAt = storeObj.getString("updated_at")
-                                branch.attrSetName = storeObj.getString("attribute_set_name")
-
-                                // field extension_attributes
-                                if (storeObj.has("extension_attributes")) {
-                                    val extensionObj = storeObj.getJSONObject("extension_attributes")
-                                    if (extensionObj.has("address")) {
-                                        val addressObj = extensionObj.getJSONObject("address")
-                                        branch.city = addressObj.getString("city")
-                                        branch.postcode = addressObj.getString("postcode")
-                                        val street = addressObj.getJSONArray("street")
-                                        var txtStreet = ""
-                                        for (s in 0 until street.length()) {
-                                            txtStreet += street.getString(s)
-                                        }
-                                        branch.street = txtStreet
-                                        val coordinatesObj = addressObj.getJSONObject("coordinates")
-                                        branch.latitude = coordinatesObj.getString("latitude")
-                                        branch.longitude = coordinatesObj.getString("longitude")
-                                        if (addressObj.has("region")){
-                                            branch.region = addressObj.getString("region")
-                                        }
-                                        if (addressObj.has("region_id")){
-                                            branch.regionId = addressObj.getInt("region_id")
-                                        }
-                                        if (addressObj.has("region_code")){
-                                            branch.regionCode = addressObj.getString("region_code")
-                                        }
-                                    }
-
-                                    if (extensionObj.has("opening_hours")) {
-                                        val openingArray = extensionObj.getJSONArray("opening_hours")
-                                        val calendar = Calendar.getInstance()
-                                        val day = calendar.get(Calendar.DAY_OF_WEEK) - 1 // index of opening_hours
-                                        if (openingArray.length() > 0 && day < openingArray.length()) {
-                                            val openItemArray = openingArray.getJSONArray(day)
-                                            val startTime = openItemArray.getJSONObject(0).getString("start_time")
-                                            val endTime = openItemArray.getJSONObject(0).getString("end_time")
-                                            branch.description = "$startTime - $endTime"
-                                        }
-                                    }
-                                }
-
-                                // field custom_attributes
-                                if (storeObj.has("custom_attributes")) {
-                                    val customAttrArray = storeObj.getJSONArray("custom_attributes")
-                                    for (m in 0 until customAttrArray.length()) {
-                                        val ctmAttr = customAttrArray.getJSONObject(m)
-                                        if (ctmAttr.has("name")) {
-                                            when (ctmAttr.getString("name")) {
-                                                "contact_phone" -> {
-                                                    branch.phone = ctmAttr.getString("value") ?: ""
-                                                }
-                                                "contact_fax" -> {
-                                                    branch.fax = ctmAttr.getString("value") ?: ""
-                                                }
-                                                "contact_mail" -> {
-                                                    branch.email = ctmAttr.getString("value") ?: ""
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                branches.add(branch) // add branch
-                            }
-                        }
-                        callback.success(branches)
-                    } catch (e: Exception) {
-                        callback.failure(APIError(e))
-                        Log.e("JSON Parser", "Error parsing data $e")
-                    }
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-                response?.close()
-            }
-
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback.failure(APIError(e))
             }
         })
     }
@@ -1302,5 +1087,18 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             "cds" -> "cds_$language"
             else -> language
         }
+    }
+
+    fun createRequestHttps(path: String): Request {
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments(path)
+                .build()
+
+        return Request.Builder()
+                .url(httpUrl)
+                .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .build()
     }
 }

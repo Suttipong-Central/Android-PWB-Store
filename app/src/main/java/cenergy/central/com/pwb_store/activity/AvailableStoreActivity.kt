@@ -46,7 +46,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
             val fragmentTransaction = supportFragmentManager.beginTransaction()
             fragmentTransaction
                     .replace(R.id.container, AvailableFragment.newInstance())
-                    .commit()
+                    .commitAllowingStateLoss()
         }
 
     }
@@ -61,7 +61,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
                         storeAvailableList = response
                         val fragmentTransaction = supportFragmentManager.beginTransaction()
                         fragmentTransaction.replace(R.id.container, AvailableFragment.newInstance())
-                                .commit()
+                                .commitAllowingStateLoss()
                     } else {
                         val error = APIErrorUtils.parseError(response)
                         Log.e(TAG, "onResponse: " + error.errorMessage)

@@ -81,7 +81,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container, CompareFragment.newInstance())
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private void initView() {

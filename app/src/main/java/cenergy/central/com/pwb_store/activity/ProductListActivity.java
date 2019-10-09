@@ -81,7 +81,7 @@ public class ProductListActivity extends BaseActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction
                 .replace(R.id.container, ProductListFragment.newInstance(keyWord, isSearch, "0" , "", null, keyWord))
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     @Override

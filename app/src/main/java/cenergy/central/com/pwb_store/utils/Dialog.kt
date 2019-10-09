@@ -13,6 +13,7 @@ fun AppCompatActivity.showCommonDialog(message: String) {
 fun AppCompatActivity.showCommonDialog(title: String?, message: String,
                                        onClick: DialogInterface.OnClickListener? = null) {
     if (isDestroyed || isFinishing) return
+
     AlertDialog.Builder(this, R.style.AlertDialogTheme)
             .setTitle(title)
             .setMessage(message)

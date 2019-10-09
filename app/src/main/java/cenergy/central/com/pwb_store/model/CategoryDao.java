@@ -28,8 +28,7 @@ public class CategoryDao implements IViewType, Parcelable {
     protected CategoryDao(Parcel in) {
         viewTypeId = in.readInt();
         category = in.readParcelable(Category.class.getClassLoader());
-        mCategoryList = new ArrayList<>();
-        in.readList(mCategoryList, Category.class.getClassLoader());
+        mCategoryList = in.createTypedArrayList(Category.CREATOR);
     }
 
     public static final Creator<CategoryDao> CREATOR = new Creator<CategoryDao>() {

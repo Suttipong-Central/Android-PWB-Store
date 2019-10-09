@@ -24,7 +24,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
-import cenergy.central.com.pwb_store.manager.HttpManagerHDLOld;
 import cenergy.central.com.pwb_store.manager.UserInfoManager;
 import cenergy.central.com.pwb_store.manager.bus.event.BookTimeBus;
 import cenergy.central.com.pwb_store.model.APIError;
@@ -43,7 +42,6 @@ import cenergy.central.com.pwb_store.model.request.ShippingRequest;
 import cenergy.central.com.pwb_store.model.request.SkuDataRequest;
 import cenergy.central.com.pwb_store.model.response.HDLResponse;
 import cenergy.central.com.pwb_store.realm.RealmController;
-import cenergy.central.com.pwb_store.utils.APIErrorHDLUtils;
 import cenergy.central.com.pwb_store.utils.CommonMethod;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.view.CalendarViewCustom;
@@ -139,10 +137,10 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
                 createShippingData(mShippingDao);
                 mProgressDialog.dismiss();
             } else {
-                APIError error = APIErrorHDLUtils.parseError(response);
-                Log.e(TAG, "onResponse: " + error.getErrorUserMessage());
-                showAlertDialog(error.getErrorUserMessage());
-                mProgressDialog.dismiss();
+//                APIError error = APIErrorHDLUtils.parseError(response);
+//                Log.e(TAG, "onResponse: " + error.getErrorUserMessage());
+//                showAlertDialog(error.getErrorUserMessage());
+//                mProgressDialog.dismiss();
 
             }
         }
@@ -235,8 +233,8 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
 //            HttpManagerHDL.getInstance().getHDLService().checkTimeSlot(UserInfoManager.getInstance().getUserToken(),
 //                    "application/json",
 //                    mHDLRequest).enqueue(CALLBACK_HDL);
-            HttpManagerHDLOld.getInstance().getHDLService().checkShippingTime(
-                    mShippingRequest).enqueue(CALLBACK_SHIPPING);
+//            HttpManagerHDLOld.getInstance().getHDLService().checkShippingTime(
+//                    mShippingRequest).enqueue(CALLBACK_SHIPPING);
 
         } else {
             mSkuDataRequests.add(new SkuDataRequest(mProductDetail.getExtensionProductDetail().getProductDetailStores().get(0).getBarCode()
@@ -248,8 +246,8 @@ public class ProductDeliveryViewHolder extends RecyclerView.ViewHolder implement
             mCustomDetailRequest = new CustomDetailRequest("1", "", "");
             mShippingRequest = new ShippingRequest(storeList.getPostCode(), mSkuDataRequests, mPeriodRequest, mCustomDetailRequest);
 
-            HttpManagerHDLOld.getInstance().getHDLService().checkShippingTime(
-                    mShippingRequest).enqueue(CALLBACK_SHIPPING);
+//            HttpManagerHDLOld.getInstance().getHDLService().checkShippingTime(
+//                    mShippingRequest).enqueue(CALLBACK_SHIPPING);
         }
 
     }

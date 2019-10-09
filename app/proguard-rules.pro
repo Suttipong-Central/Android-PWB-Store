@@ -38,9 +38,9 @@
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class nameTh to the JavaScript interface
 # class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+   public *;
+}
 
 -optimizationpasses 5
 -dontusemixedcaseclassnames
@@ -135,6 +135,7 @@
 -dontwarn okhttp3.**
 -keepattributes Signature
 -keepattributes Exceptions
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
 
 #Line Indicator
 -dontwarn com.viewpagerindicator.LinePageIndicator
@@ -169,6 +170,7 @@
 -keep class io.realm.internal.Keep.** { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+-dontwarn io.reactivex.**
 
 #Aws
 -keep class org.apache.commons.logging.**               { *; }
@@ -185,8 +187,8 @@
 -dontwarn org.apache.http.conn.scheme.**
 
 -ignorewarnings
-
--keep class * {
-    public private *;
-}
+#
+#-keep class * {
+#    public private *;
+#}
 

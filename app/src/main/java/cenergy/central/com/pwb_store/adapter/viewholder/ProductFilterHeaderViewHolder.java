@@ -46,11 +46,6 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder {
         if (selectedFilter != null) {
             mTxtHeader.setTextAppearance(itemView.getContext(), category.getId().equals(selectedFilter.getId()) ? R.style.textSubCheck : R.style.textSub);
         }
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getDefault().post(new ProductFilterItemBus(category, getAdapterPosition()));
-            }
-        });
+        itemView.setOnClickListener(v -> EventBus.getDefault().post(new ProductFilterItemBus(category, getAdapterPosition())));
     }
 }

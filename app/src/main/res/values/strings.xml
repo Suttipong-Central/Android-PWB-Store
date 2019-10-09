@@ -58,6 +58,7 @@
     <string name="tab_delivery">Arrange Delivery</string>
     <string name="size">Size:</string>
     <string name="shade">Shade:</string>
+    <string name="add_two_hour_item">2H Pick up</string>
 
     <!-- Compare -->
     <string name="compare_header">Compare products</string>
@@ -219,6 +220,10 @@
     <string name="shopping_delete"><u>Delete</u></string>
     <string name="t1_points">Earn %d points with your The 1</string>
     <string name="check_out">Checkout</string>
+    <string name="format_shopping_cart_ispu">Pick up from %s at</string>
+    <string name="btn_complete_order">Complete Order</string>
+    <string name="empty_value">Please enter quantity to order</string>
+    <string name="exceeds_maximum">Input quantity exceeds maximum number</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>
@@ -232,7 +237,10 @@
     <string name="error_form_passport_invalid">Incorrect Passport</string>
     <string name="error_form_name_en">Invalid name</string>
     <string name="error_verify_otp_time_out">Sorry connection error</string>
+
+    <!-- Stores -->
     <string name="delivery">Arrange Delivery</string>
+    <string name="delivery_2hr_pickup">2H Pick up store</string>
     <string name="select_store_title">Choose store to collect from</string>
     <string name="store_address">Store address</string>
     <string name="telephone_number">Tel no.</string>
@@ -259,6 +267,9 @@
     <string name="staff_descriptions_dialog">1. Please ask customer to go to cashier\n2. Show order confirmation screen to cashier\n3. When customer already paid, ask cashier to login to powerbuy.co.th/bonjour\n4. Go to that order then click at "Paid" button to complete process</string>
     <string name="product_not_have_delivery">This item is excluding installation service.</string>
     <string name="cannot_get_shipping_slot">Sorry, data is temporary unavailable.</string>
+    <string name="format_store_ispu_delivery">Order now, pick up in-store\nFrom %s</string>
+    <string name="error_store_pickup_empty">There is no available store that have all of your selected items.</string>
+
     <!-- Network state -->
     <string name="network_connect_error">No internet</string>
     <string name="network_state_connected">Connected</string>
@@ -311,4 +322,11 @@
     <string name="information">Information</string>
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>
+
+    <!-- Stock Indicator -->
+    <string name="label_stock_availability">Stock Availability</string>
+    <string name="label_stock_online">Online</string>
+    <string name="label_stock_store_offline">Current Store</string>
+    <string name="label_stock_stores_offline"><u>Other Stores</u></string>
+    <string name="discount">Discount</string>
 </resources>

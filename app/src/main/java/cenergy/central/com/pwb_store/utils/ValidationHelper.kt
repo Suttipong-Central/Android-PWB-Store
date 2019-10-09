@@ -10,20 +10,20 @@ import java.util.regex.Pattern
  * Created by Anuphap Suwannamas on 13/9/2018 AD.
  * Email: Anupharpae@gmail.com
  */
-class ValidationHelper(private val mContext: Context) {
+class ValidationHelper(private val context: Context) {
 
     fun validText(text: String): String? {
         return if (isEmptyData(text)) {
-            mContext.getString(R.string.error_form_empty_data)
+            context.getString(R.string.error_form_empty_data)
         } else null
     }
 
     fun validName(text: String, isThai: Boolean): String? {
         return when {
-            isEmptyData(text) -> mContext.getString(R.string.error_form_empty_data)
-            isSpecialCharacter(text) -> mContext.getString(R.string.error_form_name)
+            isEmptyData(text) -> context.getString(R.string.error_form_empty_data)
+            isSpecialCharacter(text) -> context.getString(R.string.error_form_name)
             Pattern.compile(if (isThai) "[0-9]" else "[^ a-z]", Pattern.CASE_INSENSITIVE).matcher(text).find() ->
-                mContext.getString(if (isThai) R.string.error_form_name else R.string.error_form_name_en)
+                context.getString(if (isThai) R.string.error_form_name else R.string.error_form_name_en)
             else -> null
         }
     }
@@ -56,36 +56,36 @@ class ValidationHelper(private val mContext: Context) {
 
     fun validPassport(passport: String): String? {
         return when {
-            isEmptyData(passport) -> mContext.getString(R.string.error_form_empty_data)
-            passport.length < MIN_PASSPORT_LENGTH -> mContext.getString(R.string.error_form_passport_invalid)
-            Pattern.compile("[^a-z0-9]", Pattern.CASE_INSENSITIVE).matcher(passport).find() -> mContext.getString(R.string.error_form_passport_invalid)
+            isEmptyData(passport) -> context.getString(R.string.error_form_empty_data)
+            passport.length < MIN_PASSPORT_LENGTH -> context.getString(R.string.error_form_passport_invalid)
+            Pattern.compile("[^a-z0-9]", Pattern.CASE_INSENSITIVE).matcher(passport).find() -> context.getString(R.string.error_form_passport_invalid)
             else -> null
         }
     }
 
     fun validEmail(email: String): String? {
         if (isEmptyData(email)) {
-            return mContext.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_empty_data)
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            return mContext.getString(R.string.error_form_email_pattern_not_match)
+            return context.getString(R.string.error_form_email_pattern_not_match)
         }
         return null
     }
 
     fun validPassword(password: String): String? {
         if (isEmptyData(password)) {
-            return mContext.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_empty_data)
         } else if (password.length < MIN_PASSWORD_LENGTH) {
-            return String.format(mContext.getString(R.string.error_form_password_too_short), MIN_PASSWORD_LENGTH)
+            return String.format(context.getString(R.string.error_form_password_too_short), MIN_PASSWORD_LENGTH)
         } else if (!isValidPassword(password)) {
-            return mContext.getString(R.string.error_form_password_not_correctly)
+            return context.getString(R.string.error_form_password_not_correctly)
         }
         return null
     }
 
     fun validMatchPassword(password: String, confirmationPassword: String): String? {
         return if (password != confirmationPassword) {
-            mContext.getString(R.string.error_form_confirmation_password_not_matched)
+            context.getString(R.string.error_form_confirmation_password_not_matched)
         } else null
     }
 
@@ -110,16 +110,16 @@ class ValidationHelper(private val mContext: Context) {
 
     fun validThaiPhoneNumber(phoneNumber: String): String? {
         if (phoneNumber.isBlank()) {
-            return mContext.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_empty_data)
         }
 
         val prefixNumber = phoneNumber.substring(0, 2)
         if (isEmptyData(phoneNumber)) {
-            return mContext.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_empty_data)
         } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
-            return mContext.getString(R.string.error_form_phone_number_invalid)
+            return context.getString(R.string.error_form_phone_number_invalid)
         } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
-            return mContext.getString(R.string.error_form_phone_number_invalid)
+            return context.getString(R.string.error_form_phone_number_invalid)
         }
         return null
     }

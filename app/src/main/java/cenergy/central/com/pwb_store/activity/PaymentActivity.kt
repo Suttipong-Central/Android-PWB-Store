@@ -1,8 +1,10 @@
 package cenergy.central.com.pwb_store.activity
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -28,6 +30,7 @@ import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
+import cenergy.central.com.pwb_store.manager.api.BranchApi
 import cenergy.central.com.pwb_store.manager.api.HomeDeliveryApi
 import cenergy.central.com.pwb_store.manager.api.OrderApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
@@ -37,12 +40,12 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.gson.reflect.TypeToken
@@ -64,13 +67,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private val database = RealmController.getInstance()
     private var cartId: String? = null
     private var cartItemList: List<CartItem> = listOf()
+    private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
     private var pwbMembersList: List<PwbMember> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-    private var branches: ArrayList<Branch> = arrayListOf()
+    private var branches: ArrayList<BranchResponse> = arrayListOf()
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
@@ -82,11 +86,34 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
 
+    // data product 2h
+    private var product2h: Product? = null
+    private var isEditStorePickup: Boolean = false
+    private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
     companion object {
         private const val TAG = "PaymentActivity"
-        fun intent(context: Context) {
+        private const val EXTRA_PRODUCT_2H = "extra_product_2h"
+        private const val EXTRA_CHECK_OUT_ISPU = "extra_check_out_ispu"
+        private const val EXTRA_EDIT_STORE_PICKUP = "extra_edit_store_pickup"
+
+        fun startCheckout(context: Context, isISPU: Boolean = false) {
             val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, isISPU)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+
+        fun startSelectStorePickup(context: Context, product: Product) {
+            val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_PRODUCT_2H, product)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+
+        fun startEditStorePickup(context: Context) {
+            val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
+            intent.putExtra(EXTRA_EDIT_STORE_PICKUP, true)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
@@ -98,16 +125,36 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         networkStateView = findViewById(R.id.networkStateView)
         languageButton.visibility = View.INVISIBLE
         handleChangeLanguage() // update language
+
         initView()
 
         showProgressDialog()
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
-        cacheCartItems = database.cacheCartItems
-        paymentMethods = cacheCartItems.getPaymentType(this)
-        startCheckOut() // default page
-        getCartItems()
+
+        // is start select store with product 2h?
+        if (intent.hasExtra(EXTRA_PRODUCT_2H)) {
+            this.product2h = intent.getParcelableExtra(EXTRA_PRODUCT_2H)
+            this.checkoutType = CheckoutType.ISPU
+            checkoutWithProduct2hr(this.product2h!!)
+        } else {
+            val isISPU = intent.getBooleanExtra(EXTRA_CHECK_OUT_ISPU, false)
+            isEditStorePickup = intent.getBooleanExtra(EXTRA_EDIT_STORE_PICKUP, false)
+            this.checkoutType = if (isISPU) CheckoutType.ISPU else CheckoutType.NORMAL
+            if (!isEditStorePickup) {
+                standardCheckout()
+            } else {
+                onEditStorePickup()
+            }
+        }
+    }
+
+    private fun onEditStorePickup() {
+        mProgressDialog?.dismiss()
+        val fragment = DeliveryStorePickUpFragment.newInstance(is2hrProduct = true,
+                editStorePickup = true)
+        startFragment(fragment)
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
@@ -162,6 +209,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun setBillingAddressInfo(billingAddress: AddressInformation) {
         this.billingAddress = billingAddress
     }
+
+    override fun setBillingAddressWithIspu(billingAddress: AddressInformation) {
+        this.shippingAddress = billingAddress // sent only address box 1
+        createOrderWithIspu()
+    }
     // endregion
 
     // region {@link PaymentT1Listener}
@@ -200,6 +252,67 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 startDeliveryHomeFragment()
             }
         }
+    }
+
+    private fun standardCheckout() {
+        cacheCartItems = database.cacheCartItems
+        paymentMethods = cacheCartItems.getPaymentType(this)
+        startCheckOut() // default page
+        getCartItems()
+    }
+
+    private fun checkoutWithProduct2hr(product: Product) {
+        showProgressDialog()
+        if (database.provinces != null && database.provinces.isNotEmpty()) {
+            BranchApi().getBranchesISPU(this, product.sku,
+                    object : ApiResponseCallback<List<BranchResponse>> {
+                        override fun success(response: List<BranchResponse>?) {
+                            if (response != null) {
+                                branches.clear()
+                                branches.addAll(response)
+                                val fragment = DeliveryStorePickUpFragment.newInstance(true)
+                                startFragment(fragment)
+                            }
+
+                            mProgressDialog?.dismiss()
+                        }
+
+                        override fun failure(error: APIError) {
+                            showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                    DialogInterface.OnClickListener { dialog, which ->
+                                        dialog?.dismiss()
+                                        finish()
+                                    })
+                        }
+                    })
+        } else {
+            loadProvinceData()
+        }
+    }
+
+    /*
+    * If no have provinces data must force download province data
+    * because in Branch detail page have to display about address
+    * */
+    private fun loadProvinceData() {
+        showProgressDialog()
+
+        HttpManagerMagento.getInstance(this).getProvinces(true,
+                object : ApiResponseCallback<List<Province>> {
+                    override fun success(response: List<Province>?) {
+                        // JUST FOR OPEN STORE PICK PAGE WITH PRODUCT 2H
+                        product2h?.let { checkoutWithProduct2hr(it) }
+                    }
+
+                    override fun failure(error: APIError) {
+                        showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    dialog?.dismiss()
+                                    finish()
+                                })
+                        mProgressDialog?.dismiss()
+                    }
+                })
     }
 
     private fun isUserChatAndShop(): Boolean {
@@ -254,8 +367,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         clearCachedCart() // clear cache item
     }
 
-    private fun startStorePickupFragment(totalBranch: Int) {
-        val fragment = DeliveryStorePickUpFragment.newInstance(totalBranch)
+    private fun startStorePickupFragment() {
+        val fragment = DeliveryStorePickUpFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -306,7 +419,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
                 .replace(R.id.container, fragment)
-                .commit()
+                .commitAllowingStateLoss()
     }
 
     private fun initView() {
@@ -331,11 +444,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun getCartItems() {
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-                override fun success(response: List<CartItem>?) {
-                    mProgressDialog?.dismiss()
+            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
+                override fun success(response: CartResponse?) {
                     if (response != null) {
-                        cartItemList = response
+                        cartItemList = response.items
+                        getItemTotal(cartId)
                     }
                 }
 
@@ -345,6 +458,24 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 }
             })
         }
+    }
+
+    fun getItemTotal(cartId: String) {
+        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
+            override fun success(response: CartTotalResponse?) {
+                mProgressDialog?.dismiss()
+                if (response != null) {
+                    cartTotal = response
+                } else {
+                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                mProgressDialog?.dismiss()
+                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+            }
+        })
     }
 
     fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
@@ -439,24 +570,24 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             return
         }
         val storeAddress = AddressInformation.createBranchAddress(branch!!)
-        HttpManagerMagento(this, true).createShippingInformation(cartId!!, storeAddress,
-                billingAddress
+        HttpManagerMagento(this, true)
+                .createShippingInformation(cartId!!, storeAddress, billingAddress
                         ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
-                object : ApiResponseCallback<ShippingInformationResponse> {
-                    override fun success(response: ShippingInformationResponse?) {
-                        mProgressDialog?.dismiss()
-                        if (response != null) {
-                            handleShippingInforSuccess(type, response.paymentMethods)
-                        } else {
-                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                        }
-                    }
+                        object : ApiResponseCallback<ShippingInformationResponse> {
+                            override fun success(response: ShippingInformationResponse?) {
+                                mProgressDialog?.dismiss()
+                                if (response != null) {
+                                    handleShippingInforSuccess(type, response.paymentMethods)
+                                } else {
+                                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                }
+                            }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
-                    }
-                })
+                            override fun failure(error: APIError) {
+                                mProgressDialog?.dismiss()
+                                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                            }
+                        })
     }
 
     private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
@@ -647,8 +778,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
      * FOR CDS using pickup locations (we cast it to branch model)
      */
     private fun handlePickupLocationList(pickupLocations: List<PickupLocation>) {
-        pickupLocations.mapTo(branches) { it.asBranch() } // add pickup location to branch
-        startStorePickupFragment(pickupLocations.size)
+        pickupLocations.mapTo(branches) { BranchResponse(branch = it.asBranch()) } // add pickup location to branch
+        startStorePickupFragment()
 
         // TODO: handle sort with staff's storeID
 
@@ -656,23 +787,23 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun loadBranches() {
-        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
-            override fun success(response: List<Branch>?) {
+        BranchApi().getBranchesSTS(this, object : ApiResponseCallback<List<BranchResponse>> {
+            override fun success(response: List<BranchResponse>?) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
                     if (response != null && userInformation != null) {
-                        val branch = response.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
+                        val branch = response.firstOrNull { it.branch.storeId == userInformation!!.store?.storeId.toString() }
                         if (branch != null) {
                             branches.add(branch)
-                            response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
-                                if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it)
+                            response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
+                                if (it.branch.storeId != userInformation!!.store?.storeId.toString()) branches.add(it)
                             }
                         } else {
-                            response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
+                            response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
                                 branches.add(it)
                             }
                         }
-                        startStorePickupFragment(response.size)
+                        startStorePickupFragment()
                     } else {
                         showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                     }
@@ -742,6 +873,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // region {@link PaymentProtocol}
     override fun getItems(): List<CartItem> = this.cartItemList
 
+    override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
+
     override fun getPWBMembers(): List<PwbMember> = this.pwbMembersList
 
     override fun getPWBMemberByIndex(index: Int): PwbMember? {
@@ -764,17 +897,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getEnableDateShipping(): ArrayList<ShippingSlot> = this.enableShippingSlot
 
-    override fun getBranches(): ArrayList<Branch> = this.branches
+    override fun getBranches(): ArrayList<BranchResponse> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
 
     override fun getPaymentMethods(): List<PaymentMethod> = this.paymentMethods
 
     override fun getT1CardNumber(): String = this.theOneCardNo
+
+    override fun getCheckType(): CheckoutType = this.checkoutType
     // endregion
 
     // region {@link StorePickUpListener}
-    override fun onUpdateStoreDetail(branch: Branch) {
+    override fun onUpdateStoreDetail(branch: BranchResponse) {
         if (currentFragment is DeliveryStorePickUpFragment) {
             (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(branch)
         }
@@ -785,7 +920,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-                val storePickup = StorePickup(branch.storeId.toInt())
+                val storePickup = StorePickup(branch.storeId)
                 val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
                         null, null, storePickup)
                 // store shipping this case can be anything
@@ -793,7 +928,67 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             }
         }
     }
+
+    override fun addProduct2hToCart(branchResponse: BranchResponse) {
+        showProgressDialog()
+        product2h?.let {
+            CartUtils(this).addProduct2hToCart(it, branchResponse, branches,
+                    object : AddProductToCartCallback {
+                        override fun onSuccessfully() {
+                            mProgressDialog?.dismiss()
+                            ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                            finish()
+                        }
+
+                        override fun forceClearCart() {
+                            //TODO: show dialog for clear cart
+                            mProgressDialog?.dismiss()
+                        }
+
+                        override fun onFailure(messageError: String) {
+                            showCommonDialog(messageError)
+                            mProgressDialog?.dismiss()
+                        }
+
+                        override fun onFailure(dialog: Dialog) {
+                            dialog.show()
+                            mProgressDialog?.dismiss()
+                        }
+                    })
+        }
+    }
+
+    // State Prduct 2h edit store pickup
+    override fun onProduct2hEditStorePickup(branchResponse: BranchResponse) {
+        showProgressDialog()
+        CartUtils(this).editStorePickup(branchResponse, object : EditStorePickupCallback {
+            override fun onSuccessfully() {
+                mProgressDialog?.dismiss()
+                ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                finish()
+            }
+
+            override fun onFailure(messageError: String) {
+                mProgressDialog?.dismiss()
+                showCommonDialog(messageError)
+            }
+        })
+    }
     // endregion
+
+    private fun createOrderWithIspu() {
+        val cacheCartItems = database.cacheCartItems
+        val item = cacheCartItems.find { it.branch != null }
+        if (item != null) {
+            this.branch = item.branch
+            this.deliveryOption = DeliveryOption.getStorePickupIspu() // create DeliveryOption Store Pickup ISPU
+
+            val storePickup = StorePickup(this.branch!!.storeId)
+            val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
+                    null, null, storePickup)
+            createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
+        }
+    }
 
     private fun getSpecialSKUList(): List<Long>? {
         return this.specialSKUList
@@ -803,7 +998,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {
-            startDeliveryOptions()
+            // is state of checkout with product 2h?
+            if (product2h != null || isEditStorePickup) {
+                finish()
+            } else {
+                startDeliveryOptions()
+            }
             return
         }
 
@@ -859,4 +1059,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
+}
+
+enum class CheckoutType {
+    NORMAL, ISPU
 }
