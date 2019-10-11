@@ -43,6 +43,7 @@ public class ProductDetailImageItem implements IViewType, Parcelable {
     }
 
     protected ProductDetailImageItem(Parcel in) {
+        viewTypeId = in.readInt();
         imgUrl = in.readString();
         slug = in.readString();
         pId = in.readString();
@@ -56,6 +57,7 @@ public class ProductDetailImageItem implements IViewType, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(viewTypeId);
         dest.writeString(imgUrl);
         dest.writeString(slug);
         dest.writeString(pId);
