@@ -297,14 +297,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             DeliveryType.HOME -> getString(R.string.home_delivery_desc)
             else -> ""
         }
-
-        if(shippingAddress.sameBilling == SAME_BILLING){
-            billingTelephoneLayout.visibility = View.GONE
-            shippingTelephoneLayout.visibility = View.GONE
-        } else {
-            billingTelephoneLayout.visibility = View.VISIBLE
-            shippingTelephoneLayout.visibility = View.VISIBLE
-        }
     }
 
     private fun setupShippingStorePickupView(branchShipping: Branch?, billingAddress: AddressInformation?) {
