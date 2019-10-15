@@ -552,31 +552,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/billingEmailLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10"
-                    android:orientation="horizontal">
-
-                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/billing_email_order_success"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="@string/email"
-                        android:textSize="16sp"
-                        tools:ignore="NestedWeights" />
-
-                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-                        android:id="@+id/txt_billing_email_order_success"
-                        style="@style/descriptionProduct"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="8"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/billingTelephoneLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -588,12 +563,63 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:text="@string/telephone"
+                        android:text="@string/tell"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
 
                     <cenergy.central.com.pwb_store.view.PowerBuyTextView
                         android:id="@+id/txt_billing_tel_order_success"
+                        style="@style/descriptionProduct"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="8"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/billingCompanyLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:orientation="horizontal">
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/billing_company_order_success"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/company"
+                        android:textSize="16sp"
+                        tools:ignore="NestedWeights" />
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/txt_billing_company_order_success"
+                        style="@style/descriptionProduct"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="8"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/billingVatIdLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:orientation="horizontal">
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/billing_vat_order_success"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/tax_id_success"
+                        android:textSize="16sp"
+                        tools:ignore="NestedWeights" />
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/txt_billing_vat_order_success"
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

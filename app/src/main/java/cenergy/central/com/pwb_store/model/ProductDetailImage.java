@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +37,8 @@ public class ProductDetailImage implements IViewType, Parcelable {
     protected ProductDetailImage(Parcel in) {
         viewTypeId = in.readInt();
         total = in.readInt();
-        mProductDetailImageItems = in.createTypedArrayList(ProductDetailImageItem.CREATOR);
+        List<ProductDetailImage> mProductDetailImageItems = new ArrayList<>();
+        in.readList(mProductDetailImageItems, ProductDetailImage.class.getClassLoader());
         selectedProductDetailImageItem = in.readParcelable(ProductDetailImageItem.class.getClassLoader());
     }
 

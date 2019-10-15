@@ -267,22 +267,26 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             BranchApi().getBranchesISPU(this, product.sku,
                     object : ApiResponseCallback<List<BranchResponse>> {
                         override fun success(response: List<BranchResponse>?) {
-                            if (response != null) {
-                                branches.clear()
-                                branches.addAll(response)
-                                val fragment = DeliveryStorePickUpFragment.newInstance(true)
-                                startFragment(fragment)
-                            }
+                            runOnUiThread {
+                                if (response != null) {
+                                    branches.clear()
+                                    branches.addAll(response)
+                                    val fragment = DeliveryStorePickUpFragment.newInstance(true)
+                                    startFragment(fragment)
+                                }
 
-                            mProgressDialog?.dismiss()
+                                mProgressDialog?.dismiss()
+                            }
                         }
 
                         override fun failure(error: APIError) {
-                            showCommonDialog(null, getString(R.string.some_thing_wrong),
-                                    DialogInterface.OnClickListener { dialog, which ->
-                                        dialog?.dismiss()
-                                        finish()
-                                    })
+                            runOnUiThread {
+                                showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                        DialogInterface.OnClickListener { dialog, which ->
+                                            dialog?.dismiss()
+                                            finish()
+                                        })
+                            }
                         }
                     })
         } else {

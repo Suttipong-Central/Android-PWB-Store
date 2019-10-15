@@ -176,6 +176,7 @@
     <string name="label_shipping_type">บริการจัดส่ง</string>
     <string name="label_delivery_info">วิธีการจัดส่ง</string>
     <string name="delivery_price">ค่าส่ง</string>
+    <string name="tax_id_success">เลขประจำตัวผู้เสียภาษี</string>
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
@@ -224,6 +225,7 @@
     <string name="btn_complete_order">สั่งซื้อสินค้า</string>
     <string name="empty_value">โปรดระบุจำนวนที่ต้องการซื้อ</string>
     <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
+    <string name="discount">ส่วนลด</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
@@ -329,5 +331,4 @@
     <string name="label_stock_online">ออนไลน์</string>
     <string name="label_stock_store_offline">สาขานี้</string>
     <string name="label_stock_stores_offline"><u>สาขาอื่น</u></string>
-    <string name="discount">ส่วนลด</string>
 </resources>

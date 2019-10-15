@@ -13,9 +13,8 @@ import java.util.List;
 public class CategoryDao implements IViewType, Parcelable {
 
     private int viewTypeId;
-
-    private List<Category> mCategoryList = new ArrayList<>();
     private Category category;
+    private List<Category> mCategoryList = new ArrayList<>();
 
     public CategoryDao(List<Category> categoryList) {
         this.mCategoryList = categoryList;
@@ -28,7 +27,8 @@ public class CategoryDao implements IViewType, Parcelable {
     protected CategoryDao(Parcel in) {
         viewTypeId = in.readInt();
         category = in.readParcelable(Category.class.getClassLoader());
-        mCategoryList = in.createTypedArrayList(Category.CREATOR);
+        List<Category> mCategoryList = new ArrayList<>();
+        in.readList(mCategoryList, Category.class.getClassLoader());
     }
 
     public static final Creator<CategoryDao> CREATOR = new Creator<CategoryDao>() {
@@ -69,7 +69,7 @@ public class CategoryDao implements IViewType, Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(viewTypeId);
-        parcel.writeTypedList(mCategoryList);
         parcel.writeParcelable(category, i);
+        parcel.writeTypedList(mCategoryList);
     }
 }

@@ -176,6 +176,7 @@
     <string name="label_shipping_type">Delivery type</string>
     <string name="label_delivery_info">Delivery option</string>
     <string name="delivery_price">Delivery price</string>
+    <string name="tax_id_success">Tax ID</string>
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
@@ -224,6 +225,7 @@
     <string name="btn_complete_order">Complete Order</string>
     <string name="empty_value">Please enter quantity to order</string>
     <string name="exceeds_maximum">Input quantity exceeds maximum number</string>
+    <string name="discount">Discount</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>
@@ -328,5 +330,4 @@
     <string name="label_stock_online">Online</string>
     <string name="label_stock_store_offline">Current Store</string>
     <string name="label_stock_stores_offline"><u>Other Stores</u></string>
-    <string name="discount">Discount</string>
 </resources>
