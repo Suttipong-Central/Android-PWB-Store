@@ -53,6 +53,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var tel: PowerBuyTextView
     private lateinit var openToday: PowerBuyTextView
     private lateinit var tvShippingHeader: PowerBuyTextView
+    private lateinit var tvShippingContact: PowerBuyTextView
     private lateinit var tvDeliveryType: PowerBuyTextView
     private lateinit var tvDeliveryAddress: PowerBuyTextView
     private lateinit var tvReceiverName: PowerBuyTextView
@@ -73,6 +74,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var customerNameLayout: LinearLayout
     private lateinit var deliveryInfoLayout: LinearLayout
     private lateinit var billingTelephoneLayout: LinearLayout
+    private lateinit var shippingTelephoneLayout: LinearLayout
     private var mProgressDialog: ProgressDialog? = null
 
     // data
@@ -158,6 +160,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvShippingHeader = rootView.findViewById(R.id.shipping_header_order_success)
         tvDeliveryType = rootView.findViewById(R.id.txt_delivery_type_order_success)
         tvDeliveryAddress = rootView.findViewById(R.id.txt_delivery_address_order_success)
+        tvShippingContact = rootView.findViewById(R.id.txt_shipping_contact_order_success)
         tvReceiverName = rootView.findViewById(R.id.txt_receiver_name_order_success)
         tvBillingName = rootView.findViewById(R.id.txt_billing_name_order_success)
         tvBillingAddress = rootView.findViewById(R.id.txt_billing_address_order_success)
@@ -174,6 +177,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         customerNameLayout = rootView.findViewById(R.id.customerNameLayout)
         deliveryInfoLayout = rootView.findViewById(R.id.deliveryInfoLayout)
         billingTelephoneLayout = rootView.findViewById(R.id.billingTelephoneLayout)
+        shippingTelephoneLayout = rootView.findViewById(R.id.shippingTelephoneLayout)
         deliveryLayout = rootView.findViewById(R.id.deliveryLayout)
         staffIconLayout = rootView.findViewById(R.id.staffIconLayout)
 
@@ -235,26 +239,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         //Setup customer
         orderDate.text = context?.let { order.getDisplayTimeCreated(it) }
         email.text = shippingAddress.email
-        contactNo.text = billingAddress.telephone
-        finishButton.setOnClickListener {
-            finishThisPage()
-        }
-        name.text = billingAddress.getDisplayName()
+
+        // setup billing
         tvBillingName.text = billingAddress.getDisplayName()
         tvBillingAddress.text = getAddress(billingAddress)
-        if(billingAddress.sameBilling == SAME_BILLING){
-            billingTelephoneLayout.visibility = View.GONE
-        } else {
-            billingTelephoneLayout.visibility = View.VISIBLE
-            tvBillingTelephone.text = billingAddress.telephone
-        }
-        tvBillingCompany.text = billingAddress.company
-        tvBillingTaxID.text = billingAddress.vatId
+        tvBillingTelephone.text = if (billingAddress.telephone.isBlank()) { "-" } else billingAddress.telephone
+        tvBillingCompany.text = if (billingAddress.company.isBlank()) { "-" } else billingAddress.company
+        tvBillingTaxID.text = if (billingAddress.vatId.isBlank()) { "-" } else billingAddress.vatId
 
         // setup shipping address or pickup at store
         when (DeliveryType.fromString(order.shippingType)) {
             DeliveryType.STORE_PICK_UP,
-            DeliveryType.STORE_PICK_UP_ISPU -> setupShippingStorePickupView(order)
+            DeliveryType.STORE_PICK_UP_ISPU -> setupShippingStorePickupView(order.branchShipping, order.billingAddress)
             else ->  setupShipping(order, shippingAddress)
         }
 
@@ -268,6 +264,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
         totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
         tvAmount.text = getDisplayPrice(unit, order.total.toString())
+        finishButton.setOnClickListener {
+            finishThisPage()
+        }
         mProgressDialog?.dismiss()
     }
 
@@ -275,7 +274,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         deliveryLayout.visibility = View.VISIBLE
         deliveryInfoLayout.visibility = View.VISIBLE
         storeAddressLayout.visibility = View.GONE
-        customerNameLayout.visibility = View.GONE
+        customerNameLayout.visibility = View.VISIBLE
+
+        name.text = shippingAddress.getDisplayName()
+        contactNo.text = shippingAddress.telephone
 
         tvShippingHeader.text = getString(R.string.delivery_detail)
         tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
@@ -288,27 +290,38 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
         tvReceiverName.text = shippingAddress.getDisplayName()
         tvDeliveryAddress.text = getAddress(shippingAddress)
+        tvShippingContact.text = shippingAddress.telephone
         tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
             DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
             DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
             DeliveryType.HOME -> getString(R.string.home_delivery_desc)
             else -> ""
         }
+
+        if(shippingAddress.sameBilling == SAME_BILLING){
+            billingTelephoneLayout.visibility = View.GONE
+            shippingTelephoneLayout.visibility = View.GONE
+        } else {
+            billingTelephoneLayout.visibility = View.VISIBLE
+            shippingTelephoneLayout.visibility = View.VISIBLE
+        }
     }
 
-    private fun setupShippingStorePickupView(order: Order) {
+    private fun setupShippingStorePickupView(branchShipping: Branch?, billingAddress: AddressInformation?) {
         deliveryLayout.visibility = View.GONE
         deliveryInfoLayout.visibility = View.GONE
         storeAddressLayout.visibility = View.VISIBLE
         customerNameLayout.visibility = View.VISIBLE
         tvShippingHeader.text = getString(R.string.store_collection_detail)
 
-        val branchShipping = order.branchShipping
+        name.text = billingAddress?.getDisplayName()?: "-"
+        contactNo.text = billingAddress?.telephone?: "-"
+
         if (branchShipping != null) {
-            branch.text = branchShipping.storeName
+            branch.text = if (branchShipping.storeName.isBlank()) { "-" } else branchShipping.storeName
             address.text = branchShipping.getBranchAddress()
-            tel.text = branchShipping.phone
-            openToday.text = branchShipping.description
+            tel.text = if (branchShipping.phone.isBlank()) { "-" } else branchShipping.phone
+            openToday.text = if (branchShipping.description.isBlank()) { "-" } else branchShipping.description
         }
     }
 
@@ -328,6 +341,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             rootView.findViewById<PowerBuyTextView>(R.id.branch_order_success).text = getString(R.string.branch)
             rootView.findViewById<PowerBuyTextView>(R.id.address_order_success).text = getString(R.string.address)
             rootView.findViewById<PowerBuyTextView>(R.id.tell_order_success).text = getString(R.string.phone)
+            rootView.findViewById<PowerBuyTextView>(R.id.shipping_contact_order_success).text = getString(R.string.tell)
             rootView.findViewById<PowerBuyTextView>(R.id.open_today_order_success).text = getString(R.string.open_today)
             rootView.findViewById<PowerBuyTextView>(R.id.header_billing_address_order_success).text = getString(R.string.label_billing_address)
             rootView.findViewById<PowerBuyTextView>(R.id.billing_name_order_success).text = getString(R.string.receiver_name)

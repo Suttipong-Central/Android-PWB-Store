@@ -458,6 +458,32 @@
                         android:textSize="16sp" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/shippingTelephoneLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:orientation="horizontal">
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/shipping_contact_order_success"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/tell"
+                        android:textSize="16sp"
+                        tools:ignore="NestedWeights" />
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                        android:id="@+id/txt_shipping_contact_order_success"
+                        style="@style/descriptionProduct"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="8"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <View
