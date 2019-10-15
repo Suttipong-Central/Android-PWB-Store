@@ -137,7 +137,7 @@
                     android:id="@+id/order_date_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:text="@string/order_date"
                     android:textSize="16sp"
                     tools:ignore="NestedWeights" />
@@ -147,7 +147,7 @@
                     style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7.5"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -163,7 +163,7 @@
                     android:id="@+id/name_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:text="@string/customer_name"
                     android:textSize="16sp"
                     tools:ignore="NestedWeights" />
@@ -173,7 +173,7 @@
                     style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7.5"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -188,7 +188,7 @@
                     android:id="@+id/email_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:text="@string/email"
                     android:textSize="16sp"
                     tools:ignore="NestedWeights" />
@@ -198,7 +198,7 @@
                     style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7.5"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -213,7 +213,7 @@
                     android:id="@+id/contact_no_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:text="@string/tell"
                     android:textSize="16sp"
                     tools:ignore="NestedWeights" />
@@ -223,7 +223,7 @@
                     style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7.5"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -239,7 +239,7 @@
                     android:id="@+id/delivery_option_order_success"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:text="@string/label_delivery_info"
                     android:textSize="16sp"
                     tools:ignore="NestedWeights" />
@@ -249,7 +249,7 @@
                     style="@style/descriptionProduct"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7.5"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -286,7 +286,7 @@
                         android:id="@+id/branch_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/branch"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -296,7 +296,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -311,7 +311,7 @@
                         android:id="@+id/address_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/address"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -321,7 +321,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -336,7 +336,7 @@
                         android:id="@+id/tell_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/phone"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -346,7 +346,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -361,7 +361,7 @@
                         android:id="@+id/open_today_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/open_today"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -371,7 +371,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -394,7 +394,7 @@
                         android:id="@+id/delivery_type_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/label_shipping_type"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -404,7 +404,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -419,7 +419,7 @@
                         android:id="@+id/receiver_name_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/receiver_name"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -429,7 +429,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -444,7 +444,7 @@
                         android:id="@+id/delivery_address_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/address"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -454,7 +454,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -470,7 +470,7 @@
                         android:id="@+id/shipping_contact_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/tell"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -480,7 +480,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -517,7 +517,7 @@
                         android:id="@+id/billing_name_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/receiver_name"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -527,7 +527,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -542,7 +542,7 @@
                         android:id="@+id/billing_address_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/address"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -552,7 +552,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -567,7 +567,7 @@
                         android:id="@+id/billing_tel_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/tell"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -577,7 +577,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -592,7 +592,7 @@
                         android:id="@+id/billing_company_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/company"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -602,7 +602,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -618,7 +618,7 @@
                         android:id="@+id/billing_vat_order_success"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="2.5"
                         android:text="@string/tax_id_success"
                         android:textSize="16sp"
                         tools:ignore="NestedWeights" />
@@ -628,7 +628,7 @@
                         style="@style/descriptionProduct"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
+                        android:layout_weight="7.5"
                         android:textSize="16sp" />
                 </LinearLayout>
 

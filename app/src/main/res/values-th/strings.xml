@@ -205,7 +205,7 @@
     <string name="not_found_data">ไม่พบข้อมูล</string>
     <string name="not_have_data">ไม่มีข้อมูล</string>
     <string name="name_user_order">ชื่อลูกค้า: </string>
-    <string name="receiver_name">ชื่อผู้รับ: </string>
+    <string name="receiver_name">ชื่อผู้รับ</string>
     <string name="order_date_history">วันที่สั่งซื้อ: </string>
     <string name="product">สินค้า</string>
     <string name="sort">เรียง</string>
