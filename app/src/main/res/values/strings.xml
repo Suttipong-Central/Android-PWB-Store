@@ -205,7 +205,7 @@
     <string name="not_found_data">Sorry, no data found</string>
     <string name="not_have_data">Sorry, no data found</string>
     <string name="name_user_order">Customer name: </string>
-    <string name="receiver_name">Receiver name: </string>
+    <string name="receiver_name">Receiver name</string>
     <string name="order_date_history">Order date: </string>
     <string name="product">Product</string>
     <string name="sort">Sort by</string>
