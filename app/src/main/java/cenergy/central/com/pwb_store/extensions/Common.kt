@@ -24,7 +24,7 @@ fun Product.isSalable(): Boolean{
     return extension?.stokeItem?.isSalable != null && extension!!.stokeItem!!.isSalable
 }
 
-fun Product.isTwoHourProduct(): Boolean{
+fun Product.is1HourProduct(): Boolean{
     return if (extension?.stokeItem?.is2HProduct != null && extension!!.stokeItem!!.is2HProduct &&
             shippingMethods.isNotEmpty()){
         val shippingList = arrayListOf<String>()

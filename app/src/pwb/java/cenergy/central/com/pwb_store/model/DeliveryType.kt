@@ -15,7 +15,7 @@ enum class DeliveryType(val methodCode: String) {
         override fun toString(): String = "กำหนดวันจัดส่ง (โดยรถพาวเวอร์บาย)"
     },
     STORE_PICK_UP_ISPU("ispu") {
-        override fun toString(): String = "2 Hours Pickup"
+        override fun toString(): String = "1 Hours Pickup"
     };
     companion object {
         private val map = values().associateBy(DeliveryType::methodCode)

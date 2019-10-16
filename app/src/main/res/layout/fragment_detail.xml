@@ -277,12 +277,12 @@
             android:layout_marginBottom="8dp"
             app:btn_default="false"
             app:layout_constraintBottom_toTopOf="@+id/availableStoreButton"
-            app:layout_constraintEnd_toStartOf="@id/addTwoHourToCartButton"
+            app:layout_constraintEnd_toStartOf="@id/addOneHourToCartButton"
             app:layout_constraintStart_toStartOf="parent"
             app:text="@string/add_to_cart" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
-            android:id="@+id/addTwoHourToCartButton"
+            android:id="@+id/addOneHourToCartButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -293,7 +293,7 @@
             app:layout_constraintBottom_toTopOf="@id/addToCompareButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/addToCartButton"
-            app:text="@string/add_two_hour_item" />
+            app:text="@string/add_one_hour_item" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/availableStoreButton"

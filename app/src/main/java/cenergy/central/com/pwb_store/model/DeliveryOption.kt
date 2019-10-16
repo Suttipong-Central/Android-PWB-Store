@@ -29,7 +29,7 @@ class DeliveryOption(
            return DeliveryOption(carrierCode = "storepickup",
                    methodCode = "ispu",
                    carrierTitle = "Store Pickup",
-                   methodTitle = "2 Hours Pickup",
+                   methodTitle = "1 Hours Pickup",
                    extension = DeliveryExtension())
        }
     }

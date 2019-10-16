@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -100,7 +99,7 @@ class DeliveryStorePickUpFragment : Fragment() {
             }
         }
 
-        titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_2hr_pickup)
+        titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_1hr_pickup)
         branchesFragment.updateBranches(this.displayItems, checkoutType)
     }
 

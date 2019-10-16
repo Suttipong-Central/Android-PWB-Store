@@ -7,8 +7,8 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.extensions.isTwoHourProduct
-import cenergy.central.com.pwb_store.extensions.set2HourBadge
+import cenergy.central.com.pwb_store.extensions.is1HourProduct
+import cenergy.central.com.pwb_store.extensions.set1HourBadge
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -20,7 +20,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private val oldPrice: PowerBuyTextView = itemView.findViewById(R.id.txt_product_old_price)
     private val newPrice: PowerBuyTextView = itemView.findViewById(R.id.txt_product_new_price)
     private val productBrand: PowerBuyTextView = itemView.findViewById(R.id.txt_product_brand)
-    private val badge2H: ImageView = itemView.findViewById(R.id.badge_2h)
+    private val badge1H: ImageView = itemView.findViewById(R.id.badge_2h)
 
     fun setViewHolder(product: Product) {
 
@@ -45,10 +45,10 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         productBrand.text = if (brand != "") brand else "Brand"
         productName.text = product.name
         itemView.tag = product
-        if(product.isTwoHourProduct()){
-            badge2H.set2HourBadge()
+        if(product.is1HourProduct()){
+            badge1H.set1HourBadge()
         } else {
-            badge2H.setImageDrawable(null)
+            badge1H.setImageDrawable(null)
         }
     }
 

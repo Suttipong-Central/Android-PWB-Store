@@ -45,7 +45,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     // widget view
     private lateinit var ivProductImage: ImageView
-    private lateinit var badgeTwoHour: ImageView
+    private lateinit var badge1Hour: ImageView
     private lateinit var rvProductImage: RecyclerView
     private lateinit var tvProductName: TextView
     private lateinit var tvProductCode: TextView
@@ -53,7 +53,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var tvSpecialPrice: TextView
     private lateinit var tvNormalPrice: PowerBuyTextView
     private lateinit var addItemButton: PowerBuyIconButton
-    private lateinit var addTwoHourButton: PowerBuyIconButton
+    private lateinit var add1HourButton: PowerBuyIconButton
     private lateinit var storeButton: PowerBuyIconButton
     private lateinit var compareButton: PowerBuyIconButton
 
@@ -113,8 +113,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 }
             }
 
-            R.id.addTwoHourToCartButton -> {
-                // TODO open select branch page
+            R.id.addOneHourToCartButton -> {
                 onAddToCartBy2Hrs()
             }
         }
@@ -131,12 +130,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         rvProductImage = rootView.findViewById(R.id.rvProductImage)
         tvProductName = rootView.findViewById(R.id.tvProductName)
         tvProductCode = rootView.findViewById(R.id.txt_view_product_code)
-        badgeTwoHour = rootView.findViewById(R.id.badge_2h)
+        badge1Hour = rootView.findViewById(R.id.badge_2h)
         tvTitleSpecialPrice = rootView.findViewById(R.id.txt_name_price)
         tvSpecialPrice = rootView.findViewById(R.id.txt_sale_price)
         tvNormalPrice = rootView.findViewById(R.id.txt_regular)
         addItemButton = rootView.findViewById(R.id.addToCartButton)
-        addTwoHourButton = rootView.findViewById(R.id.addTwoHourToCartButton)
+        add1HourButton = rootView.findViewById(R.id.addOneHourToCartButton)
         storeButton = rootView.findViewById(R.id.availableStoreButton)
         compareButton = rootView.findViewById(R.id.addToCompareButton)
 
@@ -194,10 +193,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
-        if (product.isTwoHourProduct()) {
-            badgeTwoHour.set2HourBadge()
+        if (product.is1HourProduct()) {
+            badge1Hour.set1HourBadge()
         } else {
-            badgeTwoHour.setImageDrawable(null)
+            badge1Hour.setImageDrawable(null)
         }
 
         val configOptions = product.extension?.productConfigOptions
@@ -252,9 +251,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // check disable product
 //        disableAddToCartButton(!context.isProductInStock(product))
 
-        addTwoHourButton.setImageDrawable(R.drawable.ic_two_hour_pick_up)
-        addTwoHourButton.setOnClickListener(this)
-        hideAddTwoHourItemButton(product.isTwoHourProduct())
+        add1HourButton.setImageDrawable(R.drawable.ic_1_hour_pick_up)
+        add1HourButton.setOnClickListener(this)
+        hideAdd1HourItemButton(product.is1HourProduct())
 
         // setup available store button
         storeButton.setImageDrawable(R.drawable.ic_store)
@@ -303,11 +302,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
-    private fun hideAddTwoHourItemButton(isTwoHour: Boolean = true) {
-        if (isTwoHour && BuildConfig.FLAVOR == "pwb") {
-            addTwoHourButton.visibility = View.VISIBLE
+    private fun hideAdd1HourItemButton(is1Hour: Boolean = true) {
+        if (is1Hour && BuildConfig.FLAVOR == "pwb") {
+            add1HourButton.visibility = View.VISIBLE
         } else {
-            addTwoHourButton.visibility = View.GONE
+            add1HourButton.visibility = View.GONE
         }
     }
 

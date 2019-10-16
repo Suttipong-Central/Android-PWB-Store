@@ -58,7 +58,7 @@
     <string name="tab_delivery">Arrange Delivery</string>
     <string name="size">Size:</string>
     <string name="shade">Shade:</string>
-    <string name="add_two_hour_item">2H Pick up</string>
+    <string name="add_one_hour_item">1H Pick up</string>
 
     <!-- Compare -->
     <string name="compare_header">Compare products</string>
@@ -242,7 +242,7 @@
 
     <!-- Stores -->
     <string name="delivery">Arrange Delivery</string>
-    <string name="delivery_2hr_pickup">2H Pick up store</string>
+    <string name="delivery_1hr_pickup">1H Pick up store</string>
     <string name="select_store_title">Choose store to collect from</string>
     <string name="store_address">Store address</string>
     <string name="telephone_number">Tel no.</string>
