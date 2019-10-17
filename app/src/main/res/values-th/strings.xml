@@ -58,7 +58,7 @@
     <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
     <string name="size">ไซต์:</string>
     <string name="shade">สี:</string>
-    <string name="add_two_hour_item">รับที่ร้านใน 2 ชม.</string>
+    <string name="add_one_hour_item">รับที่ร้านใน 1 ชม.</string>
 
     <!-- Compare -->
     <string name="compare_header">เปรียบเทียบสินค้า</string>
@@ -242,7 +242,7 @@
 
     <!-- Store -->
     <string name="delivery">การจัดส่ง</string>
-    <string name="delivery_2hr_pickup">ร้านที่สามารถรับของได้ใน 2 ชม.</string>
+    <string name="delivery_1hr_pickup">ร้านที่สามารถรับของได้ใน 1 ชม.</string>
     <string name="select_store_title">เลือกสาขาที่ต้องการรับสินค้า</string>
     <string name="store_address">ที่อยู่สาขา</string>
     <string name="telephone_number">หมายเลขโทรศัพท์</string>

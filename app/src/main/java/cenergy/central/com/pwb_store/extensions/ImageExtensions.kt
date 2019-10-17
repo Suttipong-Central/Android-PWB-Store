@@ -38,13 +38,13 @@ fun ImageView.setImageUrl(url: String, @DrawableRes placeHolder: Int) {
             .into(this)
 }
 
-fun ImageView.set2HourBadge(){
+fun ImageView.set1HourBadge(){
     val preferenceManager = PreferenceManager(this.context)
     val language = preferenceManager.getDefaultLanguage()
     this.setImageDrawable(
             if (language == "th") {
-                ContextCompat.getDrawable(this.context ,R.drawable.ic_2h_badge_th)
+                ContextCompat.getDrawable(this.context ,R.drawable.ic_1h_badge_th)
             } else {
-                ContextCompat.getDrawable(this.context ,R.drawable.ic_2h_badge_en)
+                ContextCompat.getDrawable(this.context ,R.drawable.ic_1h_badge_en)
             })
 }

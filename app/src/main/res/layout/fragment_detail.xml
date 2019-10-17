@@ -195,14 +195,14 @@
         app:layout_constraintTop_toBottomOf="@+id/productPriceLayout" />
 
     <ImageView
-        android:id="@+id/badgeTwoHour"
+        android:id="@+id/badge1Hour"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:contentDescription="@string/app_name"
         app:layout_constraintStart_toEndOf="@+id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/line1"
-        tools:src="@drawable/ic_2h_badge_en" />
+        tools:src="@drawable/ic_1h_badge_en" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
         android:id="@+id/inputProductSize"
@@ -218,7 +218,7 @@
         app:act_required="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/badgeTwoHour" />
+        app:layout_constraintTop_toBottomOf="@+id/badge1Hour" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
         android:id="@+id/inputProductShade"
@@ -277,12 +277,12 @@
             android:layout_marginBottom="8dp"
             app:btn_default="false"
             app:layout_constraintBottom_toTopOf="@+id/availableStoreButton"
-            app:layout_constraintEnd_toStartOf="@id/addTwoHourToCartButton"
+            app:layout_constraintEnd_toStartOf="@id/add1HourButton"
             app:layout_constraintStart_toStartOf="parent"
             app:text="@string/add_to_cart" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
-            android:id="@+id/addTwoHourToCartButton"
+            android:id="@+id/add1HourButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -293,7 +293,7 @@
             app:layout_constraintBottom_toTopOf="@id/addToCompareButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/addToCartButton"
-            app:text="@string/add_two_hour_item" />
+            app:text="@string/add_one_hour_item" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/availableStoreButton"

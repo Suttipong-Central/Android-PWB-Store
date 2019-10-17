@@ -90,8 +90,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 }
             }
 
-            R.id.addTwoHourToCartButton -> {
-                onAddToCartBy2Hrs()
+            R.id.add1HourButton -> {
+                onAddToCartBy1Hrs()
             }
         }
     }
@@ -154,10 +154,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
-        if (product.isTwoHourProduct()) {
-            badgeTwoHour.set2HourBadge()
+        if (product.is1HourProduct()) {
+            badge1Hour.set1HourBadge()
         } else {
-            badgeTwoHour.setImageDrawable(null)
+            badge1Hour.setImageDrawable(null)
         }
 
         val configOptions = product.extension?.productConfigOptions
@@ -212,9 +212,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // check disable product
 //        disableAddToCartButton(!context.isProductInStock(product))
 
-        addTwoHourToCartButton.setImageDrawable(R.drawable.ic_two_hour_pick_up)
-        addTwoHourToCartButton.setOnClickListener(this)
-        hideAddTwoHourItemButton(product.isTwoHourProduct())
+        add1HourButton.setImageDrawable(R.drawable.ic_1_hour_pick_up)
+        add1HourButton.setOnClickListener(this)
+        hideAdd1HourItemButton(product.is1HourProduct())
 
         // setup available store button
         availableStoreButton.setImageDrawable(R.drawable.ic_store)
@@ -254,11 +254,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
-    private fun hideAddTwoHourItemButton(isTwoHour: Boolean = true) {
-        if (isTwoHour && BuildConfig.FLAVOR == "pwb") {
-            addTwoHourToCartButton.visibility = View.VISIBLE
+    private fun hideAdd1HourItemButton(is1Hour: Boolean = true) {
+        if (is1Hour && BuildConfig.FLAVOR == "pwb") {
+            add1HourButton.visibility = View.VISIBLE
         } else {
-            addTwoHourToCartButton.visibility = View.GONE
+            add1HourButton.visibility = View.GONE
         }
     }
 
@@ -314,8 +314,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         stockIndicatorView.visibility = View.VISIBLE
     }
 
-    private fun onAddToCartBy2Hrs() {
-        productDetailListener.addProduct2HrsToCart(product)
+    private fun onAddToCartBy1Hrs() {
+        productDetailListener.addProduct1HrsToCart(product)
     }
 
     companion object {
