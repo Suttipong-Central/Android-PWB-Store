@@ -80,7 +80,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
-    private var paymentMethods = listOf<PaymentMethod>()
+    private var paymentMethods = arrayListOf<PaymentMethod>()
     private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
@@ -261,6 +261,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun standardCheckout() {
+        cacheCartItems = database.cacheCartItems
         startCheckOut() // default page
         getCartItems()
     }
@@ -626,16 +627,18 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             showCommonDialog(getString(R.string.not_found_payment_methods))
         } else {
             this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
-            //TODO: handle payment method empty
+            if (this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
+                this.paymentMethods.add(PaymentMethod.createPaymentMethod(PaymentMethod.E_ORDERING, getString(R.string.pay_here))) // add e-ordering for set default payment
+            }
             startSelectMethod()
         }
     }
 
-    private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>):List<PaymentMethod> {
+    private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>): ArrayList<PaymentMethod> {
         val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
         return methods.filter {
             supportedPaymentMethods.contains(it.code,true)
-        }
+        } as ArrayList<PaymentMethod>
     }
 
     private fun getCustomerPWB(mobile: String) {

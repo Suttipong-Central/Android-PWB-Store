@@ -11,9 +11,10 @@ import cenergy.central.com.pwb_store.model.response.PaymentMethod
 class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
-        const val PAY_AT_STORE = 1
-        const val FULL_PAYMENT = 2
-        const val INSTALLMENT = 3
+        const val E_ORDERING = 1
+        const val PAY_AT_STORE = 2
+        const val FULL_PAYMENT = 3
+        const val INSTALLMENT = 4
         const val EMPTY = 5
     }
 
@@ -25,6 +26,10 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
+            E_ORDERING -> {
+                PayHereViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_pay_at_store, parent, false))
+            }
             PAY_AT_STORE -> {
                 PayAtStoreViewHolder(LayoutInflater.from(parent.context)
                         .inflate(R.layout.list_item_pay_at_store, parent, false))
@@ -47,6 +52,9 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val paymentMethod = paymentMethods[position]
         when (holder){
+            is PayHereViewHolder -> {
+                holder.bindView(paymentMethod, listener)
+            }
             is FullPaymentViewHolder -> {
                 holder.bindView(paymentMethod, listener)
             }
@@ -76,6 +84,9 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
             }
             PaymentMethod.INSTALLMENT -> {
                 INSTALLMENT
+            }
+            PaymentMethod.E_ORDERING -> {
+                E_ORDERING
             }
             else -> {
                 EMPTY

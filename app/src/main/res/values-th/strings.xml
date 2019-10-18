@@ -311,6 +311,7 @@
     <string name="installment">Pay by Installment</string>
     <string name="pay_at_store">Pay at Store</string>
     <string name="cash_on_delivery">บริการเก็บค่าสินค้าปลายทาง</string>
+    <string name="pay_here">จ่ายที่นี่</string>
     <string name="require_tax">คุณต้องการใบกำกับภาษีเต็มรูปแบบหรือไม่</string>
     <string name="company">บริษัท</string>
     <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>

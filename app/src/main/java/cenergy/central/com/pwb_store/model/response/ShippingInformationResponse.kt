@@ -37,9 +37,14 @@ data class PaymentMethod(
             return arrayOfNulls(size)
         }
 
+        fun createPaymentMethod(methodCode: String, title: String) : PaymentMethod {
+            return PaymentMethod(code = methodCode, title = title)
+        }
+
         const val CASH_ON_DELIVERY = "cashondelivery"
         const val FULL_PAYMENT = "fullpaymentredirect"
         const val PAY_AT_STORE = "payatstore"
         const val INSTALLMENT = "p2c2p_ipp"
+        const val E_ORDERING = "e_ordering"
     }
 }
