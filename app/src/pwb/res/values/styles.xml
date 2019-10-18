@@ -26,12 +26,6 @@
         <item name="android:textColor">@color/powerBuyPurple</item>
     </style>
 
-    <style name="textHeader">
-        <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/defaultButtonColor</item>
-    </style>
-
     <!-- Form -->
     <style name="Form" />
 

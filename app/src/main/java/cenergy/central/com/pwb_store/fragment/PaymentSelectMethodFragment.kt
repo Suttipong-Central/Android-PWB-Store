@@ -65,20 +65,11 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO later show stand with COD
-//        when (DeliveryType.fromString(deliveryCode)) {
-//            DeliveryType.STANDARD -> {
-//                selectMethodAdapter.paymentMethods = paymentMethods
-//            }
-//            else -> {
-//               hidePaymentCOD()
-//            }
-//        }
         // set t1 card no.
         val t1cardNumber = paymentProtocol.getT1CardNumber()
         inputT1CardId.setText(t1cardNumber)
 
-        hidePaymentCOD()
+        setupPaymentMethodOptions()
         handleClickChangeT1()
     }
 
@@ -88,15 +79,9 @@ class PaymentSelectMethodFragment : Fragment() {
         }
     }
 
-    private fun hidePaymentCOD() {
-        val filteredPaymentMethod = arrayListOf<PaymentMethod>()
-        // no display COD
-        paymentMethods.forEach {
-            if ( it.code != PaymentMethod.CASH_ON_DELIVERY) {
-                filteredPaymentMethod.add(it)
-            }
-        }
-        selectMethodAdapter.paymentMethods = filteredPaymentMethod
+    private fun setupPaymentMethodOptions() {
+        // add more filter?
+        selectMethodAdapter.paymentMethods = paymentMethods
     }
 
     private fun setupView(rootView: View) {

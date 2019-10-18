@@ -58,7 +58,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable false // Set false when singed new apk
+            debuggable true // Set false when singed new apk
             jniDebuggable false
             renderscriptDebuggable false
             renderscriptOptimLevel 3
@@ -130,7 +130,6 @@ android {
 }
 
 def supportLibraryVersion = '28.0.0'
-def gcmVersion = '11.6.2'
 def kotlin_version = '1.2.60'
 
 dependencies {
@@ -147,15 +146,25 @@ dependencies {
     implementation "com.android.support:customtabs:$supportLibraryVersion"
     implementation "com.android.support:percent:$supportLibraryVersion"
     implementation 'com.android.support:multidex:1.0.3'
-    implementation "com.google.android.gms:play-services-gcm:$gcmVersion"
+
+    /* Firebase */
+    implementation 'com.google.firebase:firebase-config:17.0.0' // TODO: Update to last version and support androidx
+
+    /* Glide */
     implementation 'com.github.bumptech.glide:glide:3.8.0'
     implementation 'jp.wasabeef:glide-transformations:2.0.1'
-    implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+
+    /* Retrofit */
+    implementation 'com.squareup.okhttp3:okhttp:3.14.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+
+    /* Gson */
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    /* other */
+    implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.scottyab:secure-preferences-lib:0.1.4'
     implementation 'com.mcxiaoke.viewpagerindicator:library:2.4.1'
     implementation 'com.pacioianu.david:ink-page-indicator:1.2.0'
@@ -163,13 +172,13 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
     implementation 'com.github.ksoichiro:android-observablescrollview:1.6.0'
-    implementation 'com.jakewharton:butterknife:8.6.0'
+    implementation 'com.jakewharton:butterknife:8.6.0' // TODO: Remove
     implementation 'com.robinhood.ticker:ticker:1.1.1'
     implementation 'joda-time:joda-time:2.9.4'
     implementation 'com.amazonaws:aws-android-sdk-core:2.16.1'
     implementation 'com.amazonaws:aws-android-sdk-s3:2.16.1'
     //implementation 'uk.co.lucasweb:aws-v4-signer-java:1.3'
-    kapt 'com.jakewharton:butterknife-compiler:8.6.0'
+    kapt 'com.jakewharton:butterknife-compiler:8.6.0' // TODO: Remove
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //date picker
@@ -179,6 +188,7 @@ dependencies {
         transitive = true
     }
 }
+apply plugin: 'com.google.gms.google-services'
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

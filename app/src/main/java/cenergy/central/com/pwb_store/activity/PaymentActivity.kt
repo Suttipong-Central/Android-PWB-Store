@@ -21,7 +21,6 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -43,11 +42,11 @@ import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
@@ -82,7 +81,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = listOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("payatstore", "Pay at store")
+    private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
 
@@ -90,6 +89,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var product2h: Product? = null
     private var isEditStorePickup: Boolean = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
+
+    // Firebase remote config
+    private lateinit var fbRemoteConfig: FirebaseRemoteConfig
+    private var cacheExpiration: Long = 3600 // 1 hour in seconds.
 
     companion object {
         private const val TAG = "PaymentActivity"
@@ -121,6 +124,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
+        // setup remote config
+        setupRemoteConfig()
+
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         languageButton.visibility = View.INVISIBLE
@@ -143,7 +149,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             isEditStorePickup = intent.getBooleanExtra(EXTRA_EDIT_STORE_PICKUP, false)
             this.checkoutType = if (isISPU) CheckoutType.ISPU else CheckoutType.NORMAL
             if (!isEditStorePickup) {
-                standardCheckout()
+                fetchEorderingConfig()
             } else {
                 onEditStorePickup()
             }
@@ -255,8 +261,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun standardCheckout() {
-        cacheCartItems = database.cacheCartItems
-        paymentMethods = cacheCartItems.getPaymentType(this)
         startCheckOut() // default page
         getCartItems()
     }
@@ -317,18 +321,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         mProgressDialog?.dismiss()
                     }
                 })
-    }
-
-    private fun isUserChatAndShop(): Boolean {
-        return if (userInformation != null) {
-            if (userInformation!!.user != null) {
-                userInformation!!.user!!.getChatAndShopUser()
-            } else {
-                false
-            }
-        } else {
-            false
-        }
     }
 
     // region {@link PaymentTypesClickListener}
@@ -554,11 +546,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 billingAddress ?: shippingAddress!!, subscribeCheckOut,
                 deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
             override fun success(response: ShippingInformationResponse?) {
-                mProgressDialog?.dismiss()
                 if (response != null) {
                     handleShippingInforSuccess(type, response.paymentMethods)
                 } else {
                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    mProgressDialog?.dismiss()
                 }
             }
 
@@ -579,11 +571,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
-                                mProgressDialog?.dismiss()
                                 if (response != null) {
                                     handleShippingInforSuccess(type, response.paymentMethods)
                                 } else {
                                     showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                    mProgressDialog?.dismiss()
                                 }
                             }
 
@@ -600,27 +592,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             return
         }
 
-        // TODO: remove function verify user chatandshop
-        if (isUserChatAndShop()) {
-            selectPaymentTypes(paymentMethods)
-        } else {
-            showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-        }
+        displayEorderingPayment(paymentMethods)
     }
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
-        //TODO-HDL:  Change to new api
         showProgressDialog()
         shippingSlot?.let {
             HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
                 override fun success(response: ShippingSlot?) {
-                    // TODO: remove function verify user chatandshop
-                    mProgressDialog?.dismiss()
-                    if (isUserChatAndShop()) {
-                        selectPaymentTypes(paymentMethods)
-                    } else {
-                        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-                    }
+                    displayEorderingPayment(paymentMethods)
                 }
 
                 override fun failure(error: APIError) {
@@ -631,17 +611,30 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
+    private fun displayEorderingPayment(paymentMethods: ArrayList<PaymentMethod>) {
+        if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
+            selectPaymentTypes(paymentMethods)
+        } else {
+            showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+        }
+
+        mProgressDialog?.dismiss()
+    }
 
     private fun selectPaymentTypes(paymentMethodsFromAPI: ArrayList<PaymentMethod>) {
-        if (this.paymentMethods.isEmpty()) {
-            if (paymentMethodsFromAPI.isEmpty()) {
-                showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
-            } else {
-                this.paymentMethods = paymentMethodsFromAPI
-                startSelectMethod()
-            }
+        if (paymentMethodsFromAPI.isEmpty()) {
+            showCommonDialog(getString(R.string.not_found_payment_methods))
         } else {
+            this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
+            //TODO: handle payment method empty
             startSelectMethod()
+        }
+    }
+
+    private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>):List<PaymentMethod> {
+        val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
+        return methods.filter {
+            supportedPaymentMethods.contains(it.code,true)
         }
     }
 
@@ -979,6 +972,32 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
     // endregion
+
+    private fun setupRemoteConfig() {
+        fbRemoteConfig = FirebaseRemoteConfig.getInstance()
+
+        if (!BuildConfig.IS_PRODUCTION) { // is Production?
+            cacheExpiration = 0
+        }
+
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(cacheExpiration)
+                .build()
+        fbRemoteConfig.setDefaults(R.xml.remote_config_defaults)
+        fbRemoteConfig.setConfigSettingsAsync(configSettings)
+    }
+
+    private fun fetchEorderingConfig() {
+        showProgressDialog()
+        fbRemoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.i(TAG, "remote config -> fetch Successful")
+            } else {
+                Log.i(TAG, "remote config -> fetch Fail")
+            }
+            standardCheckout()
+        }
+    }
 
     private fun createOrderWithIspu() {
         val cacheCartItems = database.cacheCartItems

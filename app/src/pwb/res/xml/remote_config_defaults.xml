@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+
+    <entry>
+        <key>is_payment_option_on</key>
+        <value>false</value>
+    </entry>
+
+    <entry>
+        <key>supported_payment_methods</key>
+        <value>fullpaymentredirect,payatstore,p2c2p_ipp,e_ordering</value>
+    </entry>
+
+</defaultsMap>
