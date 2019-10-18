@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
@@ -93,6 +95,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             R.id.add1HourButton -> {
                 onAddToCartBy1Hrs()
             }
+
+            R.id.shareButton -> {
+                productDetailListener.onShareButtonClickListener()
+            }
         }
     }
 
@@ -145,7 +151,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         val unit = getString(R.string.baht)
         tvProductName.text = product.name
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
-
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
 
         if (product.isSpecialPrice()) {
@@ -223,6 +228,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // setup add to compare button
         addToCompareButton.setImageDrawable(R.drawable.ic_compare_bar)
         addToCompareButton.setOnClickListener(this)
+
+        shareButton.setOnClickListener(this)
     }
 
     private fun showSpecialPrice(unit: String, product: Product) {

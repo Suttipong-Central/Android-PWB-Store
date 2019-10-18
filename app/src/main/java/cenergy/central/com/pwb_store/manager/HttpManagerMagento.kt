@@ -467,6 +467,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                 "shipping_methods" -> {
                                     product.shippingMethods = customAttr.getString("value")
                                 }
+
+                                "url_key" -> {
+                                    product.urlKey = customAttr.getString("value")
+                                }
                             }
                             // set value to product specifications
                             val customAttrCode = customAttr.getString("attribute_code")

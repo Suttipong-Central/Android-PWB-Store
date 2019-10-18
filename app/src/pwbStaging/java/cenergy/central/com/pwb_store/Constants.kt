@@ -12,6 +12,8 @@ class Constants {
         const val CLIENT_MAGENTO = "Bearer ngvids7tnggs94sm81k8a3oxjgl9cd16"
         // endregion
 
+        const val WEB_HOST_NAME = "https://staging-fe.powerbuy.co.th"
+
         const val CONTENT_TYPE = "Content-Type"
         const val APPTICATION_JSON = "application/json"
 

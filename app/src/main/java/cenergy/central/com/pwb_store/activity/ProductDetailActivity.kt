@@ -16,12 +16,10 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
-import cenergy.central.com.pwb_store.fragment.DetailFragment
-import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
-import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
-import cenergy.central.com.pwb_store.fragment.WebViewFragment
+import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -214,6 +212,20 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             ShoppingCartActivity.startActivity(this, view, preferenceManager.cartId)
         } else {
             showAlertDialog("", resources.getString(R.string.not_have_products_in_cart))
+        }
+    }
+    // endregion
+
+    // region {@link ShareButtonClickListener}
+    override fun onShareButtonClickListener() {
+        if (product != null && product!!.urlKey.isNotBlank()) {
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(Intent.EXTRA_TEXT, "${product!!.name} ${Constants.WEB_HOST_NAME}/${preferenceManager.getDefaultLanguage()}/${product!!.urlKey}")
+            intent.type = "text/plain"
+            startActivity(intent)
+        } else {
+            showAlertDialog(getString(R.string.some_thing_wrong))
         }
     }
     // endregion

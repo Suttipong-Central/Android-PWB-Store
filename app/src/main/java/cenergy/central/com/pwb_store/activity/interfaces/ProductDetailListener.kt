@@ -14,4 +14,6 @@ interface ProductDetailListener {
     fun onDisplayAvailableStore(product: Product?)
     fun onDisplayOverview(overview: String)
     fun onDisplaySpecification(spec: String)
+
+    fun onShareButtonClickListener()
 }

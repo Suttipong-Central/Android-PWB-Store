@@ -35,7 +35,8 @@ class Product(
         var isHDL: Boolean = false,
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
-        private var productImageList: ProductDetailImage? = null) : IViewType, Parcelable {
+        private var productImageList: ProductDetailImage? = null,
+        var urlKey: String = "") : IViewType, Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
@@ -57,7 +58,8 @@ class Product(
             parcel.readString() ?: "",
             parcel.readByte() != 0.toByte(),
             parcel.readParcelable(ProductExtension::class.java.classLoader),
-            parcel.readParcelable(ProductDetailImage::class.java.classLoader))
+            parcel.readParcelable(ProductDetailImage::class.java.classLoader),
+            parcel.readString() ?: "")
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -165,6 +167,7 @@ class Product(
         parcel.writeByte(if (isHDL) 1 else 0)
         parcel.writeParcelable(extension, flags)
         parcel.writeParcelable(productImageList, flags)
+        parcel.writeString(urlKey)
     }
 
     override fun describeContents(): Int {
