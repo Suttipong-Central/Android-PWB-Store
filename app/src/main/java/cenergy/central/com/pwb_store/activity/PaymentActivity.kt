@@ -636,9 +636,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>): ArrayList<PaymentMethod> {
         val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
-        return methods.filter {
+        val result = methods.filter {
             supportedPaymentMethods.contains(it.code,true)
-        } as ArrayList<PaymentMethod>
+        }
+        return ArrayList(result)
     }
 
     private fun getCustomerPWB(mobile: String) {
@@ -746,14 +747,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             HttpManagerMagento.getInstance(this).getOrderDeliveryOptions(cartId, it,
                     object : ApiResponseCallback<List<DeliveryOption>> {
                         override fun success(response: List<DeliveryOption>?) {
-                            mProgressDialog?.dismiss()
                             if (response != null) {
                                 this@PaymentActivity.shippingSlot = null // clear shipping slot
-                                deliveryOptionsList = response
+                                deliveryOptionsList = filterDeliveryOptions(response)
                                 startDeliveryOptions()
                             } else {
                                 showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                             }
+                            mProgressDialog?.dismiss()
                         }
 
                         override fun failure(error: APIError) {
@@ -761,6 +762,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             DialogHelper(this@PaymentActivity).showErrorDialog(error)
                         }
                     })
+        }
+    }
+
+    private fun filterDeliveryOptions(response: List<DeliveryOption>): List<DeliveryOption> {
+        val supportedDeliveryOptions = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_DELIVERY_METHODS)
+        return response.filter {
+            supportedDeliveryOptions.contains(it.methodCode,true)
         }
     }
 

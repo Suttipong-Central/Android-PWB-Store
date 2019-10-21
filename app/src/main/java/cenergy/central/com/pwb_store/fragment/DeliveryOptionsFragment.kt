@@ -49,18 +49,6 @@ class DeliveryOptionsFragment : Fragment() {
         val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsListener)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = deliveryOptionsAdapter
-        deliveryOptionsAdapter.deliveryOptionList = getDeliveryOptionList()
-
-    }
-
-    private fun getDeliveryOptionList(): List<DeliveryOption> {
-        val deliveryMethods = arrayListOf<DeliveryOption>()
-        deliveryOptions.forEach {
-            val type = DeliveryType.fromString(it.methodCode)
-            if( type != null && type.methodCode != "ispu"){
-                deliveryMethods.add(it)
-            }
-        }
-        return deliveryMethods
+        deliveryOptionsAdapter.deliveryOptionList = deliveryOptions
     }
 }
