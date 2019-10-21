@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -281,16 +282,25 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     private fun setupBarcodeView(order: Order) {
         if (order.paymentRedirect.isNotBlank()) {
-            ivPaymentBarcode.visibility = View.VISIBLE
             tvPaymentDescription.visibility = View.VISIBLE
+            ivPaymentBarcode.visibility = View.VISIBLE
+            shareButton.visibility = View.VISIBLE
             val bitmapBarcode = BarcodeUtils.createQRCode(order.paymentRedirect)
             ivPaymentBarcode.setImageBitmap(bitmapBarcode)
             ivPaymentBarcode.setOnClickListener {
                 BarcodeDialogFragment.newInstance(order.paymentRedirect).show(fragmentManager, "dialog")
             }
+            shareButton.setOnClickListener {
+                val intent = Intent()
+                intent.action = Intent.ACTION_SEND
+                intent.putExtra(Intent.EXTRA_TEXT, order.paymentRedirect)
+                intent.type = "text/plain"
+                startActivity(intent)
+            }
         } else {
             tvPaymentDescription.visibility = View.GONE
             ivPaymentBarcode.visibility = View.GONE
+            shareButton.visibility = View.GONE
         }
     }
 

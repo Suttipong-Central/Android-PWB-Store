@@ -111,6 +111,16 @@
             </LinearLayout>
         </LinearLayout>
 
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvPaymentDescription"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/payment_description"/>
+
         <ImageView
             android:id="@+id/ivPaymentBarcode"
             android:layout_width="@dimen/img_qr_code_payment"
@@ -119,18 +129,17 @@
             android:layout_margin="8dp"
             android:background="@color/lightGray"
             android:contentDescription="@string/payment_header"
-            android:padding="8dp"
-            android:visibility="gone" />
+            android:padding="8dp"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/tvPaymentDescription"
-            style="@style/TextAppearance.AppCompat.Small"
+            android:id="@+id/shareButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/share_payment_link"
+            android:textColor="@color/colorPrimary"
             android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
-            android:text="@string/payment_description"
-            android:visibility="gone" />
+            android:contentDescription="@string/app_name"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -332,4 +332,5 @@
     <string name="label_stock_online">ออนไลน์</string>
     <string name="label_stock_store_offline">สาขานี้</string>
     <string name="label_stock_stores_offline"><u>สาขาอื่น</u></string>
+    <string name="share_payment_link"><u>แชร์ลิ้งค์จ่ายเงิน</u></string>
 </resources>
