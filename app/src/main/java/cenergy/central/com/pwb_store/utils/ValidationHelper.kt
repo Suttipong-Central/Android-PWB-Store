@@ -128,9 +128,19 @@ class ValidationHelper(private val context: Context) {
         return data == null || data.trim { it <= ' ' } == ""
     }
 
+    fun validTax(taxId: String): String? {
+        if (isEmptyData(taxId)){
+            return context.getString(R.string.error_form_empty_data)
+        } else if (taxId.length < MIN_TAX_ID){
+            return context.getString(R.string.error_tax_invalid)
+        }
+        return null
+    }
+
     companion object {
         private const val MIN_PASSWORD_LENGTH = 9
         private const val MIN_PHONE_NUMBER = 10
+        private const val MIN_TAX_ID = 13
         private const val MIN_PASSPORT_LENGTH = 5
         private const val LANGUAGE_THAI = "th"
         private const val LANGUAGE_ENGLISH = "en"

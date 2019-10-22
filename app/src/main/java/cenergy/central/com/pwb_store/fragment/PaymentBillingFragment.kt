@@ -36,6 +36,7 @@ import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
@@ -693,7 +694,7 @@ class PaymentBillingFragment : Fragment() {
                 paymentBillingListener?.setBillingAddressWithIspu(shippingAddress)
             } else {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.fill_in_important_information))
+                activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
             }
         }
     }
@@ -707,7 +708,8 @@ class PaymentBillingFragment : Fragment() {
                 paymentBillingListener?.setShippingAddressInfo(shippingAddress)
             } else {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.fill_in_important_information))
+                activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
+
             }
         } else {
             if (!hasEmptyInput() && !hasBillingEmptyInput()) {
@@ -719,7 +721,8 @@ class PaymentBillingFragment : Fragment() {
                 paymentBillingListener?.setShippingAddressInfo(shippingAddress)
             } else {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.fill_in_important_information))
+                activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
+
             }
         }
     }
@@ -809,6 +812,8 @@ class PaymentBillingFragment : Fragment() {
         subDistrictInput.setError(validator.validText(subDistrictInput.getText()))
         postcodeInput.setError(validator.validText(postcodeInput.getText()))
 
+        taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
+
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
@@ -840,8 +845,6 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun hasRequireTaxInvoice(): Boolean {
-        val validator = ValidationHelper.getInstance(context!!)
-        taxIdEdt.setError(validator.validText(taxIdEdt.getText()))
         return if (isRequireTaxInvoice) {
             taxIdEdt.getError() != null
         } else {
@@ -857,17 +860,6 @@ class PaymentBillingFragment : Fragment() {
     private fun getDisplayDiscount(unit: String, price: String): String {
         return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
-    }
-
-    private fun showAlertDialog(title: String, message: String) { //TODO: Refactor show alert dialog.
-        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
     }
 
     private fun showProgressDialog() {
