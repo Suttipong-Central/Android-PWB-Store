@@ -12,6 +12,8 @@ class Constants {
         const val PWB_HOST_NAME = "backend.powerbuy.co.th"
         // endregion
 
+        const val WEB_HOST_NAME = "https://www.powerbuy.co.th"
+
         const val CONTENT_TYPE = "Content-Type"
         const val APPTICATION_JSON = "application/json"
 
