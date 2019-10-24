@@ -12,14 +12,14 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.MembersAdapter
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.EOrderingMember
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class PaymentMembersFragment : Fragment() {
 
     var listener: PaymentProtocol? = null
     var membersList: List<MemberResponse> = listOf()
-    var pwbMembersList: List<PwbMember> = listOf()
+    var EOrderingMembersList: List<EOrderingMember> = listOf()
     private lateinit var recycler: RecyclerView
 
     companion object {
@@ -35,7 +35,7 @@ class PaymentMembersFragment : Fragment() {
         super.onAttach(context)
         listener = context as PaymentProtocol
         listener?.let {
-            pwbMembersList = it.getPWBMembers()
+            EOrderingMembersList = it.getPWBMembers()
             membersList = it.getMembers()
         }
     }
@@ -52,8 +52,8 @@ class PaymentMembersFragment : Fragment() {
         membersAdapter.setOnMemberClickListener(context as MemberClickListener)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = membersAdapter
-        if (pwbMembersList.isNotEmpty()) {
-            membersAdapter.memberList = pwbMembersList
+        if (EOrderingMembersList.isNotEmpty()) {
+            membersAdapter.memberList = EOrderingMembersList
         } else {
             membersAdapter.memberList = membersList
         }

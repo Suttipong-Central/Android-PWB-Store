@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <defaultsMap>
+    <entry>
+        <key>is_eordering_member_on</key>
+        <value>true</value>
+    </entry>
+
+    <entry>
+        <key>is_t1c_member_on</key>
+        <value>true</value>
+    </entry>
 
     <entry>
         <key>is_payment_option_on</key>

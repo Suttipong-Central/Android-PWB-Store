@@ -102,7 +102,7 @@ class PaymentBillingFragment : Fragment() {
     private var cartId: String? = null
     private var member: Member? = null
     private var pwbMemberIndex: Int? = null
-    private var pwbMember: PwbMember? = null
+    private var EOrderingMember: EOrderingMember? = null
     private var firstName: String = ""
     private var lastName: String = ""
     private var email: String = ""
@@ -209,7 +209,7 @@ class PaymentBillingFragment : Fragment() {
         cartId = preferenceManager?.cartId
         member = arguments?.getParcelable(ARG_MEMBER)
         pwbMemberIndex = arguments?.getInt(ARG_MEMBER_INDEX)
-        pwbMemberIndex?.let { pwbMember = paymentProtocol.getPWBMemberByIndex(it) }
+        pwbMemberIndex?.let { EOrderingMember = paymentProtocol.getPWBMemberByIndex(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -414,11 +414,11 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun handlePwbMember() {
-        if (pwbMember == null) {
+        if (EOrderingMember == null) {
             return
         }
 
-        val member = pwbMember!!
+        val member = EOrderingMember!!
         firstNameEdt.setText(member.firstname ?: "")
         lastNameEdt.setText(member.lastname ?: "")
         contactNumberEdt.setText(member.telephone ?: "")
@@ -636,7 +636,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun hasPwbMember(): Boolean {
-        return pwbMember != null
+        return EOrderingMember != null
     }
 
     private fun setupInputAddress() {

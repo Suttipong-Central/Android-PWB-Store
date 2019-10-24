@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.MembersViewHolder
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.EOrderingMember
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adapter<MembersViewHolder>() {
@@ -35,7 +35,7 @@ class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adap
     override fun onBindViewHolder(holder: MembersViewHolder, position: Int) {
         when(getItemViewType(position)){
             PWBMember -> {
-                holder.bindPwbMemberView(position, memberList[position] as PwbMember)
+                holder.bindPwbMemberView(position, memberList[position] as EOrderingMember)
                 holder.itemView.setOnClickListener { memberClickListener?.onClickedPwbMember(position) }
             }
             T1CMember -> {
@@ -47,7 +47,7 @@ class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adap
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (memberList[position] is PwbMember) {
+        return if (memberList[position] is EOrderingMember) {
             PWBMember
         } else {
             T1CMember

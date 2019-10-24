@@ -812,7 +812,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     // endregion
 
     // region get PWB Customer
-    fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<PwbMember>>) {
+    fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<EOrderingMember>>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
@@ -835,7 +835,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     try {
                         val dataObject = JSONObject(data?.string())
                         val items = dataObject.getJSONArray("items")
-                        val memberList: ArrayList<PwbMember> = arrayListOf()
+                        val memberList: ArrayList<EOrderingMember> = arrayListOf()
 
                         if (items.length() < 1) {
                             callback.success(arrayListOf())
@@ -844,7 +844,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                         for (i in 0 until items.length()) {
                             val memberDetail = items.getJSONObject(i)
-                            val pwbMember = PwbMember()
+                            val pwbMember = EOrderingMember()
 
                             if (memberDetail.has("id")) {
                                 pwbMember.id = memberDetail.getLong("id")

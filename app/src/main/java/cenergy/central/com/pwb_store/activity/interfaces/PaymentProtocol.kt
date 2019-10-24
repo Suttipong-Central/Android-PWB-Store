@@ -16,7 +16,7 @@ import java.util.*
 interface PaymentProtocol {
     fun getItems(): List<CartItem>
     fun getCartTotalResponse(): CartTotalResponse
-    fun getPWBMembers(): List<PwbMember>
+    fun getPWBMembers(): List<EOrderingMember>
     fun getMembers(): List<MemberResponse>
     fun getDeliveryOptions(): List<DeliveryOption>
     fun getShippingAddress(): AddressInformation?
@@ -25,7 +25,7 @@ interface PaymentProtocol {
     fun getEnableDateShipping(): ArrayList<ShippingSlot>
     fun getBranches(): ArrayList<BranchResponse>
     fun getSelectedBranch(): Branch?
-    fun getPWBMemberByIndex(index: Int): PwbMember?
+    fun getPWBMemberByIndex(index: Int): EOrderingMember?
     fun getPaymentMethods(): List<PaymentMethod>
     fun getT1CardNumber(): String
     fun getCheckType(): CheckoutType

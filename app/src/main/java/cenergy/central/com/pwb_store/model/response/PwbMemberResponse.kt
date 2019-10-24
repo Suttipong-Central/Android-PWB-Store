@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.model.response
 
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.EOrderingMember
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
 
 class PwbMemberResponse(
         @SerializedName("items")
-        var pwbMembers: List<PwbMember>? = null,
+        var EOrderingMembers: List<EOrderingMember>? = null,
         @SerializedName("total_count")
         var totalCount: Int? = 0
 )

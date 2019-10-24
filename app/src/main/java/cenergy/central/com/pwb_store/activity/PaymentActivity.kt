@@ -68,7 +68,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var cartItemList: List<CartItem> = listOf()
     private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
-    private var pwbMembersList: List<PwbMember> = listOf()
+    private var eOrderingMembers: List<EOrderingMember> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
@@ -189,7 +189,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             }
         } else {
             memberContact = contactNo
-            getCustomerPWB(contactNo)
+            startRetrieveMemberContact(contactNo)
         }
     }
     // endregion
@@ -262,7 +262,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
-        startCheckOut() // default page
         getCartItems()
     }
 
@@ -440,6 +439,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun getCartItems() {
+        showProgressDialog()
         preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
                 override fun success(response: CartResponse?) {
@@ -460,12 +460,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     fun getItemTotal(cartId: String) {
         CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
             override fun success(response: CartTotalResponse?) {
-                mProgressDialog?.dismiss()
                 if (response != null) {
-                    cartTotal = response
+                    handleGetCartItemsSuccess(response)
                 } else {
                     showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
                 }
+                mProgressDialog?.dismiss()
             }
 
             override fun failure(error: APIError) {
@@ -473,6 +473,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 DialogHelper(this@PaymentActivity).showErrorDialog(error)
             }
         })
+    }
+
+    private fun handleGetCartItemsSuccess(response: CartTotalResponse) {
+        this.cartTotal = response
+
+        // check retrieving eodering customer information
+        val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
+        val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+        if (!isEorderingMemberOn && !isT1CMemberOn) { // all have no enable
+            startBilling()
+        } else {
+            startCheckOut() // default page
+        }
     }
 
     fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
@@ -642,32 +655,47 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         return ArrayList(result)
     }
 
-    private fun getCustomerPWB(mobile: String) {
+    private fun startRetrieveMemberContact(memberContact: String) {
+        val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
+        val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+
+        if (isEorderingMemberOn) {
+            getEorderingMember(memberContact)
+        } else if (isT1CMemberOn){
+            getMembersT1C(memberContact)
+        }
+    }
+
+    private fun getEorderingMember(mobile: String) {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getPWBCustomer(mobile, object : ApiResponseCallback<List<PwbMember>> {
-            override fun success(response: List<PwbMember>?) {
-                runOnUiThread {
-                    if (response != null && response.isNotEmpty()) { // it can be null
-                        this@PaymentActivity.pwbMembersList = response
-                        mProgressDialog?.dismiss()
-                        startMembersFragment()
-                    } else {
-                        getMembersT1C(mobile)
+        HttpManagerMagento.getInstance(this).getPWBCustomer(mobile,
+                object : ApiResponseCallback<List<EOrderingMember>> {
+                    override fun success(response: List<EOrderingMember>?) {
+                        runOnUiThread {
+                            if (response != null && response.isNotEmpty()) { // it can be null
+                                this@PaymentActivity.eOrderingMembers = response
+                                mProgressDialog?.dismiss()
+                                startMembersFragment()
+                            } else {
+                                getMembersT1C(mobile)
+                            }
+                        }
                     }
-                }
-            }
 
-            override fun failure(error: APIError) {
-                runOnUiThread {
-                    getMembersT1C(mobile)
-                }
-                Log.d("Payment", error.errorCode ?: "")
-            }
-
-        })
+                    override fun failure(error: APIError) {
+                        runOnUiThread {
+                            getMembersT1C(mobile)
+                        }
+                        Log.d("Payment", error.errorCode ?: "")
+                    }
+                })
     }
 
     private fun getMembersT1C(mobile: String) {
+        val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+        if (!isT1CMemberOn) return // t1c on?
+
+        showProgressDialog()
         HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ",
                 object : ApiResponseCallback<List<MemberResponse>> {
                     override fun success(response: List<MemberResponse>?) {
@@ -703,6 +731,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             if (error.errorCode == null) {
                                 showAlertDialog("", getString(R.string.not_connected_network))
                             } else {
+                                /* handle not found*/
                                 // is PaymentCheckOutFragment?
                                 if (currentFragment is PaymentCheckOutFragment) {
                                     showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
@@ -885,11 +914,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
 
-    override fun getPWBMembers(): List<PwbMember> = this.pwbMembersList
+    override fun getPWBMembers(): List<EOrderingMember> = this.eOrderingMembers
 
-    override fun getPWBMemberByIndex(index: Int): PwbMember? {
-        return if (pwbMembersList.isNotEmpty()) {
-            this.pwbMembersList[index]
+    override fun getPWBMemberByIndex(index: Int): EOrderingMember? {
+        return if (eOrderingMembers.isNotEmpty()) {
+            this.eOrderingMembers[index]
         } else {
             null
         }
@@ -1008,7 +1037,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             } else {
                 Log.i(TAG, "remote config -> fetch Fail")
             }
-            standardCheckout()
+
+                standardCheckout()
         }
     }
 
@@ -1055,9 +1085,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         if (currentFragment is PaymentBillingFragment) {
             this.shippingAddress = null
-            if (this.membersList.isNotEmpty() || this.pwbMembersList.isNotEmpty()) {
+            if (this.membersList.isNotEmpty() || this.eOrderingMembers.isNotEmpty()) {
                 startMembersFragment()
             } else {
+                if (this.memberContact.isNullOrEmpty()) {
+                    finish()
+                    return
+                }
                 startCheckOut()
             }
             return
@@ -1070,7 +1104,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         if (currentFragment is PaymentMembersFragment) {
             this.membersList = listOf()
-            this.pwbMembersList = listOf()
+            this.eOrderingMembers = listOf()
             startCheckOut()
             return
         }

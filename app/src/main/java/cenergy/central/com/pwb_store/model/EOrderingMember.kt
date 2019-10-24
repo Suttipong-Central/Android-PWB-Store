@@ -2,7 +2,7 @@ package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
 
-class PwbMember(
+class EOrderingMember(
         var id: Long? = 0,
         @SerializedName("customer_id")
         var customerId: Long? = 0,

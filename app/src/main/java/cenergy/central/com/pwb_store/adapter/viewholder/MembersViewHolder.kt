@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.EOrderingMember
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
@@ -14,8 +14,8 @@ class MembersViewHolder(itemView: View, private val showDetail: Boolean) : Recyc
     private var name: PowerBuyTextView = itemView.findViewById(R.id.member_name_list_members)
     private var tvThe1CarbNumber: PowerBuyTextView = itemView.findViewById(R.id.the1_card_number)
 
-    fun bindPwbMemberView(position: Int, pwbMember: PwbMember) {
-        name.text = "${position + 1}. ${pwbMember.getDisplayName()}"
+    fun bindPwbMemberView(position: Int, EOrderingMember: EOrderingMember) {
+        name.text = "${position + 1}. ${EOrderingMember.getDisplayName()}"
     }
 
     fun bindT1CMemberView(position: Int, memberResponse: MemberResponse) {
