@@ -307,11 +307,12 @@
     <!-- Payment-->
     <string name="select_payment_types">เลือกวิธีการจ่ายเงิน</string>
     <string name="not_found_payment_methods">ไม่พบวิธีการจ่ายเงิน</string>
-    <string name="fullpayment">Credit Card (Full Payment)</string>
-    <string name="installment">Pay by Installment</string>
-    <string name="pay_at_store">Pay at Store</string>
+    <string name="fullpayment">บัตรเครดิต (ชำระเงินเต็มจำนวน)</string>
+    <string name="installment">เลือกการผ่อนชำระสินค้า</string>
+    <string name="pay_at_store">จ่ายที่ร้านเมื่อรับของ</string>
     <string name="cash_on_delivery">บริการเก็บค่าสินค้าปลายทาง</string>
     <string name="pay_here">จ่ายที่นี่</string>
+    <string name="pay_here_description">จ่ายในร้านเลยตอนนี้</string>
     <string name="require_tax">คุณต้องการใบกำกับภาษีเต็มรูปแบบหรือไม่</string>
     <string name="company">บริษัท</string>
     <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>

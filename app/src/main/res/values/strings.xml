@@ -311,6 +311,7 @@
     <string name="cash_on_delivery">Cash on Delivery (CoD)</string>
     <string name="installment">Pay by Installment</string>
     <string name="pay_here">Pay Here</string>
+    <string name="pay_here_description">Pay now in this store.</string>
     <string name="require_tax">Do you require a full tax invoice?</string>
     <string name="company">Company</string>
     <string name="tax_id">Tax ID/ID no.</string>

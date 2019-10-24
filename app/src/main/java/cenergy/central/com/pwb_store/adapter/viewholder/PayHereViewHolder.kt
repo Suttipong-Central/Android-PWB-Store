@@ -16,7 +16,7 @@ class PayHereViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
     fun bindView(paymentMethod: PaymentMethod, listener: PaymentTypeClickListener) {
         title.text = itemView.context.getString(R.string.pay_here)
-        description.visibility = View.INVISIBLE
+        description.text = itemView.context.getString(R.string.pay_here_description)
         itemView.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
         button.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
     }
