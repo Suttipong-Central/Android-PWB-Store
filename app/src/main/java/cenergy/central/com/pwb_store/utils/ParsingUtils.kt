@@ -43,7 +43,8 @@ class ParsingUtils{
                 }
 
                 val extensionObj = productObj.getJSONObject("extension_attributes")
-                if (extensionObj.has("stock_item")){
+
+                if(extensionObj.has("stock_item")){
                     val stockObject = extensionObj.getJSONObject("stock_item")
                     stockItem.productId = stockObject.getLong("product_id")
                     stockItem.stockId = stockObject.getLong("stock_id")
@@ -54,6 +55,7 @@ class ParsingUtils{
                     stockItem.maxQTY = stockObject.getInt("max_sale_qty")
                     stockItem.minQTY = stockObject.getInt("min_sale_qty")
                 }
+
                 if (extensionObj.has("ispu_salable")){
                     stockItem.is2HProduct = extensionObj.getBoolean("ispu_salable")
                 }
