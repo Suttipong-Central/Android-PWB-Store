@@ -177,7 +177,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tvBillingCompany = rootView.findViewById(R.id.txt_billing_company_order_success)
         tvBillingTaxID = rootView.findViewById(R.id.txt_billing_vat_order_success)
         tvDeliveryInfo = rootView.findViewById(R.id.txt_delivery_option_order_success)
-        shippingTitle = rootView.findViewById(R.id.txt_delivery_price_order_success)
+        shippingTitle = rootView.findViewById(R.id.delivery_price_order_success)
         tvShippingAmount = rootView.findViewById(R.id.txt_delivery_price_order_success)
         tvAmount = rootView.findViewById(R.id.txt_total_order_success)
 
