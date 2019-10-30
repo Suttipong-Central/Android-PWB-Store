@@ -225,7 +225,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onChangingT1Member(mobile: String) {
         Log.d(TAG, mobile)
         showProgressDialog()
-        getMembersT1C(mobile)
+        getMembersT1CChanged(mobile)
     }
 
     override fun onSelectedT1Member(the1Member: MemberResponse) {
@@ -710,17 +710,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             }
                         }
 
-                        // is PaymentSelectMethodFragment
-                        if (currentFragment is PaymentSelectMethodFragment) {
-                            if (response != null && response.isNotEmpty()) {
-                                this@PaymentActivity.membersList = response
-                                Log.d(TAG, "${response.size}")
-                                T1MemberDialogFragment.newInstance().show(supportFragmentManager,
-                                        T1MemberDialogFragment.TAG_FRAGMENT)
-                            } else {
-                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
-                            }
-                        }
                     }
 
                     override fun failure(error: APIError) {
@@ -730,16 +719,35 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             if (error.errorCode == null) {
                                 showAlertDialog("", getString(R.string.not_connected_network))
                             } else {
-                                /* handle not found*/
-                                // is PaymentCheckOutFragment?
-                                if (currentFragment is PaymentCheckOutFragment) {
-                                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
-                                }
+                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                            }
+                        }
+                    }
+                })
+    }
 
-                                // is PaymentSelectMethodFragment
-                                if (currentFragment is PaymentSelectMethodFragment) {
-                                    this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
-                                }
+    private fun getMembersT1CChanged(mobile: String) {
+        HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ",
+                object : ApiResponseCallback<List<MemberResponse>> {
+                    override fun success(response: List<MemberResponse>?) {
+                        mProgressDialog?.dismiss()
+                        if (response != null && response.isNotEmpty()) {
+                            this@PaymentActivity.membersList = response
+                            Log.d(TAG, "${response.size}")
+                            T1MemberDialogFragment.newInstance().show(supportFragmentManager,
+                                    T1MemberDialogFragment.TAG_FRAGMENT)
+                        } else {
+                            this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
+                        if (!isFinishing) {
+                            mProgressDialog?.dismiss()
+                            if (error.errorCode == null) {
+                                showAlertDialog("", getString(R.string.not_connected_network))
+                            } else {
+                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
                             }
                         }
                     }

@@ -249,6 +249,8 @@ class MigrationDatabase : RealmMigration {
                 addField("paymentRedirect", String::class.java)
                         .setNullable("paymentRedirect", false)
 
+                // add t1c number
+                addField("t1cEarnCardNumber", String::class.java)
             }
         }
     }

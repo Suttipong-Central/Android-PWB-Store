@@ -175,6 +175,7 @@
     <string name="label_billing_address">ใบกำกับภาษี/ที่อยู่</string>
     <string name="label_shipping_type">บริการจัดส่ง</string>
     <string name="label_delivery_info">วิธีการจัดส่ง</string>
+    <string name="label_the_one_number">The 1 No.</string>
     <string name="delivery_price">ค่าส่ง</string>
     <string name="tax_id_success">เลขประจำตัวผู้เสียภาษี</string>
 

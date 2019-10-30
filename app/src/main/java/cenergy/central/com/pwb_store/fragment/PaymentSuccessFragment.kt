@@ -18,7 +18,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -37,7 +36,6 @@ import cenergy.central.com.pwb_store.utils.BarcodeUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import java.lang.Exception
 import kotlinx.android.synthetic.main.fragment_payment_success.*
 import java.text.NumberFormat
 import java.util.*
@@ -99,6 +97,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var shippingInfo: AddressInformation? = null
     private var billingInfo: AddressInformation? = null
     private var branchAddress: Branch? = null
+    private var theOneNumber: String = ""
 
     companion object {
         private const val TAG = "PaymentSuccessFragment"
@@ -136,6 +135,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             billingInfo = paymentListener.getBillingAddress()
             branchAddress = paymentListener.getSelectedBranch()
             cartTotal = paymentListener.getCartTotalResponse()
+            theOneNumber = paymentListener.getT1CardNumber()
         } catch (e: Exception) {
             Log.d(TAG, e.toString())
         }
@@ -223,7 +223,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     fun retrieveOrder() {
-        if(mProgressDialog != null && !mProgressDialog!!.isShowing){
+        if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
             showProgressDialog()
         }
         context?.let { HttpManagerMagento.getInstance(it).getOrder(orderId!!, this) }
@@ -236,15 +236,21 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(order: Order) {
-        val shippingAddress = order.shippingAddress ?: throw IllegalArgumentException("Shipping address must not be null")
-        val billingAddress = order.billingAddress ?: throw IllegalArgumentException("Billing address must not be null")
+        val shippingAddress = order.shippingAddress
+                ?: throw IllegalArgumentException("Shipping address must not be null")
+        val billingAddress = order.billingAddress
+                ?: throw IllegalArgumentException("Billing address must not be null")
 
         updateLabel()
         setupBarcodeView(order)
 
         orderProductListAdapter.listItems = order.items
         //Setup order number
-        orderNumber.text = "${resources.getString(R.string.order_number)} ${order.orderId}"
+        orderNumber.text = "${getString(R.string.order_number)} ${order.orderId}"
+
+        // Setup the 1 number
+        val t1cNumber = order.t1cEarnCardNumber
+        tvTheOneNumber.text = if (t1cNumber.isEmpty()) "-" else t1cNumber
 
         //Setup customer
         orderDate.text = context?.let { order.getDisplayTimeCreated(it) }
@@ -446,11 +452,12 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             }
 
             // add shipping type
-            response.shippingType = deliveryType?.methodCode ?: DeliveryType.STORE_PICK_UP.methodCode
+            response.shippingType = deliveryType?.methodCode
+                    ?: DeliveryType.STORE_PICK_UP.methodCode
 
             response.items?.forEach { item ->
                 val isCacheItem = cacheCartItems?.firstOrNull { it.sku == item.sku }
-                if (isCacheItem != null){
+                if (isCacheItem != null) {
                     item.imageUrl = isCacheItem.imageUrl
                 } else {
                     item.isFreebie = true
@@ -458,7 +465,8 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             }
             // save order to local database
             val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress,
-                    paymentRedirect = urlRedirect)
+                    paymentRedirect = urlRedirect, theOneNumber = theOneNumber)
+
             database.saveOrder(order, object : DatabaseListener{
                 override fun onSuccessfully() {
                     updateViewOrder(order)
@@ -498,7 +506,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 text += subAddress.building + ", "
             }
             if (!subAddress.addressLine.isNullOrEmpty()) {
-                text += subAddress.addressLine  + ", "
+                text += subAddress.addressLine + ", "
             }
             if (!subAddress.subDistrict.isNullOrEmpty()) {
                 text += subAddress.subDistrict + ", "

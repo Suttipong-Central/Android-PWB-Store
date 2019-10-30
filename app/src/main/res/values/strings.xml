@@ -175,6 +175,7 @@
     <string name="label_billing_address">Billing Address</string>
     <string name="label_shipping_type">Delivery type</string>
     <string name="label_delivery_info">Delivery option</string>
+    <string name="label_the_one_number">The 1 No.</string>
     <string name="delivery_price">Delivery price</string>
     <string name="tax_id_success">Tax ID</string>
 

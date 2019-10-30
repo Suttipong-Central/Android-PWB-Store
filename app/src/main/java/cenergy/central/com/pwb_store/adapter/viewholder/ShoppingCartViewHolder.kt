@@ -131,9 +131,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
 
     private fun getDisplayPrice(unit: String, price: Double): String {
-        val vat = price * 0.07
-        val total = (price + vat).roundToInt()
-        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(total))
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(price))
     }
 
     private fun confirmDelete(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {

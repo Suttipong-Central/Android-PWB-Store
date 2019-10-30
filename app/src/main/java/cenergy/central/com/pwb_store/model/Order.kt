@@ -8,11 +8,6 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
-/**
- * Created by Anuphap Suwannamas on 31/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 open class Order(
         @PrimaryKey
         var orderId: String = "",
@@ -28,7 +23,9 @@ open class Order(
         var shippingAmount: Double = 0.0,
         var paymentRedirect: String = "",
         var discountPrice: Double = 0.0,
-        var total: Double = 0.0) : RealmObject() {
+        var total: Double = 0.0,
+        var t1cEarnCardNumber: String = ""
+) : RealmObject() {
 
     fun getDisplayTimeCreated(context: Context): String {
         val language = PreferenceManager(context).getDefaultLanguage()
@@ -38,8 +35,7 @@ open class Order(
     companion object {
         const val FIELD_ORDER_ID = "orderId"
 
-        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?,
-                    paymentRedirect: String = ""): Order {
+        fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, paymentRedirect: String = "", theOneNumber: String = ""): Order {
             return Order(orderId = orderResponse.orderId!!,
                     createdAt = orderResponse.createdAt,
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
@@ -53,7 +49,8 @@ open class Order(
                     shippingAmount = orderResponse.shippingAmount,
                     paymentRedirect = paymentRedirect,
                     discountPrice = orderResponse.discount,
-                    total =  orderResponse.total)
+                    total =  orderResponse.total,
+                    t1cEarnCardNumber = theOneNumber)
         }
 
         private fun asItems(items: RealmList<Item>?): RealmList<Item> {
