@@ -440,6 +440,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
             response.billingAddress = billingInfo ?: shippingInfo
 
+            if (response.shippingType != DeliveryType.STORE_PICK_UP.methodCode && response.shippingType != DeliveryType.STORE_PICK_UP_ISPU.methodCode) {
+                response.orderExtension?.shippingAssignments?.get(0)?.shipping?.shippingAddress = shippingInfo
+            }
+
             // add shipping type
             response.shippingType = deliveryType?.methodCode ?: DeliveryType.STORE_PICK_UP.methodCode
 
