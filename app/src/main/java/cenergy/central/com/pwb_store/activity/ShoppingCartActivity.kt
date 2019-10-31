@@ -20,6 +20,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.extensions.checkItems
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -280,7 +281,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun updateViewShoppingCart(shoppingCartResponse: CartTotalResponse) {
         if (cartResponse != null){
             cartItemList = cartResponse!!.items
-            shoppingCartAdapter.shoppingCartItem = shoppingCartResponse.items?: listOf()
+
+            val items = shoppingCartResponse.items?: listOf()
+
+            shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
 
             updateTitle(shoppingCartResponse.qty)
             val total = shoppingCartResponse.totalPrice

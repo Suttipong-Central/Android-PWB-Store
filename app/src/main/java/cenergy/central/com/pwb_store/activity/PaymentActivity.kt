@@ -21,6 +21,8 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
+import cenergy.central.com.pwb_store.extensions.checkItems
+import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
@@ -462,7 +464,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun handleGetCartItemsSuccess(response: CartTotalResponse) {
         this.cartTotal = response
-        this.shoppingCartItem = response.items ?: arrayListOf()
+        this.shoppingCartItem = (response.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
 
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
