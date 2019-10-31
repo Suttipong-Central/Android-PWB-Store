@@ -81,7 +81,7 @@ class PaymentSelectMethodFragment : Fragment() {
 
     private fun setupPaymentMethodOptions() {
         // add more filter?
-        selectMethodAdapter.paymentMethods = paymentMethods
+        selectMethodAdapter.paymentMethodItems = paymentMethods
     }
 
     private fun setupView(rootView: View) {

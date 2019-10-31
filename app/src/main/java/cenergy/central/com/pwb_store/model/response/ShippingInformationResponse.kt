@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model.response
 
 import android.os.Parcel
 import android.os.Parcelable
+import cenergy.central.com.pwb_store.adapter.PaymentMethodItem
 import cenergy.central.com.pwb_store.model.CartTotal
 import com.google.gson.annotations.SerializedName
 
@@ -13,7 +14,7 @@ data class ShippingInformationResponse(@SerializedName("payment_methods")
 data class PaymentMethod(
         var code: String = "",
         var title: String = ""
-) : Parcelable {
+) : PaymentMethodItem, Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString() ?: "",
             parcel.readString() ?: ""

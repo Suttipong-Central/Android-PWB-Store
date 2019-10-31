@@ -82,7 +82,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = arrayListOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("e_ordering", "Pay at store")
+    private val paymentMethod = PaymentMethod("e_ordering", "Pay Here")
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
 
@@ -626,9 +626,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             showCommonDialog(getString(R.string.not_found_payment_methods))
         } else {
             this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
-            if (this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
-                this.paymentMethods.add(PaymentMethod.createPaymentMethod(PaymentMethod.E_ORDERING, getString(R.string.pay_here))) // add e-ordering for set default payment
-            }
             startSelectMethod()
         }
     }
