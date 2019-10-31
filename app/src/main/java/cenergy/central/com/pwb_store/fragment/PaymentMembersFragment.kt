@@ -13,13 +13,15 @@ import cenergy.central.com.pwb_store.adapter.MembersAdapter
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.model.EOrderingMember
+import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class PaymentMembersFragment : Fragment() {
 
-    var listener: PaymentProtocol? = null
-    var membersList: List<MemberResponse> = listOf()
-    var EOrderingMembersList: List<EOrderingMember> = listOf()
+    private var listener: PaymentProtocol? = null
+    private var membersHDL: List<HDLCustomerInfos> = listOf()
+    private var membersList: List<MemberResponse> = listOf()
+    private var eOrderingMembersList: List<EOrderingMember> = listOf()
     private lateinit var recycler: RecyclerView
 
     companion object {
@@ -35,7 +37,8 @@ class PaymentMembersFragment : Fragment() {
         super.onAttach(context)
         listener = context as PaymentProtocol
         listener?.let {
-            EOrderingMembersList = it.getPWBMembers()
+            membersHDL = it.getHDLMembers()
+            eOrderingMembersList = it.getPWBMembers()
             membersList = it.getMembers()
         }
     }
@@ -52,10 +55,10 @@ class PaymentMembersFragment : Fragment() {
         membersAdapter.setOnMemberClickListener(context as MemberClickListener)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = membersAdapter
-        if (EOrderingMembersList.isNotEmpty()) {
-            membersAdapter.memberList = EOrderingMembersList
-        } else {
-            membersAdapter.memberList = membersList
+        when {
+            membersHDL.isNotEmpty() -> membersAdapter.memberList = membersHDL
+            eOrderingMembersList.isNotEmpty() -> membersAdapter.memberList = eOrderingMembersList
+            else -> membersAdapter.memberList = membersList
         }
     }
 }

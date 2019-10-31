@@ -9,6 +9,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.body.BookingShippingSlotBody
 import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
 import cenergy.central.com.pwb_store.model.response.BookingNumberResponse
+import cenergy.central.com.pwb_store.model.response.HDLMemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import com.amazonaws.auth.AWSCredentials
@@ -51,6 +52,23 @@ class HttpManagerHDL {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build()
+    }
+
+    fun getHDLCustomer(number: String, callback: ApiResponseCallback<HDLMemberResponse>){
+        val mHDLService = retrofit.create(HDLService::class.java)
+        mHDLService.getHDLMembers(number, true).enqueue(object : Callback<HDLMemberResponse>{
+            override fun onResponse(call: Call<HDLMemberResponse>, response: Response<HDLMemberResponse>) {
+                if (response.body() != null){
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<HDLMemberResponse>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
     }
 
     fun getShippingSlot(shippingSlotBody: ShippingSlotBody, callback: ApiResponseCallback<ShippingSlotResponse>) {

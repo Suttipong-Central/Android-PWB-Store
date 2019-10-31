@@ -32,6 +32,7 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
+import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
@@ -99,9 +100,10 @@ class PaymentBillingFragment : Fragment() {
     private var billingAddress: AddressInformation? = null
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
+    private var memberHDL: HDLCustomerInfos? = null
     private var member: Member? = null
     private var pwbMemberIndex: Int? = null
-    private var EOrderingMember: EOrderingMember? = null
+    private var eOrderingMember: EOrderingMember? = null
     private var firstName: String = ""
     private var lastName: String = ""
     private var email: String = ""
@@ -161,14 +163,23 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingPostcodeAdapter: AddressAdapter
 
     companion object {
-        private const val ARG_MEMBER = "arg_member"
-        private const val ARG_MEMBER_INDEX = "arg_member_index"
+        private const val ARG_MEMBER = "ARG_MEMBER"
+        private const val ARG_MEMBER_INDEX = "ARG_MEMBER_INDEX"
+        private const val ARG_HDL_MEMBER = "ARG_HDL_MEMBER"
         private const val IS_SAME_BILLING = 1
         private const val IS_NOT_SAME_BILLING = 0
 
         fun newInstance(): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
             val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(memberHDL: HDLCustomerInfos): PaymentBillingFragment {
+            val fragment = PaymentBillingFragment()
+            val args = Bundle()
+            args.putParcelable(ARG_HDL_MEMBER, memberHDL)
             fragment.arguments = args
             return fragment
         }
@@ -208,9 +219,10 @@ class PaymentBillingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val preferenceManager = context?.let { PreferenceManager(it) }
         cartId = preferenceManager?.cartId
+        memberHDL = arguments?.getParcelable(ARG_HDL_MEMBER)
         member = arguments?.getParcelable(ARG_MEMBER)
         pwbMemberIndex = arguments?.getInt(ARG_MEMBER_INDEX)
-        pwbMemberIndex?.let { EOrderingMember = paymentProtocol.getPWBMemberByIndex(it) }
+        pwbMemberIndex?.let { eOrderingMember = paymentProtocol.getPWBMemberByIndex(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -254,6 +266,7 @@ class PaymentBillingFragment : Fragment() {
                 handleCacheMember()
                 dismissProgressDialog()
             }
+            hasHDLMember() -> handleHDLMember()
             hasPwbMember() -> handlePwbMember()
             hasMember() -> handleT1CMember()
             else -> dismissProgressDialog()
@@ -414,12 +427,56 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun handlePwbMember() {
-        if (EOrderingMember == null) {
+    private fun handleHDLMember() {
+        if (memberHDL == null){
             return
         }
 
-        val member = EOrderingMember!!
+        val member = memberHDL!!
+        firstNameEdt.setText(member.firstname)
+        lastNameEdt.setText(member.lastname)
+        contactNumberEdt.setText(member.mobile)
+        homeNoEdt.setText(member.houseNo)
+        homeBuildingEdit.setText(member.buildingName)
+        homeSoiEdt.setText(member.soi)
+        homeRoadEdt.setText(member.road)
+        homePhoneEdt.setText(member.telephone)
+
+        // validate province with local db
+        val province = database.getProvinceByName(member.province)
+        if (province != null) {
+            this.province = province
+            provinceInput.setText(province.name)
+            districtInput.setText("")
+            subDistrictInput.setText("")
+            postcodeInput.setText("")
+            districtInput.setEnableInput(true)
+            subDistrictInput.setEnableInput(false)
+            postcodeInput.setEnableInput(false)
+
+            // load district and verify customer address
+            val district = member.district
+            val subDistrict = member.subdistrict
+            val postcodeStr = member.postcode
+            if (district.isNotBlank()) {
+                if (subDistrict.isNotBlank()) {
+                    memberLoadDistrict(province.provinceId, district, subDistrict,
+                            postcodeStr, false)
+                } else {
+                    memberLoadDistrict(province.provinceId, district,
+                            "", "", false)
+                }
+            }
+        }
+        dismissProgressDialog()
+    }
+
+    private fun handlePwbMember() {
+        if (eOrderingMember == null) {
+            return
+        }
+
+        val member = eOrderingMember!!
         firstNameEdt.setText(member.firstname ?: "")
         lastNameEdt.setText(member.lastname ?: "")
         contactNumberEdt.setText(member.telephone ?: "")
@@ -506,7 +563,8 @@ class PaymentBillingFragment : Fragment() {
                         memberLoadDistrict(province.provinceId, districtName, subDistrictName,
                                 postcodeStr, false)
                     } else {
-                        memberLoadDistrict(province.provinceId, districtName)
+                        memberLoadDistrict(province.provinceId, districtName,
+                                "", "", false)
                     }
                 }
             }
@@ -635,12 +693,16 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
+    private fun hasHDLMember(): Boolean {
+        return memberHDL != null
+    }
+
     private fun hasMember(): Boolean {
         return member != null
     }
 
     private fun hasPwbMember(): Boolean {
-        return EOrderingMember != null
+        return eOrderingMember != null
     }
 
     private fun setupInputAddress() {
@@ -1118,7 +1180,7 @@ class PaymentBillingFragment : Fragment() {
 
     // region member find address
     private fun memberLoadDistrict(provinceId: String, districtStr: String,
-                                   subDistrictStr: String = "", postcodeStr: String = "", isPwbMember: Boolean = true) {
+                                   subDistrictStr: String = "", postcodeStr: String = "", getById: Boolean = true) {
         context?.let {
             showProgressDialog()
             HttpManagerMagento.getInstance(it).getDistricts(provinceId, object : ApiResponseCallback<List<District>> {
@@ -1127,12 +1189,12 @@ class PaymentBillingFragment : Fragment() {
                         this@PaymentBillingFragment.districtList = districtList
                         this@PaymentBillingFragment.districtAdapter.setItems(districtList)
 
-                        val district = if (isPwbMember) {
+                        val district = if (getById) {
                             districtList.find { district -> district.districtId == districtStr } //by districtId
                         } else {
                             districtList.find { district -> district.name == districtStr } //by district.name
                         }
-                        memberSetDistrict(provinceId, district, subDistrictStr, postcodeStr, isPwbMember) // set district
+                        memberSetDistrict(provinceId, district, subDistrictStr, postcodeStr, getById) // set district
                     }
                 }
 
@@ -1145,7 +1207,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun memberSetDistrict(provinceId: String, district: District?, subDistrictStr: String,
-                                  postcodeStr: String, isPwbMember: Boolean) {
+                                  postcodeStr: String, getById: Boolean) {
         // found district?
         if (district != null) {
             this@PaymentBillingFragment.district = district
@@ -1156,7 +1218,7 @@ class PaymentBillingFragment : Fragment() {
             postcodeInput.setEnableInput(false)
 
             if (subDistrictStr.isNotBlank()) {
-                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, postcodeStr, isPwbMember)
+                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, postcodeStr, getById)
             } else {
                 dismissProgressDialog()
             }
@@ -1166,7 +1228,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun memberLoadSubDistrict(provinceId: String, districtId: String,
-                                      subDistrictStr: String = "", postcodeStr: String, isPwbMember: Boolean) {
+                                      subDistrictStr: String = "", postcodeStr: String, getById: Boolean) {
         context?.let {
             showProgressDialog()
             HttpManagerMagento.getInstance(it).getSubDistricts(provinceId, districtId, object : ApiResponseCallback<List<SubDistrict>> {
@@ -1175,7 +1237,7 @@ class PaymentBillingFragment : Fragment() {
                         this@PaymentBillingFragment.subDistrictList = subDistrictList
                         this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList.toDistinctId())
 
-                        val subDistrict = if (isPwbMember) {
+                        val subDistrict = if (getById) {
                             subDistrictList.find { subDistrict -> subDistrict.subDistrictId == subDistrictStr } // by districtId
                         } else {
                             subDistrictList.find { subDistrict -> subDistrict.name == subDistrictStr } // by district.name

@@ -30,6 +30,7 @@ import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.api.BranchApi
@@ -51,6 +52,7 @@ import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
+import javax.security.auth.callback.Callback
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -72,6 +74,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
     private var eOrderingMembers: List<EOrderingMember> = listOf()
+    private var membersHDL: List<HDLCustomerInfos> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
@@ -205,6 +208,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onClickedT1CMember(member: MemberResponse) {
         theOneCardNo = member.cards[0].cardNo
         getT1CMember(member.customerId)
+    }
+
+    override fun onClickedHDLMember(position: Int) {
+        startBilling(membersHDL[position])
     }
     // endregion
 
@@ -399,6 +406,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startSelectMethod() {
         val fragment = PaymentSelectMethodFragment.newInstance(deliveryOption.methodCode)
+        startFragment(fragment)
+    }
+
+    private fun startBilling(member: HDLCustomerInfos?) {
+        val fragment = if (member != null) PaymentBillingFragment.newInstance(member) else
+            PaymentBillingFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -641,13 +654,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun startRetrieveMemberContact(memberContact: String) {
+        // TODO check HDL remote config
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+        val isHDLMemberOn = true
 
-        if (isEorderingMemberOn) {
-            getEorderingMember(memberContact)
-        } else if (isT1CMemberOn){
-            getMembersT1C(memberContact)
+        when {
+            isEorderingMemberOn -> getEorderingMember(memberContact)
+            isHDLMemberOn -> getHDLMember(memberContact)
+            else -> getMembersT1C(memberContact)
         }
     }
 
@@ -662,18 +677,38 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 mProgressDialog?.dismiss()
                                 startMembersFragment()
                             } else {
-                                getMembersT1C(mobile)
+                                getHDLMember(mobile)
                             }
                         }
                     }
 
                     override fun failure(error: APIError) {
                         runOnUiThread {
-                            getMembersT1C(mobile)
+                            getHDLMember(mobile)
+                            Log.d("Payment", error.errorCode ?: "")
                         }
-                        Log.d("Payment", error.errorCode ?: "")
                     }
                 })
+    }
+
+    private fun getHDLMember(number: String){
+        HttpManagerHDL.getInstance().getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse>{
+            override fun success(response: HDLMemberResponse?) {
+                if (response?.customerInfos != null){
+                    this@PaymentActivity.membersHDL = response.customerInfos?: listOf()
+                    mProgressDialog?.dismiss()
+                    startMembersFragment()
+                } else {
+                    getMembersT1C(number)
+                    Log.d("Payment", "not found HDL customer")
+                }
+            }
+
+            override fun failure(error: APIError) {
+                getMembersT1C(number)
+                Log.d("Payment", error.errorCode ?: "")
+            }
+        })
     }
 
     private fun getMembersT1C(mobile: String) {
@@ -906,6 +941,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
 
     override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
+
+    override fun getHDLMembers(): List<HDLCustomerInfos> = this.membersHDL
 
     override fun getPWBMembers(): List<EOrderingMember> = this.eOrderingMembers
 

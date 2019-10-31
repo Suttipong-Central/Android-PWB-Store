@@ -51,7 +51,9 @@ class T1MemberDialogFragment : DialogFragment(), MemberClickListener {
         membersAdapter.memberList = membersList
     }
 
-    // region {@link MemberClickListener}
+    override fun onClickedHDLMember(position: Int) {
+        // do nothing
+    }
     override fun onClickedPwbMember(pwbMemberIndex: Int) {
         // nothing
     }
