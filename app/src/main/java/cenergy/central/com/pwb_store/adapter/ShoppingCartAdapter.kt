@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 
 class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
     private val database = RealmController.getInstance()
 
-    var cartItemList = listOf<CartItem>()
+    var shoppingCartItem = listOf<ShoppingCartItem>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -23,11 +24,11 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
     }
 
     override fun getItemCount(): Int {
-        return cartItemList.size
+        return shoppingCartItem.size
     }
 
     override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
-        val item = cartItemList[position]
+        val item = shoppingCartItem[position]
         val cacheCartItem = database.getCacheCartItem(item.id) // get cacheCartItem
 
         if (cacheCartItem != null) {

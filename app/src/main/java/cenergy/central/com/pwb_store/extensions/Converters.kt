@@ -7,7 +7,7 @@ import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import kotlin.math.roundToInt
 
-fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
+fun List<CacheCartItem>.getPaymentType(context: Context): ArrayList<PaymentMethod> {
     val paymentType = arrayListOf<String>()
     forEach { product ->
         if (product.paymentMethod.isNotEmpty() && product.paymentMethod != "") {

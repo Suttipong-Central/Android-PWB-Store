@@ -2,10 +2,8 @@ package cenergy.central.com.pwb_store.activity.interfaces
 
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.response.BranchResponse
-import cenergy.central.com.pwb_store.model.response.CartTotalResponse
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.response.*
 import java.util.*
 
 /**
@@ -14,7 +12,7 @@ import java.util.*
  */
 
 interface PaymentProtocol {
-    fun getItems(): List<CartItem>
+    fun getItems(): List<ShoppingCartItem>
     fun getCartTotalResponse(): CartTotalResponse
     fun getPWBMembers(): List<EOrderingMember>
     fun getMembers(): List<MemberResponse>

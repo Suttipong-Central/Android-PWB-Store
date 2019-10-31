@@ -21,6 +21,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
+import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -65,7 +66,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // data
     private val database = RealmController.getInstance()
     private var cartId: String? = null
-    private var cartItemList: List<CartItem> = listOf()
+    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
     private var eOrderingMembers: List<EOrderingMember> = listOf()
@@ -261,7 +262,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
-        getCartItems()
+        paymentMethods = cacheCartItems.getPaymentType(this)
+        startCheckOut() // default page
+        getItemTotal()
     }
 
     private fun checkoutWithProduct2hr(product: Product) {
@@ -437,15 +440,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun getCartItems() {
-        showProgressDialog()
+    private fun getItemTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
-                override fun success(response: CartResponse?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
+                override fun success(response: CartTotalResponse?) {
                     if (response != null) {
-                        cartItemList = response.items
-                        getItemTotal(cartId)
+                        handleGetCartItemsSuccess(response)
+                    } else {
+                        showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
                     }
+                    mProgressDialog?.dismiss()
                 }
 
                 override fun failure(error: APIError) {
@@ -456,26 +460,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    fun getItemTotal(cartId: String) {
-        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
-            override fun success(response: CartTotalResponse?) {
-                if (response != null) {
-                    handleGetCartItemsSuccess(response)
-                } else {
-                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
-                }
-                mProgressDialog?.dismiss()
-            }
-
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                DialogHelper(this@PaymentActivity).showErrorDialog(error)
-            }
-        })
-    }
-
     private fun handleGetCartItemsSuccess(response: CartTotalResponse) {
         this.cartTotal = response
+        this.shoppingCartItem = response.items ?: arrayListOf()
 
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
@@ -917,7 +904,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentProtocol}
-    override fun getItems(): List<CartItem> = this.cartItemList
+    override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
 
     override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
 

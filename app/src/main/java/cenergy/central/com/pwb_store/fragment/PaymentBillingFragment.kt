@@ -31,6 +31,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
+import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
@@ -92,7 +93,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
-    private var cartItemList: List<CartItem> = listOf()
+    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private lateinit var cartTotal: CartTotalResponse
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
@@ -195,7 +196,7 @@ class PaymentBillingFragment : Fragment() {
         defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
-        cartItemList = paymentProtocol.getItems()
+        shoppingCartItem = paymentProtocol.getItems()
         cartTotal = paymentProtocol.getCartTotalResponse()
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
@@ -230,7 +231,7 @@ class PaymentBillingFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.cartItemList = this.cartItemList
+        shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         val discount = cartTotal.discountPrice.toStringDiscount()
