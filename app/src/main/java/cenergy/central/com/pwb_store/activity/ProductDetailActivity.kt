@@ -19,6 +19,7 @@ import android.widget.TextView
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -219,11 +220,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // region {@link ShareButtonClickListener}
     override fun onShareButtonClickListener() {
         if (product != null && product!!.urlKey.isNotBlank()) {
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra(Intent.EXTRA_TEXT, "${product!!.name} ${Constants.WEB_HOST_NAME}/${preferenceManager.getDefaultLanguage()}/${product!!.urlKey}")
-            intent.type = "text/plain"
-            startActivity(intent)
+            val shareText = "${product!!.name} ${Constants.WEB_HOST_NAME}/" +
+                    "${preferenceManager.getDefaultLanguage()}/${product!!.urlKey}"
+            val shareBottomSheetFragment = ShareBottomSheetDialogFragment.newInstance(shareText)
+            shareBottomSheetFragment.show(supportFragmentManager, ShareBottomSheetDialogFragment.TAG)
         } else {
             showAlertDialog(getString(R.string.some_thing_wrong))
         }
@@ -404,14 +404,17 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
             override fun forceClearCart() {
                 showClearCartDialog()
+                dismissProgressDialog()
             }
 
             override fun onFailure(messageError: String) {
                 showCommonDialog(messageError)
+                dismissProgressDialog()
             }
 
             override fun onFailure(dialog: Dialog) {
                 if (!isFinishing) { dialog.show() }
+                dismissProgressDialog()
             }
         })
     }
@@ -442,17 +445,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 }
         builder.show()
     }
-
-//    private fun checkDisableAddProductButton(product: Product) {
-//        disableAddToCartButton(!isProductInStock(product))
-//    }
-
-//    private fun disableAddToCartButton(disable: Boolean = true) {
-//        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-//        if (fragment != null && fragment is DetailFragment) {
-//            fragment.disableAddToCartButton(disable)
-//        }
-//    }
 
     private fun clearCart() {
         database.deleteAllCacheCartItem()

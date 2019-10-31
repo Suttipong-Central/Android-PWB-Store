@@ -327,6 +327,7 @@
     <string name="information">Information</string>
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>
+    <string name="the_1_error">T1 number must be 10 digits and number only</string>
 
     <!-- Stock Indicator -->
     <string name="label_stock_availability">Stock Availability</string>
@@ -336,6 +337,9 @@
     <string name="share_payment_link"><u>Share payment link</u></string>
     <string name="error_tax_invalid">Please enter minimum length of 13 characters, number only</string>
 
-    <string name="the_1_error">T1 number must be 10 digits and number only</string>
-
+    <!-- Share -->
+    <string name="title_share_to">Share</string>
+    <string name="share_line">Line</string>
+    <string name="copied_to_clipboard">copied to clipboard!</string>
+    <string name="share_copy">Copy</string>
 </resources>

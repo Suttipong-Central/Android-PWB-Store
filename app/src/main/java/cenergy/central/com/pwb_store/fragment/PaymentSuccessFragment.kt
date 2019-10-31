@@ -23,6 +23,7 @@ import cenergy.central.com.pwb_store.activity.MainActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.OrderProductListAdapter
 import cenergy.central.com.pwb_store.dialogs.BarcodeDialogFragment
+import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
 import cenergy.central.com.pwb_store.dialogs.StaffHowToDialogFragment
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -298,13 +299,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                 BarcodeDialogFragment.newInstance(order.paymentRedirect).show(fragmentManager, "dialog")
             }
             shareButton.setOnClickListener {
-                val intent = Intent()
-                intent.action = Intent.ACTION_SEND
-                intent.putExtra(Intent.EXTRA_TEXT, order.paymentRedirect)
-                intent.type = "text/plain"
-                startActivity(intent)
+                val shareBottomSheetFragment = ShareBottomSheetDialogFragment.newInstance(order.paymentRedirect)
+                shareBottomSheetFragment.show(childFragmentManager, ShareBottomSheetDialogFragment.TAG)
             }
-            layoutHowToDoNext.visibility = View.GONE
         } else {
             layoutHowToDoNext.visibility = View.VISIBLE
             tvPaymentDescription.visibility = View.GONE

@@ -80,4 +80,8 @@
 
     <!-- tab color item freebie -->
     <color name="itemFreebieTabColor">@color/colorPrimary</color>
+
+    <!-- Sharing -->
+    <color name="line_app">#00b900</color>
+
 </resources>

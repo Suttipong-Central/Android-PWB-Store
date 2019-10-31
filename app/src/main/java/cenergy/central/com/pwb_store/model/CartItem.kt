@@ -5,7 +5,6 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 data class CartItem(
-        @PrimaryKey
         @SerializedName("item_id")
         var id: Long? = 0,
         var sku: String? = "",

@@ -328,6 +328,7 @@
     <string name="information">ข้อมูล</string>
     <string name="close">ปิด</string>
     <string name="payment_description">แสกนโค้ดเพื่อชำระเงินสำหรับคำสั่งซื้อนี้</string>
+    <string name="the_1_error">หมายเลข T1 ต้องมีความยาว 10 หลัก และเป็นตัวเลขเท่านั้น</string>
 
     <!-- Stock Indicator -->
     <string name="label_stock_availability">สต๊อกสินค้า</string>
@@ -337,5 +338,9 @@
     <string name="share_payment_link"><u>แชร์ลิ้งค์จ่ายเงิน</u></string>
     <string name="error_tax_invalid">กรุณาระบุตัวเลขขั้นต่ำ 13 ตัวอักษร</string>
 
-    <string name="the_1_error">หมายเลข T1 ต้องมีความยาว 10 หลัก และเป็นตัวเลขเท่านั้น</string>
+    <!-- Share -->
+    <string name="title_share_to">แชร์</string>
+    <string name="share_line">ไลน์</string>
+    <string name="copied_to_clipboard">copied to clipboard!</string>
+    <string name="share_copy">คัดลอก</string>
 </resources>
