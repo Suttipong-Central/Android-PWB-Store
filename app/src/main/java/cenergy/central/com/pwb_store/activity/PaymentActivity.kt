@@ -61,7 +61,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // data
     private val database = RealmController.getInstance()
     private var cartId: String? = null
-    private var cartItemList: List<CartItem> = listOf()
+    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
     private var pwbMembersList: List<PwbMember> = listOf()
@@ -231,7 +231,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         cacheCartItems = database.cacheCartItems
         paymentMethods = cacheCartItems.getPaymentType(this)
         startCheckOut() // default page
-        getCartItems()
+        getItemTotal()
     }
 
     private fun checkoutWithProduct2hr(product: Product) {
@@ -419,13 +419,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun getCartItems() {
+    private fun getItemTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
-                override fun success(response: CartResponse?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
+                override fun success(response: CartTotalResponse?) {
+                    mProgressDialog?.dismiss()
                     if (response != null) {
-                        cartItemList = response.items
-                        getItemTotal(cartId)
+                        cartTotal = response
+                        shoppingCartItem = response.items?: listOf()
+                    } else {
+                        showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
                     }
                 }
 
@@ -435,24 +438,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 }
             })
         }
-    }
-
-    fun getItemTotal(cartId: String) {
-        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
-            override fun success(response: CartTotalResponse?) {
-                mProgressDialog?.dismiss()
-                if (response != null) {
-                    cartTotal = response
-                } else {
-                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
-                }
-            }
-
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                DialogHelper(this@PaymentActivity).showErrorDialog(error)
-            }
-        })
     }
 
     fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
@@ -813,7 +798,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentProtocol}
-    override fun getItems(): List<CartItem> = this.cartItemList
+    override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
 
     override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
 

@@ -274,14 +274,13 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 mProgressDialog?.dismiss()
                 displayError(error)
             }
-
         })
     }
 
     private fun updateViewShoppingCart(shoppingCartResponse: CartTotalResponse) {
         if (cartResponse != null){
             cartItemList = cartResponse!!.items
-            shoppingCartAdapter.cartItemList = cartItemList
+            shoppingCartAdapter.shoppingCartItem = shoppingCartResponse.items?: listOf()
 
             updateTitle(shoppingCartResponse.qty)
             val total = shoppingCartResponse.totalPrice
