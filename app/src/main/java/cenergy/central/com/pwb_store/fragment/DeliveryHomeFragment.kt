@@ -97,18 +97,22 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     }
 
     private fun pickDate() {
-        val calendar = Calendar.getInstance()
-        calendar.time = tempDate
-        val dpd = DatePickerDialog.newInstance(
-                this@DeliveryHomeFragment,
-                calendar.get(Calendar.YEAR), // Initial year selection
-                calendar.get(Calendar.MONTH), // Initial month selection
-                calendar.get(Calendar.DAY_OF_MONTH) // Inital day selection
-        )
-        context?.let { dpd.accentColor = ContextCompat.getColor(it, R.color.powerBuyPurple) }
-        dpd.isThemeDark = false
-        dpd.selectableDays = enableDateList.toArray(arrayOf())
-        dpd.show(activity?.fragmentManager, "Datepickerdialog")
+        if (shippingSlots.isNotEmpty()){
+            val calendar = Calendar.getInstance()
+            calendar.time = tempDate
+            val dpd = DatePickerDialog.newInstance(
+                    this@DeliveryHomeFragment,
+                    calendar.get(Calendar.YEAR), // Initial year selection
+                    calendar.get(Calendar.MONTH), // Initial month selection
+                    calendar.get(Calendar.DAY_OF_MONTH) // Inital day selection
+            )
+            context?.let { dpd.accentColor = ContextCompat.getColor(it, R.color.powerBuyPurple) }
+            dpd.isThemeDark = false
+            dpd.selectableDays = enableDateList.toArray(arrayOf())
+            dpd.show(activity?.fragmentManager, "Datepickerdialog")
+        } else {
+            context?.let { showAlertDialog(it, "", getString(R.string.not_have_day_to_delivery)) }
+        }
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
