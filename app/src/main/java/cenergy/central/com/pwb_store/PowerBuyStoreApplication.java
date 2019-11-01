@@ -47,16 +47,17 @@ public class PowerBuyStoreApplication extends Application {
 
     private void initRealm() {
         Realm.init(this);  // add this line
-        Realm realm;
         try {
-            realm = Realm.getInstance(RealmHelper.Companion.migrationConfig());
+            Realm realm = Realm.getInstance(RealmHelper.Companion.migrationConfig());
             realm.close();
             Realm.setDefaultConfiguration(RealmHelper.Companion.migrationConfig());
         } catch (RealmMigrationNeededException e) {
             Log.e("RealmMigration", e.getMessage());
+            // Falback for release (delete realm on error)
             if (!BuildConfig.DEBUG) {
                 new PreferenceManager(this).userLogout(); // clear cache share preference
-                Realm.setDefaultConfiguration(RealmHelper.Companion.defaultConfig());
+                Realm realm = Realm.getInstance(RealmHelper.Companion.fallbackConfig());
+                realm.close();
             } else  {
                 throw new RuntimeException("RealmMigration see log!.");
             }
