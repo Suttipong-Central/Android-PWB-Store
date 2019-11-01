@@ -57,6 +57,8 @@ public class PowerBuyStoreApplication extends Application {
             if (!BuildConfig.DEBUG) {
                 new PreferenceManager(this).userLogout(); // clear cache share preference
                 Realm.setDefaultConfiguration(RealmHelper.Companion.defaultConfig());
+            } else  {
+                throw new RuntimeException("RealmMigration see log!.");
             }
         }
     }
