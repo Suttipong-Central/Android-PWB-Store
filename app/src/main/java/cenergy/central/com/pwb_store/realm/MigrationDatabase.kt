@@ -5,10 +5,6 @@ import io.realm.RealmMigration
 
 class MigrationDatabase : RealmMigration {
 
-    companion object {
-        const val SCHEMA_VERSION = 9
-    }
-
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
         if (oldVersion < 1) {
             // Update Product model

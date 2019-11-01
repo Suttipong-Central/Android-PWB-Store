@@ -4,19 +4,22 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
 import cenergy.central.com.pwb_store.manager.Contextor;
-import cenergy.central.com.pwb_store.realm.MigrationDatabase;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.utils.RealmHelper;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 /**
  * Created by napabhat on 7/5/2017 AD.
  */
 
+// TODO: refactor this class to be Kotlin and change class name
 public class PowerBuyStoreApplication extends Application {
     @Override
     public void onCreate() {
@@ -44,11 +47,17 @@ public class PowerBuyStoreApplication extends Application {
 
     private void initRealm() {
         Realm.init(this);  // add this line
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("eordering.realm")
-                .migration(new MigrationDatabase())
-                .schemaVersion(MigrationDatabase.SCHEMA_VERSION)
-                .build();
-        Realm.setDefaultConfiguration(config);
+        Realm realm;
+        try {
+            realm = Realm.getInstance(RealmHelper.Companion.migrationConfig());
+            realm.close();
+            Realm.setDefaultConfiguration(RealmHelper.Companion.migrationConfig());
+        } catch (RealmMigrationNeededException e) {
+            Log.e("RealmMigration", e.getMessage());
+            if (!BuildConfig.DEBUG) {
+                new PreferenceManager(this).userLogout(); // clear cache share preference
+                Realm.setDefaultConfiguration(RealmHelper.Companion.defaultConfig());
+            }
+        }
     }
 }
