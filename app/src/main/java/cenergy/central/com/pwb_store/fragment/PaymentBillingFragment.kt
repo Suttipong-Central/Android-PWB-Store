@@ -285,6 +285,11 @@ class PaymentBillingFragment : Fragment() {
             homeRoadEdt.setText(shippingAddress!!.subAddress?.addressLine ?: "")
             homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
 
+            // has t1
+            if (t1cNumber.isNotBlank()){
+                theOneEdt.setText(t1cNumber)
+            }
+
             // has input about vat?
             val vatId = shippingAddress!!.vatId
             if (vatId.isNotBlank()) {
