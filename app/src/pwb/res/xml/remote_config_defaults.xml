@@ -11,6 +11,11 @@
     </entry>
 
     <entry>
+        <key>is_hdl_member_on</key>
+        <value>true</value>
+    </entry>
+
+    <entry>
         <key>is_payment_option_on</key>
         <value>false</value>
     </entry>

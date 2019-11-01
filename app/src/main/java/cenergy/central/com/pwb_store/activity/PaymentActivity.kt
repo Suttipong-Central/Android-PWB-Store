@@ -482,7 +482,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
-        if (!isEorderingMemberOn && !isT1CMemberOn) { // all have no enable
+        val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
+
+        if (!isEorderingMemberOn && !isT1CMemberOn && !isHDLMemberOn) { // all have no enable
             startBilling()
         } else {
             startCheckOut() // default page
@@ -509,19 +511,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
 
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
-    }
-
-    private fun showFinishActivityDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
-                    dialog.dismiss()
-                    finish()
-                }
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title)
         }
@@ -654,15 +643,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun startRetrieveMemberContact(memberContact: String) {
-        // TODO check HDL remote config
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
-        val isHDLMemberOn = true
+        val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
 
         when {
             isEorderingMemberOn -> getEorderingMember(memberContact)
             isHDLMemberOn -> getHDLMember(memberContact)
-            else -> getMembersT1C(memberContact)
+            isT1CMemberOn -> getMembersT1C(memberContact)
         }
     }
 
@@ -692,6 +680,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun getHDLMember(number: String){
+        val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
+        if (!isHDLMemberOn) { // hdl on?
+            getMembersT1C(number)
+            return
+        }
+
+        showProgressDialog()
         HttpManagerHDL.getInstance().getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse>{
             override fun success(response: HDLMemberResponse?) {
                 if (response?.customerInfos != null){
@@ -713,7 +708,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun getMembersT1C(mobile: String) {
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
-        if (!isT1CMemberOn) return // t1c on?
+        if (!isT1CMemberOn) { // t1c on?
+            showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+            mProgressDialog?.dismiss()
+            return
+        }
 
         showProgressDialog()
         HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ",
@@ -740,7 +739,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             if (error.errorCode == null) {
                                 showAlertDialog("", getString(R.string.not_connected_network))
                             } else {
-                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
                             }
                         }
                     }
