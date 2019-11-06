@@ -58,7 +58,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         productCode.text = "${itemView.context.resources.getString(
                 R.string.product_code)} ${item.sku}"
         productPrice.text = "${itemView.context.resources.getString(
-                R.string.product_price)} ${getDisplayPrice(unit, item.price!!)}"
+                R.string.product_price)} ${getDisplayPrice(unit, item.price?: 0.0)}"
 
         // get image from cache
         Glide.with(itemView.context)
@@ -101,7 +101,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 return false
             }
         })
-        totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price!!))
+        totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price?: 0.0))
     }
 
 
@@ -117,7 +117,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         this.item = item
         productName.text = item.name
         productCode.text = "${itemView.context.resources.getString(R.string.product_code)} ${item.sku}"
-        productPrice.text = "${itemView.context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price!!)}"
+        productPrice.text = "${itemView.context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price?: 0.0)}"
 
         // hide for freebie
         deleteItemTextView.visibility = View.GONE

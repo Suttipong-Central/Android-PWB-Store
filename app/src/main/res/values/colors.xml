@@ -72,6 +72,7 @@
     <color name="textDefaultColor">@color/pwbOrange</color>
     <color name="cursorColor">@color/pwbOrange</color>
     <color name="textStaffColor">@color/colorPrimary</color>
+    <color name="textLinkColor">@color/colorPrimary</color>
 
     <!-- select branch page -->
     <color name="textHeaderBranchDetail">@color/colorPrimary</color>

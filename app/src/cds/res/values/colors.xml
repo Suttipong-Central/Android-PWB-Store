@@ -28,8 +28,9 @@
     <color name="textDefaultColor">@color/cdsRed</color>
     <color name="cursorColor">@color/cdsRed</color>
     <color name="textStaffColor">@color/cdsRed</color>
+    <color name="textLinkColor">@color/cdsRed</color>
 
-    <color name="categoryColor">#F4893F</color>
+    <color name="categoryColor">#A6192E</color>
 
     <color name="tabCalendarColor">@color/colorAccent</color>
 

@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/share_payment_link"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/textLinkColor"
             android:layout_gravity="center"
             android:visibility="gone"/>
 

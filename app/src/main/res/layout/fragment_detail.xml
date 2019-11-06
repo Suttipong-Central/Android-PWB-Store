@@ -333,6 +333,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/availableStoreButton"
             app:text="@string/product_compare" />
+
+        <android.support.constraint.Group
+            android:id="@+id/layoutBottomButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="availableStoreButton,addToCompareButton"/>
+
     </android.support.constraint.ConstraintLayout>
 
     <View

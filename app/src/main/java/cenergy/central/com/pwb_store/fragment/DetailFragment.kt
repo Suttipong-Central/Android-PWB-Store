@@ -2,7 +2,6 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -13,9 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
-import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
@@ -25,10 +22,7 @@ import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.Product
-import cenergy.central.com.pwb_store.model.ProductDetailImageItem
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.bumptech.glide.Glide
@@ -41,6 +35,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     private lateinit var sizeAdepter: ProductOptionAdepter
     private lateinit var shadeAdepter: ProductOptionAdepter
+    private var configOptions: List<ProductOption>? = listOf()
     private var configItemOptions: ArrayList<OptionBody> = arrayListOf()
     var optionSize: OptionBody? = null
     var optionShade: OptionBody? = null
@@ -74,18 +69,19 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             R.id.addToCartButton -> {
                 if (!(view as PowerBuyIconButton).isDisable) {
                     product ?: return
-                    if (product!!.typeId == "configurable") {
-                        if (optionSize == null) {
-                            Toast.makeText(context, "Size null", Toast.LENGTH_LONG).show()
-                            return
+                    if (product!!.typeId == "configurable" && !configOptions.isNullOrEmpty()) {
+                        configOptions?.forEach { productOption ->
+                            when (productOption.label) {
+                                "Size" -> {
+                                    configItemOptions.add(optionSize!!)
+                                }
+                                "Shade" -> {
+                                    configItemOptions.add(optionShade!!)
+                                }
+                            }
                         }
-                        if (optionShade == null) {
-                            Toast.makeText(context, "Shade null", Toast.LENGTH_LONG).show()
-                            return
-                        }
-                        configItemOptions.add(optionSize!!)
-                        configItemOptions.add(optionShade!!)
                         productDetailListener.addProductConfigToCart(product, configItemOptions)
+                        configItemOptions.clear()
                     } else {
                         productDetailListener.addProductToCart(product)
                     }
@@ -116,11 +112,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 stockIndicatorView.setOnClickOtherStores(View.OnClickListener {
                     productDetailListener.onDisplayAvailableStore(product)
                 })
-                layoutButton.visibility = View.VISIBLE
+                layoutBottomButton.visibility = View.VISIBLE
                 loadStockData(product)
             }
             else -> {
-                layoutButton.visibility = View.GONE
+                layoutBottomButton.visibility = View.GONE
                 stockIndicatorView.visibility = View.GONE
                 stockIndicatorLoading.dismiss()
             }
@@ -165,9 +161,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             badge1Hour.setImageDrawable(null)
         }
 
-        val configOptions = product.extension?.productConfigOptions
-        if (product.typeId == "configurable" && configOptions != null) {
-            configOptions.forEach { configOption ->
+        if (product.typeId == "configurable" && !product.extension?.productConfigOptions.isNullOrEmpty()) {
+            configOptions = product.extension!!.productConfigOptions
+            configOptions?.forEach { configOption ->
                 when (configOption.label) {
                     "Size" -> {
                         sizeAdepter = ProductOptionAdepter(context!!, R.layout.layout_text_item, arrayListOf())
@@ -175,8 +171,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                         inputProductSize.setAdapter(sizeAdepter)
 
                         val defaultOption = configOption.values[0]
-                        optionSize = OptionBody(configOption.attrId, defaultOption.index) // set default
                         inputProductSize.setText(defaultOption.valueExtension?.label ?: "")
+                        optionSize = OptionBody(configOption.attrId, defaultOption.index) // set default
 
                         inputProductSize.visibility = View.VISIBLE
                         sizeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
@@ -192,8 +188,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                         inputProductShade.setAdapter(shadeAdepter)
 
                         val defaultOption = configOption.values[0]
-                        optionShade = OptionBody(configOption.attrId, defaultOption.index) // set default
                         inputProductShade.setText(defaultOption.valueExtension?.label ?: "")
+                        optionShade = OptionBody(configOption.attrId, defaultOption.index) // set default
 
                         inputProductShade.visibility = View.VISIBLE
                         shadeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
@@ -212,7 +208,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
         // setup add item button
         addToCartButton.setImageDrawable(R.drawable.ic_shopping_cart)
-        hideAddToCartButton(product.isSalable())
+        if (BuildConfig.FLAVOR == "pwb"){
+            hideAddToCartButton(product.isSalable())
+        }
         addToCartButton.setOnClickListener(this)
         // check disable product
 //        disableAddToCartButton(!context.isProductInStock(product))

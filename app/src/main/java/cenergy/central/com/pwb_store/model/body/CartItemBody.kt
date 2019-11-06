@@ -6,11 +6,15 @@ import com.google.gson.annotations.SerializedName
 
 data class CartItemBody(var cartItem: CartBody? = null) {
     companion object {
-        fun create(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>): CartItemBody {
-            return if (listOptionsBody.isNotEmpty()) {
-                CartItemBody(CartBody(cartId, product.sku, product.getMinSaleQty(), ProductOptionBody(OptionExtensionBody(listOptionsBody)))) // default add qty 1
+        fun create(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>?): CartItemBody {
+            return if (listOptionsBody != null) {
+                val optionExtensionBody = OptionExtensionBody.create(listOptionsBody)
+                val productOptionBody = ProductOptionBody.create(optionExtensionBody)
+                val cartBody = CartBody.create(cartId, product.sku, product.getMinSaleQty(), productOptionBody)
+                CartItemBody(cartBody) // default add qty 1
             } else {
-                CartItemBody(CartBody(cartId, product.sku, product.getMinSaleQty())) // default add qty 1
+                val cartBody = CartBody.create(cartId, product.sku, product.getMinSaleQty())
+                CartItemBody(cartBody) // default add qty 1
             }
         }
 
@@ -30,21 +34,43 @@ data class CartItemBody(var cartItem: CartBody? = null) {
 
 data class CartBody(
         @SerializedName("quote_id")
-        var cartId: String,
-        var sku: String,
+        var cartId: String = "",
+        var sku: String = "",
         var qty: Int? = 0,
         @SerializedName("product_option")
         var productOption: ProductOptionBody? = null,
         @SerializedName("extension_attributes")
-        val extensionAttr: CartExtensionAttr? = null)
+        val extensionAttr: CartExtensionAttr? = null){
+    companion object{
+        fun create(cartId: String, sku: String, minSaleQty: Int, productOptionBody: ProductOptionBody): CartBody{
+            return CartBody(cartId, sku, minSaleQty, productOptionBody)
+        }
+
+        fun create(cartId: String, sku: String, minSaleQty: Int): CartBody{
+            return CartBody(cartId, sku, minSaleQty)
+        }
+    }
+}
 
 data class ProductOptionBody(
         @SerializedName("extension_attributes")
-        var extension: OptionExtensionBody)
+        var extension: OptionExtensionBody){
+    companion object{
+        fun create(optionExtensionBody: OptionExtensionBody): ProductOptionBody{
+            return ProductOptionBody(optionExtensionBody)
+        }
+    }
+}
 
 data class OptionExtensionBody(
         @SerializedName("configurable_item_options")
-        var configItemOption: ArrayList<OptionBody>? = null)
+        var configItemOption: ArrayList<OptionBody>? = null){
+    companion object{
+        fun create(configItemOption: ArrayList<OptionBody>): OptionExtensionBody{
+            return OptionExtensionBody(configItemOption)
+        }
+    }
+}
 
 data class OptionBody(
         @SerializedName("option_id")

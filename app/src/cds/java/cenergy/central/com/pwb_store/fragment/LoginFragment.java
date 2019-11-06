@@ -141,13 +141,13 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
             RealmController database = RealmController.getInstance();
 
             //TODO: Mock up data will delete soon
-            User user = new User(0, "", "0", 223L,
+            User user = new User(211, "", "12345678", 223L,
                     "chuan@central.tech", "", "", 1, "");
             Store store = new Store();
             store.setStoreId(223L);
             store.setStoreCode("");
             store.setStoreName("");
-            store.setRetailerId("");
+            store.setRetailerId("00010");
 
             // save user token
             database.saveUserToken( new UserToken(""));

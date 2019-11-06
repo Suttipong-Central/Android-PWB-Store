@@ -15,6 +15,7 @@ class Product(
         var sku: String = "",
         var name: String = "",
         var price: Double = 0.0,
+        @SerializedName("type_id")
         var typeId: String = "",
         @SerializedName("special_price")
         var specialPrice: Double = 0.0,

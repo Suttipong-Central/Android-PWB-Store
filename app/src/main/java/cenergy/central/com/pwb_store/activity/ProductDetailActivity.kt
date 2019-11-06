@@ -168,7 +168,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     override fun addProductToCart(product: Product?) {
-        product?.let { startAddToCart(it, arrayListOf()) }
+        product?.let { startAddToCart(it, null) }
     }
 
     override fun addProduct1HrsToCart(product: Product?) {
@@ -393,7 +393,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // end region
 
     // region action add product to cart
-    private fun startAddToCart(product: Product, options: ArrayList<OptionBody>) {
+    private fun startAddToCart(product: Product, options: ArrayList<OptionBody>?) {
         this.product = product
         showProgressDialog()
         CartUtils(this).addProductToCart(product, options, object : AddProductToCartCallback{

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -28,22 +29,19 @@ class CartUtils(private val context: Context) {
     private var callback: AddProductToCartCallback? = null
     private var branchResponse: BranchResponse? = null
     private var branchResponses: List<BranchResponse>? = null
-    private var options: ArrayList<OptionBody> = arrayListOf()
-    private var language = prefManager.getDefaultLanguage()
+    private var options: ArrayList<OptionBody>? = null
 
     // data
     private val db = RealmController.getInstance()
     private var cacheCartItems = db.cacheCartItems
 
-    fun addProductToCart(product: Product,
-                         options: ArrayList<OptionBody> = arrayListOf(),
+    fun addProductToCart(product: Product, options: ArrayList<OptionBody>?,
                          callback: AddProductToCartCallback) {
         this.callback = callback
         val cartId = prefManager.cartId
         this.options = options
         this.branchResponse = null // force no have branch
         this.branchResponses = null
-
         if (cartId != null) {
             requestAddToCart(cartId, product)
         } else {
@@ -196,7 +194,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCart(cartId: String, callback: ApiResponseCallback<CartResponse>) {
-        HttpManagerMagento(context).cartService.viewCart(language, cartId).enqueue(object : Callback<CartResponse> {
+        HttpManagerMagento(context).cartService.viewCart(requestLanguage(context), cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
                 if (response.body() != null && response.isSuccessful) {
                     callback.success(response.body())
@@ -212,7 +210,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotalResponse>) {
-        HttpManagerMagento(context).cartService.viewCartTotal(language, cartId).enqueue(object : Callback<CartTotalResponse> {
+        HttpManagerMagento(context).cartService.viewCartTotal(requestLanguage(context), cartId).enqueue(object : Callback<CartTotalResponse> {
             override fun onResponse(call: Call<CartTotalResponse>, response: Response<CartTotalResponse>) {
                 if (response.body() != null && response.isSuccessful) {
                     callback.success(response.body())
@@ -289,6 +287,20 @@ class CartUtils(private val context: Context) {
 
                 })
     }
+
+    /**
+     * param language
+     * in PWB is th
+     * in CDS is cds_th
+     * */
+    private fun requestLanguage(context: Context): String {
+        val language = PreferenceManager(context).getDefaultLanguage()
+        return when (BuildConfig.FLAVOR) {
+            "cds" -> "cds_$language"
+            else -> language
+        }
+    }
+
 }
 
 interface AddProductToCartCallback {
