@@ -765,7 +765,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun setSgippingInformation(cartId: String, storeAddress: AddressInformation,
+    fun setShippingInformation(cartId: String, storeAddress: AddressInformation,
                                subscribeCheckOut: SubscribeCheckOut,
                                deliveryOption: DeliveryOption,
                                callback: ApiResponseCallback<ShippingInformationResponse>) {

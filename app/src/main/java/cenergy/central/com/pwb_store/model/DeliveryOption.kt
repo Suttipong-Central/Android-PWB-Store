@@ -66,10 +66,20 @@ data class PickupLocation(var id: String = "",
                           var extension: PickupExtension
 ) {
     fun asBranch(): Branch {
-        return Branch(storeId = id, street = address, city = extension.pickupAddressInfo.region,
-                phone = telephone
-                        ?: "", postcode = postcode, storeName = name, centralStoreCode = code,
-                latitude = latitude, longitude = longitude)
+        return Branch(storeId = id,
+                street = address,
+                city = extension.pickupAddressInfo.region,
+                phone = telephone ?: "",
+                postcode = postcode,
+                storeName = name,
+                centralStoreCode = code,
+                latitude = latitude,
+                longitude = longitude,
+                regionCode = province,
+                regionId = regionId.toInt(),
+                region = extension.pickupAddressInfo.region,
+                countryId = "TH",
+                sellerCode = code)
     }
 }
 

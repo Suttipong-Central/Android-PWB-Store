@@ -109,7 +109,6 @@ class CartUtils(private val context: Context) {
                     val body = CartItemBody.create(cartId, product, options)  // normal
                     requestAddToCart(cartId, product, body)
                 }
-
             }
         }
     }
@@ -143,7 +142,7 @@ class CartUtils(private val context: Context) {
         val subscribeCheckOut = SubscribeCheckOut("", null,
                 null, null, storePickup)
 
-        HttpManagerMagento.getInstance(context).setSgippingInformation(cartId,
+        HttpManagerMagento.getInstance(context).setShippingInformation(cartId,
                 storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
                 object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
@@ -257,7 +256,7 @@ class CartUtils(private val context: Context) {
                 null, null, storePickup)
         val cartId = prefManager.cartId
         if (cartId != null) {
-            HttpManagerMagento.getInstance(context).setSgippingInformation(cartId,
+            HttpManagerMagento.getInstance(context).setShippingInformation(cartId,
                     storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
                     object : ApiResponseCallback<ShippingInformationResponse> {
                         override fun success(response: ShippingInformationResponse?) {
