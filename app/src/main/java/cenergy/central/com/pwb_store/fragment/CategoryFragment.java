@@ -100,7 +100,8 @@ public class CategoryFragment extends Fragment {
 
     private void loadCategories() {
         if(getContext() != null){
-            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(CategoryUtils.SUPER_PARENT_ID,false,
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(
+                    CategoryUtils.SUPER_PARENT_ID,false,
                     new ApiResponseCallback<List<Category>>() {
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {
