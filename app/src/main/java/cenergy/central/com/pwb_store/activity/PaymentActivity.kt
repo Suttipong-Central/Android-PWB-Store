@@ -239,8 +239,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     override fun onSelectedT1Member(the1Member: MemberResponse) {
-        if (currentFragment is PaymentSelectMethodFragment) {
-            (currentFragment as PaymentSelectMethodFragment).updateT1MemberInput(the1Member)
+        if (currentFragment is PaymentBillingFragment) {
+            (currentFragment as PaymentBillingFragment).updateT1MemberInput(the1Member)
             //update t1 card no.
             theOneCardNo = the1Member.cards[0].cardNo
         }
