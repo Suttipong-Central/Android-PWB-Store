@@ -7,4 +7,5 @@ object RemoteConfigUtils {
     const val CONFIG_KEY_EORDERING_MEMBER_ON = "is_eordering_member_on"
     const val CONFIG_KEY_T1C_MEMBER_ON = "is_t1c_member_on"
     const val CONFIG_KEY_HDL_MEMBER_ON = "is_hdl_member_on"
+    const val CONFIG_KEY_DISPLAY_SPECIAL_CATEGORY_ID = "display_special_category_ids"
 }

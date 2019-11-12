@@ -7,7 +7,6 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.asPostcode
-import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -32,6 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
@@ -209,7 +209,9 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
      * @query include_in_menu
      * @query parent_id
      * */
-    fun retrieveCategory(categoryId: String, includeInMenu: Boolean, callback: ApiResponseCallback<List<Category>>) {
+    fun retrieveCategory(categoryId: String, includeInMenu: Boolean,
+                         specialIds: ArrayList<String> = arrayListOf(),
+                         callback: ApiResponseCallback<List<Category>>) {
 
         val httpUrl = if (includeInMenu) {
             HttpUrl.Builder()
@@ -290,7 +292,9 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                         // add special category
                         if (Constants.SPECIAL_CATEGORIES.isNotEmpty()) {
-                            val specialCategories = categories.filter { it.isSpecial() }
+                            val specialCategories = categories.filter {
+                                specialIds.contains(it.id)
+                            }
                             if (specialCategories.isNotEmpty()) {
                                 modifiedCategories.addAll(specialCategories)
                             }
@@ -696,7 +700,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                    callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
 
-        val updateItemBody =  if (branch != null) {
+        val updateItemBody = if (branch != null) {
             UpdateItemBody.create(cartId, itemId, qty, branch)
         } else {
             UpdateItemBody.create(cartId, itemId, qty)

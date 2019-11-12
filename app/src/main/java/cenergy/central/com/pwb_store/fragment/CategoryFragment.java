@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.CategoryUtils;
@@ -23,6 +25,7 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
@@ -93,25 +96,37 @@ public class CategoryFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
     }
 
+    public void updateView(CategoryDao categoryDao) {
+        if (isAdded()) {
+            this.mCategoryDao = categoryDao;
+            mAdapter.setCategory(categoryDao.getCategoryList());
+        }
+    }
+
     public void foreRefresh() {
-        // do anything
         loadCategories();
     }
 
     private void loadCategories() {
-        if(getContext() != null){
+        if (getContext() != null) {
+            PreferenceManager pref = new PreferenceManager(getContext());
+            String displaySpecialIds = pref.getSpecialCategoryIds();
+            ArrayList<String> specialIds = new ArrayList<>();
+
+            if (!displaySpecialIds.trim().equals("")) {
+                String[] ids = displaySpecialIds.split(",");
+                specialIds.addAll(Arrays.asList(ids));
+            }
+
             HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(
-                    CategoryUtils.SUPER_PARENT_ID,false,
+                    CategoryUtils.SUPER_PARENT_ID, false, specialIds,
                     new ApiResponseCallback<List<Category>>() {
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {
                             if (getActivity() != null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (isAdded()) {
-                                            mAdapter.setCategory(categories);
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    if (isAdded() && categories != null) {
+                                        mAdapter.setCategory(categories);
                                     }
                                 });
                             }
