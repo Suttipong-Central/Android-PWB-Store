@@ -29,4 +29,14 @@
         <key>supported_delivery_methods</key>
         <value>express,standard,pickupatstore,hdl</value>
     </entry>
+
+    <entry>
+        <key>display_special_category_ids</key>
+        <value />
+    </entry>
+
+    <entry>
+        <key>is_support_coupon_on</key>
+        <value>false</value>
+    </entry>
 </defaultsMap>

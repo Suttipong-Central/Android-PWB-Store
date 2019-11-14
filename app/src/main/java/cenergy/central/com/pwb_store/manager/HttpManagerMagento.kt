@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.asPostcode
-import cenergy.central.com.pwb_store.extensions.isSpecial
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -31,6 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
@@ -208,7 +209,9 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
      * @query include_in_menu
      * @query parent_id
      * */
-    fun retrieveCategory(parentId: String, includeInMenu: Boolean, callback: ApiResponseCallback<List<Category>>) {
+    fun retrieveCategory(categoryId: String, includeInMenu: Boolean,
+                         specialIds: ArrayList<String> = arrayListOf(),
+                         callback: ApiResponseCallback<List<Category>>) {
 
         val httpUrl = if (includeInMenu) {
             HttpUrl.Builder()
@@ -218,7 +221,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "include_in_menu")
                     .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
                     .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
-                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", categoryId)
                     .addQueryParameter("searchCriteria[filterGroups][2][filters][0][field]", "is_active")
                     .addQueryParameter("searchCriteria[filterGroups][2][filters][0][value]", "1")
                     .build()
@@ -228,7 +231,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     .host(Constants.PWB_HOST_NAME)
                     .addPathSegments("rest/${getLanguage()}/V1/categories/list")
                     .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
-                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", parentId)
+                    .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", categoryId)
                     .build()
         }
 
@@ -246,8 +249,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 }
 
                 try {
-                    val categoryList = arrayListOf<Category>()
-                    val toRemove = arrayListOf<Category>()
+                    val categories = arrayListOf<Category>()
                     val data = JSONObject(body.string())
                     val items = data.getJSONArray("items")
                     for (i in 0 until items.length()) {
@@ -274,15 +276,33 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                 }
                             }
                         }
-                        categoryList.add(category)
+                        categories.add(category)
                     }
-                    categoryList.forEach { category ->
-                        if (!category.IsIncludeInMenu() && !category.isSpecial()) {
-                            toRemove.add(category)
+
+                    val modifiedCategories = arrayListOf<Category>()
+                    categories.sortBy { it.position } // sort by category.position
+
+                    // is super parent?
+                    if (categoryId == CategoryUtils.SUPER_PARENT_ID) {
+                        val filteredCategories = categories.filterIndexed { index, category ->
+                            // filter only selected positions
+                            index <= CategoryUtils.CATEGORY_SELECTED_POSITIONS && category.IsIncludeInMenu()
                         }
+                        modifiedCategories.addAll(filteredCategories)
+
+                        // add special category
+                        if (Constants.SPECIAL_CATEGORIES.isNotEmpty()) {
+                            val specialCategories = categories.filter {
+                                specialIds.contains(it.id)
+                            }
+                            if (specialCategories.isNotEmpty()) {
+                                modifiedCategories.addAll(specialCategories)
+                            }
+                        }
+                    } else {
+                        modifiedCategories.addAll(categories)
                     }
-                    categoryList.removeAll(toRemove)
-                    callback.success(categoryList) // return
+                    callback.success(modifiedCategories) // return result
                 } catch (e: Exception) {
                     callback.failure(APIError(e))
                     Log.e("JSON Parser", "Error parsing data $e")
@@ -680,7 +700,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                    callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
 
-        val updateItemBody =  if (branch != null) {
+        val updateItemBody = if (branch != null) {
             UpdateItemBody.create(cartId, itemId, qty, branch)
         } else {
             UpdateItemBody.create(cartId, itemId, qty)

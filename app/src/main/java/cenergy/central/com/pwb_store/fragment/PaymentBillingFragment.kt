@@ -6,21 +6,27 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
+import cenergy.central.com.pwb_store.activity.ShoppingCartActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
+import cenergy.central.com.pwb_store.extensions.getValueDiscount
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -31,8 +37,9 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
-import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
+import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.ValidationHelper
@@ -41,6 +48,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import kotlinx.android.synthetic.main.fragment_payment_billing.*
 import java.text.NumberFormat
 import java.util.*
 
@@ -52,7 +60,8 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
     private lateinit var contactNumberEdt: PowerBuyEditTextBorder
     private lateinit var emailEdt: PowerBuyEditTextBorder
-    private lateinit var theOneEdt: PowerBuyEditTextBorder
+    private lateinit var t1cardInput: PowerBuyEditTextBorder
+    private lateinit var t1MemberNameTextView: PowerBuyTextView
     private lateinit var homeNoEdt: PowerBuyEditTextBorder
     private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var homeSoiEdt: PowerBuyEditTextBorder
@@ -68,7 +77,9 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
     private lateinit var layoutDiscountPrice: LinearLayout
+    private lateinit var layoutPromotionPrice: LinearLayout
     private lateinit var discountPrice: PowerBuyTextView
+    private lateinit var promotionPrice: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
@@ -246,10 +257,25 @@ class PaymentBillingFragment : Fragment() {
         shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-        val discount = cartTotal.discountPrice.toStringDiscount()
-        if (discount > 0){
+
+        var discountPriceValue = 0.0
+        val discount = cartTotal.totalSegment?.firstOrNull{ it.code == ShoppingCartActivity.DISCOUNT }
+        if (discount != null){
+            discountPriceValue = discount.value.toStringDiscount()
+        }
+        val coupon = cartTotal.totalSegment?.firstOrNull{ it.code == ShoppingCartActivity.COUPON }
+        val couponDiscount: Double
+        if (coupon != null){
+            couponDiscount = coupon.value.getValueDiscount().toStringDiscount()
+            discountPriceValue -= couponDiscount
+            promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
+            layoutPromotionPrice.visibility = View.VISIBLE
+        } else {
+            layoutPromotionPrice.visibility = View.GONE
+        }
+        if (discountPriceValue > 0) {
             layoutDiscountPrice.visibility = View.VISIBLE
-            discountPrice.text = getDisplayDiscount(unit, discount.toString())
+            discountPrice.text = getDisplayDiscount(unit, discountPriceValue.toString())
         } else {
             layoutDiscountPrice.visibility = View.GONE
         }
@@ -286,8 +312,8 @@ class PaymentBillingFragment : Fragment() {
             homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
 
             // has t1
-            if (t1cNumber.isNotBlank()){
-                theOneEdt.setText(t1cNumber)
+            if (t1cNumber.isNotBlank()) {
+                t1cardInput.setText(t1cNumber)
             }
 
             // has input about vat?
@@ -433,7 +459,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun handleHDLMember() {
-        if (memberHDL == null){
+        if (memberHDL == null) {
             return
         }
 
@@ -536,7 +562,7 @@ class PaymentBillingFragment : Fragment() {
         lastNameEdt.setText(t1cMember.getLastName())
         contactNumberEdt.setText(t1cMember.mobilePhone)
         emailEdt.setText(t1cMember.email ?: "")
-        theOneEdt.setText(t1cMember.cardNo)
+        t1cardInput.setText(t1cMember.cardNo)
         homePhoneEdt.setText(t1cMember.homePhone)
 
         // has address?
@@ -586,7 +612,7 @@ class PaymentBillingFragment : Fragment() {
         lastNameEdt = rootView.findViewById(R.id.last_name_payment)
         contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
         emailEdt = rootView.findViewById(R.id.email_payment)
-        theOneEdt = rootView.findViewById(R.id.t1_member_no_payment)
+        t1cardInput = rootView.findViewById(R.id.input_the1_card_id)
         homeNoEdt = rootView.findViewById(R.id.house_no_payment)
         homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         homeSoiEdt = rootView.findViewById(R.id.soi_payment)
@@ -620,7 +646,9 @@ class PaymentBillingFragment : Fragment() {
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         layoutDiscountPrice = rootView.findViewById(R.id.layout_discount)
+        layoutPromotionPrice = rootView.findViewById(R.id.layout_promotion_code)
         discountPrice = rootView.findViewById(R.id.txt_discount)
+        promotionPrice = rootView.findViewById(R.id.txt_promotion)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
@@ -635,10 +663,30 @@ class PaymentBillingFragment : Fragment() {
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
 
-        //set T1 icon
-        theOneEdt.setDrawableStart(R.drawable.ic_the1)
-        theOneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        theOneEdt.setTextLength(10)
+        //set T1
+        val changeT1Button: Button = rootView.findViewById(R.id.btnChangeThe1)
+        t1MemberNameTextView = rootView.findViewById(R.id.tvT1MemberName)
+        t1cardInput.setDrawableStart(R.drawable.ic_the1)
+        t1cardInput.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        t1cardInput.setTextLength(10)
+        t1cardInput.setOnTextChanging(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (t1MemberNameTextView.visibility == View.VISIBLE) {
+                    t1MemberNameTextView.text = ""
+                    t1MemberNameTextView.visibility = View.GONE
+                }
+            }
+        })
+
+        changeT1Button.setOnClickListener {
+            ChangeTheOneDialogFragment.newInstance().show(fragmentManager, "change_t1_dialog")
+        }
 
         radioGroup = rootView.findViewById(R.id.radio_group)
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
@@ -755,7 +803,7 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
-        val t1cNumber = theOneEdt.getText()
+        val t1cNumber = t1cardInput.getText()
         if (checkoutType == CheckoutType.NORMAL) {
             checkoutNormal(t1cNumber)
         } else {
@@ -882,14 +930,14 @@ class PaymentBillingFragment : Fragment() {
         districtInput.setError(validator.validText(districtInput.getText()))
         subDistrictInput.setError(validator.validText(subDistrictInput.getText()))
         postcodeInput.setError(validator.validText(postcodeInput.getText()))
-        theOneEdt.setError(validator.validTheOne(theOneEdt.getText()))
+        t1cardInput.setError(validator.validTheOne(t1cardInput.getText()))
 
         taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
 
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || theOneEdt.getError() != null)
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {
@@ -1282,5 +1330,12 @@ class PaymentBillingFragment : Fragment() {
         }
 
         dismissProgressDialog()
+    }
+
+    fun updateT1MemberInput(the1Member: MemberResponse) {
+        t1cardInput.setText(the1Member.cards[0].cardNo)
+
+        t1MemberNameTextView.visibility = View.VISIBLE
+        t1MemberNameTextView.text = the1Member.getDisplayName()
     }
 }

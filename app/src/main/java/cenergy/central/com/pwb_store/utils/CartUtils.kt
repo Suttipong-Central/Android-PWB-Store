@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -13,16 +14,17 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.CartItemBody
 import cenergy.central.com.pwb_store.model.body.OptionBody
-import cenergy.central.com.pwb_store.model.response.BranchResponse
-import cenergy.central.com.pwb_store.model.response.CartResponse
-import cenergy.central.com.pwb_store.model.response.CartTotalResponse
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import io.realm.RealmList
+import okhttp3.HttpUrl
+import okhttp3.Request
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 
 class CartUtils(private val context: Context) {
     private val prefManager: PreferenceManager = PreferenceManager(context)
@@ -192,6 +194,38 @@ class CartUtils(private val context: Context) {
         }
     }
 
+    fun addCoupon(cartId: String, couponCode: String, callback: ApiResponseCallback<Boolean>){
+        HttpManagerMagento(context).cartService.addCoupon(cartId, couponCode).enqueue(object : Callback<Boolean>{
+            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                if (response.body() != null && response.body() == true){
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
+    fun deleteCoupon(cartId: String, callback: ApiResponseCallback<Boolean>){
+        HttpManagerMagento(context).cartService.deleteCoupon(cartId).enqueue(object : Callback<Boolean>{
+            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                if (response.body() != null && response.body() == true){
+                    callback.success(response.body())
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
+
+            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                callback.failure(APIError(t))
+            }
+        })
+    }
+
     fun viewCart(cartId: String, callback: ApiResponseCallback<CartResponse>) {
         HttpManagerMagento(context).cartService.viewCart(requestLanguage(context), cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
@@ -209,17 +243,141 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotalResponse>) {
-        HttpManagerMagento(context).cartService.viewCartTotal(requestLanguage(context), cartId).enqueue(object : Callback<CartTotalResponse> {
-            override fun onResponse(call: Call<CartTotalResponse>, response: Response<CartTotalResponse>) {
-                if (response.body() != null && response.isSuccessful) {
-                    callback.success(response.body())
+        val httpUrl = HttpUrl.Builder()
+                .scheme("https")
+                .host(Constants.PWB_HOST_NAME)
+                .addPathSegments("/rest/${requestLanguage(context)}/V1/guest-carts/$cartId/totals")
+                .build()
+
+        val request = Request.Builder()
+                .url(httpUrl)
+                .build()
+
+        HttpManagerMagento(context).defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback{
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
+                if (response != null) {
+                    val data = response.body()
+                    val cartTotalResponse = CartTotalResponse()
+                    try {
+                        val dataObject = JSONObject(data?.string())
+                        if (dataObject.has("base_grand_total")){
+                            cartTotalResponse.totalPrice = dataObject.getDouble("base_grand_total")
+                        }
+                        if (dataObject.has("base_discount_amount")) {
+                            cartTotalResponse.discountPrice = dataObject.getDouble("base_discount_amount")
+                        }
+                        if (dataObject.has("items_qty")) {
+                            cartTotalResponse.qty = dataObject.getInt("items_qty")
+                        }
+                        if (dataObject.has("coupon_code")){
+                            cartTotalResponse.couponCode = dataObject.getString("coupon_code")
+                        }
+                        if (dataObject.has("items")){
+                            val shoppingCartItems = ArrayList<ShoppingCartItem>()
+                            val itemsArray = dataObject.getJSONArray("items")
+                            for (i in 0 until itemsArray.length()) {
+                                var id: Long = 0
+                                if (itemsArray.getJSONObject(i).has("item_id")){
+                                    id = itemsArray.getJSONObject(i).getLong("item_id")
+                                }
+                                var qty = 0
+                                if (itemsArray.getJSONObject(i).has("qty")){
+                                    qty = itemsArray.getJSONObject(i).getInt("qty")
+                                }
+                                var sku = ""
+                                if (itemsArray.getJSONObject(i).has("sku")){
+                                    sku = itemsArray.getJSONObject(i).getString("sku")
+                                }
+                                var price = 0.0
+                                if (itemsArray.getJSONObject(i).has("price_incl_tax")){
+                                    price = itemsArray.getJSONObject(i).getDouble("price_incl_tax")
+                                }
+                                var name = ""
+                                if (itemsArray.getJSONObject(i).has("name")){
+                                    name = itemsArray.getJSONObject(i).getString("name")
+                                }
+                                val extension = ItemExtension()
+                                if (itemsArray.getJSONObject(i).has("extension_attributes")) {
+                                    val extensionObject = itemsArray.getJSONObject(i).getJSONObject("extension_attributes")
+                                    if (extensionObject.has("amasty_promo")){
+                                        val freeItemImage = FreeItemImage()
+                                        val amastyPromoObject = extensionObject.getJSONObject("amasty_promo")
+                                        if (amastyPromoObject.has("image_alt")){
+                                            freeItemImage.alt = amastyPromoObject.getString("image_alt")
+                                        }
+                                        if (amastyPromoObject.has("image_src")){
+                                            freeItemImage.src = amastyPromoObject.getString("image_src")
+                                        }
+                                        if (amastyPromoObject.has("image_width")){
+                                            freeItemImage.width = amastyPromoObject.getString("image_width")
+                                        }
+                                        if (amastyPromoObject.has("image_height")){
+                                            freeItemImage.height = amastyPromoObject.getString("image_height")
+                                        }
+                                        extension.amastyPromo = freeItemImage
+                                    }
+                                }
+                                var discount = 0.0
+                                if (itemsArray.getJSONObject(i).has("discount_amount")){
+                                    discount = itemsArray.getJSONObject(i).getDouble("discount_amount")
+                                }
+                                shoppingCartItems.add(ShoppingCartItem(id, qty, sku, price, name, extension, discount))
+                            }
+                            cartTotalResponse.items = shoppingCartItems
+                        }
+                        if (dataObject.has("total_segments")) {
+                            val totalSegment = arrayListOf<Segment>()
+                            val totalSegmentArray = dataObject.getJSONArray("total_segments")
+                            for (i in 0 until totalSegmentArray.length()){
+                                val segment = Segment()
+                                val segmentObject = totalSegmentArray.getJSONObject(i)
+                                when(segmentObject.getString("code")){
+                                    "shipping" -> {
+                                        segment.code = segmentObject.getString("code")
+                                        segment.title = segmentObject.getString("title")
+                                        segment.value = segmentObject.getString("value")
+                                        totalSegment.add(segment)
+                                    }
+                                    "discount" -> {
+                                        segment.code = segmentObject.getString("code")
+                                        segment.title = segmentObject.getString("title")
+                                        segment.value = segmentObject.getString("value")
+                                        totalSegment.add(segment)
+                                    }
+                                    "coupon" -> {
+                                        segment.code = segmentObject.getString("code")
+                                        segment.title = segmentObject.getString("title")
+                                        segment.value = segmentObject.getString("value")
+                                        totalSegment.add(segment)
+                                    }
+                                    "t1c" -> {
+                                        segment.code = segmentObject.getString("code")
+                                        segment.title = segmentObject.getString("title")
+                                        segment.value = segmentObject.getString("value")
+                                        totalSegment.add(segment)
+                                    }
+                                    "credit_card_on_top" -> {
+                                        segment.code = segmentObject.getString("code")
+                                        segment.title = segmentObject.getString("title")
+                                        segment.value = segmentObject.getString("value")
+                                        totalSegment.add(segment)
+                                    }
+                                }
+                            }
+                            cartTotalResponse.totalSegment = totalSegment
+                        }
+                        callback.success(cartTotalResponse)
+                    } catch (e: Exception) {
+                        callback.failure(APIError(e))
+                    }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
+                response?.close()
             }
 
-            override fun onFailure(call: Call<CartTotalResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                callback.failure(APIError(e))
             }
         })
     }

@@ -239,8 +239,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     override fun onSelectedT1Member(the1Member: MemberResponse) {
-        if (currentFragment is PaymentSelectMethodFragment) {
-            (currentFragment as PaymentSelectMethodFragment).updateT1MemberInput(the1Member)
+        if (currentFragment is PaymentBillingFragment) {
+            (currentFragment as PaymentBillingFragment).updateT1MemberInput(the1Member)
             //update t1 card no.
             theOneCardNo = the1Member.cards[0].cardNo
         }
@@ -459,17 +459,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
                 override fun success(response: CartTotalResponse?) {
-                    if (response != null) {
-                        handleGetCartItemsSuccess(response)
-                    } else {
-                        showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                    runOnUiThread {
+                        if (response != null) {
+                            handleGetCartItemsSuccess(response)
+                        } else {
+                            showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                        }
+                        mProgressDialog?.dismiss()
                     }
-                    mProgressDialog?.dismiss()
                 }
 
                 override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    }
                 }
             })
         }

@@ -25,6 +25,17 @@ class PreferenceManager(private var context: Context) {
         editor.apply()
     }
 
+    fun setSpecialCategoryIds(specialIds: String) {
+        val editor = pref.edit()
+        editor.putString(PREF_SPECIAL_CATEGORY_IDS, specialIds)
+        editor.apply()
+    }
+
+    // "130639,130704,131187"
+    fun getSpecialCategoryIds(): String {
+        return pref.getString(PREF_SPECIAL_CATEGORY_IDS, "") ?: ""
+    }
+
     fun clearCartId() {
         pref.edit().remove(PREF_CART_ID).apply()
     }
@@ -54,6 +65,7 @@ class PreferenceManager(private var context: Context) {
         const val PREF_CART_ID = "cart_id"
         const val PREF_ADDRESS_LOADED = "address_loaded"
         const val PREF_LANGUAGE = "pref_language"
+        const val PREF_SPECIAL_CATEGORY_IDS = "pref_special_category_ids"
     }
 }
 

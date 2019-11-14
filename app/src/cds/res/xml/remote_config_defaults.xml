@@ -29,4 +29,9 @@
         <key>supported_delivery_methods</key>
         <value>express,standard,pickupatstore,hdl</value>
     </entry>
+
+    <entry>
+        <key>display_special_category_ids</key>
+        <value/>
+    </entry>
 </defaultsMap>

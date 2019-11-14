@@ -227,6 +227,13 @@
     <string name="empty_value">Please enter quantity to order</string>
     <string name="exceeds_maximum">Input quantity exceeds maximum number</string>
     <string name="discount">Discount</string>
+    <string name="add_coupon">Apply</string>
+    <string name="promotion_code">Promotion Code</string>
+    <string name="cancel_coupon">Cancel Coupon</string>
+    <string name="enter_promo_code_hint">Enter promo code</string>
+    <string name="enter_promo_code">Please enter coupon code</string>
+    <string name="invalid_promo_code">The coupon code %s is not valid</string>
+    <string name="used_promo_code">You used coupon code %s</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>

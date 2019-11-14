@@ -60,8 +60,8 @@ class SubHeaderProductFragment : Fragment() {
 
     private fun loadCategories(parentId: String) {
         activity?.let {
-            HttpManagerMagento.getInstance(it).retrieveCategory(parentId, true,
-                    object : ApiResponseCallback<List<Category>> {
+            HttpManagerMagento.getInstance(it).retrieveCategory(categoryId = parentId,
+                    includeInMenu =  true, callback = object : ApiResponseCallback<List<Category>> {
                         override fun success(response: List<Category>?) {
                             it.runOnUiThread {
                                 adapter.setCategoryHeader(category?.departmentName, response)

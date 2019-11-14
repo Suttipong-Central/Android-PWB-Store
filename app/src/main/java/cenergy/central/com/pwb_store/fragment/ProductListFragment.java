@@ -26,7 +26,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.BuildConfig;
@@ -647,7 +649,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private void loadCategoryLv3(Category categoryLv2) {
         if (getContext() == null) return;
         HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(categoryLv2.getId(),
-                true, new ApiResponseCallback<List<Category>>() {
+                true, new ArrayList<>(),new ApiResponseCallback<List<Category>>() {
                     @Override
                     public void success(final List<Category> categories) {
                         if (getActivity() != null) {

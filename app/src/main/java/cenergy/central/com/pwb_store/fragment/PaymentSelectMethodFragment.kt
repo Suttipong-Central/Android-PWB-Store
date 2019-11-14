@@ -22,9 +22,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 class PaymentSelectMethodFragment : Fragment() {
 
     private lateinit var paymentProtocol: PaymentProtocol
-    private lateinit var inputT1CardId: PowerBuyEditTextBorder
-    private lateinit var btnChangeT1: Button
-    private lateinit var tvThe1MemberName: PowerBuyTextView
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
@@ -65,18 +62,8 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // set t1 card no.
-        val t1cardNumber = paymentProtocol.getT1CardNumber()
-        inputT1CardId.setText(t1cardNumber)
 
         setupPaymentMethodOptions()
-        handleClickChangeT1()
-    }
-
-    private fun handleClickChangeT1() {
-        btnChangeT1.setOnClickListener {
-            ChangeTheOneDialogFragment.newInstance().show(fragmentManager, "dialog")
-        }
     }
 
     private fun setupPaymentMethodOptions() {
@@ -85,22 +72,11 @@ class PaymentSelectMethodFragment : Fragment() {
     }
 
     private fun setupView(rootView: View) {
-        tvThe1MemberName = rootView.findViewById(R.id.tv_the1_member_name)
-        inputT1CardId = rootView.findViewById(R.id.input_the1_card_id)
-        btnChangeT1 = rootView.findViewById(R.id.btn_change_the1)
         recycler = rootView.findViewById(R.id.recycler_select_methods)
         selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
 
-        inputT1CardId.setEnableInput(false)
-    }
-
-    fun updateT1MemberInput(the1Member: MemberResponse) {
-        inputT1CardId.setText(the1Member.cards[0].cardNo)
-
-        tvThe1MemberName.visibility = View.VISIBLE
-        tvThe1MemberName.text = the1Member.getDisplayName()
     }
 }

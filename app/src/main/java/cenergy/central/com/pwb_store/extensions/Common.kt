@@ -35,11 +35,6 @@ fun Product.is1HourProduct(): Boolean{
     }
 }
 
-fun Category.isSpecial(): Boolean {
-    val specialIDs = Constants.SPECIAL_CATEGORIES
-    return specialIDs.contains(this.id)
-}
-
 fun Context?.isProductInStock(compareProduct: CompareProduct) : Boolean {
     val database = RealmController.getInstance()
     val productInCart = database.getCacheCartItemBySKU(compareProduct.sku)

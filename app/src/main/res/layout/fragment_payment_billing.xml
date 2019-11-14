@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,8 +15,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:focusable="true"
         android:clickable="true"
+        android:focusable="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
@@ -76,8 +76,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -99,29 +99,63 @@
                     app:required="true" />
             </LinearLayout>
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/layout_earn_t1c_point"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:weightSum="2">
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/title_select_methods"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/guildHalf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/t1_member_no_payment"
+                    android:id="@+id/input_the1_card_id"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     app:header="@string/t1_member"
+                    android:layout_marginEnd="@dimen/margin_padding_small"
+                    app:layout_constraintEnd_toEndOf="@id/guildHalf"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:pwb_icon="@drawable/ic_the1"
                     app:required="false" />
-            </LinearLayout>
+
+                <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                    android:id="@+id/tvT1MemberName"
+                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="@id/input_the1_card_id"
+                    app:layout_constraintTop_toBottomOf="@+id/input_the1_card_id" />
+
+                <Button
+                    android:id="@+id/btnChangeThe1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/t1_change"
+                    app:layout_constraintBottom_toBottomOf="@+id/input_the1_card_id"
+                    app:layout_constraintStart_toEndOf="@+id/input_the1_card_id" />
+
+            </android.support.constraint.ConstraintLayout>
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:background="@color/lightGray" />
 
         <LinearLayout
@@ -168,11 +202,11 @@
             </LinearLayout>
 
             <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:weightSum="2">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
                     android:id="@+id/soi_payment"
@@ -196,8 +230,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -217,15 +251,15 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/district"
-                    app:act_required="true"/>
+                    app:act_required="true" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -245,15 +279,15 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/post_code"
-                    app:act_required="true"/>
+                    app:act_required="true" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -270,14 +304,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/require_tax"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/require_tax" />
 
                 <RadioGroup
                     android:id="@+id/radio_tax_group"
@@ -290,7 +324,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/yes"
-                        android:theme="@style/RadioButtonStyle"/>
+                        android:theme="@style/RadioButtonStyle" />
 
                     <RadioButton
                         android:id="@+id/radio_tax_no"
@@ -298,7 +332,7 @@
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:text="@string/no"
-                        android:theme="@style/RadioButtonStyle"/>
+                        android:theme="@style/RadioButtonStyle" />
                 </RadioGroup>
             </LinearLayout>
 
@@ -334,22 +368,22 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:background="@color/lightGray" />
 
         <LinearLayout
             android:id="@+id/billing_option_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/same_billing"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:text="@string/same_billing" />
 
             <RadioGroup
                 android:id="@+id/radio_group"
@@ -363,14 +397,14 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/yes"
-                    android:theme="@style/RadioButtonStyle"/>
+                    android:theme="@style/RadioButtonStyle" />
 
                 <RadioButton
                     android:id="@+id/radio_no"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/no"
-                    android:theme="@style/RadioButtonStyle"/>
+                    android:theme="@style/RadioButtonStyle" />
             </RadioGroup>
 
         </LinearLayout>
@@ -393,8 +427,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="16dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -420,8 +454,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -452,15 +486,6 @@
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/billing_house_no_payment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    app:header="@string/house_no"
-                    app:required="true" />
-
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
                     android:id="@+id/billing_place_or_building_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -474,8 +499,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -501,8 +526,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -522,15 +547,15 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/district"
-                    app:act_required="true"/>
+                    app:act_required="true" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -541,7 +566,17 @@
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/sub_district"
-                    app:act_required="true" />
+                    app:act_required="true" >
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                        android:id="@+id/billing_house_no_payment"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        app:header="@string/house_no"
+                        app:required="true" />
+                </cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke>
 
                 <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
                     android:id="@+id/billing_input_postcode"
@@ -550,7 +585,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:act_header="@string/post_code"
-                    app:act_required="true"/>
+                    app:act_required="true" />
 
             </LinearLayout>
         </LinearLayout>
@@ -567,7 +602,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="6dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 style="@style/textNameProduct"
@@ -588,12 +624,39 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_promotion_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="6dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/promotion_code"
+                android:textSize="18sp" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_promotion"
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:textColor="@color/dangerColor"
+                android:textSize="18sp"
+                tools:text="4,404" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_total_shopping_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginBottom="16dp"
             android:layout_marginEnd="6dp"
+            android:layout_marginBottom="16dp"
             android:orientation="horizontal">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -618,7 +681,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:text="@string/choose_delivery_option"
-            app:icon_invisible="true"/>
+            app:icon_invisible="true"
+            app:text="@string/choose_delivery_option" />
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

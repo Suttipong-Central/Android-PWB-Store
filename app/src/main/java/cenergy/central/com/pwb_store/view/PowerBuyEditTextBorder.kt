@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.support.design.widget.TextInputEditText
 import android.support.v4.content.ContextCompat
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -72,7 +73,7 @@ class PowerBuyEditTextBorder : LinearLayout {
         inputLayout.background = ContextCompat.getDrawable(context,
                 if (isEnable) R.drawable.bg_input_enable else R.drawable.bg_input_disable)
         header?.text = textHeader
-        requiredField?.visibility =if (required) View.VISIBLE else View.GONE
+        requiredField?.visibility = if (required) View.VISIBLE else View.GONE
         editText.setText(textEditText)
 
         // set icon
@@ -82,7 +83,7 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     fun getText(): String {
-        return if (editText.text != null) {
+        return if (editText.text != null && editText.text!!.trim() != "") {
             this.editText.text.toString()
         } else {
             ""
@@ -134,5 +135,9 @@ class PowerBuyEditTextBorder : LinearLayout {
         this.isEnable = isEnable
         editText.isEnabled = this.isEnable
         notifyAttributeChanged()
+    }
+
+    fun setOnTextChanging(callback: TextWatcher) {
+        editText.addTextChangedListener(callback)
     }
 }

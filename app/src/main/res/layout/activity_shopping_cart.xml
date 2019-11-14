@@ -73,7 +73,7 @@
             android:clipToPadding="false"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:layout_constraintBottom_toTopOf="@id/layout_total_shopping_cart"
+            app:layout_constraintBottom_toTopOf="@id/couponBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cartDescriptionTextView" />
@@ -88,7 +88,7 @@
             android:orientation="horizontal"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
-            app:layout_constraintBottom_toTopOf="@id/layout_total_shopping_cart"
+            app:layout_constraintBottom_toTopOf="@id/layout_promotion_shopping_cart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline">
 
@@ -111,13 +111,48 @@
                 tools:text="-2,000" />
         </LinearLayout>
 
+
+        <LinearLayout
+            android:id="@+id/layout_promotion_shopping_cart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layout_total_shopping_cart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/label_promotion_text_view"
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/promotion_code"
+                android:textSize="18sp" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_promotion_shopping_cart"
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:textColor="@color/dangerColor"
+                android:textSize="18sp"
+                tools:text="-2,000" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/layout_total_shopping_cart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:gravity="end"
             android:orientation="horizontal"
             android:paddingEnd="8dp"
@@ -144,7 +179,41 @@
                 tools:text="4,404" />
         </LinearLayout>
 
+        <cenergy.central.com.pwb_store.view.PowerBuyEditText
+            android:id="@+id/couponCodeEdt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_input_enable"
+            android:hint="@string/enter_promo_code_hint"
+            android:padding="6dp"
+            android:textCursorDrawable="@drawable/custom_cursor"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/t1c_layout"
+            app:layout_constraintEnd_toStartOf="@id/couponBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/couponBtn" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+            android:id="@+id/couponBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_primary"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:icon_invisible="true"
+            app:layout_constraintBottom_toTopOf="@+id/t1c_layout"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:text="@string/add_coupon" />
+
         <LinearLayout
+            android:id="@+id/t1c_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
