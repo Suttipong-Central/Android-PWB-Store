@@ -240,15 +240,6 @@ class MigrationDatabase : RealmMigration {
 
         // app version 1.1.1
         if (oldVersion < 9) {
-            // create order coupon
-            val coupon = realm.schema.create("OrderCoupon").apply {
-                addField("discountAmount", Double::class.java)
-                addField("discountFormat", String::class.java)
-                        .setNullable("discountFormat", false)
-                addField("couponCode", String::class.java)
-                        .setNullable("couponCode", false)
-            }
-
             // Update Order model
             realm.schema.get("Order")?.apply {
                 // add payment redirect
@@ -258,11 +249,27 @@ class MigrationDatabase : RealmMigration {
                 // add t1c number
                 addField("t1cEarnCardNumber", String::class.java)
                         .setNullable("t1cEarnCardNumber", false)
+            }
+        }
 
+        // app version 1.1.1  
+        if (oldVersion < 10) {
+            // Create OrderCoupon
+            val coupon = realm.schema.create("OrderCoupon").apply {
+                addField("discountAmount", Double::class.java)
+                addField("discountFormat", String::class.java)
+                        .setNullable("discountFormat", false)
+                addField("couponCode", String::class.java)
+                        .setNullable("couponCode", false)
+            }
+
+            // Order add coupon object
+            realm.schema.get("Order")?.apply {
                 // add coupon
                 addRealmObjectField("coupon", coupon)
             }
 
+            // OrderResponse add coupon object
             realm.schema.get("OrderResponse")?.apply {
                 realm.schema.get("OderExtension")?.apply{
                     addRealmObjectField("coupon", coupon)
