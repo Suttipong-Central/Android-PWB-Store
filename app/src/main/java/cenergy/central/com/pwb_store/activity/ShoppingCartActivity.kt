@@ -8,19 +8,20 @@ import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.Toast
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
+import cenergy.central.com.pwb_store.extensions.getValueDiscount
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -35,7 +36,11 @@ import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.CartUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.RemoteConfigUtils
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.*
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
@@ -48,12 +53,19 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var recycler: RecyclerView
     private lateinit var backToShopButton: PowerBuyBackButton
     private lateinit var paymentButton: PowerBuyIconButton
+    private lateinit var couponBtn: PowerBuyIconButton
     private lateinit var searchImageView: ImageView
     private lateinit var layoutDiscountPrice: LinearLayout
+    private lateinit var layoutPromotionPrice: LinearLayout
+    private lateinit var discountTitle: PowerBuyTextView
     private lateinit var discountPrice: PowerBuyTextView
+    private lateinit var promotionTitle: PowerBuyTextView
+    private lateinit var promotionPrice: PowerBuyTextView
+    private lateinit var totalTitle: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var title: PowerBuyTextView
     private lateinit var tvT1: PowerBuyTextView
+    private lateinit var couponCodeEdt: PowerBuyEditText
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
     // data
@@ -65,9 +77,17 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
     private var branch: Branch? = null
     private var cartResponse: CartResponse? = null
+    private var isCouponAdded = false
+    private var promotionCode = ""
+
+    // Firebase remote config
+    private lateinit var fbRemoteConfig: FirebaseRemoteConfig
+    private var cacheExpiration: Long = 3600 // 1 hour in seconds.
 
     companion object {
         private const val CART_ID = "CART_ID"
+        const val DISCOUNT = "discount"
+        const val COUPON = "coupon"
         const val RESULT_UPDATE_PRODUCT = 59000
 
         @JvmStatic
@@ -91,6 +111,9 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+        // setup remote config
+        setupRemoteConfig()
+
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
@@ -134,11 +157,25 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         searchImageView = findViewById(R.id.search_button)
         recycler = findViewById(R.id.recycler_view_shopping_cart)
         layoutDiscountPrice = findViewById(R.id.layout_discount_shopping_cart)
+        layoutPromotionPrice = findViewById(R.id.layout_promotion_shopping_cart)
+        couponCodeEdt = findViewById(R.id.couponCodeEdt)
+        discountTitle = findViewById(R.id.label_discount_text_view)
         discountPrice = findViewById(R.id.txt_discount_shopping_cart)
+        promotionTitle = findViewById(R.id.label_promotion_text_view)
+        promotionPrice = findViewById(R.id.txt_promotion_shopping_cart)
+        totalTitle = findViewById(R.id.label_total_text_view)
         totalPrice = findViewById(R.id.txt_total_price_shopping_cart)
         tvT1 = findViewById(R.id.txt_t1_shopping_cart)
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
+        couponBtn = findViewById(R.id.couponBtn)
+        couponBtn.setText(getString(R.string.add_coupon))
+
+        val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
+        if (isSupportCouponOn){ // support coupon?
+            couponBtn.visibility = View.VISIBLE
+            couponCodeEdt.visibility = View.VISIBLE
+        }
 
         // setup payment button
         paymentButton = findViewById(R.id.payment)
@@ -238,7 +275,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         paymentButton.setText(getString(R.string.check_out))
 
         // update text label
-        findViewById<TextView>(R.id.label_total_text_view).setText(R.string.total_price)
+        couponCodeEdt.hint = getString(R.string.enter_promo_code_hint)
+        discountTitle.text = getString(R.string.discount)
+        promotionTitle.text = getString(R.string.promotion_code)
+        totalTitle.text = getString(R.string.total_price)
     }
 
     private fun getCartItem() {
@@ -249,7 +289,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                     getCartTotal()
                 } else {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                    showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
                 }
             }
 
@@ -263,17 +303,21 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun getCartTotal(){
         CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse>{
             override fun success(response: CartTotalResponse?) {
-                mProgressDialog?.dismiss()
-                if (response != null) {
-                    updateViewShoppingCart(response)
-                } else {
-                    showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                runOnUiThread {
+                    mProgressDialog?.dismiss()
+                    if (response != null) {
+                        updateViewShoppingCart(response)
+                    } else {
+                        showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+                    }
                 }
             }
 
             override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                displayError(error)
+                runOnUiThread {
+                    mProgressDialog?.dismiss()
+                    displayError(error)
+                }
             }
         })
     }
@@ -284,19 +328,47 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
             val items = shoppingCartResponse.items?: listOf()
 
+            var discountPriceValue = 0.0
+            val discount = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == DISCOUNT}
+            if (discount != null){
+                discountPriceValue = discount.value.toStringDiscount()
+            }
+
+            val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
+            if (isSupportCouponOn){ // support coupon?
+                val coupon = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == COUPON}
+                val couponDiscount: Double
+                if (coupon != null){
+                    couponDiscount = coupon.value.getValueDiscount().toStringDiscount()
+                    discountPriceValue -= couponDiscount
+                    promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
+                    couponBtn.setText(getString(R.string.cancel_coupon))
+                    couponCodeEdt.isEnabled = false
+                    isCouponAdded = true
+                    layoutPromotionPrice.visibility = View.VISIBLE
+                    handleCoupon()
+                } else {
+                    layoutPromotionPrice.visibility = View.GONE
+                    couponBtn.setText(getString(R.string.add_coupon))
+                    couponCodeEdt.isEnabled = true
+                    isCouponAdded = false
+                    handleCoupon()
+                }
+                promotionCode = shoppingCartResponse.couponCode
+                couponCodeEdt.setText(promotionCode)
+            }
+
             shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
 
             updateTitle(shoppingCartResponse.qty)
             val total = shoppingCartResponse.totalPrice
             val t1Points = (total - (total % 50)) / 50
-            val discount = shoppingCartResponse.discountPrice.toStringDiscount()
-            if (discount > 0) {
+            if (discountPriceValue > 0) {
                 layoutDiscountPrice.visibility = View.VISIBLE
-                discountPrice.text = getDisplayDiscount(unit, discount.toString())
+                discountPrice.text = getDisplayDiscount(unit, discountPriceValue.toString())
             } else {
                 layoutDiscountPrice.visibility = View.GONE
             }
-
             totalPrice.text = getDisplayPrice(unit, total.toString())
             tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
             checkCanClickPayment()
@@ -311,6 +383,62 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             }
         } else {
             paymentButton.setButtonDisable(true)
+        }
+    }
+
+    private fun handleCoupon() {
+        if (!isCouponAdded){
+            couponBtn.setOnClickListener {
+                addCoupon()
+            }
+        } else {
+            couponBtn.setOnClickListener {
+                deleteCoupon()
+            }
+        }
+    }
+
+    private fun addCoupon(){
+        showProgressDialog()
+        promotionCode = couponCodeEdt.text.toString()
+        if (promotionCode.isNotEmpty()){
+            preferenceManager.cartId?.let { cartId ->
+                CartUtils(this).addCoupon(cartId, promotionCode, object : ApiResponseCallback<Boolean>{
+                    override fun success(response: Boolean?) {
+                        if (response != null){
+                            hideKeyBoard()
+                            refreshShoppingCart()
+                            Toast.makeText(this@ShoppingCartActivity, getString(R.string.used_promo_code, promotionCode), Toast.LENGTH_SHORT).show()
+                        } else {
+                            showCommonDialog(R.string.some_thing_wrong)
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showCommonDialog(getString(R.string.invalid_promo_code, promotionCode))
+                    }
+                })
+            }
+        } else {
+            mProgressDialog?.dismiss()
+            showCommonDialog(R.string.enter_promo_code)
+        }
+    }
+
+    private fun deleteCoupon(){
+        showProgressDialog()
+        preferenceManager.cartId?.let { cartId ->
+            CartUtils(this).deleteCoupon(cartId, object : ApiResponseCallback<Boolean>{
+                override fun success(response: Boolean?) {
+                    refreshShoppingCart()
+                }
+
+                override fun failure(error: APIError) {
+                    mProgressDialog?.dismiss()
+                    showCommonDialog(getString(R.string.please_try_again))
+                }
+            })
         }
     }
 
@@ -351,7 +479,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
                         override fun failure(error: APIError) {
                             mProgressDialog?.dismiss()
-                            showAlertDialog("", getString(R.string.exceeds_maximum))
+                            showCommonDialog(getString(R.string.exceeds_maximum))
                             getCartItem()
                         }
                     })
@@ -382,37 +510,48 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
-    private fun showAlertDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(R.string.ok) { dialog, _ -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
-    }
-
     private fun clearCart() {
         database.deleteAllCacheCartItem()
         preferenceManager.clearCartId()
     }
 
-
     private fun displayError(error: APIError) {
         if (error.errorCode == null) {
-            showAlertDialog("", getString(R.string.not_connected_network))
+            showCommonDialog(getString(R.string.not_connected_network))
         } else {
             when (error.errorCode) {
                 "408", "404" -> {
-                    showAlertDialog("", getString(R.string.server_not_found))
+                    showCommonDialog(getString(R.string.server_not_found))
                 }
                 APIError.INTERNAL_SERVER_ERROR.toString() -> {
                     clearCart()
                     finish()
                 }
-                else -> showAlertDialog("", getString(R.string.some_thing_wrong))
+                else -> showCommonDialog(getString(R.string.some_thing_wrong))
             }
+        }
+    }
+
+
+    private fun setupRemoteConfig() {
+        fbRemoteConfig = FirebaseRemoteConfig.getInstance()
+
+        if (!BuildConfig.IS_PRODUCTION) { // is Production?
+            cacheExpiration = 0
+        }
+
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(cacheExpiration)
+                .build()
+        fbRemoteConfig.setDefaults(R.xml.remote_config_defaults)
+        fbRemoteConfig.setConfigSettingsAsync(configSettings)
+    }
+
+    fun hideKeyBoard(){
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (currentFocus != null) {
+            inputManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            inputManager.hideSoftInputFromInputMethod(currentFocus!!.windowToken, 0)
         }
     }
 }

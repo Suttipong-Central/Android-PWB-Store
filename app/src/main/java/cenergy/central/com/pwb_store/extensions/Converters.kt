@@ -2,9 +2,13 @@ package cenergy.central.com.pwb_store.extensions
 
 import android.content.Context
 import android.os.Parcel
+import android.util.Log
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import com.google.gson.JsonArray
+import org.json.JSONArray
+import org.json.JSONObject
 import kotlin.math.roundToInt
 
 fun List<CacheCartItem>.getPaymentType(context: Context): ArrayList<PaymentMethod> {
@@ -61,4 +65,20 @@ fun Parcel.createLongList() : List<Long> {
 
 fun Double.toStringDiscount(): Double{
     return this.toString().replace("-","").toDouble()
+}
+
+fun String?.toStringDiscount(): Double {
+    return this?.replace("-", "")?.toDouble() ?: 0.0
+}
+
+fun String?.getValueDiscount(): String {
+    var discount = ""
+    if (this != null) {
+        val arrayJson = JSONArray(this)
+        val objJson = JSONObject(arrayJson[0].toString())
+        if (objJson.has("discount_amount")) {
+            discount = objJson.getString("discount_amount")
+        }
+    }
+    return discount
 }

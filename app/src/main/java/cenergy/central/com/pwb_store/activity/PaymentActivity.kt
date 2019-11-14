@@ -459,17 +459,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
                 override fun success(response: CartTotalResponse?) {
-                    if (response != null) {
-                        handleGetCartItemsSuccess(response)
-                    } else {
-                        showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                    runOnUiThread {
+                        if (response != null) {
+                            handleGetCartItemsSuccess(response)
+                        } else {
+                            showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                        }
+                        mProgressDialog?.dismiss()
                     }
-                    mProgressDialog?.dismiss()
                 }
 
                 override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    }
                 }
             })
         }

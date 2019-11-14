@@ -227,6 +227,13 @@
     <string name="empty_value">โปรดระบุจำนวนที่ต้องการซื้อ</string>
     <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
     <string name="discount">ส่วนลด</string>
+    <string name="add_coupon">ใช้คูปอง</string>
+    <string name="promotion_code">ส่วนลดจากรหัส</string>
+    <string name="cancel_coupon">ยกเลิกคูปอง</string>
+    <string name="enter_promo_code_hint">ใส่โค้ด</string>
+    <string name="enter_promo_code">กรุณากรอกรหัสคูปอง</string>
+    <string name="invalid_promo_code">รหัสคูปอง %s ไม่ถูกต้อง</string>
+    <string name="used_promo_code">คุณใช้รหัสคูปอง %s</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>

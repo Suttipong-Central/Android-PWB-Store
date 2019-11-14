@@ -486,15 +486,6 @@
                 android:weightSum="2">
 
                 <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-                    android:id="@+id/billing_house_no_payment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    app:header="@string/house_no"
-                    app:required="true" />
-
-                <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
                     android:id="@+id/billing_place_or_building_payment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -575,7 +566,17 @@
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/sub_district"
-                    app:act_required="true" />
+                    app:act_required="true" >
+
+                    <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                        android:id="@+id/billing_house_no_payment"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        app:header="@string/house_no"
+                        app:required="true" />
+                </cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke>
 
                 <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
                     android:id="@+id/billing_input_postcode"
@@ -601,7 +602,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="6dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 style="@style/textNameProduct"
@@ -612,6 +614,33 @@
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_discount"
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:textColor="@color/dangerColor"
+                android:textSize="18sp"
+                tools:text="4,404" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_promotion_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="6dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                style="@style/textNameProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/promotion_code"
+                android:textSize="18sp" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/txt_promotion"
                 style="@style/textNameProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

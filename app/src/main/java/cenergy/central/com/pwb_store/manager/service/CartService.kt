@@ -8,6 +8,7 @@ import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.http.*
 
 interface CartService {
@@ -24,9 +25,12 @@ interface CartService {
     fun viewCart(@Path("lang") language: String,
                  @Path("cartId") quoteID: String): Call<CartResponse>
 
-    @GET("/rest/{lang}/V1/guest-carts/{cartId}/totals")
-    fun viewCartTotal(@Path("lang") language: String,
-                      @Path("cartId") cartId: String): Call<CartTotalResponse>
+    @PUT("/rest/V1/guest-carts/{cartId}/coupons/{code}")
+    fun addCoupon(@Path("cartId") cartId: String,
+                  @Path("code") code: String): Call<Boolean>
+
+    @DELETE("/rest/V1/guest-carts/{cartId}/coupons")
+    fun deleteCoupon(@Path("cartId") cartId: String): Call<Boolean>
 
     @DELETE("/rest/V1/guest-carts/{cartId}/items/{itemId}")
     fun deleteItem(@Path("cartId") cartId: String,

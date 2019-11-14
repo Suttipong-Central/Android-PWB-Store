@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.constraint.Group
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
@@ -45,8 +46,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     // widget view
     private lateinit var recycler: RecyclerView
     private lateinit var orderNumber: PowerBuyTextView
-    private lateinit var discountPrice: PowerBuyTextView
     private lateinit var discountTitle: PowerBuyTextView
+    private lateinit var discountPrice: PowerBuyTextView
+    private lateinit var promotionTitle: PowerBuyTextView
+    private lateinit var promotionPrice: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var orderDate: PowerBuyTextView
     private lateinit var name: PowerBuyTextView
@@ -79,6 +82,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var deliveryInfoLayout: LinearLayout
     private lateinit var billingTelephoneLayout: LinearLayout
     private lateinit var shippingTelephoneLayout: LinearLayout
+    private lateinit var discountLayout: Group
+    private lateinit var couponLayout: Group
+    private lateinit var shippingLayout: Group
     private var mProgressDialog: ProgressDialog? = null
 
     // data
@@ -163,8 +169,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         showProgressDialog()
         recycler = rootView.findViewById(R.id.recycler_view_order_detail_list)
         orderNumber = rootView.findViewById(R.id.order_number_order_success)
-        discountPrice = rootView.findViewById(R.id.txt_discount_order_success)
         discountTitle = rootView.findViewById(R.id.discount_order_success)
+        discountPrice = rootView.findViewById(R.id.txt_discount_order_success)
+        promotionTitle = rootView.findViewById(R.id.promotion_order_success)
+        promotionPrice = rootView.findViewById(R.id.txt_promotion_order_success)
         totalPrice = rootView.findViewById(R.id.txt_total_price_order_success)
         orderDate = rootView.findViewById(R.id.txt_order_date_order_success)
         tvShippingHeader = rootView.findViewById(R.id.shipping_header_order_success)
@@ -201,6 +209,9 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         tel = rootView.findViewById(R.id.txt_tell_order_success)
         openToday = rootView.findViewById(R.id.txt_open_today_order_success)
         finishButton = rootView.findViewById(R.id.buttonFinished)
+        discountLayout = rootView.findViewById(R.id.layoutDiscount)
+        couponLayout = rootView.findViewById(R.id.layoutCouponDiscount)
+        shippingLayout = rootView.findViewById(R.id.layoutDeliveryDiscount)
 
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
@@ -272,12 +283,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         // setup total or summary
-        val discount = order.discountPrice.toStringDiscount()
-        discountTitle.visibility = if (discount > 0) View.VISIBLE else View.GONE
-        discountPrice.visibility = if (discount > 0) View.VISIBLE else View.GONE
+        var discount = order.discountPrice.toStringDiscount()
+        val couponDiscount = order.coupon?.discountAmount?: 0.0
+        if (couponDiscount > 0){
+            discount -= couponDiscount
+            couponLayout.visibility = View.VISIBLE
+            promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
+        } else {
+            couponLayout.visibility = View.GONE
+        }
+        discountLayout.visibility = if (discount > 0) View.VISIBLE else View.GONE
         discountPrice.text = getDisplayDiscount(unit, discount.toString())
-        shippingTitle.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
-        tvShippingAmount.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
+        shippingLayout.visibility = if (order.shippingAmount > 0) View.VISIBLE else View.GONE
         tvShippingAmount.text = getDisplayPrice(unit, order.shippingAmount.toString())
         totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
         tvAmount.text = getDisplayPrice(unit, order.total.toString())

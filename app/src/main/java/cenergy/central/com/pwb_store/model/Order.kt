@@ -24,7 +24,8 @@ open class Order(
         var paymentRedirect: String = "",
         var discountPrice: Double = 0.0,
         var total: Double = 0.0,
-        var t1cEarnCardNumber: String = ""
+        var t1cEarnCardNumber: String = "",
+        var coupon: OrderCoupon? = null
 ) : RealmObject() {
 
     fun getDisplayTimeCreated(context: Context): String {
@@ -36,21 +37,22 @@ open class Order(
         const val FIELD_ORDER_ID = "orderId"
 
         fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, paymentRedirect: String = "", theOneNumber: String = ""): Order {
-            return Order(orderId = orderResponse.orderId!!,
+            return Order(orderId = orderResponse.orderId ?: "",
                     createdAt = orderResponse.createdAt,
-                    memberName = orderResponse.billingAddress!!.getDisplayName(),
+                    memberName = orderResponse.billingAddress?.getDisplayName() ?: "",
                     shippingType = orderResponse.shippingType!!,
                     items = asItems(orderResponse.items),
-                    shippingAddress = orderResponse.orderExtension!!.shippingAssignments!![0]!!.shipping!!.shippingAddress!!,
-                    billingAddress = orderResponse.billingAddress!!,
+                    shippingAddress = orderResponse.orderExtension?.shippingAssignments!![0]?.shipping?.shippingAddress,
+                    billingAddress = orderResponse.billingAddress,
                     branchShipping = branchShipping,
                     shippingDescription = orderResponse.shippingDescription,
                     baseTotal = orderResponse.baseTotal,
                     shippingAmount = orderResponse.shippingAmount,
                     paymentRedirect = paymentRedirect,
                     discountPrice = orderResponse.discount,
-                    total =  orderResponse.total,
-                    t1cEarnCardNumber = theOneNumber)
+                    total = orderResponse.total,
+                    t1cEarnCardNumber = theOneNumber,
+                    coupon = orderResponse.orderExtension?.coupon)
         }
 
         private fun asItems(items: RealmList<Item>?): RealmList<Item> {

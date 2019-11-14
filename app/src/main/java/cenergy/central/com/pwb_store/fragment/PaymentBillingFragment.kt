@@ -20,11 +20,13 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
+import cenergy.central.com.pwb_store.activity.ShoppingCartActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
+import cenergy.central.com.pwb_store.extensions.getValueDiscount
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -75,7 +77,9 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
     private lateinit var layoutDiscountPrice: LinearLayout
+    private lateinit var layoutPromotionPrice: LinearLayout
     private lateinit var discountPrice: PowerBuyTextView
+    private lateinit var promotionPrice: PowerBuyTextView
     private lateinit var totalPrice: PowerBuyTextView
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
@@ -253,10 +257,25 @@ class PaymentBillingFragment : Fragment() {
         shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-        val discount = cartTotal.discountPrice.toStringDiscount()
-        if (discount > 0) {
+
+        var discountPriceValue = 0.0
+        val discount = cartTotal.totalSegment?.firstOrNull{ it.code == ShoppingCartActivity.DISCOUNT }
+        if (discount != null){
+            discountPriceValue = discount.value.toStringDiscount()
+        }
+        val coupon = cartTotal.totalSegment?.firstOrNull{ it.code == ShoppingCartActivity.COUPON }
+        val couponDiscount: Double
+        if (coupon != null){
+            couponDiscount = coupon.value.getValueDiscount().toStringDiscount()
+            discountPriceValue -= couponDiscount
+            promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
+            layoutPromotionPrice.visibility = View.VISIBLE
+        } else {
+            layoutPromotionPrice.visibility = View.GONE
+        }
+        if (discountPriceValue > 0) {
             layoutDiscountPrice.visibility = View.VISIBLE
-            discountPrice.text = getDisplayDiscount(unit, discount.toString())
+            discountPrice.text = getDisplayDiscount(unit, discountPriceValue.toString())
         } else {
             layoutDiscountPrice.visibility = View.GONE
         }
@@ -627,7 +646,9 @@ class PaymentBillingFragment : Fragment() {
 
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         layoutDiscountPrice = rootView.findViewById(R.id.layout_discount)
+        layoutPromotionPrice = rootView.findViewById(R.id.layout_promotion_code)
         discountPrice = rootView.findViewById(R.id.txt_discount)
+        promotionPrice = rootView.findViewById(R.id.txt_promotion)
         totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
