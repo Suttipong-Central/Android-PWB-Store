@@ -10,7 +10,7 @@ import io.realm.RealmConfiguration
 class RealmHelper {
 
     companion object {
-        private const val schemaVersion = 9L
+        private const val schemaVersion = 10L
         private const val nameDb = "eordering.realm"
 
         fun migrationConfig(): RealmConfiguration {
