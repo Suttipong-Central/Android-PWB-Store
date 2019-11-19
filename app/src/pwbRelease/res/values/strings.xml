@@ -3,4 +3,5 @@
     <string name="app_name" translatable="false">PowerBuy Store</string>
     <string name="watermark_business" translatable="false">PowerBuy</string>
     <string name="watermark_environment" translatable="false">Production(headless)</string>
+    <string name="hostname_deep_link" translatable="false">www.powerbuy.co.th</string>
 </resources>

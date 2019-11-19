@@ -26,6 +26,23 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 
+interface AddProductToCartCallback {
+    fun onSuccessfully()
+    fun forceClearCart()
+    fun onFailure(messageError: String)
+    fun onFailure(dialog: Dialog)
+}
+
+interface EditStorePickupCallback {
+    fun onSuccessfully()
+    fun onFailure(messageError: String)
+}
+
+interface CartListener {
+    fun onCartCreated(cartId: String)
+    fun onFailure(messageError: String)
+}
+
 class CartUtils(private val context: Context) {
     private val prefManager: PreferenceManager = PreferenceManager(context)
     private var callback: AddProductToCartCallback? = null
@@ -37,7 +54,24 @@ class CartUtils(private val context: Context) {
     private val db = RealmController.getInstance()
     private var cacheCartItems = db.cacheCartItems
 
-    fun addProductToCart(product: Product, options: ArrayList<OptionBody>?,
+    fun createCart(listener: CartListener) {
+        HttpManagerMagento.getInstance(context).getCart(object : ApiResponseCallback<String?> {
+            override fun success(response: String?) {
+                if (response != null) {
+                    prefManager.setCartId(response)
+                    listener.onCartCreated(response)
+                } else {
+                    listener.onFailure(context.getString(R.string.not_found_data))
+                }
+            }
+
+            override fun failure(error: APIError) {
+                listener.onFailure(error.errorMessage)
+            }
+        })
+    }
+
+    fun addProductToCart(product: Product, options: ArrayList<OptionBody> = arrayListOf(),
                          callback: AddProductToCartCallback) {
         this.callback = callback
         val cartId = prefManager.cartId
@@ -458,16 +492,4 @@ class CartUtils(private val context: Context) {
         }
     }
 
-}
-
-interface AddProductToCartCallback {
-    fun onSuccessfully()
-    fun forceClearCart()
-    fun onFailure(messageError: String)
-    fun onFailure(dialog: Dialog)
-}
-
-interface EditStorePickupCallback {
-    fun onSuccessfully()
-    fun onFailure(messageError: String)
 }

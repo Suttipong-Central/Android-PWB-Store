@@ -29,7 +29,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
@@ -616,11 +615,11 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun getProductFromBarcode(barcode: String, callback: ApiResponseCallback<Product?>) {
+    fun getProductByBarcode(barcode: String, callback: ApiResponseCallback<Product?>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getProductFromBarcode(Constants.CLIENT_MAGENTO, getLanguage(), "barcode", barcode, "eq")
-                .enqueue(object : Callback<ProductByBarcodeResponse> {
-                    override fun onResponse(call: Call<ProductByBarcodeResponse>?, response: Response<ProductByBarcodeResponse>?) {
+        productService.getProductByBarcode(Constants.CLIENT_MAGENTO, getLanguage(), "barcode", barcode, "eq")
+                .enqueue(object : Callback<ProductSearchResponse> {
+                    override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
                         if (response != null) {
                             val productResponse = response.body()
                             if (productResponse != null && productResponse.products.size > 0) {
@@ -633,12 +632,34 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                     }
 
-                    override fun onFailure(call: Call<ProductByBarcodeResponse>?, t: Throwable?) {
+                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable?) {
                         callback.failure(APIError(t))
                     }
                 })
     }
 
+    fun getProductByProductJda(jda: String, callback: ApiResponseCallback<Product?>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductByBarcode(Constants.CLIENT_MAGENTO, getLanguage(), "jda_sku", jda, "eq")
+                .enqueue(object : Callback<ProductSearchResponse> {
+                    override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
+                        if (response != null) {
+                            val productResponse = response.body()
+                            if (productResponse != null && productResponse.products.size > 0) {
+                                getProductDetail(productResponse.products[0].sku, callback)
+                            } else {
+                                callback.success(null)
+                            }
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable?) {
+                        callback.failure(APIError(t))
+                    }
+                })
+    }
     // end product
 
     // region Cart

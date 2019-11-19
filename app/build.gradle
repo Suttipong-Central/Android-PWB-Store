@@ -99,8 +99,8 @@ android {
         pwb {
             applicationId "cenergy.central.com.eordering.pwb"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 88
-            versionName "1.1.1"
+            versionCode 89
+            versionName "1.1.2"
         }
 
         cds {

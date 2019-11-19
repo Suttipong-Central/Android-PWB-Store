@@ -1,7 +1,9 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -20,12 +22,17 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
-import cenergy.central.com.pwb_store.fragment.*
+import cenergy.central.com.pwb_store.fragment.DetailFragment
+import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
+import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
+import cenergy.central.com.pwb_store.fragment.WebViewFragment
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.DeliveryInfo
+import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
@@ -54,8 +61,32 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private val database = RealmController.getInstance()
     private var productSku: String? = null
     private var productId: String? = null
-    private var isBarcode: Boolean = false
+    private var productJdaSku: String? = null
     private var product: Product? = null
+
+    companion object {
+        private val TAG = ProductDetailActivity::class.java.simpleName
+
+        const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
+        const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
+        const val ARG_PRODUCT_JDA_SKU = "ARG_PRODUCT_JDA_SKU"
+
+        private const val TAG_DETAIL_FRAGMENT = "fragment_detail"
+        private const val TAG_OVERVIEW_FRAGMENT = "fragment_overview"
+        private const val TAG_EXTENSION_FRAGMENT = "fragment_extension"
+
+        fun startActivityBySku(context: Context, sku: String) {
+            val intent = Intent(context, ProductDetailActivity::class.java)
+            intent.putExtra(ARG_PRODUCT_SKU, sku)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+
+        fun startActivityByJDA(context: Context, jdaSku: String) {
+            val intent = Intent(context, ProductDetailActivity::class.java)
+            intent.putExtra(ARG_PRODUCT_JDA_SKU, jdaSku)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,25 +95,31 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
 
-        // get startPayment
-        val mIntent = intent
-        val extras = mIntent.extras
-        if (extras != null) {
-            productSku = extras.getString(ARG_PRODUCT_SKU)
-            productId = extras.getString(ARG_PRODUCT_ID)
-            isBarcode = extras.getBoolean(ARG_IS_BARCODE)
+        // get intent extra
+        intent.extras?.let {
+            productSku = it.getString(ARG_PRODUCT_SKU, null)
+            productId = it.getString(ARG_PRODUCT_ID, null)
+            productJdaSku = it.getString(ARG_PRODUCT_JDA_SKU, null)
         }
 
         bindView()
-
         retrieveProductDetail()
     }
 
     private fun retrieveProductDetail() {
-        if (!isBarcode) {
-            productSku?.let { retrieveProduct(it) }
-        } else {
-            productId?.let { retrieveProductFromBarcode(it) }
+        if (productSku != null) {
+            retrieveProduct(productSku!!)
+            return
+        }
+
+        if (productId != null) { // is barcode?
+            retrieveProductByBarcode(productId!!)
+            return
+        }
+
+        if (productJdaSku != null) { // is from offline store cds/rbs?
+            retrieveProductByProductJda(productJdaSku!!)
+            return
         }
     }
 
@@ -231,23 +268,44 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // endregion
 
     // region retrieve product
-    private fun retrieveProductFromBarcode(barcode: String) {
+    private fun retrieveProductByBarcode(barcode: String) {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getProductFromBarcode(barcode, object : ApiResponseCallback<Product?> {
-            override fun success(response: Product?) {
-                handleGetProductSuccess(response)
-            }
+        HttpManagerMagento.getInstance(this).getProductByBarcode(barcode,
+                object : ApiResponseCallback<Product?> {
+                    override fun success(response: Product?) {
+                        handleGetProductSuccess(response)
+                    }
 
-            override fun failure(error: APIError) {
-                Log.e(TAG, "onResponse: " + error.errorMessage)
-                runOnUiThread {
-                    // dismiss loading dialog
-                    dismissProgressDialog()
-                    // show error message
-                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-                }
-            }
-        })
+                    override fun failure(error: APIError) {
+                        Log.e(TAG, "onResponse: " + error.errorMessage)
+                        runOnUiThread {
+                            // dismiss loading dialog
+                            dismissProgressDialog()
+                            // show error message
+                            DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
+                        }
+                    }
+                })
+    }
+
+    private fun retrieveProductByProductJda(jdaSku: String) {
+        showProgressDialog()
+        HttpManagerMagento.getInstance(this).getProductByProductJda(jdaSku,
+                object : ApiResponseCallback<Product?> {
+                    override fun success(response: Product?) {
+                        handleGetProductSuccess(response)
+                    }
+
+                    override fun failure(error: APIError) {
+                        Log.e(TAG, "onResponse: " + error.errorMessage)
+                        runOnUiThread {
+                            // dismiss loading dialog
+                            dismissProgressDialog()
+                            // show error message
+                            DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
+                        }
+                    }
+                })
     }
 
     private fun retrieveProduct(sku: String) {
@@ -280,23 +338,25 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkHDLOption(product: Product) {
-        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku, object : ApiResponseCallback<List<DeliveryInfo>> {
-            override fun success(response: List<DeliveryInfo>?) {
-                product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
-                dismissProgressDialog()
-                startProductDetailFragment(product)
-            }
+        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku,
+                object : ApiResponseCallback<List<DeliveryInfo>> {
+                    override fun success(response: List<DeliveryInfo>?) {
+                        product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
+                        dismissProgressDialog()
+                        startProductDetailFragment(product)
+                    }
 
-            override fun failure(error: APIError) {
-                dismissProgressDialog()
-                startProductDetailFragment(product)
-            }
-        })
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                        startProductDetailFragment(product)
+                    }
+                })
     }
     // end region
 
     private fun startProductDetailFragment(product: Product) {
         // set product
+        this@ProductDetailActivity.productSku = product.sku
         this.product = product
 
         // setup
@@ -396,7 +456,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun startAddToCart(product: Product, options: ArrayList<OptionBody>?) {
         this.product = product
         showProgressDialog()
-        CartUtils(this).addProductToCart(product, options, object : AddProductToCartCallback{
+        CartUtils(this).addProductToCart(product, options, object : AddProductToCartCallback {
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
                 dismissProgressDialog()
@@ -413,7 +473,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             }
 
             override fun onFailure(dialog: Dialog) {
-                if (!isFinishing) { dialog.show() }
+                if (!isFinishing) {
+                    dialog.show()
+                }
                 dismissProgressDialog()
             }
         })
@@ -455,17 +517,5 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         if (!isFinishing && progressDialog != null && progressDialog!!.isShowing) {
             progressDialog!!.dismiss()
         }
-    }
-
-    companion object {
-        private val TAG = ProductDetailActivity::class.java.simpleName
-
-        const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID"
-        const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
-        const val ARG_IS_BARCODE = "ARG_IS_BARCODE"
-
-        private const val TAG_DETAIL_FRAGMENT = "fragment_detail"
-        private const val TAG_OVERVIEW_FRAGMENT = "fragment_overview"
-        private const val TAG_EXTENSION_FRAGMENT = "fragment_extension"
     }
 }
