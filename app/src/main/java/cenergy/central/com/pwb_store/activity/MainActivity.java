@@ -274,7 +274,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 Log.d(TAG, "barcode : " + result.getContents());
                 Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
                 intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());
-                intent.putExtra(ProductDetailActivity.ARG_IS_BARCODE, true);
                 ActivityCompat.startActivityForResult(MainActivity.this, intent, REQUEST_UPDATE_LANGUAGE,
                         ActivityOptionsCompat
                                 .makeScaleUpAnimation(toolbar, 0, 0, toolbar.getWidth(), toolbar.getHeight())

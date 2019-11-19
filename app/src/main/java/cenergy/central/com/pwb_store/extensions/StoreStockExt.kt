@@ -5,7 +5,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 
 fun List<StoreAvailable>.getStockAvailability(): Pair<Boolean, Boolean> {
     val userInformation = RealmController.getInstance().userInformation
-    val retailerId = userInformation.store?.retailerId
+    val retailerId = userInformation?.store?.retailerId
 
     // output
     var stockCurrentStore = false

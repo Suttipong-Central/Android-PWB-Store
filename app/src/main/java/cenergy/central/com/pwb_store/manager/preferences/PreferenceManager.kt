@@ -75,5 +75,10 @@ enum class AppLanguage(val key: String) {
     },
     EN("en") {
         override fun toString(): String = "en"
-    },
+    };
+
+    companion object {
+        private val map = values().associateBy(AppLanguage::key)
+        fun fromString(value: String) = map[value] ?: TH
+    }
 }
