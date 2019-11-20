@@ -2,11 +2,9 @@ package cenergy.central.com.pwb_store.extensions
 
 import android.content.Context
 import android.os.Parcel
-import android.util.Log
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
-import com.google.gson.JsonArray
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.roundToInt
@@ -36,7 +34,7 @@ fun List<CacheCartItem>.getPaymentType(context: Context): ArrayList<PaymentMetho
     return paymentMethodFilter
 }
 
-fun Int.dpToPx(context: Context): Int{
+fun Int.dpToPx(context: Context): Int {
     val density = context.resources.displayMetrics.density
     return (this.toFloat() * density).roundToInt()
 }
@@ -49,12 +47,12 @@ fun List<PaymentMethod>.getMethodTitle(): List<String> {
     return methods
 }
 
-fun Parcel.writeLongList(input:List<Long>) {
+fun Parcel.writeLongList(input: List<Long>) {
     writeInt(input.size) // Save number of elements.
     input.forEach(this::writeLong) // Save each element.
 }
 
-fun Parcel.createLongList() : List<Long> {
+fun Parcel.createLongList(): List<Long> {
     val size = readLong()
     val output = ArrayList<Long>()
     for (i in 0 until size) {
@@ -63,8 +61,8 @@ fun Parcel.createLongList() : List<Long> {
     return output
 }
 
-fun Double.toStringDiscount(): Double{
-    return this.toString().replace("-","").toDouble()
+fun Double.toStringDiscount(): Double {
+    return this.toString().replace("-", "").toDouble()
 }
 
 fun String?.toStringDiscount(): Double {
@@ -81,4 +79,12 @@ fun String?.getValueDiscount(): String {
         }
     }
     return discount
+}
+
+fun List<List<Long>>.findIntersect(): List<Long> {
+    val sum = arrayListOf<Long>()
+    this.forEach {
+        sum.addAll(it)
+    }
+    return sum.groupBy { it }.filter { it.value.size == this.size }.flatMap { it.value }
 }
