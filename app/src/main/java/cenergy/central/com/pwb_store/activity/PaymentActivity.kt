@@ -21,7 +21,6 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.extensions.checkItems
 import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.fragment.*
@@ -52,7 +51,6 @@ import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
-import javax.security.auth.callback.Callback
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -254,9 +252,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
-                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
-                        null, null, null)
-                handleCreateShippingInformation(deliveryOption, subscribeCheckOut)
+                val addressInfoExtBody = AddressInfoExtensionBody(checkout = shippingAddress!!.email)
+                handleCreateShippingInformation(deliveryOption, addressInfoExtBody)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -346,9 +343,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         showProgressDialog()
         this.shippingSlot = shippingSlot // set shipping slot
-        val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
-                shippingDate, shippingSlot.slotExtension.daySlotId.toString(),
-                shippingSlot.getTimeDescription())
+        val subscribeCheckOut = AddressInfoExtensionBody(
+                checkout = shippingAddress!!.email,
+                shippingDate = shippingDate,
+                shippingSlotInDay = shippingSlot.slotExtension.daySlotId.toString(),
+                shippingSlotDescription = shippingSlot.getTimeDescription())
 
         handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
     }
@@ -539,19 +538,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, subscribeCheckOut: SubscribeCheckOut) {
+    private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody) {
         if (cartId != null && shippingAddress != null) {
             when (val type = DeliveryType.fromString(deliveryOption.methodCode)) {
-                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, subscribeCheckOut)
-                else -> createShippingInfor(type, subscribeCheckOut)
+                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
+                else -> createShippingInfor(type, addressInfoExtensionBody)
             }
         }
     }
 
-    private fun createShippingInfor(type: DeliveryType?, subscribeCheckOut: SubscribeCheckOut) {
+    private fun createShippingInfor(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody) {
         type ?: return // type null?
         HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
-                billingAddress ?: shippingAddress!!, subscribeCheckOut,
+                billingAddress ?: shippingAddress!!, addressInfoExtensionBody,
                 deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
             override fun success(response: ShippingInformationResponse?) {
                 if (response != null) {
@@ -569,14 +568,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, subscribeCheckOut: SubscribeCheckOut) {
+    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody) {
         if (branch == null || type == null) {
             return
         }
         val storeAddress = AddressInformation.createBranchAddress(branch!!)
         HttpManagerMagento(this, true)
                 .createShippingInformation(cartId!!, storeAddress, billingAddress
-                        ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        ?: shippingAddress!!, addressInfoExtensionBody, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
@@ -641,7 +640,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>): ArrayList<PaymentMethod> {
         val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
         val result = methods.filter {
-            supportedPaymentMethods.contains(it.code,true)
+            supportedPaymentMethods.contains(it.code, true)
         }
         return ArrayList(result)
     }
@@ -683,7 +682,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 })
     }
 
-    private fun getHDLMember(number: String){
+    private fun getHDLMember(number: String) {
         val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
         if (!isHDLMemberOn) { // hdl on?
             getMembersT1C(number)
@@ -691,10 +690,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         showProgressDialog()
-        HttpManagerHDL.getInstance().getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse>{
+        HttpManagerHDL.getInstance().getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse> {
             override fun success(response: HDLMemberResponse?) {
-                if (response?.customerInfos != null){
-                    this@PaymentActivity.membersHDL = response.customerInfos?: listOf()
+                if (response?.customerInfos != null) {
+                    this@PaymentActivity.membersHDL = response.customerInfos ?: listOf()
                     mProgressDialog?.dismiss()
                     startMembersFragment()
                 } else {
@@ -828,17 +827,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun filterDeliveryOptions(response: List<DeliveryOption>): List<DeliveryOption> {
         val supportedDeliveryOptions = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_DELIVERY_METHODS)
         return response.filter {
-            supportedDeliveryOptions.contains(it.methodCode,true)
+            supportedDeliveryOptions.contains(it.methodCode, true)
         }
     }
 
     private fun getStoresDelivery(deliveryOption: DeliveryOption) {
         this.branches = arrayListOf() // clear branch list
         when (BuildConfig.FLAVOR) {
-            "cds" -> {
+            "pwb" -> {
+                loadBranches()
+            }
+            else -> {
                 handlePickupLocationList(deliveryOption.extension.pickupLocations)
             }
-            else -> loadBranches()
         }
     }
 
@@ -992,11 +993,25 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-                val storePickup = StorePickup(branch.storeId)
-                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
-                        null, null, storePickup)
-                // store shipping this case can be anything
-                handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
+                // TODO: Refactor checking app flavor
+                if (BuildConfig.FLAVOR == "pwb") {
+                    val storePickup = StorePickup(branch.storeId)
+                    val subscribeCheckOut = AddressInfoExtensionBody(
+                            checkout = shippingAddress!!.email,
+                            storePickup = storePickup)
+                    handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
+                } else { // cds, rbs?
+                    val pickerInfo = PickerInfo(
+                            firstName = shippingAddress!!.firstname,
+                            lastName = shippingAddress!!.lastname,
+                            email = shippingAddress!!.email,
+                            telephone = shippingAddress!!.telephone)
+                    val subscribeCheckOut = AddressInfoExtensionBody(
+                            checkout = shippingAddress!!.email,
+                            pickupLocationId = branch.storeId,
+                            pickerInfo = pickerInfo)
+                    handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
+                }
             }
         }
     }
@@ -1033,7 +1048,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // State Prduct 2h edit store pickup
     override fun onProduct2hEditStorePickup(branchResponse: BranchResponse) {
         showProgressDialog()
-        CartUtils(this).editStorePickup(branchResponse, object : EditStorePickupCallback {
+        CartUtils(this).editStore2hPickup(branchResponse, object : EditStorePickupCallback {
             override fun onSuccessfully() {
                 mProgressDialog?.dismiss()
                 ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
@@ -1071,7 +1086,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 Log.i(TAG, "remote config -> fetch Fail")
             }
 
-                standardCheckout()
+            standardCheckout()
         }
     }
 
@@ -1083,8 +1098,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             this.deliveryOption = DeliveryOption.getStorePickupIspu() // create DeliveryOption Store Pickup ISPU
 
             val storePickup = StorePickup(this.branch!!.storeId)
-            val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
-                    null, null, storePickup)
+            val subscribeCheckOut = AddressInfoExtensionBody(checkout = shippingAddress!!.email,
+                    storePickup = storePickup)
             createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
         }
     }

@@ -153,8 +153,9 @@ class CartUtils(private val context: Context) {
         HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {
                     override fun success(response: CartItem?) {
+                        // is product 2h
                         if (branchResponse != null) {
-                            response?.let { setShippingAddress(cartId, it, product, branchResponse!!) }
+                            response?.let { setProduct2hShippingAddress(cartId, it, product, branchResponse!!) }
                         } else {
                             // product normal
                             response?.let { saveCartItem(it, product, branchResponse) }
@@ -171,14 +172,13 @@ class CartUtils(private val context: Context) {
                 })
     }
 
-    private fun setShippingAddress(cartId: String, cartItem: CartItem, product: Product,
-                                   branchResponse: BranchResponse) {
+    private fun setProduct2hShippingAddress(cartId: String, cartItem: CartItem, product: Product,
+                                            branchResponse: BranchResponse) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
-        val subscribeCheckOut = SubscribeCheckOut("", null,
-                null, null, storePickup)
+        val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)
 
-        HttpManagerMagento.getInstance(context).setShippingInformation(cartId,
+        HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,
                 storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
                 object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
@@ -441,18 +441,17 @@ class CartUtils(private val context: Context) {
         return item != null
     }
 
-    fun editStorePickup(branchResponse: BranchResponse, callback: EditStorePickupCallback) {
+    fun editStore2hPickup(branchResponse: BranchResponse, callback: EditStorePickupCallback) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
-        val subscribeCheckOut = SubscribeCheckOut("", null,
-                null, null, storePickup)
+        val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup =  storePickup)
         val cartId = prefManager.cartId
         if (cartId != null) {
-            HttpManagerMagento.getInstance(context).setShippingInformation(cartId,
+            HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,
                     storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
                     object : ApiResponseCallback<ShippingInformationResponse> {
                         override fun success(response: ShippingInformationResponse?) {
-                            editStorePickupInCartItem(branchResponse, callback)
+                            editStore2hPickupInCartItem(branchResponse, callback)
                         }
 
                         override fun failure(error: APIError) {
@@ -464,7 +463,7 @@ class CartUtils(private val context: Context) {
         }
     }
 
-    private fun editStorePickupInCartItem(branchResponse: BranchResponse,
+    private fun editStore2hPickupInCartItem(branchResponse: BranchResponse,
                                           callback: EditStorePickupCallback) {
         RealmController.getInstance().editBranchInCartItem(branchResponse.branch,
                 object : DatabaseListener {

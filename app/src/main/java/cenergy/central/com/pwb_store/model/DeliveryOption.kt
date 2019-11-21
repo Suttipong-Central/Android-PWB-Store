@@ -55,9 +55,9 @@ data class PickupLocation(var id: String = "",
                           var postcode: String = "",
                           var telephone: String? = "",
                           @SerializedName("lat")
-                          var latitude: String = "",
+                          var latitude: String? = "",
                           @SerializedName("long")
-                          var longitude: String = "",
+                          var longitude: String? = "",
                           @SerializedName("pickup_fee")
                           var pickupFee: String = "",
                           @SerializedName("pos_handling_fee")
@@ -73,8 +73,8 @@ data class PickupLocation(var id: String = "",
                 postcode = postcode,
                 storeName = name,
                 centralStoreCode = code,
-                latitude = latitude,
-                longitude = longitude,
+                latitude = latitude ?: "",
+                longitude = longitude ?: "",
                 regionCode = province,
                 regionId = regionId.toInt(),
                 region = extension.pickupAddressInfo.region,

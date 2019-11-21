@@ -351,6 +351,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun hideAdd1HourItemButton(is1Hour: Boolean = true) {
+        // TODO: Refactor checking app flavor
         if (is1Hour && BuildConfig.FLAVOR == "pwb") {
             add1HourButton.visibility = View.VISIBLE
         } else {

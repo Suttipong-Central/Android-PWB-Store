@@ -3,7 +3,9 @@ package cenergy.central.com.pwb_store.extensions
 import android.content.Context
 import android.os.Parcel
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CacheCartItem
+import cenergy.central.com.pwb_store.model.SubAddress
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import org.json.JSONArray
 import org.json.JSONObject
@@ -87,4 +89,38 @@ fun List<List<Long>>.findIntersect(): List<Long> {
         sum.addAll(it)
     }
     return sum.groupBy { it }.filter { it.value.size == this.size }.flatMap { it.value }
+}
+
+fun AddressInformation.modifyToCdsType(): AddressInformation {
+    val oldSubAddress = this.subAddress
+    var addressLine = ""
+
+    if (subAddress != null) {
+        if (!subAddress!!.houseNumber.isNullOrEmpty()) {
+            addressLine += subAddress!!.houseNumber + " "
+        }
+        if (!subAddress!!.soi.isNullOrEmpty()) {
+            addressLine += subAddress!!.soi + ", "
+        }
+        if (!subAddress!!.addressLine.isNullOrEmpty()) {
+            addressLine += subAddress!!.addressLine
+        }
+    }
+
+    val newSubAddress = SubAddress(mobile = oldSubAddress?.mobile,
+            houseNumber = "",
+            building = oldSubAddress?.building,
+            soi = "",
+            t1cNo = oldSubAddress?.t1cNo,
+            district = oldSubAddress?.district,
+            subDistrict = oldSubAddress?.subDistrict,
+            postcode = oldSubAddress?.postcode,
+            districtId = oldSubAddress?.districtId,
+            subDistrictId = oldSubAddress?.subDistrictId,
+            postcodeId = oldSubAddress?.postcodeId,
+            addressLine = addressLine
+    )
+
+    this.subAddress = newSubAddress
+    return this
 }

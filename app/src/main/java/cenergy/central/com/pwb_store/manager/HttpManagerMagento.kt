@@ -7,6 +7,7 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.asPostcode
+import cenergy.central.com.pwb_store.extensions.modifyToCdsType
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -30,7 +31,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 
 class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
@@ -769,13 +769,16 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun createShippingInformation(cartId: String, shippingAddress: AddressInformation, billingAddress: AddressInformation,
-                                  subscribeCheckOut: SubscribeCheckOut, deliveryOption: DeliveryOption,
+    fun createShippingInformation(cartId: String, shippingAddress: AddressInformation,
+                                  billingAddress: AddressInformation,
+                                  addressInfoExtensionBody: AddressInfoExtensionBody,
+                                  deliveryOption: DeliveryOption,
                                   callback: ApiResponseCallback<ShippingInformationResponse>) {
 
         val cartService = retrofit.create(CartService::class.java)
 
-        // clone shipping address and clear tax information
+        // clone shipping address and clear vat information
+        // because no need send vat and company with shipping address
         val newShippingAddress = AddressInformation(
                 city = shippingAddress.city,
                 region = shippingAddress.region,
@@ -793,32 +796,42 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 company = "",
                 vatId = "")
 
-        val addressInformationBody = AddressInformationBody(newShippingAddress, billingAddress, deliveryOption.methodCode,
-                deliveryOption.carrierCode, subscribeCheckOut)
-        val shippingBody = ShippingBody(addressInformationBody)
-        cartService.createShippingInformation(getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
-            override fun onResponse(call: Call<ShippingInformationResponse>?, response: Response<ShippingInformationResponse>?) {
-                if (response != null && response.isSuccessful) {
-                    val shippingInformation = response.body()
-                    callback.success(shippingInformation)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
+        // TODO: Refactor checking app flavor
+        val addressInformationBody = if (BuildConfig.FLAVOR == "pwb") {
+            AddressInformationBody(newShippingAddress, billingAddress,
+                    deliveryOption.methodCode, deliveryOption.carrierCode, addressInfoExtensionBody)
+        } else {
+            AddressInformationBody(newShippingAddress.modifyToCdsType(),
+                    billingAddress.modifyToCdsType(), deliveryOption.methodCode,
+                    deliveryOption.carrierCode, addressInfoExtensionBody)
+        }
 
-            override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
+        val shippingBody = ShippingBody(addressInformationBody)
+        cartService.createShippingInformation(getLanguage(), cartId, shippingBody)
+                .enqueue(object : Callback<ShippingInformationResponse> {
+                    override fun onResponse(call: Call<ShippingInformationResponse>?,
+                                            response: Response<ShippingInformationResponse>?) {
+                        if (response != null && response.isSuccessful) {
+                            val shippingInformation = response.body()
+                            callback.success(shippingInformation)
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
+                        callback.failure(APIError(t))
+                    }
+                })
     }
 
-    fun setShippingInformation(cartId: String, storeAddress: AddressInformation,
-                               subscribeCheckOut: SubscribeCheckOut,
-                               deliveryOption: DeliveryOption,
-                               callback: ApiResponseCallback<ShippingInformationResponse>) {
+    fun setProduct2hShippingInformation(cartId: String, storeAddress: AddressInformation,
+                                        addressInfoExtensionBody: AddressInfoExtensionBody,
+                                        deliveryOption: DeliveryOption,
+                                        callback: ApiResponseCallback<ShippingInformationResponse>) {
 
         val addressInformationBody = AddressInformationBody(storeAddress, null,
-                deliveryOption.methodCode, deliveryOption.carrierCode, subscribeCheckOut)
+                deliveryOption.methodCode, deliveryOption.carrierCode, addressInfoExtensionBody)
         val shippingBody = ShippingBody(addressInformationBody)
 
         cartService.createShippingInformation(getLanguage(), cartId, shippingBody)
