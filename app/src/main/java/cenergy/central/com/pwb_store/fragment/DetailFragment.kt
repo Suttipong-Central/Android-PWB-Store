@@ -205,11 +205,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                         handleUpdateSizeAdapter()
                     } else {
                         sizeAdepter.setItems(sizeValues)
+                        sizeSelectedOption = handleDefaultSizeOption(sizeValues)
                     }
                     inputProductSize.setAdapter(sizeAdepter)
                     inputProductSize.setHeaderTextBold()
                     inputProductSize.setHeaderTextColor(R.color.nameProductColor)
-                    sizeSelectedOption = handleDefaultSizeOption(sizeValues)
                     inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
                     optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index) // set default
                     inputProductSize.visibility = View.VISIBLE

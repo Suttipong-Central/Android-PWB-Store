@@ -72,7 +72,7 @@ open class CacheCartItem(
                     itemId = cartItem.id,
                     sku = cartItem.sku,
                     qty = cartItem.qty,
-                    name = cartItem.name,
+                    name = product.name,
                     price = cartItem.price,
                     type = cartItem.type,
                     cartId = cartItem.cartId,

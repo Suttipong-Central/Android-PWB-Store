@@ -54,7 +54,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         this.listener = listener
         this.item = item
         this.cacheCartItem = cacheCartItem
-        productName.text = item.name
+        productName.text = cacheCartItem.name
         productCode.text = "${itemView.context.resources.getString(
                 R.string.product_code)} ${item.sku}"
         productPrice.text = "${itemView.context.resources.getString(

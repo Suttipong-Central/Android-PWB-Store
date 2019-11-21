@@ -67,7 +67,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productId: String? = null
     private var productJdaSku: String? = null
     private var product: Product? = null
-    private var childProduct: ArrayList<Product> = arrayListOf()
+    private var childProductList: ArrayList<Product> = arrayListOf()
 
     companion object {
         private val TAG = ProductDetailActivity::class.java.simpleName
@@ -204,7 +204,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // region product ProductDetailProtocol
     override fun getProduct(): Product? = product
 
-    override fun getChildProduct(): ArrayList<Product> = childProduct
+    override fun getChildProduct(): ArrayList<Product> = childProductList
 
     override fun addProductToCompare(product: Product?) {
 //        product?.let { addToCompare(it) }
@@ -361,7 +361,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 override fun success(response: ProductResponse?) {
                     runOnUiThread {
                         if (response != null) {
-                            childProduct = response.products
+                            childProductList = response.products
                             checkHDLOption(product)
                         }
                     }
