@@ -39,6 +39,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private var configItemOptions: ArrayList<OptionBody> = arrayListOf()
     var optionSize: OptionBody? = null
     var optionShade: OptionBody? = null
+    private var productOptionShade: ProductOption? = null
+    private var productOptionSize: ProductOption? = null
     private var shadeSelectedOption: ProductValue? = null
     private var sizeSelectedOption: ProductValue? = null
     private var sizeValues: List<ProductValue> = listOf()
@@ -171,10 +173,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         if (product.typeId == "configurable" && product.extension != null) {
             configOptions = product.extension!!.productConfigOptions
             configOptions?.let { configOption ->
-                val productOptionShade = configOption.firstOrNull { option -> option.label == "Shade" }
+                productOptionShade = configOption.firstOrNull { option -> option.label == "Shade" }
                 productOptionShade?.let {
-                    shadeAttributeId = productOptionShade.attrId
-                    val shadeValues = productOptionShade.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
+                    shadeAttributeId = productOptionShade!!.attrId
+                    val shadeValues = productOptionShade!!.values.filter {
+                        it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
                     val shadeAdapter = ShadeSelectAdapter(shadeValues)
                     inputProductShade.setAdapter(shadeAdapter)
 
@@ -187,16 +190,18 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                             inputProductShade.setShadeName(shade.valueExtension?.label ?: "")
                             optionShade = OptionBody(shadeAttributeId, shade.index)
                             shadeSelectedOption = shade
-                            handleUpdateSizeAdapter()
+                            if (productOptionSize != null){
+                                handleUpdateSizeAdapter()
+                            }
                             handleUpdateViewProductConfig()
                         }
                     })
                 }
 
-                val productOptionSize = configOption.firstOrNull { option -> option.label == "Size" }
+                productOptionSize = configOption.firstOrNull { option -> option.label == "Size" }
                 productOptionSize?.let {
-                    sizeAttributeId = productOptionSize.attrId
-                    sizeValues = productOptionSize.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
+                    sizeAttributeId = productOptionSize!!.attrId
+                    sizeValues = productOptionSize!!.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
                     if (shadeSelectedOption != null){
                         handleUpdateSizeAdapter()
                     } else {
