@@ -18,6 +18,7 @@
     <color name="defaultTextButtonColor">#A6192E</color>
     <color name="defaultButtonStrokeColor">#A6192E</color>
     <color name="iconArrowBack">@color/colorAccent</color>
+    <color name="textSelectedColor">@color/colorAccent</color>
 
     <color name="toggleSelectedStroke">@color/colorAccent</color>
     <color name="toggleSelectedFill">@color/colorPrimary</color>

@@ -15,7 +15,7 @@ class Stores2hViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val tvDeliveryDescription: PowerBuyTextView = itemView.deliveryTextView
     fun bind(item: BranchResponse, selectedIndex: Int?) {
         if (selectedIndex == adapterPosition) {
-            tvStoreName.setTextColor(ContextCompat.getColor(itemView.context, R.color.powerBuyPurple))
+            tvStoreName.setTextColor(ContextCompat.getColor(itemView.context, R.color.textSelectedColor))
             layout.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.extraGray))
         } else {
             tvStoreName.setTextColor(ContextCompat.getColor(itemView.context, R.color.grayTextColor))

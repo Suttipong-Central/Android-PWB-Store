@@ -60,6 +60,7 @@
     <color name="defaultIconButtonColor">@color/white</color>
     <color name="defaultButtonStrokeColor">#F4893F</color>
     <color name="iconArrowBack">@color/white</color>
+    <color name="textSelectedColor">@color/colorPrimary</color>
 
     <color name="toggleSelectedStroke">@color/transparent</color>
     <color name="toggleSelectedFill">@color/white</color>

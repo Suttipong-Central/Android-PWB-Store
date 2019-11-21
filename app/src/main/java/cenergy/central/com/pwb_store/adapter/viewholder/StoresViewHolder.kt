@@ -17,7 +17,7 @@ class StoresViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         storeName.text = branch.storeName
 
         if (selectedIndex == adapterPosition) {
-            storeName.setTextColor(ContextCompat.getColor(itemView.context, R.color.powerBuyPurple))
+            storeName.setTextColor(ContextCompat.getColor(itemView.context, R.color.textSelectedColor))
             layout.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.extraGray))
         } else {
             storeName.setTextColor(ContextCompat.getColor(itemView.context, R.color.grayTextColor))
