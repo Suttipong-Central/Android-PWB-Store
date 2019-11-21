@@ -180,7 +180,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                         it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
                     val shadeAdapter = ShadeSelectAdapter(shadeValues)
                     inputProductShade.setAdapter(shadeAdapter)
-
                     shadeSelectedOption = shadeValues[0]
                     inputProductShade.setShadeName(shadeSelectedOption!!.valueExtension?.label ?: "")
                     optionShade = OptionBody(shadeAttributeId, shadeSelectedOption!!.index) // set default
@@ -223,6 +222,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                         }
                     })
                 }
+                handleUpdateViewProductConfig()
             }
         } else {
             inputProductSize.visibility = View.GONE
@@ -265,7 +265,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         sizeSelectedOption = newSizeVale[0]
         inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
         optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index) // set default
-        handleUpdateViewProductConfig()
     }
 
     private fun handleUpdateViewProductConfig() {
@@ -273,13 +272,13 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             val listProductShadeChild = shadeSelectedOption!!.valueExtension!!.products
             val listProductSizeChild = sizeSelectedOption!!.valueExtension!!.products
             val groupProductChildren = listOf(listProductShadeChild, listProductSizeChild)
-            val childProductId = groupProductChildren.findIntersect()[0] // todo index 0 because we think just only one have intersect
+            val childProductId = groupProductChildren.findIntersect()[0] // index 0 because we think just only one have intersect
             val childProduct = productChildren.first { it.id == childProductId }
             updateViewProductConfig(childProduct)
         } else if (shadeSelectedOption != null){
             val childProduct = productChildren.first { it.id == shadeSelectedOption!!.valueExtension!!.products[0] }
             updateViewProductConfig(childProduct)
-        } else {
+        } else if (sizeSelectedOption != null){
             val childProduct = productChildren.first { it.id == sizeSelectedOption!!.valueExtension!!.products[0] }
             updateViewProductConfig(childProduct)
         }
@@ -321,14 +320,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             sizeValues[0]
         }
     }
-//
-//    private fun handleSizeDefaultValue(): List<ProductValue> {
-//
-//    }
-//
-//    private fun handleShadeDefaultValue(): List<ProductValue> {
-//
-//    }
 
     private fun showSpecialPrice(unit: String, product: Product) {
         if (product.specialPrice > 0) {
