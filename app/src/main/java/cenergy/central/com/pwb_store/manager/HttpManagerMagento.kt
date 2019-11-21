@@ -290,7 +290,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         modifiedCategories.addAll(filteredCategories)
 
                         // add special category
-                        if (Constants.SPECIAL_CATEGORIES.isNotEmpty()) {
+                        if (specialIds.isNotEmpty()) {
                             val specialCategories = categories.filter {
                                 specialIds.contains(it.id)
                             }
