@@ -80,18 +80,18 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 if (!(view as PowerBuyIconButton).isDisable) {
                     product ?: return
                     if (product!!.typeId == "configurable" && !configOptions.isNullOrEmpty()) {
-                        configOptions?.forEach { productOption ->
-                            when (productOption.label) {
-                                "Size" -> {
-                                    configItemOptions.add(optionSize!!)
-                                }
-                                "Shade" -> {
-                                    configItemOptions.add(optionShade!!)
-                                }
+                        configOptions?.let { productOption ->
+                            productOptionShade = productOption.firstOrNull { option -> option.label == "Shade" }
+                            productOptionShade?.let {
+                                configItemOptions.add(optionShade!!)
                             }
+                            productOptionSize = productOption.firstOrNull { option -> option.label == "Size" }
+                            productOptionSize?.let {
+                                configItemOptions.add(optionSize!!)
+                            }
+                            productDetailListener.addProductConfigToCart(product, childProduct, configItemOptions)
+                            configItemOptions.clear()
                         }
-                        productDetailListener.addProductConfigToCart(product, childProduct, configItemOptions)
-                        configItemOptions.clear()
                     } else {
                         productDetailListener.addProductToCart(product)
                     }
