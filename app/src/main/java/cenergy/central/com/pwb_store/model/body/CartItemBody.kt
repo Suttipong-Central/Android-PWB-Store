@@ -6,11 +6,11 @@ import com.google.gson.annotations.SerializedName
 
 data class CartItemBody(var cartItem: CartBody? = null) {
     companion object {
-        fun create(cartId: String, product: Product, listOptionsBody: ArrayList<OptionBody>?): CartItemBody {
+        fun create(cartId: String, product: Product, childProduct: Product?, listOptionsBody: ArrayList<OptionBody>?): CartItemBody {
             return if (listOptionsBody != null) {
                 val optionExtensionBody = OptionExtensionBody.create(listOptionsBody)
                 val productOptionBody = ProductOptionBody.create(optionExtensionBody)
-                val cartBody = CartBody.create(cartId, product.sku, product.getMinSaleQty(), productOptionBody)
+                val cartBody = CartBody.create(cartId, product.sku, childProduct?.getMinSaleQty() ?: product.getMinSaleQty(), productOptionBody)
                 CartItemBody(cartBody) // default add qty 1
             } else {
                 val cartBody = CartBody.create(cartId, product.sku, product.getMinSaleQty())

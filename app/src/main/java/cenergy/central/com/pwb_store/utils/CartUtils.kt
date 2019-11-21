@@ -71,7 +71,7 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun addProductToCart(product: Product, options: ArrayList<OptionBody>? = arrayListOf(),
+    fun addProductToCart(product: Product, childProduct: Product?,options: ArrayList<OptionBody>? = arrayListOf(),
                          callback: AddProductToCartCallback) {
         this.callback = callback
         val cartId = prefManager.cartId
@@ -79,9 +79,9 @@ class CartUtils(private val context: Context) {
         this.branchResponse = null // force no have branch
         this.branchResponses = null
         if (cartId != null) {
-            requestAddToCart(cartId, product)
+            requestAddToCart(cartId, product, childProduct)
         } else {
-            retrieveCart(product)
+            retrieveCart(product, childProduct)
         }
     }
 
@@ -95,20 +95,20 @@ class CartUtils(private val context: Context) {
         val cartId = prefManager.cartId
 
         if (cartId != null) {
-            requestAddToCart(cartId, product)
+            requestAddToCart(cartId, product, null)
         } else {
-            retrieveCart(product)
+            retrieveCart(product, null)
         }
     }
 
-    private fun retrieveCart(product: Product) {
+    private fun retrieveCart(product: Product, childProduct: Product?) {
         HttpManagerMagento.getInstance(context).getCart(object : ApiResponseCallback<String?> {
             override fun success(response: String?) {
                 if (response != null) {
                     prefManager.setCartId(response)
 
                     // next step add to card
-                    requestAddToCart(response, product)
+                    requestAddToCart(response, product, childProduct)
                 }
             }
 
@@ -119,37 +119,37 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    private fun requestAddToCart(cartId: String, product: Product) {
+    private fun requestAddToCart(cartId: String, product: Product, childProduct: Product?) {
         // is empty cart?
         if (cacheCartItems == null || cacheCartItems.isEmpty()) {
             val cartItemBody = if (branchResponse != null) {
                 CartItemBody.create(cartId, product, branchResponse!!)  // ispu
             } else {
-                CartItemBody.create(cartId, product, options) // normal
+                CartItemBody.create(cartId, product, childProduct, options) // normal
             }
-            requestAddToCart(cartId, product, cartItemBody)
+            requestAddToCart(cartId, product, childProduct, cartItemBody)
         } else {
             // is product ispu
             if (branchResponse != null) {
                 if (cacheCartItems.hasProduct2h()) {
                     val body = CartItemBody.create(cartId, product, branchResponse!!)  // ispu
-                    requestAddToCart(cartId, product, body)
+                    requestAddToCart(cartId, product, childProduct, body)
                 } else {
-                    clearCartAndRecreateCart(product)
+                    clearCartAndRecreateCart(product, childProduct)
                 }
             } else {
                 // product normal
                 if (cacheCartItems.hasProduct2h()) {
-                    clearCartAndRecreateCart(product)
+                    clearCartAndRecreateCart(product, childProduct)
                 } else {
-                    val body = CartItemBody.create(cartId, product, options)  // normal
-                    requestAddToCart(cartId, product, body)
+                    val body = CartItemBody.create(cartId, product, childProduct, options)  // normal
+                    requestAddToCart(cartId, product, childProduct, body)
                 }
             }
         }
     }
 
-    private fun requestAddToCart(cartId: String, product: Product, cartItemBody: CartItemBody) {
+    private fun requestAddToCart(cartId: String, product: Product, childProduct: Product?, cartItemBody: CartItemBody) {
         HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {
                     override fun success(response: CartItem?) {
@@ -158,7 +158,7 @@ class CartUtils(private val context: Context) {
                             response?.let { setProduct2hShippingAddress(cartId, it, product, branchResponse!!) }
                         } else {
                             // product normal
-                            response?.let { saveCartItem(it, product, branchResponse) }
+                            response?.let { saveCartItem(it, childProduct?: product, branchResponse) }
                         }
                     }
 
@@ -416,12 +416,12 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    private fun clearCartAndRecreateCart(product: Product) {
+    private fun clearCartAndRecreateCart(product: Product, childProduct: Product?) {
         RealmController.getInstance().deleteAllCacheCartItem(object : DatabaseListener {
             override fun onSuccessfully() {
                 prefManager.clearCartId()
                 cacheCartItems = db.cacheCartItems
-                retrieveCart(product)
+                retrieveCart(product, childProduct)
             }
 
             override fun onFailure(error: Throwable) {

@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
-
+    private var childProduct: Product? = null
     private var configOptions: List<ProductOption>? = listOf()
     private var configItemOptions: ArrayList<OptionBody> = arrayListOf()
     var optionSize: OptionBody? = null
@@ -90,7 +90,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                                 }
                             }
                         }
-                        productDetailListener.addProductConfigToCart(product, configItemOptions)
+                        productDetailListener.addProductConfigToCart(product, childProduct, configItemOptions)
                         configItemOptions.clear()
                     } else {
                         productDetailListener.addProductToCart(product)
@@ -273,42 +273,44 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             val listProductSizeChild = sizeSelectedOption!!.valueExtension!!.products
             val groupProductChildren = listOf(listProductShadeChild, listProductSizeChild)
             val childProductId = groupProductChildren.findIntersect()[0] // index 0 because we think just only one have intersect
-            val childProduct = productChildren.first { it.id == childProductId }
-            updateViewProductConfig(childProduct)
+            childProduct = productChildren.first { it.id == childProductId }
+            updateViewProductConfig()
         } else if (shadeSelectedOption != null){
-            val childProduct = productChildren.first { it.id == shadeSelectedOption!!.valueExtension!!.products[0] }
-            updateViewProductConfig(childProduct)
+            childProduct = productChildren.first { it.id == shadeSelectedOption!!.valueExtension!!.products[0] }
+            updateViewProductConfig()
         } else if (sizeSelectedOption != null){
-            val childProduct = productChildren.first { it.id == sizeSelectedOption!!.valueExtension!!.products[0] }
-            updateViewProductConfig(childProduct)
+            childProduct = productChildren.first { it.id == sizeSelectedOption!!.valueExtension!!.products[0] }
+            updateViewProductConfig()
         }
     }
 
-    private fun updateViewProductConfig(childProduct: Product) {
+    private fun updateViewProductConfig() {
         // setup product image
-        val productImageList = childProduct.getProductImageList()
-        if (productImageList.productDetailImageItems.size > 0) {
-            Glide.with(Contextor.getInstance().context)
-                    .load(productImageList.productDetailImageItems[0].imgUrl)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
-                    .fitCenter()
-                    .into(ivProductImage)
-        } else {
-            ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
-        }
-        rvProductImage.adapter = ProductImageAdapter(this, productImageList.productDetailImageItems)
+        if (childProduct != null){
+            val productImageList = childProduct!!.getProductImageList()
+            if (productImageList.productDetailImageItems.size > 0) {
+                Glide.with(Contextor.getInstance().context)
+                        .load(productImageList.productDetailImageItems[0].imgUrl)
+                        .placeholder(R.drawable.ic_placeholder)
+                        .crossFade()
+                        .fitCenter()
+                        .into(ivProductImage)
+            } else {
+                ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
+            }
+            rvProductImage.adapter = ProductImageAdapter(this, productImageList.productDetailImageItems)
 
-        // setup product detail
-        val unit = getString(R.string.baht)
-        tvProductName.text = childProduct.name
-        tvProductCode.text = "${getString(R.string.product_code)} ${childProduct.sku}"
-        tvNormalPrice.text = childProduct.getDisplayOldPrice(unit)
+            // setup product detail
+            val unit = getString(R.string.baht)
+            tvProductName.text = childProduct!!.name
+            tvProductCode.text = "${getString(R.string.product_code)} ${childProduct!!.sku}"
+            tvNormalPrice.text = childProduct!!.getDisplayOldPrice(unit)
 
-        if (childProduct.isSpecialPrice()) {
-            showSpecialPrice(unit, childProduct)
-        } else {
-            hideSpecialPrice()
+            if (childProduct!!.isSpecialPrice()) {
+                showSpecialPrice(unit, childProduct!!)
+            } else {
+                hideSpecialPrice()
+            }
         }
     }
 
