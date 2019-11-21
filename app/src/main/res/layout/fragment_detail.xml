@@ -215,6 +215,22 @@
         app:layout_constraintTop_toBottomOf="@+id/line1"
         tools:src="@drawable/ic_1h_badge_en" />
 
+    <cenergy.central.com.pwb_store.view.PowerBuyShadeSelectView
+        android:id="@+id/inputProductShade"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_normal"
+        android:layout_marginBottom="@dimen/margin_padding_small"
+        android:layout_weight="1"
+        android:completionThreshold="1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/badge1Hour"
+        app:shade_header="@string/shade" />
+
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
         android:id="@+id/inputProductSize"
         android:layout_width="0dp"
@@ -229,31 +245,13 @@
         app:act_required="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/badge1Hour" />
-
-    <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
-        android:id="@+id/inputProductShade"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_padding_small"
-        android:layout_marginTop="@dimen/margin_padding_small"
-        android:layout_marginEnd="@dimen/margin_padding_normal"
-        android:layout_marginBottom="@dimen/margin_padding_small"
-        android:layout_weight="1"
-        android:completionThreshold="1"
-        android:visibility="gone"
-        app:act_header="@string/shade"
-        app:act_required="false"
-        app:layout_constraintBottom_toTopOf="@id/stockIndicatorView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/inputProductSize" />
+        app:layout_constraintTop_toBottomOf="@+id/inputProductShade" />
 
     <cenergy.central.com.pwb_store.view.StockIndicatorView
         android:id="@+id/stockIndicatorView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/layoutButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40" />
@@ -263,6 +261,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:theme="@style/AlertDialogTheme"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/stockIndicatorView"
         app:layout_constraintEnd_toEndOf="@+id/stockIndicatorView"
         app:layout_constraintStart_toStartOf="@+id/stockIndicatorView"

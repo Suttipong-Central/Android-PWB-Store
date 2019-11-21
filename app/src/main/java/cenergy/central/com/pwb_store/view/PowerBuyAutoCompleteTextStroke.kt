@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.view
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Typeface
 import android.support.design.widget.TextInputLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatAutoCompleteTextView
@@ -179,6 +180,14 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         if (enable) {
             this.inputText.showDropDown()
         }
+    }
+
+    fun setHeaderTextBold(){
+        this.header.setTypeface(this.header.typeface, Typeface.BOLD)
+    }
+
+    fun setHeaderTextColor(color: Int){
+        this.header.setTextColor(ContextCompat.getColor(context, color))
     }
 
     fun setAdapter(adapter: QtyAdapter){

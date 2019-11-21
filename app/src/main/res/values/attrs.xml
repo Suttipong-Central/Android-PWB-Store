@@ -33,4 +33,9 @@
         <attr name="btn_default" format="boolean"/>
         <attr name="text" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="PowerBuyShadeSelectView">
+        <attr name="shade_header" format="string"/>
+        <attr name="shade_name" format="string"/>
+    </declare-styleable>
 </resources>

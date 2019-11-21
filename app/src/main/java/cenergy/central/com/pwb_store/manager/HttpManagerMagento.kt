@@ -336,11 +336,12 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     val stockItem = StockItem()
                     val images = arrayListOf<ProductGallery>()
                     val productOptions = arrayListOf<ProductOption>()
+                    val productIdChildren = arrayListOf<String>()
                     val specifications = arrayListOf<Specification>()
 
                     try {
                         val productObject = JSONObject(data?.string())
-                        product.id = productObject.getInt("id")
+                        product.id = productObject.getLong("id")
                         product.sku = productObject.getString("sku")
                         product.name = productObject.getString("name")
                         product.price = productObject.getDouble("price")
@@ -385,8 +386,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                             }
                         }
 
-                        Log.d("Specifications", "${specifications.size}")
-
                         if (extensionObj.has("configurable_product_options")) {
                             val productConfigArray = extensionObj.getJSONArray("configurable_product_options")
                             for (i in 0 until productConfigArray.length()) {
@@ -398,13 +397,13 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                 val productValues = arrayListOf<ProductValue>()
                                 if (productConfigArray.getJSONObject(i).has("values")) {
                                     val valuesArray = productConfigArray.getJSONObject(i).getJSONArray("values")
-                                    val productIDs = arrayListOf<Long>()
                                     for (j in 0 until valuesArray.length()) {
                                         val index = valuesArray.getJSONObject(j).getInt("value_index")
                                         val valueExtensionObject = valuesArray.getJSONObject(j).getJSONObject("extension_attributes")
                                         val valueLabel = valueExtensionObject.getString("label")
                                         val value = valueExtensionObject.getString("frontend_value")
                                         val type = valueExtensionObject.getString("frontend_type")
+                                        val productIDs = arrayListOf<Long>()
                                         if (valueExtensionObject.has("products")) {
                                             val productArray = valueExtensionObject.getJSONArray("products")
                                             for (k in 0 until productArray.length()) {
@@ -417,8 +416,15 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                 productOptions.add(ProductOption(id, productId, attrId, label, position, productValues))
                             }
                         }
-
                         productExtension.productConfigOptions = productOptions
+
+                        if (extensionObj.has("configurable_product_links")) {
+                            val productChildrenArray = extensionObj.getJSONArray("configurable_product_links")
+                            for (i in 0 until productChildrenArray.length()){
+                                productIdChildren.add(productChildrenArray.getString(i))
+                            }
+                        }
+                        productExtension.productConfigLinks = productIdChildren
 
                         val galleryArray = productObject.getJSONArray("media_gallery_entries")
                         for (i in 0 until galleryArray.length()) {

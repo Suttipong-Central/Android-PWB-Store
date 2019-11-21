@@ -22,9 +22,13 @@ class ParsingUtils{
                 val productExtension = ProductExtension()
                 val stockItem = StockItem()
                 val productFilter = ProductFilter()
+                val productIdChildren = arrayListOf<String>()
+                val images = arrayListOf<ProductGallery>()
+                val productOptions = arrayListOf<ProductOption>()
+                val specifications = arrayListOf<Specification>()
                 val filterItem = arrayListOf<FilterItem>()
 
-                product.id = productObj.getInt("id")
+                product.id = productObj.getLong("id")
                 product.sku = productObj.getString("sku")
                 product.name = productObj.getString("name")
                 product.price = productObj.getDouble("price")
@@ -43,7 +47,6 @@ class ParsingUtils{
                 }
 
                 val extensionObj = productObj.getJSONObject("extension_attributes")
-
                 if(extensionObj.has("stock_item")){
                     val stockObject = extensionObj.getJSONObject("stock_item")
                     stockItem.productId = stockObject.getLong("product_id")
@@ -99,7 +102,109 @@ class ParsingUtils{
                             }
                         }
                     }
+
+                    // set value to product specifications
+                    val customAttrCode = attrArray.getJSONObject(j).getString("attribute_code")
+                    specifications.forEach {
+                        if (it.code == customAttrCode) {
+                            val customAttrValue = attrArray.getJSONObject(j).getString("value")
+                            it.value = customAttrValue
+                        }
+                    }
                 }
+
+                // get product specification
+                if (extensionObj.has("specification_attributes")) {
+                    val specAttrs = extensionObj.getJSONArray("specification_attributes")
+                    for (specIndex in 0 until specAttrs.length()) {
+                        val specAttr = specAttrs.getJSONObject(specIndex)
+                        if (specAttr.has("attribute_code") && specAttr.has("label")) {
+                            // no need attr star_rating
+                            if (!specAttr.getString("attribute_code").contains("star_rating")) {
+                                val attrCode = specAttr.getString("attribute_code")
+                                val label = specAttr.getString("label")
+                                specifications.add(Specification(code = attrCode, label = label))
+                            }
+                        }
+                    }
+                }
+
+                if (extensionObj.has("configurable_product_options")) {
+                    val productConfigArray = extensionObj.getJSONArray("configurable_product_options")
+                    for (j in 0 until productConfigArray.length()) {
+                        val id = productConfigArray.getJSONObject(j).getInt("id")
+                        val attrId = productConfigArray.getJSONObject(j).getString("attribute_id")
+                        val label = productConfigArray.getJSONObject(j).getString("label")
+                        val position = productConfigArray.getJSONObject(j).getInt("position")
+                        val productId = productConfigArray.getJSONObject(j).getLong("product_id")
+
+                        val productValues = arrayListOf<ProductValue>()
+                        if (productConfigArray.getJSONObject(j).has("values")) {
+                            val valuesArray = productConfigArray.getJSONObject(j).getJSONArray("values")
+                            for (k in 0 until valuesArray.length()) {
+                                val index = valuesArray.getJSONObject(k).getInt("value_index")
+                                val valueExtensionObject = valuesArray.getJSONObject(k).getJSONObject("extension_attributes")
+                                val valueLabel = valueExtensionObject.getString("label")
+                                val value = valueExtensionObject.getString("frontend_value")
+                                val type = valueExtensionObject.getString("frontend_type")
+
+                                val productIDs = arrayListOf<Long>()
+                                if (valueExtensionObject.has("products")) {
+                                    val productIdArray = valueExtensionObject.getJSONArray("products")
+                                    for (l in 0 until productIdArray.length()) {
+                                        productIDs.add(productIdArray.getLong(l))
+                                    }
+                                }
+                                productValues.add(ProductValue(index, ProductValueExtension(valueLabel, value, type, productIDs)))
+                            }
+                        }
+                        productOptions.add(ProductOption(id, productId, attrId, label, position, productValues))
+                    }
+                }
+                productExtension.productConfigOptions = productOptions
+
+                if (extensionObj.has("configurable_product_links")) {
+                    val productChildrenArray = extensionObj.getJSONArray("configurable_product_links")
+                    for (j in 0 until productChildrenArray.length()){
+                        productIdChildren.add(productChildrenArray.getString(j))
+                    }
+                }
+                productExtension.productConfigLinks = productIdChildren
+
+                val galleryArray = productObj.getJSONArray("media_gallery_entries")
+                for (j in 0 until galleryArray.length()) {
+                    val id = galleryArray.getJSONObject(j).getString("id")
+                    val type = galleryArray.getJSONObject(j).getString("media_type")
+                    var label = ""
+                    if(galleryArray.getJSONObject(j).has("label")){
+                        label = galleryArray.getJSONObject(j).getString("label")
+                    }
+                    var position = 0
+                    if (!galleryArray.getJSONObject(j).isNull("position")) {
+                        position = galleryArray.getJSONObject(j).getInt("position")
+                    }
+                    var disabled = false
+                    if (!galleryArray.getJSONObject(j).isNull("disabled")) {
+                        disabled = galleryArray.getJSONObject(j).getBoolean("disabled")
+                    }
+                    val file = galleryArray.getJSONObject(j).getString("file")
+                    images.add(ProductGallery(id, type, label, position, disabled, file))
+                }
+                product.gallery = images
+
+                val attrOptions = productObj.getJSONArray("custom_attributes_option")
+                // set value to product specifications
+                for (optionIndex in 0 until attrOptions.length()) {
+                    val attrOption = attrOptions.getJSONObject(optionIndex)
+                    val customAttrCode = attrOption.getString("attribute_code")
+                    specifications.forEach {
+                        if (it.code == customAttrCode) {
+                            val customAttrValue = attrOption.getString("value")
+                            it.value = customAttrValue
+                        }
+                    }
+                }
+                productExtension.specifications = specifications // addd product spec to product extension
 
                 val filterArray = productResponseObject.getJSONArray("filters")
                 for (j in 0 until filterArray.length()) {

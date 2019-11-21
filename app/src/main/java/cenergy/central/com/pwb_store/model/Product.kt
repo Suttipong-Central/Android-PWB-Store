@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class Product(
-        var id: Int = 0,
+        var id: Long = 0,
         var sku: String = "",
         var name: String = "",
         var price: Double = 0.0,
@@ -40,7 +40,7 @@ class Product(
         var urlKey: String = "") : IViewType, Parcelable {
 
     constructor(parcel: Parcel) : this(
-            parcel.readInt(),
+            parcel.readLong(),
             parcel.readString() ?: "",
             parcel.readString() ?: "",
             parcel.readDouble(),
@@ -143,12 +143,8 @@ class Product(
         }
     }
 
-    fun setProductImageList(productImageList: ProductDetailImage) {
-        this.productImageList = productImageList
-    }
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(sku)
         parcel.writeString(name)
         parcel.writeDouble(price)

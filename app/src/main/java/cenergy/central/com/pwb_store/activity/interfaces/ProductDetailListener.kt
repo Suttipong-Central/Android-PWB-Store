@@ -5,6 +5,7 @@ import cenergy.central.com.pwb_store.model.body.OptionBody
 
 interface ProductDetailListener {
     fun getProduct(): Product?
+    fun getChildProduct(): ArrayList<Product>
 
     fun addProductToCompare(product: Product?)
     fun addProductToCart(product: Product?)

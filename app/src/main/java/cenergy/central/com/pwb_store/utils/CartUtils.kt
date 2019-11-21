@@ -71,7 +71,7 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun addProductToCart(product: Product, options: ArrayList<OptionBody> = arrayListOf(),
+    fun addProductToCart(product: Product, options: ArrayList<OptionBody>? = arrayListOf(),
                          callback: AddProductToCartCallback) {
         this.callback = callback
         val cartId = prefManager.cartId

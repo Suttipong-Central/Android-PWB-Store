@@ -29,11 +29,15 @@ import cenergy.central.com.pwb_store.fragment.WebViewFragment
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.DeliveryInfo
 import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.OptionBody
+import cenergy.central.com.pwb_store.model.body.SortOrder
+import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
 import cenergy.central.com.pwb_store.utils.CartUtils
@@ -63,6 +67,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productId: String? = null
     private var productJdaSku: String? = null
     private var product: Product? = null
+    private var childProduct: ArrayList<Product> = arrayListOf()
 
     companion object {
         private val TAG = ProductDetailActivity::class.java.simpleName
@@ -199,6 +204,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // region product ProductDetailProtocol
     override fun getProduct(): Product? = product
 
+    override fun getChildProduct(): ArrayList<Product> = childProduct
+
     override fun addProductToCompare(product: Product?) {
 //        product?.let { addToCompare(it) }
         showAlertDialog(getString(R.string.developing_system_compare))
@@ -329,11 +336,44 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun handleGetProductSuccess(response: Product?) {
         if (response != null) {
-            checkHDLOption(response)
+            if (response.typeId == "configurable") {
+                checkProductConfig(response)
+            } else {
+                checkHDLOption(response)
+            }
         } else {
             dismissProgressDialog()
             tvNotFound.visibility = View.VISIBLE
             containerGroupView.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun checkProductConfig(product: Product) {
+        if (product.typeId == "configurable") {
+            val productLinks = product.extension?.productConfigLinks ?: listOf()
+            val result = TextUtils.join(",", productLinks)
+            val filterGroupsList = java.util.ArrayList<FilterGroups>()
+            filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
+            val sortOrders = java.util.ArrayList<SortOrder>()
+
+            ProductListAPI.retrieveProducts(this, productLinks.size, 1,
+                    filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
+                override fun success(response: ProductResponse?) {
+                    runOnUiThread {
+                        if (response != null) {
+                            childProduct = response.products
+                            checkHDLOption(product)
+                        }
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    runOnUiThread {
+                        Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
+                        checkHDLOption(product)
+                    }
+                }
+            })
         }
     }
 

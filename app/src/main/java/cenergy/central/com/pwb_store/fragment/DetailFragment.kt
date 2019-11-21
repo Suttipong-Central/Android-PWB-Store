@@ -17,7 +17,9 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
+import cenergy.central.com.pwb_store.adapter.ShadeSelectAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
+import cenergy.central.com.pwb_store.adapter.interfaces.ShadeClickListener
 import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
@@ -28,22 +30,28 @@ import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
 
-
+@SuppressLint("SetTextI18n")
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
 
-    private lateinit var sizeAdepter: ProductOptionAdepter
-    private lateinit var shadeAdepter: ProductOptionAdepter
     private var configOptions: List<ProductOption>? = listOf()
     private var configItemOptions: ArrayList<OptionBody> = arrayListOf()
     var optionSize: OptionBody? = null
     var optionShade: OptionBody? = null
+    private var shadeSelectedOption: ProductValue? = null
+    private var sizeSelectedOption: ProductValue? = null
+    private var sizeValues: List<ProductValue> = listOf()
+    private val sizeAdepter by lazy { ProductOptionAdepter(context!!, R.layout.layout_text_item) }
+    private var sizeAttributeId: String = ""
+    private var shadeAttributeId: String = ""
+    private var productChildren = arrayListOf<Product>()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
         product = productDetailListener.getProduct()
+        productChildren = productDetailListener.getChildProduct()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -123,7 +131,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun initDetail(product: Product) {
         // setup product image
         val productImageList = product.getProductImageList()
@@ -161,44 +168,55 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             badge1Hour.setImageDrawable(null)
         }
 
-        if (product.typeId == "configurable" && !product.extension?.productConfigOptions.isNullOrEmpty()) {
+        if (product.typeId == "configurable" && product.extension != null) {
             configOptions = product.extension!!.productConfigOptions
-            configOptions?.forEach { configOption ->
-                when (configOption.label) {
-                    "Size" -> {
-                        sizeAdepter = ProductOptionAdepter(context!!, R.layout.layout_text_item, arrayListOf())
-                        sizeAdepter.setItems(configOption.values)
-                        inputProductSize.setAdapter(sizeAdepter)
+            configOptions?.let { configOption ->
+                val productOptionShade = configOption.firstOrNull { option -> option.label == "Shade" }
+                productOptionShade?.let {
+                    shadeAttributeId = productOptionShade.attrId
+                    val shadeValues = productOptionShade.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
+                    val shadeAdapter = ShadeSelectAdapter(shadeValues)
+                    inputProductShade.setAdapter(shadeAdapter)
 
-                        val defaultOption = configOption.values[0]
-                        inputProductSize.setText(defaultOption.valueExtension?.label ?: "")
-                        optionSize = OptionBody(configOption.attrId, defaultOption.index) // set default
+                    shadeSelectedOption = shadeValues[0]
+                    inputProductShade.setShadeName(shadeSelectedOption!!.valueExtension?.label ?: "")
+                    optionShade = OptionBody(shadeAttributeId, shadeSelectedOption!!.index) // set default
+                    inputProductShade.visibility = View.VISIBLE
+                    shadeAdapter.setCallBack(object : ShadeClickListener {
+                        override fun onShadeClickListener(shade: ProductValue) {
+                            inputProductShade.setShadeName(shade.valueExtension?.label ?: "")
+                            optionShade = OptionBody(shadeAttributeId, shade.index)
+                            shadeSelectedOption = shade
+                            handleUpdateSizeAdapter()
+                            handleUpdateViewProductConfig()
+                        }
+                    })
+                }
 
-                        inputProductSize.visibility = View.VISIBLE
-                        sizeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
-                            override fun onOptionClickListener(optionValue: Int, label: String) {
-                                inputProductSize.setText(label)
-                                optionSize = OptionBody(configOption.attrId, optionValue)
-                            }
-                        })
+                val productOptionSize = configOption.firstOrNull { option -> option.label == "Size" }
+                productOptionSize?.let {
+                    sizeAttributeId = productOptionSize.attrId
+                    sizeValues = productOptionSize.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
+                    if (shadeSelectedOption != null){
+                        handleUpdateSizeAdapter()
+                    } else {
+                        sizeAdepter.setItems(sizeValues)
                     }
-                    "Shade" -> {
-                        shadeAdepter = ProductOptionAdepter(context!!, R.layout.layout_text_item, arrayListOf())
-                        shadeAdepter.setItems(configOption.values)
-                        inputProductShade.setAdapter(shadeAdepter)
-
-                        val defaultOption = configOption.values[0]
-                        inputProductShade.setText(defaultOption.valueExtension?.label ?: "")
-                        optionShade = OptionBody(configOption.attrId, defaultOption.index) // set default
-
-                        inputProductShade.visibility = View.VISIBLE
-                        shadeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
-                            override fun onOptionClickListener(optionValue: Int, label: String) {
-                                inputProductShade.setText(label)
-                                optionShade = OptionBody(configOption.attrId, optionValue)
-                            }
-                        })
-                    }
+                    inputProductSize.setAdapter(sizeAdepter)
+                    inputProductSize.setHeaderTextBold()
+                    inputProductSize.setHeaderTextColor(R.color.nameProductColor)
+                    sizeSelectedOption = handleDefaultSizeOption(sizeValues)
+                    inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
+                    optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index) // set default
+                    inputProductSize.visibility = View.VISIBLE
+                    sizeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
+                        override fun onOptionClickListener(size: ProductValue) {
+                            inputProductSize.setText(size.valueExtension?.label?: "")
+                            optionSize = OptionBody(sizeAttributeId, size.index)
+                            sizeSelectedOption = size
+                            handleUpdateViewProductConfig()
+                        }
+                    })
                 }
             }
         } else {
@@ -229,6 +247,83 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
         shareButton.setOnClickListener(this)
     }
+
+    private fun handleUpdateSizeAdapter() {
+        val newSizeVale = arrayListOf<ProductValue>()
+        shadeSelectedOption!!.valueExtension?.products?.forEach { shadeId ->
+            val size = sizeValues.firstOrNull{ it.valueExtension!!.products.contains(shadeId)}
+            if (size != null){
+                newSizeVale.add(size)
+            }
+        }
+        sizeAdepter.setItems(newSizeVale)
+        sizeSelectedOption = newSizeVale[0]
+        inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
+        optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index) // set default
+        handleUpdateViewProductConfig()
+    }
+
+    private fun handleUpdateViewProductConfig() {
+        if (shadeSelectedOption != null && sizeSelectedOption != null){
+            val listProductShadeChild = shadeSelectedOption!!.valueExtension!!.products
+            val listProductSizeChild = sizeSelectedOption!!.valueExtension!!.products
+            val groupProductChildren = listOf(listProductShadeChild, listProductSizeChild)
+            val childProductId = groupProductChildren.findIntersect()[0] // todo index 0 because we think just only one have intersect
+            val childProduct = productChildren.first { it.id == childProductId }
+            updateViewProductConfig(childProduct)
+        } else if (shadeSelectedOption != null){
+            val childProduct = productChildren.first { it.id == shadeSelectedOption!!.valueExtension!!.products[0] }
+            updateViewProductConfig(childProduct)
+        } else {
+            val childProduct = productChildren.first { it.id == sizeSelectedOption!!.valueExtension!!.products[0] }
+            updateViewProductConfig(childProduct)
+        }
+    }
+
+    private fun updateViewProductConfig(childProduct: Product) {
+        // setup product image
+        val productImageList = childProduct.getProductImageList()
+        if (productImageList.productDetailImageItems.size > 0) {
+            Glide.with(Contextor.getInstance().context)
+                    .load(productImageList.productDetailImageItems[0].imgUrl)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .crossFade()
+                    .fitCenter()
+                    .into(ivProductImage)
+        } else {
+            ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
+        }
+        rvProductImage.adapter = ProductImageAdapter(this, productImageList.productDetailImageItems)
+
+        // setup product detail
+        val unit = getString(R.string.baht)
+        tvProductName.text = childProduct.name
+        tvProductCode.text = "${getString(R.string.product_code)} ${childProduct.sku}"
+        tvNormalPrice.text = childProduct.getDisplayOldPrice(unit)
+
+        if (childProduct.isSpecialPrice()) {
+            showSpecialPrice(unit, childProduct)
+        } else {
+            hideSpecialPrice()
+        }
+    }
+
+    private fun handleDefaultSizeOption(sizeValues: List<ProductValue>): ProductValue {
+        return if (shadeSelectedOption != null){
+            val shadeChildId = shadeSelectedOption!!.valueExtension!!.products.first()
+            sizeValues.firstOrNull { it.valueExtension!!.products.first() == shadeChildId } ?: sizeValues[0]
+        } else {
+            sizeValues[0]
+        }
+    }
+//
+//    private fun handleSizeDefaultValue(): List<ProductValue> {
+//
+//    }
+//
+//    private fun handleShadeDefaultValue(): List<ProductValue> {
+//
+//    }
 
     private fun showSpecialPrice(unit: String, product: Product) {
         if (product.specialPrice > 0) {

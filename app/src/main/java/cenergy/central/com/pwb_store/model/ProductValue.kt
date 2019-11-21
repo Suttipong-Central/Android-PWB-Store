@@ -1,34 +1,12 @@
 package cenergy.central.com.pwb_store.model
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 class ProductValue (
         @SerializedName("value_index")
         var index: Int = 0,
         @SerializedName("extension_attributes")
-        var valueExtension: ProductValueExtension? = null): Parcelable {
-    constructor(parcel: Parcel) : this(
-            parcel.readInt(),
-            parcel.readParcelable(ProductValueExtension::class.java.classLoader))
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(index)
-        parcel.writeParcelable(valueExtension, flags)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<ProductValue> {
-        override fun createFromParcel(parcel: Parcel): ProductValue {
-            return ProductValue(parcel)
-        }
-
-        override fun newArray(size: Int): Array<ProductValue?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+        var valueExtension: ProductValueExtension? = null): Parcelable
