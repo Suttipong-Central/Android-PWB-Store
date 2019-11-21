@@ -120,8 +120,8 @@
                     android:id="@+id/input_the1_card_id"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:header="@string/t1_member"
                     android:layout_marginEnd="@dimen/margin_padding_small"
+                    app:header="@string/t1_member"
                     app:layout_constraintEnd_toEndOf="@id/guildHalf"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -138,13 +138,14 @@
                     app:layout_constraintStart_toStartOf="@id/input_the1_card_id"
                     app:layout_constraintTop_toBottomOf="@+id/input_the1_card_id" />
 
-                <Button
+                <cenergy.central.com.pwb_store.view.PowerBuyIconButton
                     android:id="@+id/btnChangeThe1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/t1_change"
+                    android:layout_marginStart="@dimen/margin_padding_normal"
+                    android:layout_marginBottom="@dimen/margin_padding_xsmall"
+                    app:text="@string/t1_add"
+                    app:icon_invisible="true"
                     app:layout_constraintBottom_toBottomOf="@+id/input_the1_card_id"
                     app:layout_constraintStart_toEndOf="@+id/input_the1_card_id" />
 
@@ -566,7 +567,7 @@
                     android:layout_weight="1"
                     android:completionThreshold="1"
                     app:act_header="@string/sub_district"
-                    app:act_required="true" >
+                    app:act_required="true">
 
                     <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
                         android:id="@+id/billing_house_no_payment"

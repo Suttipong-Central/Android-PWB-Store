@@ -331,6 +331,7 @@
     <string name="t1_member">T1 member no</string>
     <string name="title_earn_t1c_option">Earn T1 points</string>
     <string name="t1_change">Change</string>
+    <string name="t1_add">Add</string>
     <string name="information">Information</string>
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>

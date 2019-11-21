@@ -48,7 +48,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import kotlinx.android.synthetic.main.fragment_payment_billing.*
 import java.text.NumberFormat
 import java.util.*
 
@@ -84,6 +83,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
     private lateinit var radioTaxGroup: RadioGroup
+    private lateinit var changeT1Button: PowerBuyIconButton
 
     private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
     private lateinit var districtInput: PowerBuyAutoCompleteTextStroke
@@ -664,13 +664,15 @@ class PaymentBillingFragment : Fragment() {
         taxIdEdt.setTextLength(13)
 
         //set T1
-        val changeT1Button: Button = rootView.findViewById(R.id.btnChangeThe1)
+        changeT1Button = rootView.findViewById(R.id.btnChangeThe1)
         t1MemberNameTextView = rootView.findViewById(R.id.tvT1MemberName)
         t1cardInput.setDrawableStart(R.drawable.ic_the1)
         t1cardInput.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         t1cardInput.setTextLength(10)
         t1cardInput.setOnTextChanging(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
+            override fun afterTextChanged(s: Editable) {
+                changeT1Button.setText(getString(
+                        if (s.length >= 10) R.string.t1_change else R.string.t1_add))
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

@@ -332,6 +332,7 @@
     <string name="t1_member">หมายเลขสมาชิกเดอะวัน</string>
     <string name="title_earn_t1c_option">รับคะแนน T1</string>
     <string name="t1_change">เปลี่ยน</string>
+    <string name="t1_add">เพิ่ม</string>
     <string name="information">ข้อมูล</string>
     <string name="close">ปิด</string>
     <string name="payment_description">แสกนโค้ดเพื่อชำระเงินสำหรับคำสั่งซื้อนี้</string>
