@@ -602,7 +602,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // endregion
 
     private void handleStartCategoryLv1() {
-        if (Constants.Companion.getSPECIAL_CATEGORIES().contains(categoryLv1.getId())) {
+        if (categoryLv1.getChildren().isEmpty()) {
             this.categoryLv2 = null; //Clear categoryLv2
             startProductListFragment(categoryLv1);
         } else {

@@ -36,7 +36,5 @@ class Constants {
         // region formatter
         val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
         // endregion
-
-        val SPECIAL_CATEGORIES = arrayListOf<String>("6484")
     }
 }
