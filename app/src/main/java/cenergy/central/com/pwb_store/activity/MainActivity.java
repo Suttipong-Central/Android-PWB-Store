@@ -362,8 +362,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     private void requestCategories() {
         String displayIds = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_DISPLAY_SPECIAL_CATEGORY_ID);
-
-
+        specialCategoryIds.clear();
         if (!displayIds.trim().equals("")) {
             getPreferenceManager().setSpecialCategoryIds(displayIds);
             String[] ids = displayIds.split(",");
