@@ -112,6 +112,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private FirebaseRemoteConfig fbRemoteConfig;
     private long cacheExpiration = 3600; // 1 hour in seconds.
     private boolean isLoadingCategory = false;
+    private ArrayList<String> specialCategoryIds = new ArrayList<>();
 
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
@@ -362,15 +363,15 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void requestCategories() {
         String displayIds = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_DISPLAY_SPECIAL_CATEGORY_ID);
 
-        ArrayList<String> specialIds = new ArrayList<>();
+
         if (!displayIds.trim().equals("")) {
             getPreferenceManager().setSpecialCategoryIds(displayIds);
             String[] ids = displayIds.split(",");
-            specialIds.addAll(Arrays.asList(ids));
+            specialCategoryIds.addAll(Arrays.asList(ids));
         }
 
         HttpManagerMagento.Companion.getInstance(this).retrieveCategory(
-                CategoryUtils.SUPER_PARENT_ID, false, specialIds,
+                CategoryUtils.SUPER_PARENT_ID, false, specialCategoryIds,
                 new ApiResponseCallback<List<Category>>() {
                     @Override
                     public void success(@Nullable final List<Category> categories) {
@@ -602,7 +603,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // endregion
 
     private void handleStartCategoryLv1() {
-        if (categoryLv1.getChildren().isEmpty()) {
+        if (specialCategoryIds.contains(categoryLv1.getId())) {
             this.categoryLv2 = null; //Clear categoryLv2
             startProductListFragment(categoryLv1);
         } else {
