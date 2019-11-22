@@ -300,12 +300,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         modifiedCategories.addAll(filteredCategories)
 
                         // add special category
-                        if (specialIds.isNotEmpty()) {
-                            val specialCategories = categories.filter {
-                                specialIds.contains(it.id)
-                            }
-                            if (specialCategories.isNotEmpty()) {
-                                modifiedCategories.addAll(specialCategories)
+                        specialIds.forEach {
+                            val cat = categories.firstOrNull { category ->  category.id == it }
+                            if (cat != null) {
+                                modifiedCategories.add(cat)
                             }
                         }
                     } else {
