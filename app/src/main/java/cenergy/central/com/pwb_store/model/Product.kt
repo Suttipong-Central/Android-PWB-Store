@@ -110,31 +110,6 @@ class Product(
 //        return image
     }
 
-    fun isSpecialPrice(): Boolean {
-        return if (specialFromDate != null && specialToDate != null) {
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-            val specialFormDateTime = formatter.parse(specialFromDate)
-            val specialToDateTime = formatter.parse(specialToDate)
-            val current = Date()
-            if (specialPrice < price) {
-                val formatToday = SimpleDateFormat("dd", Locale.ENGLISH)
-                val formatMonth = SimpleDateFormat("MM", Locale.ENGLISH)
-                val formatYear = SimpleDateFormat("yyy", Locale.ENGLISH)
-                if (formatToday.format(specialToDateTime) == formatToday.format(current)
-                        && formatMonth.format(specialToDateTime) == formatMonth.format(current)
-                        && formatYear.format(specialToDateTime) == formatYear.format(current)) {
-                    true
-                } else {
-                    (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
-                }
-            } else {
-                false
-            }
-        } else {
-            false
-        }
-    }
-
     fun getMinSaleQty(): Int{
         return if (extension?.stokeItem?.minQTY != null && extension!!.stokeItem!!.minQTY!! > 0){
             extension!!.stokeItem!!.minQTY!!

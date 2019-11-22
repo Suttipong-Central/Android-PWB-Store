@@ -68,7 +68,7 @@ class ParsingUtils{
                 productExtension.stokeItem = stockItem // add stockItem to productExtension
                 product.extension = productExtension // set productExtension to product
 
-                val attrArray = productObj.getJSONArray("custom_attributes")
+                val attrArray = productObj.getJSONArray("custom_attributes_option")
                 for (j in 0 until attrArray.length()) {
                     when (attrArray.getJSONObject(j).getString("attribute_code")) {
                         "special_price" -> {

@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.is1HourProduct
+import cenergy.central.com.pwb_store.extensions.isSpecialPrice
 import cenergy.central.com.pwb_store.extensions.set1HourBadge
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
