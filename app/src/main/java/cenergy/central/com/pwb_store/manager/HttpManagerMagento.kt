@@ -400,9 +400,18 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                     for (j in 0 until valuesArray.length()) {
                                         val index = valuesArray.getJSONObject(j).getInt("value_index")
                                         val valueExtensionObject = valuesArray.getJSONObject(j).getJSONObject("extension_attributes")
-                                        val valueLabel = valueExtensionObject.getString("label")
-                                        val value = valueExtensionObject.getString("frontend_value")
-                                        val type = valueExtensionObject.getString("frontend_type")
+                                        var valueLabel = ""
+                                        if (valueExtensionObject.has("label")){
+                                            valueLabel = valueExtensionObject.getString("label")
+                                        }
+                                        var value = ""
+                                        if (valueExtensionObject.has("frontend_value")){
+                                            value = valueExtensionObject.getString("frontend_value")
+                                        }
+                                        var type = ""
+                                        if (valueExtensionObject.has("frontend_type")){
+                                            type = valueExtensionObject.getString("frontend_type")
+                                        }
                                         val productIDs = arrayListOf<Long>()
                                         if (valueExtensionObject.has("products")) {
                                             val productArray = valueExtensionObject.getJSONArray("products")
@@ -430,7 +439,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         for (i in 0 until galleryArray.length()) {
                             val id = galleryArray.getJSONObject(i).getString("id")
                             val type = galleryArray.getJSONObject(i).getString("media_type")
-                            val label = galleryArray.getJSONObject(i).getString("label")
+                            var label = ""
+                            if(galleryArray.getJSONObject(i).has("label")) {
+                                label = galleryArray.getJSONObject(i).getString("label")
+                            }
                             var position = 0
                             if (!galleryArray.getJSONObject(i).isNull("position")) {
                                 position = galleryArray.getJSONObject(i).getInt("position")

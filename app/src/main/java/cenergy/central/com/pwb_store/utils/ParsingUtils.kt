@@ -144,10 +144,18 @@ class ParsingUtils{
                             for (k in 0 until valuesArray.length()) {
                                 val index = valuesArray.getJSONObject(k).getInt("value_index")
                                 val valueExtensionObject = valuesArray.getJSONObject(k).getJSONObject("extension_attributes")
-                                val valueLabel = valueExtensionObject.getString("label")
-                                val value = valueExtensionObject.getString("frontend_value")
-                                val type = valueExtensionObject.getString("frontend_type")
-
+                                var valueLabel = ""
+                                if (valueExtensionObject.has("label")) {
+                                    valueLabel = valueExtensionObject.getString("label")
+                                }
+                                var value = ""
+                                if (valueExtensionObject.has("frontend_value")) {
+                                    value = valueExtensionObject.getString("frontend_value")
+                                }
+                                var type = ""
+                                if (valueExtensionObject.has("frontend_type")){
+                                    type = valueExtensionObject.getString("frontend_type")
+                                }
                                 val productIDs = arrayListOf<Long>()
                                 if (valueExtensionObject.has("products")) {
                                     val productIdArray = valueExtensionObject.getJSONArray("products")
