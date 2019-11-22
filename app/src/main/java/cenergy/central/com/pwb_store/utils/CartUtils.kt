@@ -360,10 +360,10 @@ class CartUtils(private val context: Context) {
                             cartTotalResponse.items = shoppingCartItems
                         }
                         if (dataObject.has("total_segments")) {
-                            val totalSegment = arrayListOf<Segment>()
+                            val totalSegment = arrayListOf<TotalSegment>()
                             val totalSegmentArray = dataObject.getJSONArray("total_segments")
                             for (i in 0 until totalSegmentArray.length()){
-                                val segment = Segment()
+                                val segment = TotalSegment()
                                 val segmentObject = totalSegmentArray.getJSONObject(i)
                                 when(segmentObject.getString("code")){
                                     "shipping" -> {
@@ -379,6 +379,12 @@ class CartUtils(private val context: Context) {
                                         totalSegment.add(segment)
                                     }
                                     "coupon" -> {
+                                        segment.code = segmentObject.getString("code")
+                                        segment.title = segmentObject.getString("title")
+                                        segment.value = segmentObject.getString("value")
+                                        totalSegment.add(segment)
+                                    }
+                                    "amasty_coupon_amount" -> {
                                         segment.code = segmentObject.getString("code")
                                         segment.title = segmentObject.getString("title")
                                         segment.value = segmentObject.getString("value")

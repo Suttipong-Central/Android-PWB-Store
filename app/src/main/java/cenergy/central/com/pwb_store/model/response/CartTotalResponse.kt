@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.model.response
 
+import cenergy.central.com.pwb_store.model.TotalSegment
 import com.google.gson.annotations.SerializedName
 import io.realm.annotations.PrimaryKey
 
@@ -12,7 +13,7 @@ class CartTotalResponse(
         var qty: Int = 0,
         var items: List<ShoppingCartItem>? = arrayListOf(),
         @SerializedName("total_segments")
-        var totalSegment: List<Segment>? = arrayListOf(),
+        var totalSegment: List<TotalSegment>? = arrayListOf(),
         var couponCode: String = ""
 )
 
@@ -88,10 +89,4 @@ class Rules(
         var basePrice: Int? = 0,
         @SerializedName("address_id")
         var addressId: Long? = 0
-)
-
-class Segment(
-        var code: String? = "",
-        var title: String? = "",
-        var value: String? = ""
 )

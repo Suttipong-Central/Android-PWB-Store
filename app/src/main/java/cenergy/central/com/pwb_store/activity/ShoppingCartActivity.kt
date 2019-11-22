@@ -21,7 +21,6 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
-import cenergy.central.com.pwb_store.extensions.getValueDiscount
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -31,6 +30,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.TotalSegment
 import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -86,8 +86,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     companion object {
         private const val CART_ID = "CART_ID"
-        const val DISCOUNT = "discount"
-        const val COUPON = "coupon"
         const val RESULT_UPDATE_PRODUCT = 59000
 
         @JvmStatic
@@ -329,23 +327,24 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             val items = shoppingCartResponse.items?: listOf()
 
             var discountPriceValue = 0.0
-            val discount = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == DISCOUNT}
+            val discount = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == TotalSegment.DISCOUNT_KEY}
             if (discount != null){
                 discountPriceValue = discount.value.toStringDiscount()
             }
 
             val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
             if (isSupportCouponOn){ // support coupon?
-                val coupon = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == COUPON}
-                val couponDiscount: Double
+                val coupon = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == TotalSegment.COUPON_KEY}
                 if (coupon != null){
-                    couponDiscount = coupon.value.getValueDiscount().toStringDiscount()
-                    discountPriceValue -= couponDiscount
-                    promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
-                    couponBtn.setText(getString(R.string.cancel_coupon))
-                    couponCodeEdt.isEnabled = false
-                    isCouponAdded = true
-                    layoutPromotionPrice.visibility = View.VISIBLE
+                    val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+                    val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
+                    val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
+                    discountPriceValue -= couponDiscountAmount
+                    promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
+                    couponBtn.setText(getString( if (hasCoupon) R.string.cancel_coupon else R.string.add_coupon))
+                    couponCodeEdt.isEnabled = !hasCoupon
+                    isCouponAdded = hasCoupon
+                    layoutPromotionPrice.visibility = if (hasCoupon) View.VISIBLE else View.GONE
                     handleCoupon()
                 } else {
                     layoutPromotionPrice.visibility = View.GONE
@@ -459,9 +458,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
                 override fun failure(error: APIError) {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@ShoppingCartActivity).showErrorDialog(error)
+                    showCommonDialog(getString(R.string.please_try_again))
                 }
-
             })
         }
     }

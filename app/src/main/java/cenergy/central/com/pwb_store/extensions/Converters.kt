@@ -71,18 +71,6 @@ fun String?.toStringDiscount(): Double {
     return this?.replace("-", "")?.toDouble() ?: 0.0
 }
 
-fun String?.getValueDiscount(): String {
-    var discount = ""
-    if (this != null) {
-        val arrayJson = JSONArray(this)
-        val objJson = JSONObject(arrayJson[0].toString())
-        if (objJson.has("discount_amount")) {
-            discount = objJson.getString("discount_amount")
-        }
-    }
-    return discount
-}
-
 fun List<List<Long>>.findIntersect(): List<Long> {
     val sum = arrayListOf<Long>()
     this.forEach {

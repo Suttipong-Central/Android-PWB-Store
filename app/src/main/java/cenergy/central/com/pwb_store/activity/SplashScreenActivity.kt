@@ -85,7 +85,6 @@ class SplashScreenActivity : AppCompatActivity() {
     private fun checkIntent(intent: Intent) {
         val action = intent.action
         val data = intent.dataString
-        Log.d("SplashScreenActivity", "${intent.data}")
 
         if (Intent.ACTION_VIEW != action || data == null) {
             start()

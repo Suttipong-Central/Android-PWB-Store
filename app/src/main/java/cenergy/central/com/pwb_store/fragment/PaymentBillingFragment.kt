@@ -14,19 +14,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
-import cenergy.central.com.pwb_store.activity.ShoppingCartActivity
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
-import cenergy.central.com.pwb_store.extensions.getValueDiscount
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -258,18 +255,20 @@ class PaymentBillingFragment : Fragment() {
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
 
+        // coupon & discout
         var discountPriceValue = 0.0
-        val discount = cartTotal.totalSegment?.firstOrNull{ it.code == ShoppingCartActivity.DISCOUNT }
-        if (discount != null){
+        val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
+        if (discount != null) {
             discountPriceValue = discount.value.toStringDiscount()
         }
-        val coupon = cartTotal.totalSegment?.firstOrNull{ it.code == ShoppingCartActivity.COUPON }
-        val couponDiscount: Double
-        if (coupon != null){
-            couponDiscount = coupon.value.getValueDiscount().toStringDiscount()
-            discountPriceValue -= couponDiscount
-            promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
-            layoutPromotionPrice.visibility = View.VISIBLE
+        val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
+        if (coupon != null) {
+            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+            val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
+            val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
+            discountPriceValue -= couponDiscountAmount
+            promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
+            layoutPromotionPrice.visibility = if (hasCoupon) View.VISIBLE else View.GONE
         } else {
             layoutPromotionPrice.visibility = View.GONE
         }
