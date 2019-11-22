@@ -152,10 +152,20 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                             "chuan@central.tech", "", "", 0, "")
 
                     if (userBranch != null && userBranch.items.size > 0) {
-                        getStoreLocation(user, userBranch.items[0].code, callback)
+                        val sellerCode = userBranch.items[0].code
+                        if (BuildConfig.FLAVOR == "cds"){
+                            val store = Store()
+                            store.retailerId = sellerCode
+                            // save user token
+                            database.saveUserToken(UserToken(token = userToken))
+                            // save user information
+                            val userInformation = UserInformation(userId = user.userId, user = user, store = store)
+                            database.saveUserInformation(userInformation)
+                            callback.success(userInformation)
+                        } else {
+                            getStoreLocation(user, sellerCode, callback)
+                        }
                     }
-
-
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
