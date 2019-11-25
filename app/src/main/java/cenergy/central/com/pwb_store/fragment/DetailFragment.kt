@@ -80,18 +80,14 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 if (!(view as PowerBuyIconButton).isDisable) {
                     product ?: return
                     if (product!!.typeId == "configurable" && !configOptions.isNullOrEmpty()) {
-                        configOptions?.let { productOption ->
-                            productOptionShade = productOption.firstOrNull { option -> option.label == "Shade" }
-                            productOptionShade?.let {
-                                configItemOptions.add(optionShade!!)
-                            }
-                            productOptionSize = productOption.firstOrNull { option -> option.label == "Size" }
-                            productOptionSize?.let {
-                                configItemOptions.add(optionSize!!)
-                            }
-                            productDetailListener.addProductConfigToCart(product, childProduct, configItemOptions)
-                            configItemOptions.clear()
+                        productOptionShade?.let {
+                            configItemOptions.add(optionShade!!)
                         }
+                        productOptionSize?.let {
+                            configItemOptions.add(optionSize!!)
+                        }
+                        productDetailListener.addProductConfigToCart(product, childProduct, configItemOptions)
+                        configItemOptions.clear()
                     } else {
                         productDetailListener.addProductToCart(product)
                     }
@@ -254,17 +250,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun handleUpdateSizeAdapter() {
-        val newSizeVale = arrayListOf<ProductValue>()
-        shadeSelectedOption!!.valueExtension?.products?.forEach { shadeId ->
-            val size = sizeValues.firstOrNull{ it.valueExtension!!.products.contains(shadeId)}
-            if (size != null){
-                newSizeVale.add(size)
-            }
-        }
-        sizeAdepter.setItems(newSizeVale)
-        sizeSelectedOption = newSizeVale[0]
+        val shadeOptions = shadeSelectedOption!!.valueExtension?.products ?: listOf()
+        val newSizeValues = sizeValues.filter { it.valueExtension?.products?.firstOrNull { key->shadeOptions.contains(key) } != null }
+        sizeAdepter.setItems(newSizeValues)
+        sizeSelectedOption = newSizeValues[0]
         inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
-        optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index) // set default
+        optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index)
     }
 
     private fun handleUpdateViewProductConfig() {
