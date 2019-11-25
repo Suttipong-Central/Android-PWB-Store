@@ -214,6 +214,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         shippingLayout = rootView.findViewById(R.id.layoutDeliveryDiscount)
 
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recycler.setHasFixedSize(true)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = orderProductListAdapter
     }
