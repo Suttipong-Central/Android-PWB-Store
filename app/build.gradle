@@ -106,8 +106,8 @@ android {
         cds {
             applicationId "cenergy.central.com.eordering.cds"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 89
-            versionName "1.1.1"
+            versionCode 90
+            versionName "1.1.2"
         }
 
         rbs {
