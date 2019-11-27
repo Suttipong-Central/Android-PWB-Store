@@ -251,7 +251,7 @@
         android:id="@+id/stockIndicatorView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/layoutButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40" />
@@ -261,7 +261,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:theme="@style/AlertDialogTheme"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/stockIndicatorView"
         app:layout_constraintEnd_toEndOf="@+id/stockIndicatorView"
         app:layout_constraintStart_toStartOf="@+id/stockIndicatorView"
