@@ -212,7 +212,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     override fun addProductToCart(product: Product?) {
-        product?.let { startAddToCart(it, null, null) }
+        product?.let { startAddToCart(it) }
     }
 
     override fun addProduct1HrsToCart(product: Product?) {
@@ -221,11 +221,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun startPaymentBy2Hr(product: Product) {
         PaymentActivity.startSelectStorePickup(this, product)
-    }
-
-    override fun addProductConfigToCart(product: Product?, childProduct: Product?, listOptionsBody: ArrayList<OptionBody>) {
-        product?.let { startAddToCart(it, childProduct, listOptionsBody) }
-
     }
 
     override fun onDisplayAvailableStore(product: Product?) {
@@ -493,10 +488,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // end region
 
     // region action add product to cart
-    private fun startAddToCart(product: Product, childProduct: Product?, options: ArrayList<OptionBody>?) {
+    private fun startAddToCart(product: Product) {
         this.product = product
         showProgressDialog()
-        CartUtils(this).addProductToCart(product, childProduct, options, object : AddProductToCartCallback {
+        CartUtils(this).addProductToCart(product, object : AddProductToCartCallback {
             override fun onSuccessfully() {
                 updateShoppingCartBadge()
                 dismissProgressDialog()

@@ -13,7 +13,6 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.CartItemBody
-import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -48,7 +47,6 @@ class CartUtils(private val context: Context) {
     private var callback: AddProductToCartCallback? = null
     private var branchResponse: BranchResponse? = null
     private var branchResponses: List<BranchResponse>? = null
-    private var options: ArrayList<OptionBody>? = null
 
     // data
     private val db = RealmController.getInstance()
@@ -71,17 +69,15 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun addProductToCart(product: Product, childProduct: Product?,options: ArrayList<OptionBody>? = arrayListOf(),
-                         callback: AddProductToCartCallback) {
+    fun addProductToCart(product: Product, callback: AddProductToCartCallback) {
         this.callback = callback
         val cartId = prefManager.cartId
-        this.options = options
         this.branchResponse = null // force no have branch
         this.branchResponses = null
         if (cartId != null) {
-            requestAddToCart(cartId, product, childProduct)
+            requestAddToCart(cartId, product)
         } else {
-            retrieveCart(product, childProduct)
+            retrieveCart(product)
         }
     }
 
@@ -95,20 +91,20 @@ class CartUtils(private val context: Context) {
         val cartId = prefManager.cartId
 
         if (cartId != null) {
-            requestAddToCart(cartId, product, null)
+            requestAddToCart(cartId, product)
         } else {
-            retrieveCart(product, null)
+            retrieveCart(product)
         }
     }
 
-    private fun retrieveCart(product: Product, childProduct: Product?) {
+    private fun retrieveCart(product: Product) {
         HttpManagerMagento.getInstance(context).getCart(object : ApiResponseCallback<String?> {
             override fun success(response: String?) {
                 if (response != null) {
                     prefManager.setCartId(response)
 
                     // next step add to card
-                    requestAddToCart(response, product, childProduct)
+                    requestAddToCart(response, product)
                 }
             }
 
@@ -119,37 +115,37 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    private fun requestAddToCart(cartId: String, product: Product, childProduct: Product?) {
+    private fun requestAddToCart(cartId: String, product: Product) {
         // is empty cart?
         if (cacheCartItems == null || cacheCartItems.isEmpty()) {
             val cartItemBody = if (branchResponse != null) {
                 CartItemBody.create(cartId, product, branchResponse!!)  // ispu
             } else {
-                CartItemBody.create(cartId, product, childProduct, options) // normal
+                CartItemBody.create(cartId, product) // normal
             }
-            requestAddToCart(cartId, product, childProduct, cartItemBody)
+            requestAddToCart(cartId, product, cartItemBody)
         } else {
             // is product ispu
             if (branchResponse != null) {
                 if (cacheCartItems.hasProduct2h()) {
                     val body = CartItemBody.create(cartId, product, branchResponse!!)  // ispu
-                    requestAddToCart(cartId, product, childProduct, body)
+                    requestAddToCart(cartId, product, body)
                 } else {
-                    clearCartAndRecreateCart(product, childProduct)
+                    clearCartAndRecreateCart(product)
                 }
             } else {
                 // product normal
                 if (cacheCartItems.hasProduct2h()) {
-                    clearCartAndRecreateCart(product, childProduct)
+                    clearCartAndRecreateCart(product)
                 } else {
-                    val body = CartItemBody.create(cartId, product, childProduct, options)  // normal
-                    requestAddToCart(cartId, product, childProduct, body)
+                    val body = CartItemBody.create(cartId, product)  // normal
+                    requestAddToCart(cartId, product, body)
                 }
             }
         }
     }
 
-    private fun requestAddToCart(cartId: String, product: Product, childProduct: Product?, cartItemBody: CartItemBody) {
+    private fun requestAddToCart(cartId: String, product: Product, cartItemBody: CartItemBody) {
         HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {
                     override fun success(response: CartItem?) {
@@ -158,7 +154,7 @@ class CartUtils(private val context: Context) {
                             response?.let { setProduct2hShippingAddress(cartId, it, product, branchResponse!!) }
                         } else {
                             // product normal
-                            response?.let { saveCartItem(it, childProduct?: product, branchResponse) }
+                            response?.let { saveCartItem(it, product, branchResponse) }
                         }
                     }
 
@@ -422,12 +418,12 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    private fun clearCartAndRecreateCart(product: Product, childProduct: Product?) {
+    private fun clearCartAndRecreateCart(product: Product) {
         RealmController.getInstance().deleteAllCacheCartItem(object : DatabaseListener {
             override fun onSuccessfully() {
                 prefManager.clearCartId()
                 cacheCartItems = db.cacheCartItems
-                retrieveCart(product, childProduct)
+                retrieveCart(product)
             }
 
             override fun onFailure(error: Throwable) {

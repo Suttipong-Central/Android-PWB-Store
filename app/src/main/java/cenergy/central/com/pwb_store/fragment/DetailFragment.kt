@@ -36,9 +36,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private var product: Product? = null
     private var childProduct: Product? = null
     private var configOptions: List<ProductOption>? = listOf()
-    private var configItemOptions: ArrayList<OptionBody> = arrayListOf()
-    var optionSize: OptionBody? = null
-    var optionShade: OptionBody? = null
     private var productOptionShade: ProductOption? = null
     private var productOptionSize: ProductOption? = null
     private var shadeSelectedOption: ProductValue? = null
@@ -79,15 +76,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             R.id.addToCartButton -> {
                 if (!(view as PowerBuyIconButton).isDisable) {
                     product ?: return
-                    if (product!!.typeId == "configurable" && !configOptions.isNullOrEmpty()) {
-                        productOptionShade?.let {
-                            configItemOptions.add(optionShade!!)
-                        }
-                        productOptionSize?.let {
-                            configItemOptions.add(optionSize!!)
-                        }
-                        productDetailListener.addProductConfigToCart(product, childProduct, configItemOptions)
-                        configItemOptions.clear()
+                    if (product!!.typeId == "configurable") {
+                        childProduct ?: return
+                        productDetailListener.addProductToCart(childProduct)
                     } else {
                         productDetailListener.addProductToCart(product)
                     }
@@ -170,7 +161,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             configOptions = product.extension!!.productConfigOptions
             configOptions?.let { configOption ->
                 productOptionShade = configOption.firstOrNull { option -> option.label == "Shade" }
-                productOptionShade?.let {
+                if (productOptionShade != null){
                     shadeAttributeId = productOptionShade!!.attrId
                     val shadeValues = productOptionShade!!.values.filter {
                         it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
@@ -178,12 +169,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                     inputProductShade.setAdapter(shadeAdapter)
                     shadeSelectedOption = shadeValues[0]
                     inputProductShade.setShadeName(shadeSelectedOption!!.valueExtension?.label ?: "")
-                    optionShade = OptionBody(shadeAttributeId, shadeSelectedOption!!.index) // set default
                     inputProductShade.visibility = View.VISIBLE
                     shadeAdapter.setCallBack(object : ShadeClickListener {
                         override fun onShadeClickListener(shade: ProductValue) {
                             inputProductShade.setShadeName(shade.valueExtension?.label ?: "")
-                            optionShade = OptionBody(shadeAttributeId, shade.index)
                             shadeSelectedOption = shade
                             if (productOptionSize != null){
                                 handleUpdateSizeAdapter()
@@ -194,7 +183,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 }
 
                 productOptionSize = configOption.firstOrNull { option -> option.label == "Size" }
-                productOptionSize?.let {
+                if(productOptionSize != null){
                     sizeAttributeId = productOptionSize!!.attrId
                     sizeValues = productOptionSize!!.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
                     if (shadeSelectedOption != null){
@@ -207,12 +196,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                     inputProductSize.setHeaderTextBold()
                     inputProductSize.setHeaderTextColor(R.color.nameProductColor)
                     inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
-                    optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index) // set default
                     inputProductSize.visibility = View.VISIBLE
                     sizeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
                         override fun onOptionClickListener(size: ProductValue) {
                             inputProductSize.setText(size.valueExtension?.label?: "")
-                            optionSize = OptionBody(sizeAttributeId, size.index)
                             sizeSelectedOption = size
                             handleUpdateViewProductConfig()
                         }
@@ -255,7 +242,15 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         sizeAdepter.setItems(newSizeValues)
         sizeSelectedOption = newSizeValues[0]
         inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
-        optionSize = OptionBody(sizeAttributeId, sizeSelectedOption!!.index)
+    }
+
+    private fun handleDefaultSizeOption(sizeValues: List<ProductValue>): ProductValue {
+        return if (shadeSelectedOption != null){
+            val shadeChildId = shadeSelectedOption!!.valueExtension!!.products[0]
+            sizeValues.firstOrNull { it.valueExtension!!.products.first() == shadeChildId } ?: sizeValues[0]
+        } else {
+            sizeValues[0]
+        }
     }
 
     private fun handleUpdateViewProductConfig() {
@@ -302,15 +297,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             } else {
                 hideSpecialPrice()
             }
-        }
-    }
-
-    private fun handleDefaultSizeOption(sizeValues: List<ProductValue>): ProductValue {
-        return if (shadeSelectedOption != null){
-            val shadeChildId = shadeSelectedOption!!.valueExtension!!.products.first()
-            sizeValues.firstOrNull { it.valueExtension!!.products.first() == shadeChildId } ?: sizeValues[0]
-        } else {
-            sizeValues[0]
         }
     }
 
