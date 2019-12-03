@@ -27,9 +27,7 @@ fun Product.isSalable(): Boolean{
 fun Product.is1HourProduct(): Boolean{
     return if (extension?.stokeItem?.is2HProduct != null && extension!!.stokeItem!!.is2HProduct &&
             shippingMethods.isNotEmpty()){
-        val shippingList = arrayListOf<String>()
-        shippingList.addAll(this.shippingMethods.split(","))
-        shippingList.indexOf(Product.PRODUCT_TWO_HOUR) != -1
+        shippingMethods.contains(Product.PRODUCT_TWO_HOUR)
     } else {
         false
     }

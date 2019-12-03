@@ -64,8 +64,8 @@
         app:constraint_referenced_ids="line,content_branches,content_branch_detail"/>
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/storeListEmpty"
-        style="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:id="@+id/errorTextView"
+        style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

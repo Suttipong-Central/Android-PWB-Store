@@ -279,6 +279,7 @@
     <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
     <string name="format_store_ispu_delivery">สั่งตอนนี้ รับได้ที่สาขา\nตั้งเเต่ %s</string>
     <string name="error_store_pickup_empty">ไม่มีสาขาที่มีของครบทุกชิ้นที่คุณเลือก</string>
+    <string name="error_store_1h_pickup">ไม่มีร้านค้าที่มีสินค้าชิ้นนี้</string>
 
     <!-- Network state -->
     <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>

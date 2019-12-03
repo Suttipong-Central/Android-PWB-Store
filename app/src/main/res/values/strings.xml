@@ -279,6 +279,7 @@
     <string name="cannot_get_shipping_slot">Sorry, data is temporary unavailable.</string>
     <string name="format_store_ispu_delivery">Order now, pick up in-store\nFrom %s</string>
     <string name="error_store_pickup_empty">There is no available store that have all of your selected items.</string>
+    <string name="error_store_1h_pickup">No available store to pick up for this product</string>
 
     <!-- Network state -->
     <string name="network_connect_error">No internet</string>
