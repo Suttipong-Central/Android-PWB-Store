@@ -9,4 +9,5 @@ object RemoteConfigUtils {
     const val CONFIG_KEY_HDL_MEMBER_ON = "is_hdl_member_on"
     const val CONFIG_KEY_DISPLAY_SPECIAL_CATEGORY_ID = "display_special_category_ids"
     const val CONFIG_KEY_SUPPORT_COUPON_ON = "is_support_coupon_on"
+    const val CONFIG_KEY_EORDERING_PAYMENT_ON = "is_eodering_payment_on"
 }

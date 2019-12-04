@@ -633,6 +633,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             showCommonDialog(getString(R.string.not_found_payment_methods))
         } else {
             this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
+            val isEorderingPaymentOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_PAYMENT_ON)
+            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
+                this.paymentMethods.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
+            }
             startSelectMethod()
         }
     }
