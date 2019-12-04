@@ -85,12 +85,14 @@ class DeliveryStorePickUpFragment : Fragment() {
         titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_1hr_pickup)
         errorTextView.text = getString(R.string.error_store_pickup_empty) // default error
 
-        val userStore = context?.getUserStore()
-        if (userStore != null && displayItems.isNotEmpty()) {
-            val removeBranch = displayItems.firstOrNull { it.branch.storeId == userStore.storeId.toString() }
-            if (removeBranch != null) {
-                displayItems.remove(removeBranch)
-                errorTextView.text = getString(R.string.error_store_1h_pickup)
+        if (checkoutType == CheckoutType.ISPU) {
+            val userStore = context?.getUserStore()
+            if (userStore != null && displayItems.isNotEmpty()) {
+                val removeBranch = displayItems.firstOrNull { it.branch.storeId == userStore.storeId.toString() }
+                if (removeBranch != null) {
+                    displayItems.remove(removeBranch)
+                    errorTextView.text = getString(R.string.error_store_1h_pickup)
+                }
             }
         }
 
