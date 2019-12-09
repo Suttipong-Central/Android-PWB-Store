@@ -5,13 +5,13 @@ import android.util.Log
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.ProductListBody
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.ParsingUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.Gson
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -47,7 +47,7 @@ class ProductListAPI {
                         try {
                             callback.success(ParsingUtils.parseToProductResponse(response))
                         } catch (e: Exception) {
-                            callback.failure(APIError(e))
+                            callback.failure(e.getResultError())
                             Log.e("JSON Parser", "Error parsing data $e")
                         }
                     } else {
@@ -57,7 +57,7 @@ class ProductListAPI {
                 }
 
                 override fun onFailure(call: okhttp3.Call, e: IOException) {
-                    callback.failure(APIError(e))
+                    callback.failure(e.getResultError())
                 }
             })
         }

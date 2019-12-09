@@ -71,7 +71,7 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun addProductToCart(product: Product, childProduct: Product?,options: ArrayList<OptionBody>? = arrayListOf(),
+    fun addProductToCart(product: Product, childProduct: Product?, options: ArrayList<OptionBody>? = arrayListOf(),
                          callback: AddProductToCartCallback) {
         this.callback = callback
         val cartId = prefManager.cartId
@@ -93,7 +93,6 @@ class CartUtils(private val context: Context) {
         this.callback = callback
 
         val cartId = prefManager.cartId
-
         if (cartId != null) {
             requestAddToCart(cartId, product, null)
         } else {
@@ -158,15 +157,25 @@ class CartUtils(private val context: Context) {
                             response?.let { setProduct2hShippingAddress(cartId, it, product, branchResponse!!) }
                         } else {
                             // product normal
-                            response?.let { saveCartItem(it, childProduct?: product, branchResponse) }
+                            response?.let {
+                                saveCartItem(it, childProduct ?: product, branchResponse)
+                            }
                         }
                     }
 
                     override fun failure(error: APIError) {
-                        if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
-                            callback?.forceClearCart()
-                        } else {
-                            callback?.onFailure(error.errorMessage)
+                        when (error.errorCode) {
+                            APIError.NOT_FOUND.toString() -> {
+                                if (error.errorParameter != null && error.errorParameter.fieldName == "cartId") {
+                                    callback?.forceClearCart()
+                                } else {
+                                    callback?.onFailure(error.errorMessage)
+                                }
+                            }
+                            APIError.INTERNAL_SERVER_ERROR.toString() -> {
+                                callback?.forceClearCart()
+                            }
+                            else -> callback?.onFailure(error.errorMessage)
                         }
                     }
                 })
@@ -228,10 +237,10 @@ class CartUtils(private val context: Context) {
         }
     }
 
-    fun addCoupon(cartId: String, couponCode: String, callback: ApiResponseCallback<Boolean>){
-        HttpManagerMagento(context).cartService.addCoupon(cartId, couponCode).enqueue(object : Callback<Boolean>{
+    fun addCoupon(cartId: String, couponCode: String, callback: ApiResponseCallback<Boolean>) {
+        HttpManagerMagento(context).cartService.addCoupon(cartId, couponCode).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
-                if (response.body() != null && response.body() == true){
+                if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -239,15 +248,15 @@ class CartUtils(private val context: Context) {
             }
 
             override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
 
-    fun deleteCoupon(cartId: String, callback: ApiResponseCallback<Boolean>){
-        HttpManagerMagento(context).cartService.deleteCoupon(cartId).enqueue(object : Callback<Boolean>{
+    fun deleteCoupon(cartId: String, callback: ApiResponseCallback<Boolean>) {
+        HttpManagerMagento(context).cartService.deleteCoupon(cartId).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
-                if (response.body() != null && response.body() == true){
+                if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -255,7 +264,7 @@ class CartUtils(private val context: Context) {
             }
 
             override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -271,7 +280,7 @@ class CartUtils(private val context: Context) {
             }
 
             override fun onFailure(call: Call<CartResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -287,14 +296,14 @@ class CartUtils(private val context: Context) {
                 .url(httpUrl)
                 .build()
 
-        HttpManagerMagento(context).defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback{
+        HttpManagerMagento(context).defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 if (response != null) {
                     val data = response.body()
                     val cartTotalResponse = CartTotalResponse()
                     try {
                         val dataObject = JSONObject(data?.string())
-                        if (dataObject.has("base_grand_total")){
+                        if (dataObject.has("base_grand_total")) {
                             cartTotalResponse.totalPrice = dataObject.getDouble("base_grand_total")
                         }
                         if (dataObject.has("base_discount_amount")) {
@@ -303,56 +312,56 @@ class CartUtils(private val context: Context) {
                         if (dataObject.has("items_qty")) {
                             cartTotalResponse.qty = dataObject.getInt("items_qty")
                         }
-                        if (dataObject.has("coupon_code")){
+                        if (dataObject.has("coupon_code")) {
                             cartTotalResponse.couponCode = dataObject.getString("coupon_code")
                         }
-                        if (dataObject.has("items")){
+                        if (dataObject.has("items")) {
                             val shoppingCartItems = ArrayList<ShoppingCartItem>()
                             val itemsArray = dataObject.getJSONArray("items")
                             for (i in 0 until itemsArray.length()) {
                                 var id: Long = 0
-                                if (itemsArray.getJSONObject(i).has("item_id")){
+                                if (itemsArray.getJSONObject(i).has("item_id")) {
                                     id = itemsArray.getJSONObject(i).getLong("item_id")
                                 }
                                 var qty = 0
-                                if (itemsArray.getJSONObject(i).has("qty")){
+                                if (itemsArray.getJSONObject(i).has("qty")) {
                                     qty = itemsArray.getJSONObject(i).getInt("qty")
                                 }
                                 var sku = ""
-                                if (itemsArray.getJSONObject(i).has("sku")){
+                                if (itemsArray.getJSONObject(i).has("sku")) {
                                     sku = itemsArray.getJSONObject(i).getString("sku")
                                 }
                                 var price = 0.0
-                                if (itemsArray.getJSONObject(i).has("price_incl_tax")){
+                                if (itemsArray.getJSONObject(i).has("price_incl_tax")) {
                                     price = itemsArray.getJSONObject(i).getDouble("price_incl_tax")
                                 }
                                 var name = ""
-                                if (itemsArray.getJSONObject(i).has("name")){
+                                if (itemsArray.getJSONObject(i).has("name")) {
                                     name = itemsArray.getJSONObject(i).getString("name")
                                 }
                                 val extension = ItemExtension()
                                 if (itemsArray.getJSONObject(i).has("extension_attributes")) {
                                     val extensionObject = itemsArray.getJSONObject(i).getJSONObject("extension_attributes")
-                                    if (extensionObject.has("amasty_promo")){
+                                    if (extensionObject.has("amasty_promo")) {
                                         val freeItemImage = FreeItemImage()
                                         val amastyPromoObject = extensionObject.getJSONObject("amasty_promo")
-                                        if (amastyPromoObject.has("image_alt")){
+                                        if (amastyPromoObject.has("image_alt")) {
                                             freeItemImage.alt = amastyPromoObject.getString("image_alt")
                                         }
-                                        if (amastyPromoObject.has("image_src")){
+                                        if (amastyPromoObject.has("image_src")) {
                                             freeItemImage.src = amastyPromoObject.getString("image_src")
                                         }
-                                        if (amastyPromoObject.has("image_width")){
+                                        if (amastyPromoObject.has("image_width")) {
                                             freeItemImage.width = amastyPromoObject.getString("image_width")
                                         }
-                                        if (amastyPromoObject.has("image_height")){
+                                        if (amastyPromoObject.has("image_height")) {
                                             freeItemImage.height = amastyPromoObject.getString("image_height")
                                         }
                                         extension.amastyPromo = freeItemImage
                                     }
                                 }
                                 var discount = 0.0
-                                if (itemsArray.getJSONObject(i).has("discount_amount")){
+                                if (itemsArray.getJSONObject(i).has("discount_amount")) {
                                     discount = itemsArray.getJSONObject(i).getDouble("discount_amount")
                                 }
                                 shoppingCartItems.add(ShoppingCartItem(id, qty, sku, price, name, extension, discount))
@@ -362,10 +371,10 @@ class CartUtils(private val context: Context) {
                         if (dataObject.has("total_segments")) {
                             val totalSegment = arrayListOf<TotalSegment>()
                             val totalSegmentArray = dataObject.getJSONArray("total_segments")
-                            for (i in 0 until totalSegmentArray.length()){
+                            for (i in 0 until totalSegmentArray.length()) {
                                 val segment = TotalSegment()
                                 val segmentObject = totalSegmentArray.getJSONObject(i)
-                                when(segmentObject.getString("code")){
+                                when (segmentObject.getString("code")) {
                                     "shipping" -> {
                                         segment.code = segmentObject.getString("code")
                                         segment.title = segmentObject.getString("title")
@@ -408,7 +417,7 @@ class CartUtils(private val context: Context) {
                         }
                         callback.success(cartTotalResponse)
                     } catch (e: Exception) {
-                        callback.failure(APIError(e))
+                        callback.failure(e.getResultError())
                     }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -417,7 +426,7 @@ class CartUtils(private val context: Context) {
             }
 
             override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback.failure(APIError(e))
+                callback.failure(e.getResultError())
             }
         })
     }
@@ -450,7 +459,7 @@ class CartUtils(private val context: Context) {
     fun editStore2hPickup(branchResponse: BranchResponse, callback: EditStorePickupCallback) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
-        val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup =  storePickup)
+        val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)
         val cartId = prefManager.cartId
         if (cartId != null) {
             HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,
@@ -470,7 +479,7 @@ class CartUtils(private val context: Context) {
     }
 
     private fun editStore2hPickupInCartItem(branchResponse: BranchResponse,
-                                          callback: EditStorePickupCallback) {
+                                            callback: EditStorePickupCallback) {
         RealmController.getInstance().editBranchInCartItem(branchResponse.branch,
                 object : DatabaseListener {
                     override fun onSuccessfully() {

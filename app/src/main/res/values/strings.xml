@@ -267,7 +267,7 @@
     <string name="shipping_address">Delivery Address</string>
     <string name="select_shipping_dialog">Delivery</string>
     <string name="select_store_dialog">Collect</string>
-    <string name="title_clear_cart">เราเจอปัญหากับรถเข็นนี้ (จำเป็นต้องลบรถเข็น)</string>
+    <string name="title_clear_cart">There is problem with current shopping cart (cart will be re-generated).</string>
     <string name="developing_system_compare">Compare feature is temporary unavailable.</string>
     <string name="freebie_promotion_not_found">Please check promotion or free item when added item to cart</string>
     <string name="not_have_day_to_delivery">Sorry, there is no available slot.</string>

@@ -7,6 +7,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.body.BookingSlotBody
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,7 +28,7 @@ class HomeDeliveryApi {
             }
 
             override fun onFailure(call: Call<ShippingSlot>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }

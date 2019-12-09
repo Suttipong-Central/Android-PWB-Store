@@ -12,6 +12,7 @@ import cenergy.central.com.pwb_store.model.response.BookingNumberResponse
 import cenergy.central.com.pwb_store.model.response.HDLMemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
@@ -66,7 +67,7 @@ class HttpManagerHDL {
             }
 
             override fun onFailure(call: Call<HDLMemberResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -83,8 +84,8 @@ class HttpManagerHDL {
                 }
             }
 
-            override fun onFailure(call: Call<ShippingSlotResponse>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<ShippingSlotResponse>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -101,8 +102,8 @@ class HttpManagerHDL {
                 }
             }
 
-            override fun onFailure(call: Call<BookingNumberResponse>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<BookingNumberResponse>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }

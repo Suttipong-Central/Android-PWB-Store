@@ -9,6 +9,7 @@ import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.ParsingUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import okhttp3.HttpUrl
 import okhttp3.Request
 import java.io.IOException
@@ -55,7 +56,7 @@ class SearchProductsAPI {
                         try {
                             callback.success(ParsingUtils.parseToProductResponse(response))
                         } catch (e: Exception) {
-                            callback.failure(APIError(e))
+                            callback.failure(e.getResultError())
                             Log.e("JSON Parser", "Error parsing data $e")
                         }
                     } else {
@@ -65,7 +66,7 @@ class SearchProductsAPI {
                 }
 
                 override fun onFailure(call: okhttp3.Call, e: IOException) {
-                    callback.failure(APIError(e))
+                    callback.failure(e.getResultError())
                 }
             })
         }
