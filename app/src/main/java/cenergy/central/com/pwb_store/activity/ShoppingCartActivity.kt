@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.activity
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -22,7 +23,6 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -170,7 +170,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         couponBtn.setText(getString(R.string.add_coupon))
 
         val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
-        if (isSupportCouponOn){ // support coupon?
+        if (isSupportCouponOn) { // support coupon?
             couponBtn.visibility = View.VISIBLE
             couponCodeEdt.visibility = View.VISIBLE
         }
@@ -205,7 +205,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             cartDescriptionTextView.text = getString(R.string.format_shopping_cart_ispu,
                     retailer.extension!!.deliverlyPromiseIspu ?: "")
             // store name use from cache follow website
-            storeNameTextView.text = item.branch?.storeName?: ""
+            storeNameTextView.text = item.branch?.storeName ?: ""
             this.checkoutType = CheckoutType.ISPU
             this.branch = item.branch
         } else {
@@ -298,8 +298,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         })
     }
 
-    private fun getCartTotal(){
-        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse>{
+    private fun getCartTotal() {
+        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
             override fun success(response: CartTotalResponse?) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
@@ -321,27 +321,27 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun updateViewShoppingCart(shoppingCartResponse: CartTotalResponse) {
-        if (cartResponse != null){
+        if (cartResponse != null) {
             cartItemList = cartResponse!!.items
 
-            val items = shoppingCartResponse.items?: listOf()
+            val items = shoppingCartResponse.items ?: listOf()
 
             var discountPriceValue = 0.0
-            val discount = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == TotalSegment.DISCOUNT_KEY}
-            if (discount != null){
+            val discount = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
+            if (discount != null) {
                 discountPriceValue = discount.value.toStringDiscount()
             }
 
             val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
-            if (isSupportCouponOn){ // support coupon?
-                val coupon = shoppingCartResponse.totalSegment?.firstOrNull{ it.code == TotalSegment.COUPON_KEY}
-                if (coupon != null){
+            if (isSupportCouponOn) { // support coupon?
+                val coupon = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
+                if (coupon != null) {
                     val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
                     val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
                     val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
                     discountPriceValue -= couponDiscountAmount
                     promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
-                    couponBtn.setText(getString( if (hasCoupon) R.string.cancel_coupon else R.string.add_coupon))
+                    couponBtn.setText(getString(if (hasCoupon) R.string.cancel_coupon else R.string.add_coupon))
                     couponCodeEdt.isEnabled = !hasCoupon
                     isCouponAdded = hasCoupon
                     layoutPromotionPrice.visibility = if (hasCoupon) View.VISIBLE else View.GONE
@@ -386,7 +386,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun handleCoupon() {
-        if (!isCouponAdded){
+        if (!isCouponAdded) {
             couponBtn.setOnClickListener {
                 addCoupon()
             }
@@ -397,14 +397,14 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun addCoupon(){
+    private fun addCoupon() {
         showProgressDialog()
         promotionCode = couponCodeEdt.text.toString()
-        if (promotionCode.isNotEmpty()){
+        if (promotionCode.isNotEmpty()) {
             preferenceManager.cartId?.let { cartId ->
-                CartUtils(this).addCoupon(cartId, promotionCode, object : ApiResponseCallback<Boolean>{
+                CartUtils(this).addCoupon(cartId, promotionCode, object : ApiResponseCallback<Boolean> {
                     override fun success(response: Boolean?) {
-                        if (response != null){
+                        if (response != null) {
                             hideKeyBoard()
                             refreshShoppingCart()
                             Toast.makeText(this@ShoppingCartActivity, getString(R.string.used_promo_code, promotionCode), Toast.LENGTH_SHORT).show()
@@ -425,10 +425,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun deleteCoupon(){
+    private fun deleteCoupon() {
         showProgressDialog()
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).deleteCoupon(cartId, object : ApiResponseCallback<Boolean>{
+            CartUtils(this).deleteCoupon(cartId, object : ApiResponseCallback<Boolean> {
                 override fun success(response: Boolean?) {
                     refreshShoppingCart()
                 }
@@ -518,18 +518,31 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             showCommonDialog(getString(R.string.not_connected_network))
         } else {
             when (error.errorCode) {
-                "408", "404" -> {
+                APIError.REQUEST_TIMEOUT.toString() -> {
                     showCommonDialog(getString(R.string.server_not_found))
                 }
+                APIError.NOT_FOUND.toString() -> {
+                    if (error.errorParameter != null && error.errorParameter.fieldName == "cartId") {
+                        showClearCartDialog()
+                    } else {
+                        showCommonDialog(error.errorMessage)
+                    }
+                }
                 APIError.INTERNAL_SERVER_ERROR.toString() -> {
-                    clearCart()
-                    finish()
+                    showClearCartDialog()
                 }
                 else -> showCommonDialog(getString(R.string.some_thing_wrong))
             }
         }
     }
 
+    private fun showClearCartDialog() {
+        showCommonDialog(null, getString(R.string.title_clear_cart), DialogInterface.OnClickListener { dialog, which ->
+            clearCart() // clear item cart
+            dialog?.dismiss()
+            finish()
+        })
+    }
 
     private fun setupRemoteConfig() {
         fbRemoteConfig = FirebaseRemoteConfig.getInstance()
@@ -545,7 +558,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         fbRemoteConfig.setConfigSettingsAsync(configSettings)
     }
 
-    fun hideKeyBoard(){
+    fun hideKeyBoard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (currentFocus != null) {
             inputManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)

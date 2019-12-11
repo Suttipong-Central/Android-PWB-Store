@@ -267,7 +267,7 @@
     <string name="shipping_address">Delivery Address</string>
     <string name="select_shipping_dialog">Delivery</string>
     <string name="select_store_dialog">Collect</string>
-    <string name="title_clear_cart">เราเจอปัญหากับรถเข็นนี้ (จำเป็นต้องลบรถเข็น)</string>
+    <string name="title_clear_cart">There is problem with current shopping cart (cart will be re-generated).</string>
     <string name="developing_system_compare">Compare feature is temporary unavailable.</string>
     <string name="freebie_promotion_not_found">Please check promotion or free item when added item to cart</string>
     <string name="not_have_day_to_delivery">Sorry, there is no available slot.</string>
@@ -279,6 +279,7 @@
     <string name="cannot_get_shipping_slot">Sorry, data is temporary unavailable.</string>
     <string name="format_store_ispu_delivery">Order now, pick up in-store\nFrom %s</string>
     <string name="error_store_pickup_empty">There is no available store that have all of your selected items.</string>
+    <string name="error_store_1h_pickup">No available store to pick up for this product</string>
 
     <!-- Network state -->
     <string name="network_connect_error">No internet</string>

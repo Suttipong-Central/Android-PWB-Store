@@ -33,10 +33,21 @@
         android:orientation="vertical">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_staff_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:maxLines="1"
+            android:padding="4dp"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            tools:text="12345678" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/txt_view_full_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="4dp"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             tools:text="Panisa Punjavorn" />
@@ -47,7 +58,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:maxLines="1"
-            android:padding="5dp"
+            android:padding="4dp"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             tools:text="Central World" />

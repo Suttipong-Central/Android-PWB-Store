@@ -9,6 +9,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
@@ -75,8 +76,8 @@ class HttpMangerSiebel(context: Context) {
                 }
             }
 
-            override fun onFailure(call: Call<List<MemberResponse>>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<List<MemberResponse>>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -93,8 +94,8 @@ class HttpMangerSiebel(context: Context) {
                 }
             }
 
-            override fun onFailure(call: Call<Member>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<Member>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }

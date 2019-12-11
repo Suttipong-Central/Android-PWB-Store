@@ -19,13 +19,11 @@ class BranchesFragment : Fragment(), StoreClickListener {
 
     private val storesAdapter = StoresDeliveryAdapter(this)
     private var items: ArrayList<BranchResponse> = arrayListOf()
-    private lateinit var storesRecycler: RecyclerView
     private var listener: StorePickUpListener? = null
+    private lateinit var storesRecycler: RecyclerView
 
 
     companion object {
-        private const val PER_PAGE = 13
-
         fun newInstance(): BranchesFragment {
             val fragment = BranchesFragment()
             val args = Bundle()
@@ -62,11 +60,4 @@ class BranchesFragment : Fragment(), StoreClickListener {
         listener?.onUpdateStoreDetail(branchResponse)
     }
     // endregion
-
-    private fun totalPageCal(total: Int): Int {
-        val num: Int
-        val x = total.toFloat() / PER_PAGE
-        num = Math.ceil(x.toDouble()).toInt()
-        return num
-    }
 }

@@ -1,35 +1,25 @@
 package cenergy.central.com.pwb_store.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import cenergy.central.com.pwb_store.model.response.ErrorParameter;
+import cenergy.central.com.pwb_store.utils.ApiException;
+import cenergy.central.com.pwb_store.utils.NetworkNotConnection;
 
 /**
  * Created by napabhat on 9/6/2017 AD.
  */
 
-public class APIError implements Parcelable {
+public class APIError {
 
     public static final int BAD_REQUEST = 400;
     public static final int UNAUTHORIZED = 401;
     public static final int REQUEST_TIMEOUT = 408;
     public static final int INTERNAL_SERVER_ERROR = 500;
     public static final int NOT_FOUND = 404;
-
-    public static final Creator<APIError> CREATOR = new Creator<APIError>() {
-        @Override
-        public APIError createFromParcel(Parcel in) {
-            return new APIError(in);
-        }
-
-        @Override
-        public APIError[] newArray(int size) {
-            return new APIError[size];
-        }
-    };
 
     @SerializedName("errorCode")
     @Expose
@@ -43,6 +33,9 @@ public class APIError implements Parcelable {
     @SerializedName("error")
     @Expose
     private String error;
+    @SerializedName("parameters")
+    @Expose
+    private ErrorParameter errorParameter;
 
     /**
      * No args constructor for use in serialization
@@ -70,11 +63,16 @@ public class APIError implements Parcelable {
     public APIError(Throwable e) {
         if (e instanceof ApiException) {
             ApiException error = (ApiException) e;
-
-            errorCode = String.valueOf(error.getStatusCode());
+            errorParameter = error.getErrorParameter();
+            errorCode = String.valueOf(error.getCode());
             errorMessage = error.getMessage();
             errorUserMessage = error.getLocalizedMessage();
+        } else if (e instanceof NetworkNotConnection) {
+            errorCode = null;
+            errorMessage = e.getMessage();
+            errorUserMessage = e.getLocalizedMessage();
         } else {
+            errorCode = "-1";
             errorMessage = e.getMessage();
             errorUserMessage = e.getLocalizedMessage();
         }
@@ -85,19 +83,6 @@ public class APIError implements Parcelable {
         errorMessage = in.readString();
         errorUserMessage = in.readString();
         error = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(errorCode);
-        dest.writeString(errorMessage);
-        dest.writeString(errorUserMessage);
-        dest.writeString(error);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
@@ -144,5 +129,17 @@ public class APIError implements Parcelable {
      */
     public void setErrorUserMessage(String errorUserMessage) {
         this.errorUserMessage = errorUserMessage;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public ErrorParameter getErrorParameter() {
+        return errorParameter;
+    }
+
+    public void setErrorParameter(ErrorParameter errorParameter) {
+        this.errorParameter = errorParameter;
     }
 }

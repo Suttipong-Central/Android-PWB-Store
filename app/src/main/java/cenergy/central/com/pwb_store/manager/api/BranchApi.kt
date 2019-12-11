@@ -8,6 +8,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.SourceItem
 import cenergy.central.com.pwb_store.model.response.BranchResponse
+import cenergy.central.com.pwb_store.utils.getResultError
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -29,7 +30,7 @@ class BranchApi {
                     val items = parseBranchResponse(response)
                     callback.success(items)
                 } catch (e: Exception) {
-                    callback.failure(APIError(e))
+                    callback.failure(e.getResultError())
                     Log.e("JSON Parser", "Error parsing data $e")
                 }
 
@@ -37,7 +38,7 @@ class BranchApi {
             }
 
             override fun onFailure(call: Call, e: IOException) {
-                callback.failure(APIError(e))
+                callback.failure(e.getResultError())
             }
         })
     }
@@ -55,7 +56,7 @@ class BranchApi {
                     val items = parseBranchResponse(response)
                     callback.success(items)
                 } catch (e: Exception) {
-                    callback.failure(APIError(e))
+                    callback.failure(e.getResultError())
                     Log.e("JSON Parser", "Error parsing data $e")
                 }
 
@@ -63,7 +64,7 @@ class BranchApi {
             }
 
             override fun onFailure(call: Call, e: IOException) {
-                callback.failure(APIError(e))
+                callback.failure(e.getResultError())
             }
         })
     }

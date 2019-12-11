@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.GsonBuilder
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -48,14 +49,9 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     init {
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
-        defaultHttpClient = OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
-                .followRedirects(false)
-                .followSslRedirects(false)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor { chain ->
-                    val request = chain.request().newBuilder().build()
-                    chain.proceed(request)
+        defaultHttpClient = OkHttpClient.Builder().apply {
+                    readTimeout(30, TimeUnit.SECONDS)
+                    writeTimeout(30, TimeUnit.SECONDS)
                 }
                 .addInterceptor(interceptor)
                 .build()
@@ -108,7 +104,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     if (loginResponse != null) {
                         setUserToken(loginResponse)
                         // get user information
-                        getUserId(callback)
+                        getUserId(username, callback)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
                     }
@@ -118,29 +114,29 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
 
-    fun getUserId(callback: ApiResponseCallback<UserInformation>) {
+    fun getUserId(username: String, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
         userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse> {
             override fun onResponse(call: Call<LoginUserResponse>, response: Response<LoginUserResponse>?) {
                 if (response?.body() != null) {
-                    getBranchUser(response.body()!!, callback)
+                    getBranchUser(username, response.body()!!, callback)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
             }
 
             override fun onFailure(call: Call<LoginUserResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
 
-    private fun getBranchUser(userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
+    private fun getBranchUser(username: String, userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
         userService.retrieveStoreUser("$BEARER $userToken").enqueue(object : Callback<UserBranch> {
             override fun onResponse(call: Call<UserBranch>, response: Response<UserBranch>?) {
@@ -149,7 +145,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                     //TODO: Mock up data will delete soon
                     val user = User(userResponse.userId, "", userResponse.staffId, 223L,
-                            "chuan@central.tech", "", "", 0, "")
+                            "chuan@central.tech", username, "", 0, "")
 
                     if (userBranch != null && userBranch.items.size > 0) {
                         val sellerCode = userBranch.items[0].code
@@ -172,7 +168,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<UserBranch>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -205,7 +201,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<StoreLocationResponse>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -311,13 +307,13 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     }
                     callback.success(modifiedCategories) // return result
                 } catch (e: Exception) {
-                    callback.failure(APIError(e))
+                    callback.failure(e.getResultError())
                     Log.e("JSON Parser", "Error parsing data $e")
                 }
             }
 
             override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback.failure(APIError(e))
+                callback.failure(e.getResultError())
             }
         })
     }
@@ -543,7 +539,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         product.extension = productExtension // add product extension to product
                         callback.success(product)
                     } catch (e: Exception) {
-                        callback.failure(APIError(e))
+                        callback.failure(e.getResultError())
                         Log.e("JSON Parser", "Error parsing data $e")
                     }
                 } else {
@@ -552,8 +548,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 response?.close()
             }
 
-            override fun onFailure(call: okhttp3.Call?, e: IOException?) {
-                callback.failure(APIError(e))
+            override fun onFailure(call: okhttp3.Call?, e: IOException) {
+                callback.failure(e.getResultError())
             }
         })
     }
@@ -570,7 +566,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<List<DeliveryInfo>>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -627,7 +623,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                         callback.success(storeAvailableList)
                     } catch (e: Exception) {
-                        callback.failure(APIError(e))
+                        callback.failure(e.getResultError())
                     }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -636,7 +632,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback.failure(APIError(e))
+                callback.failure(e.getResultError())
             }
         })
     }
@@ -658,8 +654,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                     }
 
-                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable?) {
-                        callback.failure(APIError(t))
+                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable) {
+                        callback.failure(t.getResultError())
                     }
                 })
     }
@@ -681,8 +677,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                     }
 
-                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable?) {
-                        callback.failure(APIError(t))
+                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable) {
+                        callback.failure(t.getResultError())
                     }
                 })
     }
@@ -702,8 +698,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 }
             }
 
-            override fun onFailure(call: Call<String>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<String>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -720,8 +716,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 }
             }
 
-            override fun onFailure(call: Call<CartItem>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<CartItem>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -737,8 +733,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 }
             }
 
-            override fun onFailure(call: Call<Boolean>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<Boolean>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -763,8 +759,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 }
             }
 
-            override fun onFailure(call: Call<CartItem>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<CartItem>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -784,7 +780,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<List<DeliveryOption>>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -839,8 +835,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                     }
 
-                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
-                        callback.failure(APIError(t))
+                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable) {
+                        callback.failure(t.getResultError())
                     }
                 })
     }
@@ -866,8 +862,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                     }
 
-                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable?) {
-                        callback.failure(APIError(t))
+                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable) {
+                        callback.failure(t.getResultError())
                     }
                 })
     }
@@ -884,8 +880,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 }
             }
 
-            override fun onFailure(call: Call<OrderResponse>?, t: Throwable?) {
-                callback.failure(APIError(t))
+            override fun onFailure(call: Call<OrderResponse>?, t: Throwable) {
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -1043,7 +1039,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                         }
                         callback.success(memberList)
                     } catch (e: Exception) {
-                        callback.failure(APIError(e))
+                        callback.failure(e.getResultError())
                         Log.e("JSON Parser", "Error parsing data $e")
                     }
                 } else {
@@ -1103,7 +1099,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<List<Province>>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -1127,7 +1123,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<List<District>>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
@@ -1154,7 +1150,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             }
 
             override fun onFailure(call: Call<List<SubDistrict>>, t: Throwable) {
-                callback.failure(APIError(t))
+                callback.failure(t.getResultError())
             }
         })
     }
