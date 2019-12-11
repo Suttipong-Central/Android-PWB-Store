@@ -2,8 +2,8 @@ package cenergy.central.com.pwb_store.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityOptionsCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

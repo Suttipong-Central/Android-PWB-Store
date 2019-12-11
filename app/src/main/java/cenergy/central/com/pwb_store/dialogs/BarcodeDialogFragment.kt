@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.dialogs
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,7 +43,7 @@ class BarcodeDialogFragment : DialogFragment() {
         barcodeImageView.layoutParams.height = 450.dpToPx(rootView.context)
         barcodeImageView.layoutParams.width = 450.dpToPx(rootView.context)
         closeButton.layoutParams.width = 250.dpToPx(rootView.context)
-        closeButton.setOnClickListener { dialog.dismiss() }
+        closeButton.setOnClickListener { dialog?.dismiss() }
     }
 
     private fun retrieveInstanceState(bundle: Bundle) {

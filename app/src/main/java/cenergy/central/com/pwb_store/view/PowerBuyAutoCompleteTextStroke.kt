@@ -3,9 +3,9 @@ package cenergy.central.com.pwb_store.view
 import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatAutoCompleteTextView
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher

@@ -1,11 +1,11 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import androidx.core.content.ContextCompat
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 
@@ -71,15 +71,6 @@ class LanguageButton : RadioGroup {
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
-//        val typedArray = context.theme
-//                .obtainStyledAttributes(attrs, R.styleable.LanguageButton, 0, 0)
-
-        //Get attribute values
-//        textHeader = typedArray.getString(R.styleable.PowerBuyAutoCompleteTextStroke_act_header)
-//        required = typedArray.getBoolean(R.styleable.PowerBuyAutoCompleteTextStroke_act_required, false)
-
-//        typedArray.recycle()
-
         prepareView()
 
         notifyAttributeChanged()

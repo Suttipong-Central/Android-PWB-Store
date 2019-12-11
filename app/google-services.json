@@ -121,6 +121,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:19f8627abfbafeed4e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.rbs.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

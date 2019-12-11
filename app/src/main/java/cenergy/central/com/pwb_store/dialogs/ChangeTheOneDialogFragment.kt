@@ -2,7 +2,7 @@ package cenergy.central.com.pwb_store.dialogs
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.text.InputType
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.single_cell_layout.*
 class ChangeTheOneDialogFragment : DialogFragment() {
     private var listener: PaymentT1Listener? = null
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as PaymentT1Listener
     }
@@ -58,7 +58,7 @@ class ChangeTheOneDialogFragment : DialogFragment() {
 
         if (mobile.isNotBlank()) {
             listener?.onChangingT1Member(mobile)
-            dialog.dismiss()
+            dialog?.dismiss()
         }
     }
 

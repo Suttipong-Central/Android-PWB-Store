@@ -8,9 +8,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -346,7 +346,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val subscribeCheckOut = AddressInfoExtensionBody(
                 checkout = shippingAddress!!.email,
                 shippingDate = shippingDate,
-                shippingSlotInDay = shippingSlot.slotExtension.daySlotId.toString(),
+                shippingSlotInDay = shippingSlot.slotExtension?.daySlotId.toString(),
                 shippingSlotDescription = shippingSlot.getTimeDescription())
 
         handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
@@ -1181,9 +1181,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (currentFocus != null) {
-            inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
-            inputManager.hideSoftInputFromInputMethod(currentFocus.windowToken, 0)
+        currentFocus?.let {
+            inputManager.hideSoftInputFromWindow(it.windowToken, 0)
+            inputManager.hideSoftInputFromInputMethod(it.windowToken, 0)
         }
     }
 

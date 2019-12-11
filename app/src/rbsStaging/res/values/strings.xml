@@ -3,4 +3,6 @@
     <string name="app_name" translatable="false">Robinson Staging</string>
     <string name="watermark_business" translatable="false">Robinson</string>
     <string name="watermark_environment" translatable="false">Staging</string>
+    <string name="hostname_deep_link" translatable="false">staging-fe.robinson.co.th</string>
+
 </resources>

@@ -13,9 +13,6 @@ class Constants {
 
         const val WEB_HOST_NAME = "https://staging.central.co.th"
 
-        const val CONTENT_TYPE = "Content-Type"
-        const val APPTICATION_JSON = "application/json"
-
         // datalake
         const val DATALAKE_HOST_NAME = "staging-datalake-api.powerbuy.co.th"
         const val DATALAKE_X_SUBJECT_ID_HEADER = "x-subject-id"

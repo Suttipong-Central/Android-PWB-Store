@@ -4,7 +4,7 @@
     android:id="@+id/layout_header_user"
     android:layout_width="match_parent"
     android:layout_height="130dp"
-    android:background="@color/powerBuyPurple"
+    android:background="@color/primaryButtonColor"
     android:orientation="horizontal"
     android:paddingStart="16dp"
     android:paddingLeft="16dp"

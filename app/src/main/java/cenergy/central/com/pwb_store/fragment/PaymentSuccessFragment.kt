@@ -5,13 +5,13 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.constraint.Group
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.constraintlayout.widget.Group
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
@@ -231,7 +231,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
 
         staffIconLayout.setOnClickListener {
-            StaffHowToDialogFragment.newInstance().show(fragmentManager, "dialog")
+            StaffHowToDialogFragment.newInstance().show(childFragmentManager, "dialog")
         }
     }
 
@@ -314,7 +314,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             val bitmapBarcode = BarcodeUtils.createQRCode(order.paymentRedirect)
             ivPaymentBarcode.setImageBitmap(bitmapBarcode)
             ivPaymentBarcode.setOnClickListener {
-                BarcodeDialogFragment.newInstance(order.paymentRedirect).show(fragmentManager, "dialog")
+                BarcodeDialogFragment.newInstance(order.paymentRedirect).show(childFragmentManager, "dialog")
             }
             shareButton.setOnClickListener {
                 val shareBottomSheetFragment = ShareBottomSheetDialogFragment.newInstance(order.paymentRedirect)

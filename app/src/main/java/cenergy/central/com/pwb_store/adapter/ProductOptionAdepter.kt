@@ -36,7 +36,7 @@ class ProductOptionAdepter(private val mContext: Context, private var mLayoutRes
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rootView = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false)
         val size = items[position]
         val titleTextView = rootView.tvTitle

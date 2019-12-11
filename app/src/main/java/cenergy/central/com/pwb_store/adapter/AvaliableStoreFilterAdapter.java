@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -11,12 +11,7 @@ import java.util.List;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableFilterHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.AvaliableFilterItemViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterHeaderViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterItemViewHolder;
 import cenergy.central.com.pwb_store.model.IViewType;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.ProductFilterItem;
-import cenergy.central.com.pwb_store.model.ProductFilterList;
 import cenergy.central.com.pwb_store.model.StoreFilterHeader;
 import cenergy.central.com.pwb_store.model.StoreFilterItem;
 import cenergy.central.com.pwb_store.model.StoreFilterList;

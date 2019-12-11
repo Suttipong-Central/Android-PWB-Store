@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -10,7 +10,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchHistoryClearBus;
-import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
  * Created by napabhat on 8/9/2017 AD.

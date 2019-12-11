@@ -44,7 +44,7 @@ class AddressAdapter(private val mContext: Context, private var mLayoutResourceI
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rootView = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false)
         val item = items[position]
         val titleTextView = rootView.tvTitle

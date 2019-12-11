@@ -3,10 +3,10 @@ package cenergy.central.com.pwb_store.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.LinearSnapHelper
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -46,7 +46,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private var shadeAttributeId: String = ""
     private var productChildren = arrayListOf<Product>()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
         product = productDetailListener.getProduct()

@@ -3,8 +3,8 @@ package cenergy.central.com.pwb_store.view
 import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.design.widget.TextInputEditText
-import android.support.v4.content.ContextCompat
+import com.google.android.material.textfield.TextInputEditText
+import androidx.core.content.ContextCompat
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.AttributeSet

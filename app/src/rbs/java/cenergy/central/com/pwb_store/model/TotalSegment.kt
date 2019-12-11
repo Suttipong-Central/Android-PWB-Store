@@ -9,9 +9,10 @@ class TotalSegment(
         var title: String? = "",
         var value: String? = ""
 ) {
+
     companion object {
-        const val COUPON_CODE = "amasty_coupon_amount"
-        const val DISCOUNT_CODE = "discount"
+        const val COUPON_KEY = "amasty_coupon_amount"
+        const val DISCOUNT_KEY = "discount"
 
         fun getCouponDiscount(s: String?): CouponDiscount? {
             var couponDiscount: CouponDiscount? = null

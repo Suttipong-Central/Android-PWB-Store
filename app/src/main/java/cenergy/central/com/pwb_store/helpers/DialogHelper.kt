@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.helpers
 
 import android.content.Context
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.text.TextUtils
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.APIError

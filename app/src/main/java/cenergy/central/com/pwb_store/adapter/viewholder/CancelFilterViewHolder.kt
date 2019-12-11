@@ -1,8 +1,8 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.graphics.Typeface
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus

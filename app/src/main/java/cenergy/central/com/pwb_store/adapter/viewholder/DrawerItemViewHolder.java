@@ -1,19 +1,14 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
-import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.DrawerItem;
-import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 /**
  * Created by napabhat on 6/29/2017 AD.

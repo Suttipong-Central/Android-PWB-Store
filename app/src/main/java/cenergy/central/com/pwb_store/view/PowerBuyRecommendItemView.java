@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.widget.CardView;
+import androidx.cardview.widget.CardView;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;
@@ -22,7 +22,6 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.RecommendBus;
 import cenergy.central.com.pwb_store.model.BundleSavedState;
-import cenergy.central.com.pwb_store.model.Event;
 import cenergy.central.com.pwb_store.model.ProductRelatedList;
 
 /**

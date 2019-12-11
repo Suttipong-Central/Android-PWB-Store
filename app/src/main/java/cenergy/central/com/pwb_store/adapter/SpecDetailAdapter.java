@@ -1,8 +1,8 @@
 package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,13 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderDetailViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.CompareItemDetailViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SpecAddCompareViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.SpecDetailViewHolder;
-import cenergy.central.com.pwb_store.model.CompareDao;
-import cenergy.central.com.pwb_store.model.CompareDetail;
-import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.SpecDao;

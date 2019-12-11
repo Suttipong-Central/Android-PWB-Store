@@ -3,10 +3,10 @@ package cenergy.central.com.pwb_store.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -63,7 +63,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as PaymentProtocol
         deliveryHomeListener = context as DeliveryHomeListener
@@ -162,7 +162,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
 
             if (selectedSlots.isNotEmpty()) {
                 timeSlotDialog = timeSlotDialogFragment.newInstance(selectedSlots)
-                timeSlotDialog.show(fragmentManager, "dialog")
+                timeSlotDialog.show(childFragmentManager, "dialog")
             }
         }
     }

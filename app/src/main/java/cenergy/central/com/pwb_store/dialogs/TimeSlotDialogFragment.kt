@@ -1,9 +1,9 @@
 package cenergy.central.com.pwb_store.dialogs
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,11 +30,11 @@ class TimeSlotDialogFragment : DialogFragment() {
     }
 
     private fun retrieveInstanceState(bundle: Bundle) {
-        shippingSlot = bundle.getParcelableArrayList(ARG_SLOT)
+        shippingSlot = bundle.getParcelableArrayList(ARG_SLOT) ?: arrayListOf()
     }
 
     private fun retrieveArguments(bundle: Bundle?) {
-        bundle?.let { shippingSlot = bundle.getParcelableArrayList(ARG_SLOT) }
+        bundle?.let { shippingSlot = bundle.getParcelableArrayList(ARG_SLOT) ?: arrayListOf() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ class TimeSlotDialogFragment : DialogFragment() {
     }
 
     private fun setupView(rootView: View) {
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         val recycler: RecyclerView = rootView.findViewById(R.id.time_slot_recycler)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = TimeSlotAdapter(shippingSlot.sortedBy { it.getTimeDescription() }, timeSlotClickListener)

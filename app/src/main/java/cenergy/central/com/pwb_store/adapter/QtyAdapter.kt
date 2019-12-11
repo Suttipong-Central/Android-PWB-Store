@@ -39,7 +39,7 @@ class QtyAdapter(private val mContext: Context, private var mLayoutResourceId: I
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rootView = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false)
         val qty = items[position]
         rootView.tvTitle.text = qty.toString()

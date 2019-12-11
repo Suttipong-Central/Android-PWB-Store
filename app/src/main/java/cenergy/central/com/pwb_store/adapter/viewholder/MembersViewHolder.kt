@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.EOrderingMember

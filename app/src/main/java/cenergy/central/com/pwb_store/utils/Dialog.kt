@@ -2,8 +2,8 @@ package cenergy.central.com.pwb_store.utils
 
 import android.app.Activity
 import android.content.DialogInterface
-import android.support.annotation.StringRes
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import cenergy.central.com.pwb_store.R
 
 fun Activity.showCommonDialog(message: String) {

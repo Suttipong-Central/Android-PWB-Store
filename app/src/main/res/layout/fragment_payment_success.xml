@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true"
@@ -12,7 +12,7 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -55,7 +55,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:id="@+id/layoutHowToDoNext"
@@ -766,7 +766,7 @@
                 android:layout_height="1dp"
                 android:background="@color/lightGray" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_order_detail_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -774,7 +774,7 @@
                 android:overScrollMode="never"
                 android:paddingBottom="8dp" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/amountLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -787,7 +787,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     android:background="@color/lightGray" />
 
-                <android.support.constraint.Guideline
+                <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline80"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -899,29 +899,29 @@
                     app:layout_constraintTop_toBottomOf="@+id/txt_promotion_order_success"
                     tools:text="0" />
 
-                <android.support.constraint.Group
+                <androidx.constraintlayout.widget.Group
                     android:id="@+id/layoutDiscount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:constraint_referenced_ids="discount_order_success,txt_discount_order_success"/>
 
-                <android.support.constraint.Group
+                <androidx.constraintlayout.widget.Group
                     android:id="@+id/layoutCouponDiscount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:constraint_referenced_ids="promotion_order_success,txt_promotion_order_success"/>
 
-                <android.support.constraint.Group
+                <androidx.constraintlayout.widget.Group
                     android:id="@+id/layoutDeliveryDiscount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:constraint_referenced_ids="delivery_price_order_success,txt_delivery_price_order_success"/>
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -929,7 +929,7 @@
                 android:background="@color/lightGray"
                 android:padding="8dp">
 
-                <android.support.constraint.Guideline
+                <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline80b"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -963,7 +963,7 @@
                     app:layout_constraintStart_toEndOf="@+id/guideline80b"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="4,404" />
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <cenergy.central.com.pwb_store.view.PowerBuyIconButton
                 android:id="@+id/buttonFinished"
@@ -977,4 +977,4 @@
 
     </LinearLayout>
 
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>

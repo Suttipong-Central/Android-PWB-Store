@@ -3,9 +3,9 @@ package cenergy.central.com.pwb_store.fragment
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -686,7 +686,7 @@ class PaymentBillingFragment : Fragment() {
         })
 
         changeT1Button.setOnClickListener {
-            ChangeTheOneDialogFragment.newInstance().show(fragmentManager, "change_t1_dialog")
+            ChangeTheOneDialogFragment.newInstance().show(childFragmentManager, "change_t1_dialog")
         }
 
         radioGroup = rootView.findViewById(R.id.radio_group)
