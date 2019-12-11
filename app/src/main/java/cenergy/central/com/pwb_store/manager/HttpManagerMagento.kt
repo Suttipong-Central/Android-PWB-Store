@@ -104,7 +104,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     if (loginResponse != null) {
                         setUserToken(loginResponse)
                         // get user information
-                        getUserId(callback)
+                        getUserId(username, callback)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
                     }
@@ -119,12 +119,12 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun getUserId(callback: ApiResponseCallback<UserInformation>) {
+    fun getUserId(username: String, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
         userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse> {
             override fun onResponse(call: Call<LoginUserResponse>, response: Response<LoginUserResponse>?) {
                 if (response?.body() != null) {
-                    getBranchUser(response.body()!!, callback)
+                    getBranchUser(username, response.body()!!, callback)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
@@ -136,7 +136,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    private fun getBranchUser(userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
+    private fun getBranchUser(username: String, userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
         userService.retrieveStoreUser("$BEARER $userToken").enqueue(object : Callback<UserBranch> {
             override fun onResponse(call: Call<UserBranch>, response: Response<UserBranch>?) {
@@ -145,7 +145,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                     //TODO: Mock up data will delete soon
                     val user = User(userResponse.userId, "", userResponse.staffId, 223L,
-                            "chuan@central.tech", "", "", 0, "")
+                            "chuan@central.tech", username, "", 0, "")
 
                     if (userBranch != null && userBranch.items.size > 0) {
                         val sellerCode = userBranch.items[0].code
