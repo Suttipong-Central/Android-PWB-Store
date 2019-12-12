@@ -14,12 +14,15 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.fragment.LoginFragment
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 
 class LoginActivity : BaseActivity() {
 
     // widget view
     private lateinit var networkStateView: NetworkStateView
     private lateinit var languageButton: LanguageButton
+    private val analytics by lazy { Analytics(this) }
 
     @Subscribe
     fun onEvent(loginSuccessBus: LoginSuccessBus) {
@@ -52,6 +55,7 @@ class LoginActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         EventBus.getDefault().register(this)
+        analytics.trackScreen(Screen.LOGIN)
     }
 
     override fun onPause() {
