@@ -319,26 +319,22 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 true, new ArrayList<>(), new ApiResponseCallback<List<Category>>() {
                     @Override
                     public void success(@Nullable final List<Category> categories) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (currentFragment instanceof ProductListFragment && categories != null) {
-                                    for (Category category : categories) {
-                                        if (category.getId().equals(categoryLv2.getId())) {
-                                            categoryLv2 = category; // force be new data th/en
-                                        }
+                        runOnUiThread(() -> {
+                            if (currentFragment instanceof ProductListFragment && categories != null) {
+                                for (Category category : categories) {
+                                    if (category.getId().equals(categoryLv2.getId())) {
+                                        categoryLv2 = category; // force be new data th/en
                                     }
-                                    startProductListFragment(categoryLv2); // force reopen PLP
-                                    dismissProgressDialog();
                                 }
+                                startProductListFragment(categoryLv2); // force reopen PLP
+                                dismissProgressDialog();
                             }
                         });
                     }
 
                     @Override
                     public void failure(@NotNull APIError error) {
-                        Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                        dismissProgressDialog();
+                        runOnUiThread(() -> dismissProgressDialog());
                     }
                 });
     }
@@ -379,9 +375,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
                     @Override
                     public void failure(@NotNull APIError error) {
-                        Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                        isLoadingCategory = false;
-                        dismissProgressDialog();
+                        runOnUiThread(() -> {
+                            isLoadingCategory = false;
+                            dismissProgressDialog();
+                        });
                     }
                 });
     }
