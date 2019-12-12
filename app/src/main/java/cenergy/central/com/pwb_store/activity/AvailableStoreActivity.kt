@@ -64,8 +64,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
                                 .commitAllowingStateLoss()
                     } else {
                         val error = APIErrorUtils.parseError(response)
-                        Log.e(TAG, "onResponse: " + error.errorMessage)
-                        showAlertDialog(error.errorMessage, false)
+                        showAlertDialog(error.errorMessage?: getString(R.string.some_thing_wrong), false)
                     }
                 }
             }
@@ -73,7 +72,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
             override fun failure(error: APIError) {
                 runOnUiThread {
                     dismissProgressDialog()
-                    showAlertDialog(error.errorMessage, false)
+                    showAlertDialog(error.errorMessage?: getString(R.string.some_thing_wrong), false)
                 }
             }
         })

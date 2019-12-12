@@ -9,13 +9,14 @@ fun List<StoreAvailable>.getStockAvailability(): Pair<Boolean, Boolean> {
 
     // output
     var stockCurrentStore = false
-    val stockOtherStores = this.any { it.qty > 0 }
+    var stockOtherStores = false
 
     if (retailerId != null) {
         val store = this.firstOrNull { it.sellerCode == retailerId }
         if (store != null) {
             stockCurrentStore = store.qty > 0
         }
+        stockOtherStores = this.filter { it.sellerCode != retailerId }.any { it.qty > 0 }
     }
 
     return Pair(stockCurrentStore, stockOtherStores)

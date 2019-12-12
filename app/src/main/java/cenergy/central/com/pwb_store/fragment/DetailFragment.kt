@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -134,7 +135,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
         }
 
-        rvProductImage.layoutManager = LinearLayoutManager(context, LinearLayout.HORIZONTAL, false)
+        rvProductImage.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rvProductImage.adapter = ProductImageAdapter(this, productImageList.productDetailImageItems)
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rvProductImage)
@@ -368,26 +369,26 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun handleStockFailure() {
-        product?.let {
-            val inStock = context.isProductInStock(it)
+        if (product != null){
+            val inStock = context.isProductInStock(product!!)
             stockIndicatorView.setState(hasOnline = inStock, hasStoreOffline = false, hasStoresOffline = false)
-        } ?: run {
+        } else {
             stockIndicatorView.setState() // default was false
         }
         stockIndicatorView.visibility = View.VISIBLE
     }
 
     private fun handleStockSuccess(response: List<StoreAvailable>?) {
-        response?.let {
+        if (response != null){
             val inStock = if (product != null) context.isProductInStock(product!!) else false
-            val stockAvailability = it.getStockAvailability()
+            val stockAvailability = response.getStockAvailability()
             stockIndicatorView.setState(hasOnline = inStock,
                     hasStoreOffline = stockAvailability.first,
                     hasStoresOffline = stockAvailability.second)
-        } ?: run {
+            stockIndicatorView.visibility = View.VISIBLE
+        } else {
             handleStockFailure()
         }
-        stockIndicatorView.visibility = View.VISIBLE
     }
 
     private fun onAddToCartBy1Hrs() {
