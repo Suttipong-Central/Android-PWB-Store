@@ -49,9 +49,14 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     init {
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
-        defaultHttpClient = OkHttpClient.Builder().apply {
-                    readTimeout(30, TimeUnit.SECONDS)
-                    writeTimeout(30, TimeUnit.SECONDS)
+        defaultHttpClient = OkHttpClient.Builder()
+                .readTimeout(30, TimeUnit.SECONDS)
+                .followRedirects(false)
+                .followSslRedirects(false)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor { chain ->
+                    val request = chain.request().newBuilder().build()
+                    chain.proceed(request)
                 }
                 .addInterceptor(interceptor)
                 .build()
@@ -149,7 +154,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                     if (userBranch != null && userBranch.items.size > 0) {
                         val sellerCode = userBranch.items[0].code
-                        if (BuildConfig.FLAVOR == "cds"){
+                        if (BuildConfig.FLAVOR == "cds") {
                             val store = Store()
                             store.retailerId = sellerCode
                             // save user token
@@ -297,7 +302,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                         // add special category
                         specialIds.forEach {
-                            val cat = categories.firstOrNull { category ->  category.id == it }
+                            val cat = categories.firstOrNull { category -> category.id == it }
                             if (cat != null) {
                                 modifiedCategories.add(cat)
                             }
@@ -405,15 +410,15 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                         val index = valuesArray.getJSONObject(j).getInt("value_index")
                                         val valueExtensionObject = valuesArray.getJSONObject(j).getJSONObject("extension_attributes")
                                         var valueLabel = ""
-                                        if (valueExtensionObject.has("label")){
+                                        if (valueExtensionObject.has("label")) {
                                             valueLabel = valueExtensionObject.getString("label")
                                         }
                                         var value = ""
-                                        if (valueExtensionObject.has("frontend_value")){
+                                        if (valueExtensionObject.has("frontend_value")) {
                                             value = valueExtensionObject.getString("frontend_value")
                                         }
                                         var type = ""
-                                        if (valueExtensionObject.has("frontend_type")){
+                                        if (valueExtensionObject.has("frontend_type")) {
                                             type = valueExtensionObject.getString("frontend_type")
                                         }
                                         val productIDs = arrayListOf<Long>()
@@ -433,7 +438,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                         if (extensionObj.has("configurable_product_links")) {
                             val productChildrenArray = extensionObj.getJSONArray("configurable_product_links")
-                            for (i in 0 until productChildrenArray.length()){
+                            for (i in 0 until productChildrenArray.length()) {
                                 productIdChildren.add(productChildrenArray.getString(i))
                             }
                         }
@@ -444,7 +449,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                             val id = galleryArray.getJSONObject(i).getString("id")
                             val type = galleryArray.getJSONObject(i).getString("media_type")
                             var label = ""
-                            if(galleryArray.getJSONObject(i).has("label")) {
+                            if (galleryArray.getJSONObject(i).has("label")) {
                                 label = galleryArray.getJSONObject(i).getString("label")
                             }
                             var position = 0
