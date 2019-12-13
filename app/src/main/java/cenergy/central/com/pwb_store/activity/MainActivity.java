@@ -476,7 +476,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         switch (action) {
             case ACTION_CART: {
                 if (database.getCacheCartItems().size() > 0) {
-                    ShoppingCartActivity.Companion.startActivity(this, getPreferenceManager().getCartId());
+                    ShoppingCartActivity.Companion.startActivity(this);
                 } else {
                     showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
                 }

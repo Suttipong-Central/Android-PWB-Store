@@ -267,6 +267,7 @@ class PaymentBillingFragment : Fragment() {
             val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
             val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
             discountPriceValue -= couponDiscountAmount
+            cartTotal.totalPrice -= couponDiscountAmount
             promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
             layoutPromotionPrice.visibility = if (hasCoupon) View.VISIBLE else View.GONE
         } else {
@@ -274,6 +275,7 @@ class PaymentBillingFragment : Fragment() {
         }
         if (discountPriceValue > 0) {
             layoutDiscountPrice.visibility = View.VISIBLE
+            cartTotal.totalPrice -= discountPriceValue
             discountPrice.text = getDisplayDiscount(unit, discountPriceValue.toString())
         } else {
             layoutDiscountPrice.visibility = View.GONE

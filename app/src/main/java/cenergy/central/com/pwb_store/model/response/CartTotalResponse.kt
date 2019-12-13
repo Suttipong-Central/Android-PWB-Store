@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import io.realm.annotations.PrimaryKey
 
 class CartTotalResponse(
-        @SerializedName("base_grand_total")
+        @SerializedName("subtotal_incl_tax")
         var totalPrice: Double = 0.0,
         @SerializedName("base_discount_amount")
         var discountPrice: Double = 0.0,

@@ -63,15 +63,16 @@ class SplashScreenActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun startShoppingCart(cartId: String) {
-        ShoppingCartActivity.startActivity(this, cartId)
+    private fun startShoppingCart() {
+        ShoppingCartActivity.startActivity(this)
         finish()
     }
 
     private fun createCart() {
         CartUtils(this).createCart(object : CartListener {
             override fun onCartCreated(cartId: String) {
-                startShoppingCart(cartId)
+                preferenceManager.setCartId(cartId)
+                startShoppingCart()
             }
 
             override fun onFailure(messageError: String) {
@@ -101,9 +102,9 @@ class SplashScreenActivity : AppCompatActivity() {
 
         if (data.contains(PATH_SHOPPING_CART)) {
             // open shopping cart
-            preferenceManager.cartId?.let {
-                startShoppingCart(it)
-            } ?: run {
+            if (preferenceManager.cartId != null){
+                startShoppingCart()
+            } else {
                 createCart()
             }
         } else {

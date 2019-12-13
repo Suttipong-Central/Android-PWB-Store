@@ -70,7 +70,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var mProgressDialog: ProgressDialog? = null
     // data
     private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
-    private var cartId: String = ""
     private var unit: String = ""
     private val database = RealmController.getInstance()
     private var hasChangingData: Boolean = false
@@ -85,13 +84,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var cacheExpiration: Long = 3600 // 1 hour in seconds.
 
     companion object {
-        private const val CART_ID = "CART_ID"
         const val RESULT_UPDATE_PRODUCT = 59000
 
         @JvmStatic
-        fun startActivity(context: Context, view: View, cartId: String?) {
+        fun startActivity(context: Context, view: View) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
-            intent.putExtra(CART_ID, cartId)
             ActivityCompat.startActivityForResult((context as Activity), intent, REQUEST_UPDATE_LANGUAGE,
                     ActivityOptionsCompat
                             .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
@@ -99,9 +96,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
 
         @JvmStatic
-        fun startActivity(context: Context, cartId: String?) {
+        fun startActivity(context: Context) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
-            intent.putExtra(CART_ID, cartId)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
@@ -115,8 +111,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         handleChangeLanguage()
-
-        cartId = intent.getStringExtra(CART_ID)
         initView()
         setUpToolbar()
         showProgressDialog()
@@ -280,44 +274,48 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun getCartItem() {
-        CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
-            override fun success(response: CartResponse?) {
-                if (response != null) {
-                    cartResponse = response
-                    getCartTotal()
-                } else {
-                    mProgressDialog?.dismiss()
-                    showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
-                }
-            }
-
-            override fun failure(error: APIError) {
-                mProgressDialog?.dismiss()
-                displayError(error)
-            }
-        })
-    }
-
-    private fun getCartTotal() {
-        CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
-            override fun success(response: CartTotalResponse?) {
-                runOnUiThread {
-                    mProgressDialog?.dismiss()
+        preferenceManager.cartId?.let{ cartId ->
+            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
+                override fun success(response: CartResponse?) {
                     if (response != null) {
-                        updateViewShoppingCart(response)
+                        cartResponse = response
+                        getCartTotal()
                     } else {
+                        mProgressDialog?.dismiss()
                         showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
                     }
                 }
-            }
 
-            override fun failure(error: APIError) {
-                runOnUiThread {
+                override fun failure(error: APIError) {
                     mProgressDialog?.dismiss()
                     displayError(error)
                 }
-            }
-        })
+            })
+        }
+    }
+
+    private fun getCartTotal() {
+        preferenceManager.cartId?.let{ cartId ->
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
+                override fun success(response: CartTotalResponse?) {
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        if (response != null) {
+                            updateViewShoppingCart(response)
+                        } else {
+                            showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+                        }
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        displayError(error)
+                    }
+                }
+            })
+        }
     }
 
     private fun updateViewShoppingCart(shoppingCartResponse: CartTotalResponse) {
@@ -325,6 +323,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             cartItemList = cartResponse!!.items
 
             val items = shoppingCartResponse.items ?: listOf()
+
+            var total = shoppingCartResponse.totalPrice
 
             var discountPriceValue = 0.0
             val discount = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
@@ -340,6 +340,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                     val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
                     val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
                     discountPriceValue -= couponDiscountAmount
+                    total -= couponDiscountAmount
                     promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
                     couponBtn.setText(getString(if (hasCoupon) R.string.cancel_coupon else R.string.add_coupon))
                     couponCodeEdt.isEnabled = !hasCoupon
@@ -356,15 +357,14 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 promotionCode = shoppingCartResponse.couponCode
                 couponCodeEdt.setText(promotionCode)
             }
-
             shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
 
             updateTitle(shoppingCartResponse.qty)
-            val total = shoppingCartResponse.totalPrice
             val t1Points = (total - (total % 50)) / 50
             if (discountPriceValue > 0) {
                 layoutDiscountPrice.visibility = View.VISIBLE
                 discountPrice.text = getDisplayDiscount(unit, discountPriceValue.toString())
+                total -= discountPriceValue
             } else {
                 layoutDiscountPrice.visibility = View.GONE
             }

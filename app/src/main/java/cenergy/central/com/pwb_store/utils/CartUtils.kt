@@ -297,8 +297,8 @@ class CartUtils(private val context: Context) {
                     val cartTotalResponse = CartTotalResponse()
                     try {
                         val dataObject = JSONObject(data?.string())
-                        if (dataObject.has("base_grand_total")) {
-                            cartTotalResponse.totalPrice = dataObject.getDouble("base_grand_total")
+                        if (dataObject.has("subtotal_incl_tax")) {
+                            cartTotalResponse.totalPrice = dataObject.getDouble("subtotal_incl_tax")
                         }
                         if (dataObject.has("base_discount_amount")) {
                             cartTotalResponse.discountPrice = dataObject.getDouble("base_discount_amount")

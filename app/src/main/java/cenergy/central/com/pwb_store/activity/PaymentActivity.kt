@@ -1027,7 +1027,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     object : AddProductToCartCallback {
                         override fun onSuccessfully() {
                             mProgressDialog?.dismiss()
-                            ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                            ShoppingCartActivity.startActivity(this@PaymentActivity)
                             finish()
                         }
 
@@ -1055,7 +1055,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         CartUtils(this).editStore2hPickup(branchResponse, object : EditStorePickupCallback {
             override fun onSuccessfully() {
                 mProgressDialog?.dismiss()
-                ShoppingCartActivity.startActivity(this@PaymentActivity, preferenceManager.cartId)
+                ShoppingCartActivity.startActivity(this@PaymentActivity)
                 finish()
             }
 

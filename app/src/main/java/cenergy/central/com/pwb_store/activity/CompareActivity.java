@@ -45,7 +45,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
 public class CompareActivity extends AppCompatActivity implements CompareItemListener, PowerBuyShoppingCartView.OnClickListener {
 
     Toolbar mToolbar;
-    PowerBuyShoppingCartView mBuyShoppingCartView;
+    private PowerBuyShoppingCartView mBuyShoppingCartView;
     private PreferenceManager preferenceManager;
     private ProgressDialog mProgressDialog;
     private RealmController database = RealmController.getInstance();
@@ -89,12 +89,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mToolbar.setNavigationOnClickListener(v -> finish());
         mBuyShoppingCartView.setListener(this);
     }
 
@@ -134,7 +129,7 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     @Override
     public void onShoppingCartClick(View view) {
         if (database.getCacheCartItems().size() > 0) {
-            ShoppingCartActivity.Companion.startActivity(this, view, preferenceManager.getCartId());
+            ShoppingCartActivity.Companion.startActivity(this, view);
         } else {
             showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
         }
@@ -143,12 +138,9 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     private void showAlertDialog(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                            mProgressDialog.dismiss();
-                        }
+                .setPositiveButton(getString(R.string.ok_alert), (dialog, which) -> {
+                    if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                        mProgressDialog.dismiss();
                     }
                 });
 
@@ -271,12 +263,9 @@ public class CompareActivity extends AppCompatActivity implements CompareItemLis
     private void showClearCartDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(getString(R.string.title_clear_cart))
-                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        clearCart(); // clear item cart
-                        updateShoppingCartBadge(); // update ui
-                    }
+                .setPositiveButton(getString(R.string.ok_alert), (dialog, which) -> {
+                    clearCart(); // clear item cart
+                    updateShoppingCartBadge(); // update ui
                 });
         builder.show();
     }
