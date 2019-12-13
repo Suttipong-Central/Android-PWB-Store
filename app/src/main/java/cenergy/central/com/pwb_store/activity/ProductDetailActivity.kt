@@ -279,13 +279,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                     }
 
                     override fun failure(error: APIError) {
-                        Log.e(TAG, "onResponse: " + error.errorMessage)
-                        runOnUiThread {
-                            // dismiss loading dialog
-                            dismissProgressDialog()
-                            // show error message
-                            DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-                        }
+                        dismissProgressDialog()
+                        DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
                     }
                 })
     }
@@ -299,13 +294,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                     }
 
                     override fun failure(error: APIError) {
-                        Log.e(TAG, "onResponse: " + error.errorMessage)
-                        runOnUiThread {
-                            // dismiss loading dialog
-                            dismissProgressDialog()
-                            // show error message
-                            DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
-                        }
+                        dismissProgressDialog()
+                        DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
                     }
                 })
     }
@@ -314,15 +304,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getProductDetail(sku, object : ApiResponseCallback<Product?> {
             override fun success(response: Product?) {
-                handleGetProductSuccess(response)
+                runOnUiThread {
+                    handleGetProductSuccess(response)
+                }
             }
 
             override fun failure(error: APIError) {
-                Log.e(TAG, "onResponse: " + error.errorMessage)
                 runOnUiThread {
-                    // dismiss loading dialog
                     dismissProgressDialog()
-                    // show error message
                     DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
                 }
             }
