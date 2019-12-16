@@ -16,10 +16,13 @@ import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class PaymentSelectMethodFragment : Fragment() {
+    private val analytics by lazy { context?.let { Analytics(it) } }
 
     private lateinit var paymentProtocol: PaymentProtocol
     private lateinit var recycler: RecyclerView
@@ -64,6 +67,11 @@ class PaymentSelectMethodFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupPaymentMethodOptions()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SELECT_PAYMENT)
     }
 
     private fun setupPaymentMethodOptions() {

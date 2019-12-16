@@ -13,6 +13,8 @@ import com.journeyapps.barcodescanner.CompoundBarcodeView;
 
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
+import cenergy.central.com.pwb_store.utils.Analytics;
+import cenergy.central.com.pwb_store.utils.Screen;
 
 public class BarcodeScanActivity extends AppCompatActivity {
 
@@ -21,11 +23,14 @@ public class BarcodeScanActivity extends AppCompatActivity {
     CompoundBarcodeView mCompoundBarcodeView;
     private CaptureManager captureManager;
     private static boolean cameraOn = false;
+    private Analytics analytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_barcode_scan);
+        analytics = new Analytics(this);
+
         mCompoundBarcodeView = findViewById(R.id.zxing_barcode_scanner);
         mImageButtonBack = findViewById(R.id.image_button_back);
         mFlashLightButton = findViewById(R.id.image_button_flashlight);
@@ -63,6 +68,9 @@ public class BarcodeScanActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (analytics != null) {
+            analytics.trackScreen(Screen.SEARCH_BY_BARCODE);
+        }
         captureManager.onResume();
     }
 

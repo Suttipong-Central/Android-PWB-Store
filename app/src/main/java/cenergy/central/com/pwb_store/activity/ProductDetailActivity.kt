@@ -7,17 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -35,14 +35,10 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.DeliveryInfo
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
-import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.AddProductToCartCallback
-import cenergy.central.com.pwb_store.utils.CartUtils
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
@@ -51,6 +47,7 @@ import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
 class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
 
+    private val analytics: Analytics? by lazy { Analytics(this) }
     // widget view
     private var progressDialog: ProgressDialog? = null
     private lateinit var mToolbar: Toolbar
@@ -111,6 +108,15 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         retrieveProductDetail()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // analytics
+        analytics?.trackScreen(Screen.PRODUCT_DETAIL)
+
+        updateCompareBadge()
+        updateShoppingCartBadge()
+    }
+
     private fun retrieveProductDetail() {
         if (productSku != null) {
             retrieveProduct(productSku!!)
@@ -126,12 +132,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             retrieveProductByProductJda(productJdaSku!!)
             return
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateCompareBadge()
-        updateShoppingCartBadge()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -16,10 +16,13 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Category
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 import kotlinx.android.synthetic.main.activity_sub_header_product.view.*
 
 class SubHeaderProductFragment : Fragment() {
 
+    private val analytics by lazy { context?.let { Analytics(it) } }
     private var category: Category? = null
     private lateinit var adapter: CategoryAdapter
 
@@ -39,6 +42,16 @@ class SubHeaderProductFragment : Fragment() {
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        category?.id?.let { loadCategories(it) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.CATEGORY_LV2)
+    }
+
     private fun setupView(rootView: View) {
         val subHeaderRecycler = rootView.sub_header_recycler
         val gridLayoutManager = GridLayoutManager(rootView.context, 3, LinearLayoutManager.VERTICAL, false)
@@ -46,11 +59,6 @@ class SubHeaderProductFragment : Fragment() {
         subHeaderRecycler.layoutManager = gridLayoutManager
         subHeaderRecycler.adapter = adapter
         adapter.setCategoryHeader(category?.departmentName, arrayListOf()) // default
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        category?.id?.let { loadCategories(it) }
     }
 
     fun foreRefresh(category: Category) {

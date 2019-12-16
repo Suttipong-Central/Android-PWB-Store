@@ -7,17 +7,17 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.appcompat.widget.Toolbar
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
@@ -34,10 +34,7 @@ import cenergy.central.com.pwb_store.model.TotalSegment
 import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.CartUtils
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.RemoteConfigUtils
-import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -82,6 +79,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     // Firebase remote config
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
     private var cacheExpiration: Long = 3600 // 1 hour in seconds.
+    private val analytics: Analytics? by lazy { Analytics(this) }
 
     companion object {
         const val RESULT_UPDATE_PRODUCT = 59000
@@ -118,6 +116,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         recycler.adapter = shoppingCartAdapter
 
         getCartItem()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SHOPPING_CART)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -274,7 +277,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun getCartItem() {
-        preferenceManager.cartId?.let{ cartId ->
+        preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
                 override fun success(response: CartResponse?) {
                     if (response != null) {
@@ -295,7 +298,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun getCartTotal() {
-        preferenceManager.cartId?.let{ cartId ->
+        preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
                 override fun success(response: CartTotalResponse?) {
                     runOnUiThread {

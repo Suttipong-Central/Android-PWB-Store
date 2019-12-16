@@ -14,8 +14,11 @@ import cenergy.central.com.pwb_store.adapter.DeliveryOptionsAdapter
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.DeliveryType
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 
 class DeliveryOptionsFragment : Fragment() {
+    private val analytics by lazy { context?.let { Analytics(it) } }
 
     private lateinit var recyclerView: RecyclerView
     private var deliveryOptions: List<DeliveryOption> = arrayListOf()
@@ -42,6 +45,11 @@ class DeliveryOptionsFragment : Fragment() {
         val rootView = LayoutInflater.from(context).inflate(R.layout.fragment_delivery_options, container, false)
         setupView(rootView)
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SELECT_DELIVERY)
     }
 
     private fun setupView(rootView: View) {

@@ -548,7 +548,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         }
     }
 
-    /*
+    /**
      *
      * override method from BaseActivity
      * on language change

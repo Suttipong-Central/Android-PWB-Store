@@ -38,9 +38,7 @@ import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.ValidationHelper
-import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
@@ -96,6 +94,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var taxInvoiceLayout: LinearLayout
 
     private var mProgressDialog: ProgressDialog? = null
+    private val analytics by lazy { context?.let { Analytics(it) } }
 
     // data
     private lateinit var preferenceManager: PreferenceManager
@@ -225,8 +224,7 @@ class PaymentBillingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val preferenceManager = context?.let { PreferenceManager(it) }
-        cartId = preferenceManager?.cartId
+        cartId = preferenceManager.cartId
         memberHDL = arguments?.getParcelable(ARG_HDL_MEMBER)
         member = arguments?.getParcelable(ARG_MEMBER)
         pwbMemberIndex = arguments?.getInt(ARG_MEMBER_INDEX)
@@ -244,6 +242,11 @@ class PaymentBillingFragment : Fragment() {
         setupInputAddress()
         loadProvinceList() // on start
         setupCartItems()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SHIPING_AND_BILLING_ADDRESSES)
     }
 
     private fun setupCartItems() {
