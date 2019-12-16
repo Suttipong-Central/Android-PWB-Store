@@ -5,84 +5,26 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.appcompat.app.AppCompatActivity
-import cenergy.central.com.pwb_store.BuildConfig
-import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.CartListener
-import cenergy.central.com.pwb_store.utils.CartUtils
-import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.DeepLink
 
 class SplashScreenActivity : AppCompatActivity() {
     val preferenceManager by lazy { PreferenceManager(this) }
     private lateinit var database: RealmController
-
-    companion object {
-        private const val PATH_SHOPPING_CART = "/shopping-cart"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         database = RealmController.getInstance()
 
         if (database.userToken != null) {
-            checkIntent(intent)
+            checkStart(intent)
         } else {
-            forceLogin()
+            forceLogin(intent)
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        intent?.let { checkIntent(it) }
-    }
-
-    private fun start() {
-        // start main page
-        val intent = Intent(this, MainActivity::class.java)
-        ActivityCompat.startActivity(this, intent,
-                ActivityOptionsCompat.makeBasic().toBundle())
-        finish()
-    }
-
-    private fun forceLogin() {
-        // start login page
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
-
-    }
-
-    private fun startProductDetailBySku(sku: String) {
-        ProductDetailActivity.startActivityBySku(this, sku)
-        finish()
-    }
-
-    private fun startProductDetailByJda(jdaSku: String) {
-        ProductDetailActivity.startActivityByJDA(this, jdaSku)
-        finish()
-    }
-
-    private fun startShoppingCart() {
-        ShoppingCartActivity.startActivity(this)
-        finish()
-    }
-
-    private fun createCart() {
-        CartUtils(this).createCart(object : CartListener {
-            override fun onCartCreated(cartId: String) {
-                preferenceManager.setCartId(cartId)
-                startShoppingCart()
-            }
-
-            override fun onFailure(messageError: String) {
-                showCommonDialog(messageError)
-            }
-        })
-    }
-
-    //TODO: Improve this function
-    private fun checkIntent(intent: Intent) {
+    private fun checkStart(intent: Intent) {
         val action = intent.action
         val data = intent.dataString
 
@@ -91,36 +33,37 @@ class SplashScreenActivity : AppCompatActivity() {
             return
         }
 
-        // set default AppLanguage
-        if (intent.data != null && intent.data!!.pathSegments.isNotEmpty()) {
-            intent.data!!.pathSegments.forEach {
-                if (it == "th" || it == "en") {
-                    preferenceManager.setDefaultLanguage(AppLanguage.fromString(it))
-                }
-            }
+        if (intent.data != null && intent.data!!.pathSegments.isNotEmpty()){
+            DeepLink(this).checkIntent(
+                    intent.data!!.pathSegments.toTypedArray(),
+                    intent.data!!,
+                    data)
         }
+    }
 
-        if (data.contains(PATH_SHOPPING_CART)) {
-            // open shopping cart
-            if (preferenceManager.cartId != null){
-                startShoppingCart()
-            } else {
-                createCart()
-            }
-        } else {
-            // open pdp
-            if (BuildConfig.FLAVOR.contentEquals("pwb")) { // is flavor PWB
-                val sku = intent.data?.getQueryParameter("sku")
-                if (!sku.isNullOrEmpty()) {
-                    startProductDetailBySku(sku)
-                }
-            } else {
-                // cds, rbs
-                val jda = intent.data?.getQueryParameter("jda_sku")
-                if (!jda.isNullOrEmpty()) {
-                    startProductDetailByJda(jda)
-                }
-            }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let { checkStart(intent) }
+    }
+
+    private fun forceLogin(intent: Intent) {
+        // start login page
+        val intentLogin = Intent(this, LoginActivity::class.java)
+        if (intent.data != null && intent.data!!.pathSegments.isNotEmpty()){
+            intentLogin.putExtra(DeepLink.DEEP_LINK_EXTRA_PATH_SEGMENTS, intent.data!!.pathSegments.toTypedArray())
+            intentLogin.putExtra(DeepLink.DEEP_LINK_EXTRA_URI, intent.data!!)
+            intentLogin.putExtra(DeepLink.DEEP_LINK_EXTRA_LINK, intent.dataString)
         }
+        startActivity(intentLogin)
+        finish()
+
+    }
+
+    private fun start() {
+        // start main page
+        val intent = Intent(this, MainActivity::class.java)
+        ActivityCompat.startActivity(this, intent,
+                ActivityOptionsCompat.makeBasic().toBundle())
+        finish()
     }
 }

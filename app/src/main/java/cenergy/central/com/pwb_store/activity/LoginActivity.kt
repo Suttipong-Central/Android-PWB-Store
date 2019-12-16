@@ -1,21 +1,21 @@
 package cenergy.central.com.pwb_store.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.fragment.LoginFragment
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.DeepLink
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
-import cenergy.central.com.pwb_store.fragment.LoginFragment
-import cenergy.central.com.pwb_store.utils.Analytics
-import cenergy.central.com.pwb_store.utils.Screen
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 class LoginActivity : BaseActivity() {
 
@@ -24,15 +24,22 @@ class LoginActivity : BaseActivity() {
     private lateinit var languageButton: LanguageButton
     private val analytics by lazy { Analytics(this) }
 
+    private var pathSegments = arrayOf("")
+    private var uriDeepLink: Uri? = null
+    private var link = ""
     @Subscribe
     fun onEvent(loginSuccessBus: LoginSuccessBus) {
         if (loginSuccessBus.isSuccess) {
-            val intent = Intent(this, MainActivity::class.java)
-            ActivityCompat.startActivity(this, intent,
-                    ActivityOptionsCompat
-                            .makeBasic()
-                            .toBundle())
-            finish()
+            if (pathSegments.isNotEmpty() && uriDeepLink != null && link.isNotEmpty()){
+                DeepLink(this).checkIntent(pathSegments, uriDeepLink!!, link)
+            } else {
+                val intent = Intent(this, MainActivity::class.java)
+                ActivityCompat.startActivity(this, intent,
+                        ActivityOptionsCompat
+                                .makeBasic()
+                                .toBundle())
+                finish()
+            }
         }
     }
 
@@ -41,6 +48,17 @@ class LoginActivity : BaseActivity() {
         setContentView(R.layout.activity_login)
         languageButton = findViewById(R.id.switch_language_button)
         handleChangeLanguage()
+        if (intent != null) {
+            if (intent.hasExtra(DeepLink.DEEP_LINK_EXTRA_PATH_SEGMENTS)) {
+                pathSegments = intent.getStringArrayExtra(DeepLink.DEEP_LINK_EXTRA_PATH_SEGMENTS) ?: arrayOf()
+            }
+            if (intent.hasExtra(DeepLink.DEEP_LINK_EXTRA_URI)) {
+                uriDeepLink = intent.getParcelableExtra(DeepLink.DEEP_LINK_EXTRA_URI)
+            }
+            if (intent.hasExtra(DeepLink.DEEP_LINK_EXTRA_LINK)) {
+                link = intent.getStringExtra(DeepLink.DEEP_LINK_EXTRA_LINK) ?: ""
+            }
+        }
         initView()
     }
 
