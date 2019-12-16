@@ -146,7 +146,7 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                             if (response != null) {
                                 if (checkUserLogin(response)) {
                                     dismissDialog();
-                                    EventBus.getDefault().post(new LoginSuccessBus(true));
+                                    EventBus.getDefault().post(new LoginSuccessBus(true, response));
                                 } else {
                                     dismissDialog();
                                     showAlertDialog("", getString(R.string.some_thing_wrong));
@@ -165,14 +165,6 @@ public class LoginFragment extends Fragment implements TextWatcher, View.OnClick
                     });
         }
     }
-
-//    private Boolean checkUserLogin(UserResponse userResponse){
-//        return  userResponse.getUser().getStaffId() != null && !userResponse.getUser().getStaffId().equals("")
-//                && !userResponse.getUser().getStaffId().equals("0") && userResponse.getUser().getStoreId() != null
-//                && userResponse.getUser().getStoreId() != 0 && userResponse.getStore() != null
-//                && userResponse.getStore().getPostalCode() != null && userResponse.getStore().getStoreId() != null
-//                && userResponse.getStore().getStoreId() != 0;
-//    }
 
     private Boolean checkUserLogin(UserInformation userInformation){
         return userInformation.getStore() != null && userInformation.getUser() != null &&

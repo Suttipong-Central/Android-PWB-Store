@@ -381,6 +381,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         if (cartItemList.isNotEmpty()) {
             paymentButton.setButtonDisable(false)
             paymentButton.setOnClickListener {
+                analytics?.trackStartCheckout() // tracking event
                 PaymentActivity.startCheckout(this, checkoutType == CheckoutType.ISPU)
             }
         } else {

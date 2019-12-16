@@ -94,7 +94,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var isEditStorePickup: Boolean = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
 
-    // Firebase remote config
+    // Firebase
+    private val analytics by lazy { Analytics(this) }
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
     private var cacheExpiration: Long = 3600 // 1 hour in seconds.
 
@@ -1023,6 +1024,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun addProduct2hToCart(branchResponse: BranchResponse) {
         showProgressDialog()
         product2h?.let {
+            analytics.trackAddToCart(it.sku, "1h_pickup")
+
             CartUtils(this).addProduct2hToCart(it, branchResponse, branches,
                     object : AddProductToCartCallback {
                         override fun onSuccessfully() {

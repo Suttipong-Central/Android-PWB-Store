@@ -224,7 +224,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     override fun onDisplayAvailableStore(product: Product?) {
-        product?.let { startAvailableStore(it) }
+        product?.let {
+            startAvailableStore(it)
+        }
     }
 
     override fun onDisplayOverview(overview: String) {
@@ -479,6 +481,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // region action add product to cart
     private fun startAddToCart(product: Product) {
         this.product = product
+
+        analytics?.trackAddToCart(product.sku, "normal") // tracking event
+
         showProgressDialog()
         CartUtils(this).addProductToCart(product, object : AddProductToCartCallback {
             override fun onSuccessfully() {
