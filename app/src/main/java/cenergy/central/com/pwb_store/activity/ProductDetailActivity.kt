@@ -512,6 +512,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     // endregion
 
     private fun startAvailableStore(product: Product) {
+
+        analytics?.trackViewStoreStock(product.sku)
+
         val intent = Intent(this, AvailableStoreActivity::class.java)
         intent.putExtra(AvailableStoreActivity.ARG_SKU, product.sku)
         startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)

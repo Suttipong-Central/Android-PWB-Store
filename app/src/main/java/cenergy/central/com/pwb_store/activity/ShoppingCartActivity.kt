@@ -227,8 +227,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     //region {@link implement ShoppingCartAdapter.ShoppingCartListener }
-    override fun onDeleteItem(itemId: Long) {
-        deleteItem(itemId)
+    override fun onDeleteItem(itemId: Long, sku: String) {
+        deleteItem(itemId, sku)
     }
 
     override fun onUpdateItem(itemId: Long, qty: Int) {
@@ -445,9 +445,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun deleteItem(itemId: Long) {
+    private fun deleteItem(itemId: Long, sku: String) {
         hasChangingData = true
         showProgressDialog()
+        analytics?.trackRemoveItemFromCart(sku)
         preferenceManager.cartId?.let { cartId ->
             HttpManagerMagento.getInstance(this).deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
                 override fun success(response: Boolean?) {

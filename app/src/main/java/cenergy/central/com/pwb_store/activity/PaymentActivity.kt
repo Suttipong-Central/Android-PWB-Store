@@ -188,6 +188,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (contactNo == null) {
             if (currentState == NetworkInfo.State.CONNECTED) {
                 membersList = listOf() // clear membersList
+                analytics.trackCustomerSource(CustomerSource.NEW_USER)
                 startBilling()
             } else {
                 showAlertDialog("", getString(R.string.not_connected_network))
@@ -250,6 +251,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onSelectedOptionListener(deliveryOption: DeliveryOption) {
         this.deliveryOption = deliveryOption // set delivery option
         deliveryType = DeliveryType.fromString(deliveryOption.methodCode)
+        analytics.trackSelectDelivery(deliveryOption.methodCode)
         when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
@@ -525,6 +527,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
+                    // tracking payment method
+                    analytics.trackSelectPayment(paymentMethod.code)
                     updateOrder(paymentMethod)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
@@ -670,6 +674,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         runOnUiThread {
                             if (response != null && response.isNotEmpty()) { // it can be null
                                 this@PaymentActivity.eOrderingMembers = response
+                                analytics.trackCustomerSource(CustomerSource.BU)
                                 mProgressDialog?.dismiss()
                                 startMembersFragment()
                             } else {
@@ -699,6 +704,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun success(response: HDLMemberResponse?) {
                 if (response?.customerInfos != null) {
                     this@PaymentActivity.membersHDL = response.customerInfos ?: listOf()
+                    analytics.trackCustomerSource(CustomerSource.HDL)
                     mProgressDialog?.dismiss()
                     startMembersFragment()
                 } else {
@@ -727,11 +733,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 object : ApiResponseCallback<List<MemberResponse>> {
                     override fun success(response: List<MemberResponse>?) {
                         mProgressDialog?.dismiss()
-
                         // is PaymentCheckOutFragment?
                         if (currentFragment is PaymentCheckOutFragment) {
                             if (response != null && response.isNotEmpty()) {
                                 this@PaymentActivity.membersList = response
+                                analytics.trackCustomerSource(CustomerSource.T1)
                                 startMembersFragment()
                             } else {
                                 showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
@@ -907,6 +913,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         OrderApi().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email,
                 addressInfo!!, theOneCardNo, object : OrderApi.CreateOderCallback {
             override fun onSuccess(oderId: String?) {
+                analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {
                     if (oderId != null) {
                         hideBackButton()
@@ -923,11 +930,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 }
             }
 
-            override fun onSuccessAndRedirect(oderId: String?, url: String) {
+            override fun onSuccessAndRedirect(orderId: String?, url: String) {
+                analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {
-                    oderId?.let {
+                    if (orderId != null) {
                         hideBackButton()
-                        getOrder(it, url)
+                        getOrder(orderId, url)
+                    } else {
+                        mProgressDialog?.dismiss()
+                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
                     }
                 }
             }
