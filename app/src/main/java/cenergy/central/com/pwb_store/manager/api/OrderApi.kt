@@ -47,7 +47,7 @@ class OrderApi {
 
     interface CreateOderCallback {
         fun onSuccess(oderId: String?)
-        fun onSuccessAndRedirect(oderId: String?, url: String)
+        fun onSuccessAndRedirect(orderId: String?, url: String)
         fun onFailure(error: APIError)
     }
 }

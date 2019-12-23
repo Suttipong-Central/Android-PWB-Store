@@ -94,7 +94,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                         item.id?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt()) }
                     } else {
                         productQty.setText(item.qty.toString())
-                        showAlertDialog("", itemView.context.getString(R.string.empty_value))
+                        showAlertDialog(itemView.context.getString(R.string.empty_value))
                     }
                     return true
                 }
@@ -140,7 +140,11 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         val builder = AlertDialog.Builder(itemView.context, R.style.AlertDialogTheme)
         builder.setMessage(context.getString(R.string.title_confirm_delete_item))
         builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
-            shoppingCartItem.id?.let { itemId -> listener?.onDeleteItem(itemId) }
+            if (shoppingCartItem.id != null && shoppingCartItem.sku != null){
+                listener?.onDeleteItem(shoppingCartItem.id!!, shoppingCartItem.sku!!)
+            } else {
+                showAlertDialog(context.getString(R.string.some_thing_wrong))
+            }
             dialog?.dismiss()
         }
 
@@ -156,14 +160,10 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         qtyText.text = shoppingCartItem.qty.toString()
     }
 
-    private fun showAlertDialog(title: String, message: String) {
+    private fun showAlertDialog(message: String) {
         val builder = AlertDialog.Builder(itemView.context, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
         builder.show()
     }
 }

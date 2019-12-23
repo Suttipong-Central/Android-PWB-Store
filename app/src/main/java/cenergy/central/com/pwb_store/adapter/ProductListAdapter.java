@@ -22,6 +22,7 @@ import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ViewType;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
+import cenergy.central.com.pwb_store.utils.Analytics;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
@@ -139,6 +140,8 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     productListViewHolder.itemView.setOnClickListener(view -> {
                         if(clicked){
                             clicked = false;
+                            Analytics analytics = new Analytics(mContext);
+                            analytics.trackViewItem(product.getSku());
                             Intent intent = new Intent(mContext, ProductDetailActivity.class);
                             intent.putExtra(ProductDetailActivity.ARG_PRODUCT_SKU, product.getSku());
                             ((Activity) mContext).startActivityForResult(intent, BaseActivity.REQUEST_UPDATE_LANGUAGE);

@@ -65,6 +65,7 @@ import cenergy.central.com.pwb_store.model.DrawerItem;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.realm.RealmController;
+import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.utils.RemoteConfigUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
@@ -84,8 +85,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
     private static final String TAG_FRAGMENT_PRODUCT_LIST = "product_list";
     private static final int TIME_TO_WAIT = 2000;
-
-    //private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 999;
 
     private Toolbar toolbar;
     private DrawerLayout drawer;
@@ -108,7 +107,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private Category categoryLv2;
     private Fragment currentFragment;
 
-    // Firebase remote config
+    // Firebase
+    private Analytics analytics;
     private FirebaseRemoteConfig fbRemoteConfig;
     private long cacheExpiration = 3600; // 1 hour in seconds.
     private boolean isLoadingCategory = false;
@@ -153,7 +153,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
     @Subscribe
     public void onEvent(SearchEventBus searchEventBus) {
-        if (searchEventBus.getKeyword().length() > 0) {
+        String keyword = searchEventBus.getKeyword();
+        if (keyword.length() > 0) {
+            analytics.trackSearch(keyword); // tracking event
+
             Intent intent = new Intent(this, ProductListActivity.class);
             intent.putExtra(ProductListActivity.ARG_KEY_WORD, searchEventBus.getKeyword());
             intent.putExtra(ProductListActivity.ARG_SEARCH, searchEventBus.isClick());
@@ -175,8 +178,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         languageButton = findViewById(R.id.switch_language_button);
-        setupRemoteConfig();
+        // setup analytic
+        analytics = new Analytics(this);
 
+        setupRemoteConfig();
         handleChangeLanguage();
         initView();
     }
@@ -273,6 +278,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         if (result != null) {
             if (result.getContents() != null) {
                 Log.d(TAG, "barcode : " + result.getContents());
+                if (analytics != null) {
+                    analytics.trackSearchByBarcode(result.getContents());
+                }
                 Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
                 intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());
                 ActivityCompat.startActivityForResult(MainActivity.this, intent, REQUEST_UPDATE_LANGUAGE,
@@ -548,7 +556,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         }
     }
 
-    /*
+    /**
      *
      * override method from BaseActivity
      * on language change
@@ -588,12 +596,24 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     @Override
     public void onClickedCategoryLv1(Category category) {
         this.categoryLv1 = category;
+
+        // tracking event
+        if (analytics != null) {
+            analytics.trackViewCategoryLv1(category.getId(), category.getDepartmentName());
+        }
+
         handleStartCategoryLv1();
     }
 
     @Override
     public void onClickedCategoryLv2(Category category) {
         this.categoryLv2 = category;
+
+        // tracking event
+        if (analytics != null) {
+            analytics.trackViewProductList(category.getId(), category.getDepartmentName());
+        }
+
         startProductListFragment(categoryLv2);
     }
     // endregion

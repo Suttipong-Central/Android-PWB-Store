@@ -18,10 +18,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
@@ -51,34 +47,37 @@ import cenergy.central.com.pwb_store.model.SortingList;
 import cenergy.central.com.pwb_store.model.body.FilterGroups;
 import cenergy.central.com.pwb_store.model.body.SortOrder;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
+import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
+import cenergy.central.com.pwb_store.utils.Screen;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 import static java.lang.Math.ceil;
 
-public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks, View.OnClickListener, OnBrandFilterClickListener {
+public class ProductListFragment extends Fragment implements View.OnClickListener, OnBrandFilterClickListener {
     private static final String TAG = ProductListFragment.class.getSimpleName();
     private static final String ARG_TITLE = "ARG_TITLE";
     private static final String ARG_SEARCH = "ARG_SEARCH";
     private static final String ARG_DEPARTMENT_ID = "ARG_DEPARTMENT_ID";
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
     private static final String ARG_PRODUCT_FILTER = "ARG_PRODUCT_FILTER";
-//    private static final String ARG_PRODUCT_FILTER_TEMP = "ARG_PRODUCT_FILTER_TEMP";
     private static final String ARG_SORT_NAME = "ARG_SORT_NAME";
     private static final String ARG_SORT_TYPE = "ARG_SORT_TYPE";
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
     private static final String ARG_PAGE = "ARG_PAGE";
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
-//    private static final String ARG_PRODUCT_FILTER_SUB_HEADER = "ARG_PRODUCT_FILTER_SUB_HEADER";
     private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
     private static final String ARG_IS_SORTING = "ARG_IS_SORTING";
 
     private static final String PRODUCT_2H_FIELD = "expr-p";
     private static final String PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))";
 
+    // Analytic
+    private Analytics analytics;
+
     //View Members
-    ObservableRecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
     private PowerBuyTextView productCount;
     private LinearLayout layoutProgress;
     private LinearLayout mProductLayout;
@@ -238,7 +237,17 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        analytics.trackScreen(Screen.PRODUCT_LIST);
+    }
+
     private void init() {
+        if (getContext() != null) {
+            analytics = new Analytics(getContext());
+        }
+
         // Init Fragment level's variable(s) here
         if (getArguments() != null) {
             title = getArguments().getString(ARG_TITLE);
@@ -353,7 +362,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         mLayoutManger.setSpanSizeLookup(mProductListAdapter.getSpanSize());
         mRecyclerView.setLayoutManager(mLayoutManger);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
-        mRecyclerView.setScrollViewCallbacks(this);
         mRecyclerView.setAdapter(mProductListAdapter);
 
         if (savedInstanceState == null) {
@@ -476,21 +484,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         Log.d(TAG, "Calculator : " + x);
         num = (int) ceil(x);
         return num;
-    }
-
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
     }
 
     private void retrieveProductList() {

@@ -42,7 +42,7 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
     }
 
     interface ShoppingCartListener {
-        fun onDeleteItem(itemId: Long)
+        fun onDeleteItem(itemId: Long, sku: String)
         fun onUpdateItem(itemId: Long, qty: Int)
     }
 }

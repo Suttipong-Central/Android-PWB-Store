@@ -34,8 +34,10 @@ import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.BarcodeUtils
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import kotlinx.android.synthetic.main.fragment_payment_success.*
@@ -99,6 +101,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private lateinit var cartTotal: CartTotalResponse
 
     // get data activity
+    private val analytics by lazy { context?.let { Analytics(it) } }
     private lateinit var paymentListener: PaymentProtocol
     private var deliveryType: DeliveryType? = null
     private var shippingInfo: AddressInformation? = null
@@ -233,6 +236,11 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         staffIconLayout.setOnClickListener {
             StaffHowToDialogFragment.newInstance().show(childFragmentManager, "dialog")
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.ORDER_SUCCESS)
     }
 
     fun retrieveOrder() {

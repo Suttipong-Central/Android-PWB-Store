@@ -22,6 +22,8 @@ import cenergy.central.com.pwb_store.fragment.SearchSuggestionFragment;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.utils.Analytics;
+import cenergy.central.com.pwb_store.utils.Screen;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
 
@@ -32,13 +34,15 @@ import cenergy.central.com.pwb_store.view.NetworkStateView;
 public class SearchActivity extends BaseActivity {
     public static final String TAG = SearchActivity.class.getSimpleName();
 
+    private Analytics analytics;
+
     private LanguageButton languageButton;
     private PreferenceManager preferenceManager;
     private NetworkStateView networkStateView;
 
     @Subscribe
     public void onEvent(BarcodeBus barcodeBus){
-        if (barcodeBus.isBarcode() == true){
+        if (barcodeBus.isBarcode()){
             IntentIntegrator integrator = new IntentIntegrator(this).setCaptureActivity(BarcodeScanActivity.class);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
             integrator.initiateScan();
@@ -50,6 +54,7 @@ public class SearchActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        analytics = new Analytics(this);
         preferenceManager = new PreferenceManager(this);
         languageButton = findViewById(R.id.switch_language_button);
 
@@ -97,6 +102,9 @@ public class SearchActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (analytics != null) {
+            analytics.trackScreen(Screen.SEARCH);
+        }
         EventBus.getDefault().register(this);
     }
 
@@ -112,8 +120,10 @@ public class SearchActivity extends BaseActivity {
         if (result != null) {
             if (result.getContents() != null) {
                 //TODO แก้Barcode
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "barcode : " + result.getContents());
+                if (analytics != null) {
+                    analytics.trackSearchByBarcode(result.getContents());
+                }
                 Intent intent = new Intent(SearchActivity.this, ProductDetailActivity.class);
                 intent.putExtra(ProductDetailActivity.ARG_PRODUCT_ID, result.getContents());
                 startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE);

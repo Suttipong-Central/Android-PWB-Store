@@ -27,9 +27,14 @@ class LoginActivity : BaseActivity() {
     private var pathSegments = arrayOf("")
     private var uriDeepLink: Uri? = null
     private var link = ""
+
     @Subscribe
     fun onEvent(loginSuccessBus: LoginSuccessBus) {
         if (loginSuccessBus.isSuccess) {
+            // tracking event
+            val userInfo = loginSuccessBus.userInformation
+            analytics.trackLoginSuccess(userInfo.store?.retailerId)
+
             if (pathSegments.isNotEmpty() && uriDeepLink != null && link.isNotEmpty()){
                 DeepLink(this).checkIntent(pathSegments, uriDeepLink!!, link)
             } else {

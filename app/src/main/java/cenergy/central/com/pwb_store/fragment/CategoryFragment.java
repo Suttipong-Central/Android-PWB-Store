@@ -29,7 +29,9 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
+import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
+import cenergy.central.com.pwb_store.utils.Screen;
 
 public class CategoryFragment extends Fragment {
 
@@ -39,6 +41,7 @@ public class CategoryFragment extends Fragment {
 
     private CategoryAdapter mAdapter;
     private CategoryDao mCategoryDao;
+    private Analytics analytics;
 
     public CategoryFragment() {
         super();
@@ -63,6 +66,14 @@ public class CategoryFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (analytics != null) {
+            analytics.trackScreen(Screen.CATEGORY_LV1);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         initInstances(rootView, savedInstanceState);
@@ -70,6 +81,10 @@ public class CategoryFragment extends Fragment {
     }
 
     private void init() {
+        if (getContext() != null) {
+            analytics = new Analytics(getContext());
+        }
+
         if (getArguments() != null) {
             mCategoryDao = getArguments().getParcelable(ARG_CATEGORY);
         }
