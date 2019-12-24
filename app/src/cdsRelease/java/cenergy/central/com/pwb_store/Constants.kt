@@ -8,7 +8,7 @@ class Constants {
         // region endpoint
         const val BASE_URL_MAGENTO = "https://backend.central.co.th"
         const val CLIENT_MAGENTO = "Bearer 7xkqrabvnqthewp4ym41dgnamnromei0"
-        const val PWB_HOST_NAME = "backend.central.co.th/"
+        const val PWB_HOST_NAME = "backend.central.co.th"
         // ens region
 
         const val WEB_HOST_NAME = "https://www.central.co.th"
