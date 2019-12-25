@@ -13,7 +13,9 @@ import java.util.*
 
 interface PaymentProtocol {
     fun getItems(): List<ShoppingCartItem>
-    fun getCartTotalResponse(): CartTotalResponse
+    fun getTotalPrice(): Double
+    fun getDiscount(): Double
+    fun getPromotionDiscount(): Double
     fun getHDLMembers(): List<HDLCustomerInfos>
     fun getPWBMembers(): List<EOrderingMember>
     fun getMembers(): List<MemberResponse>

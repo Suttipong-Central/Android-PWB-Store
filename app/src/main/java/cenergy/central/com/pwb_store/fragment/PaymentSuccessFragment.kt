@@ -30,7 +30,6 @@ import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -98,7 +97,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var database = RealmController.getInstance()
     private var cacheOrder: Order? = null
     private var urlRedirect: String = ""
-    private lateinit var cartTotal: CartTotalResponse
 
     // get data activity
     private val analytics by lazy { context?.let { Analytics(it) } }
@@ -144,7 +142,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             shippingInfo = paymentListener.getShippingAddress()
             billingInfo = paymentListener.getBillingAddress()
             branchAddress = paymentListener.getSelectedBranch()
-            cartTotal = paymentListener.getCartTotalResponse()
             theOneNumber = paymentListener.getT1CardNumber()
         } catch (e: Exception) {
             Log.d(TAG, e.toString())

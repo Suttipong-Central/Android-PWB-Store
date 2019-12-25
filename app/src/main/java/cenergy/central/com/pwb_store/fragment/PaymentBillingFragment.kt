@@ -72,9 +72,9 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
     private lateinit var layoutDiscountPrice: LinearLayout
     private lateinit var layoutPromotionPrice: LinearLayout
-    private lateinit var discountPrice: PowerBuyTextView
-    private lateinit var promotionPrice: PowerBuyTextView
-    private lateinit var totalPrice: PowerBuyTextView
+    private lateinit var discountPriceTextView: PowerBuyTextView
+    private lateinit var promotionPriceTextView: PowerBuyTextView
+    private lateinit var totalPriceTextView: PowerBuyTextView
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
     private lateinit var radioTaxGroup: RadioGroup
@@ -102,7 +102,6 @@ class PaymentBillingFragment : Fragment() {
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
     private var shoppingCartItem: List<ShoppingCartItem> = listOf()
-    private lateinit var cartTotal: CartTotalResponse
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private var paymentBillingListener: PaymentBillingListener? = null
@@ -136,6 +135,9 @@ class PaymentBillingFragment : Fragment() {
     private var isRequireTaxInvoice = false
     private var checkoutType: CheckoutType = CheckoutType.NORMAL
     private var t1cNumber = ""
+    private var discount = 0.0
+    private var promotionDiscount = 0.0
+    private var totalPrice = 0.0
 
     // shipping data address
     private var provinceList = listOf<Province>()
@@ -215,7 +217,9 @@ class PaymentBillingFragment : Fragment() {
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
         shoppingCartItem = paymentProtocol.getItems()
-        cartTotal = paymentProtocol.getCartTotalResponse()
+        discount = paymentProtocol.getDiscount()
+        promotionDiscount = paymentProtocol.getPromotionDiscount()
+        totalPrice = paymentProtocol.getTotalPrice()
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
         checkoutType = paymentProtocol.getCheckType()
@@ -257,33 +261,28 @@ class PaymentBillingFragment : Fragment() {
         shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-
-        // coupon & discout
-        var discountPriceValue = 0.0
-        val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
-        if (discount != null) {
-            discountPriceValue = discount.value.toStringDiscount()
-        }
-        val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
-        if (coupon != null) {
-            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
-            val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
-            val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
-            discountPriceValue -= couponDiscountAmount
-            cartTotal.totalPrice -= couponDiscountAmount
-            promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
-            layoutPromotionPrice.visibility = if (hasCoupon) View.VISIBLE else View.GONE
-        } else {
-            layoutPromotionPrice.visibility = View.GONE
-        }
-        if (discountPriceValue > 0) {
+        if (discount > 0){
+            discountPriceTextView.text = getDisplayDiscount(unit, discount.toString())
             layoutDiscountPrice.visibility = View.VISIBLE
-            cartTotal.totalPrice -= discountPriceValue
-            discountPrice.text = getDisplayDiscount(unit, discountPriceValue.toString())
+            discountPriceTextView.visibility = View.VISIBLE
         } else {
             layoutDiscountPrice.visibility = View.GONE
+            discountPriceTextView.visibility = View.GONE
         }
-        totalPrice.text = getDisplayPrice(unit, cartTotal.totalPrice.toString())
+        if (promotionDiscount > 0){
+            promotionPriceTextView.text = getDisplayDiscount(unit, promotionDiscount.toString())
+            layoutPromotionPrice.visibility = View.VISIBLE
+            promotionPriceTextView.visibility = View.VISIBLE
+        } else {
+            layoutPromotionPrice.visibility = View.GONE
+            promotionPriceTextView.visibility = View.GONE
+        }
+        if (totalPrice > 0){
+            totalPriceTextView.text = getDisplayPrice(unit, totalPrice.toString())
+            totalPriceTextView.visibility = View.VISIBLE
+        } else {
+            totalPriceTextView.visibility = View.GONE
+        }
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
@@ -651,9 +650,9 @@ class PaymentBillingFragment : Fragment() {
         recycler = rootView.findViewById(R.id.recycler_product_list_payment)
         layoutDiscountPrice = rootView.findViewById(R.id.layout_discount)
         layoutPromotionPrice = rootView.findViewById(R.id.layout_promotion_code)
-        discountPrice = rootView.findViewById(R.id.txt_discount)
-        promotionPrice = rootView.findViewById(R.id.txt_promotion)
-        totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
+        discountPriceTextView = rootView.findViewById(R.id.txt_discount)
+        promotionPriceTextView = rootView.findViewById(R.id.txt_promotion)
+        totalPriceTextView = rootView.findViewById(R.id.txt_total_price_payment_description)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
         // Set Input type

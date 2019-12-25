@@ -23,6 +23,7 @@ import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -69,7 +70,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private val database = RealmController.getInstance()
     private var cartId: String? = null
     private var shoppingCartItem: List<ShoppingCartItem> = listOf()
-    private lateinit var cartTotal: CartTotalResponse
     private var membersList: List<MemberResponse> = listOf()
     private var eOrderingMembers: List<EOrderingMember> = listOf()
     private var membersHDL: List<HDLCustomerInfos> = listOf()
@@ -88,6 +88,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private val paymentMethod = PaymentMethod("e_ordering", "Pay Here")
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
+    private var discountPrice = 0.0
+    private var promotionDiscount = 0.0
+    private var totalPrice = 0.0
 
     // data product 2h
     private var product2h: Product? = null
@@ -481,9 +484,23 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun handleGetCartItemsSuccess(response: CartTotalResponse) {
-        this.cartTotal = response
-        this.shoppingCartItem = (response.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
+    private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
+        this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
+        this.totalPrice = cartTotal.totalPrice
+        val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
+        if (discount != null) {
+            this.discountPrice = discount.value.toStringDiscount()
+        }
+        val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
+        if (coupon != null) {
+            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+            this.promotionDiscount = couponDiscount?.couponAmount.toStringDiscount()
+            this.discountPrice -= promotionDiscount
+            this.totalPrice -= promotionDiscount
+        }
+        if (discountPrice > 0) {
+            this.totalPrice -= discountPrice
+        }
 
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
@@ -960,7 +977,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // region {@link PaymentProtocol}
     override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
 
-    override fun getCartTotalResponse(): CartTotalResponse = this.cartTotal
+    override fun getDiscount(): Double = this.discountPrice
+
+    override fun getPromotionDiscount(): Double = this.promotionDiscount
+
+    override fun getTotalPrice(): Double = this.totalPrice
 
     override fun getHDLMembers(): List<HDLCustomerInfos> = this.membersHDL
 
