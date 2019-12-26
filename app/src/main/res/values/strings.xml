@@ -351,4 +351,5 @@
     <string name="share_line">Line</string>
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">Copy</string>
+    <string name="cannot_display_history">Can’t open this history</string>
 </resources>
