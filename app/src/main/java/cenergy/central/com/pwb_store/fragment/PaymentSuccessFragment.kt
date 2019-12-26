@@ -249,15 +249,20 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     private fun getOrderFromLocalDatabase(orderId: String) {
         cacheOrder = database.getOrder(orderId)
-        cacheOrder?.let { cacheOrder -> updateViewOrder(cacheOrder) }
+        cacheOrder?.let { order ->
+            updateViewOrder(order)
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(order: Order) {
-        val shippingAddress = order.shippingAddress
-                ?: throw IllegalArgumentException("Shipping address must not be null")
         val billingAddress = order.billingAddress
-                ?: throw IllegalArgumentException("Billing address must not be null")
+        val shippingAddress = order.shippingAddress
+
+        if (billingAddress == null || shippingAddress == null){
+            showAlertFinishDialog(getString(R.string.cannot_display_history))
+            return
+        }
 
         updateLabel()
         setupBarcodeView(order)
@@ -450,14 +455,20 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
     }
 
-    private fun showAlertDialog(title: String, message: String) { //TODO: Refactor show alert dialog.
+    private fun showAlertDialog(message: String) {
         val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
+        builder.show()
+    }
 
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
+    private fun showAlertFinishDialog(message: String) {
+        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                    dialog.dismiss()
+                    activity?.finish()
+                }
         builder.show()
     }
 
@@ -494,18 +505,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
                 override fun onFailure(error: Throwable) {
                     mProgressDialog?.dismiss()
-                    showAlertDialog("", error.message?: resources.getString(R.string.some_thing_wrong))
+                    showAlertDialog(error.message?: resources.getString(R.string.some_thing_wrong))
                 }
             })
         } else {
             mProgressDialog?.dismiss()
-            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+            showAlertDialog(resources.getString(R.string.some_thing_wrong))
         }
     }
 
     override fun failure(error: APIError) {
         mProgressDialog?.dismiss()
-        showAlertDialog("", error.errorMessage?: resources.getString(R.string.some_thing_wrong))
+        showAlertDialog(error.errorMessage?: resources.getString(R.string.some_thing_wrong))
     }
     //endregion
 

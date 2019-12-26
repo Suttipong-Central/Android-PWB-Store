@@ -228,7 +228,7 @@
     <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
     <string name="discount">ส่วนลด</string>
     <string name="add_coupon">ใช้คูปอง</string>
-    <string name="promotion_code">ส่วนลดจากรหัส</string>
+    <string name="promotion_code">โค้ดส่วนลด</string>
     <string name="cancel_coupon">ยกเลิกคูปอง</string>
     <string name="enter_promo_code_hint">ใส่โค้ด</string>
     <string name="enter_promo_code">กรุณากรอกรหัสคูปอง</string>
@@ -352,4 +352,5 @@
     <string name="share_line">ไลน์</string>
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">คัดลอก</string>
+    <string name="cannot_display_history">ไม่สามารถเปิดประวัติรายการนี้ได้</string>
 </resources>
