@@ -194,7 +194,7 @@
     <string name="qty_title">Quantity:</string>
     <string name="fill_in_important_information">Please fill in information</string>
     <string name="sorry">Sorry</string>
-    <string name="some_thing_wrong">Please try again</string>
+    <string name="some_thing_wrong">Something went wrong, Please try again</string>
     <string name="confirm_oder">Do you confirm to proceed this order?</string>
     <string name="ok_alert">Yes</string>
     <string name="cancel_alert">No</string>

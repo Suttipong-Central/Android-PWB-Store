@@ -66,7 +66,7 @@ class CartUtils(private val context: Context) {
             }
 
             override fun failure(error: APIError) {
-                listener.onFailure(error.errorMessage)
+                listener.onFailure(error.errorMessage ?: defaultErrorMessage)
             }
         })
     }
@@ -169,13 +169,13 @@ class CartUtils(private val context: Context) {
                                 if (error.errorParameter != null && error.errorParameter.fieldName == "cartId") {
                                     callback?.forceClearCart()
                                 } else {
-                                    callback?.onFailure(error.errorMessage)
+                                    callback?.onFailure(error.errorMessage ?: defaultErrorMessage)
                                 }
                             }
                             APIError.INTERNAL_SERVER_ERROR.toString() -> {
                                 callback?.forceClearCart()
                             }
-                            else -> callback?.onFailure(error.errorMessage)
+                            else -> callback?.onFailure(error.errorMessage ?: defaultErrorMessage)
                         }
                     }
                 })
@@ -195,7 +195,7 @@ class CartUtils(private val context: Context) {
                     }
 
                     override fun failure(error: APIError) {
-                        callback?.onFailure(error.errorMessage)
+                        callback?.onFailure(error.errorMessage ?: defaultErrorMessage)
                     }
                 })
     }
@@ -441,8 +441,8 @@ class CartUtils(private val context: Context) {
 
             override fun onFailure(error: Throwable) {
                 // TODO: handle on create cart
-                Log.d("CartUtils", error.message)
-                callback?.onFailure(error.localizedMessage)
+                Log.d("CartUtils", error.message ?: defaultErrorMessage)
+                callback?.onFailure(error.localizedMessage ?: defaultErrorMessage)
             }
         })
     }
@@ -470,7 +470,7 @@ class CartUtils(private val context: Context) {
                         }
 
                         override fun failure(error: APIError) {
-                            callback.onFailure(error.errorMessage)
+                            callback.onFailure(error.errorMessage ?: defaultErrorMessage)
                         }
                     })
         } else {
@@ -487,11 +487,13 @@ class CartUtils(private val context: Context) {
                     }
 
                     override fun onFailure(error: Throwable) {
-                        callback.onFailure(error.localizedMessage)
+                        callback.onFailure(error.localizedMessage ?: defaultErrorMessage)
                     }
 
                 })
     }
+
+    private val defaultErrorMessage: String = context.getString(R.string.some_thing_wrong)
 
     /**
      * param language
