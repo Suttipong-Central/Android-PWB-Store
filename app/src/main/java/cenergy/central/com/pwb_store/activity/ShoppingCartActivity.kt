@@ -392,6 +392,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun handleCoupon() {
         if (!isCouponAdded) {
             couponBtn.setOnClickListener {
+                hideKeyBoard()
                 addCoupon()
             }
         } else {
@@ -409,7 +410,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 CartUtils(this).addCoupon(cartId, promotionCode, object : ApiResponseCallback<Boolean> {
                     override fun success(response: Boolean?) {
                         if (response != null) {
-                            hideKeyBoard()
                             refreshShoppingCart()
                             Toast.makeText(this@ShoppingCartActivity, getString(R.string.used_promo_code, promotionCode), Toast.LENGTH_SHORT).show()
                         } else {
