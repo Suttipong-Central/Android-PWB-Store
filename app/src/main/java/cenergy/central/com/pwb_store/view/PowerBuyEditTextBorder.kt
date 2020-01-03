@@ -3,15 +3,15 @@ package cenergy.central.com.pwb_store.view
 import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
-import com.google.android.material.textfield.TextInputEditText
-import androidx.core.content.ContextCompat
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import cenergy.central.com.pwb_store.R
+import com.google.android.material.textfield.TextInputEditText
 
 
 class PowerBuyEditTextBorder : LinearLayout {
@@ -90,8 +90,8 @@ class PowerBuyEditTextBorder : LinearLayout {
         }
     }
 
-    fun setText(input: String) {
-        this.textEditText = input
+    fun setText(input: String?) {
+        this.textEditText = input ?: ""
         notifyAttributeChanged()
     }
 

@@ -61,8 +61,8 @@ class PowerBuyShadeSelectView: ConstraintLayout {
         shadeRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     }
 
-    fun setShadeName(name: String){
-        this.name = name
+    fun setShadeName(name: String?){
+        this.name = name ?: ""
         notifyAttributeChanged()
     }
 

@@ -169,11 +169,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                     val shadeAdapter = ShadeSelectAdapter(shadeValues)
                     inputProductShade.setAdapter(shadeAdapter)
                     shadeSelectedOption = shadeValues[0]
-                    inputProductShade.setShadeName(shadeSelectedOption!!.valueExtension?.label ?: "")
+                    inputProductShade.setShadeName(shadeSelectedOption!!.valueExtension?.label)
                     inputProductShade.visibility = View.VISIBLE
                     shadeAdapter.setCallBack(object : ShadeClickListener {
                         override fun onShadeClickListener(shade: ProductValue) {
-                            inputProductShade.setShadeName(shade.valueExtension?.label ?: "")
+                            inputProductShade.setShadeName(shade.valueExtension?.label)
                             shadeSelectedOption = shade
                             if (productOptionSize != null){
                                 handleUpdateSizeAdapter()
@@ -196,11 +196,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                     inputProductSize.setAdapter(sizeAdepter)
                     inputProductSize.setHeaderTextBold()
                     inputProductSize.setHeaderTextColor(R.color.nameProductColor)
-                    inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
+                    inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label)
                     inputProductSize.visibility = View.VISIBLE
                     sizeAdepter.setCallback(object : ProductOptionAdepter.OptionClickListener {
                         override fun onOptionClickListener(size: ProductValue) {
-                            inputProductSize.setText(size.valueExtension?.label?: "")
+                            inputProductSize.setText(size.valueExtension?.label)
                             sizeSelectedOption = size
                             handleUpdateViewProductConfig()
                         }
@@ -242,7 +242,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         val newSizeValues = sizeValues.filter { it.valueExtension?.products?.firstOrNull { key->shadeOptions.contains(key) } != null }
         sizeAdepter.setItems(newSizeValues)
         sizeSelectedOption = newSizeValues[0]
-        inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label ?: "")
+        inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label)
     }
 
     private fun handleDefaultSizeOption(sizeValues: List<ProductValue>): ProductValue {

@@ -157,8 +157,8 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
         notifyAttributeChanged()
     }
 
-    fun setText(input: String) {
-        this.textEditText = input
+    fun setText(input: String?) {
+        this.textEditText = input ?: ""
         notifyAttributeChanged()
     }
 
