@@ -456,20 +456,24 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     }
 
     private fun showAlertDialog(message: String) {
-        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
-        builder.show()
+        activity?.let {
+            val builder = AlertDialog.Builder(it, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
+            builder.show()
+        }
     }
 
     private fun showAlertFinishDialog(message: String) {
-        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    dialog.dismiss()
-                    activity?.finish()
-                }
-        builder.show()
+        activity?.let {
+            val builder = AlertDialog.Builder(it, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                        dialog.dismiss()
+                        activity?.finish()
+                    }
+            builder.show()
+        }
     }
 
     // {@like implement ApiResponseCallback<OrderResponse>}
