@@ -8,13 +8,12 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -194,7 +193,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 analytics.trackCustomerSource(CustomerSource.NEW_USER)
                 startBilling()
             } else {
-                showAlertDialog("", getString(R.string.not_connected_network))
+                showCommonDialog(getString(R.string.not_connected_network))
             }
         } else {
             memberContact = contactNo
@@ -339,7 +338,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     // region {@link PaymentTypesClickListener}
     override fun onPaymentTypeClickListener(paymentMethod: PaymentMethod) {
-        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+        showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
     }
     // endregion
 
@@ -468,7 +467,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         if (response != null) {
                             handleGetCartItemsSuccess(response)
                         } else {
-                            showAlertDialog("", resources.getString(R.string.cannot_get_cart_item))
+                            showCommonDialog(getString(R.string.cannot_get_cart_item))
                         }
                         mProgressDialog?.dismiss()
                     }
@@ -477,7 +476,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 override fun failure(error: APIError) {
                     runOnUiThread {
                         mProgressDialog?.dismiss()
-                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                        showCommonAPIErrorDialog(error)
                     }
                 }
             })
@@ -514,7 +513,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
+    fun showAlertDialogCheckSkip(message: String, checkSkip: Boolean) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
         if (checkSkip) {
@@ -523,24 +522,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         } else {
             builder.setPositiveButton(android.R.string.ok) { _, _ -> startCheckOut() }
         }
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
         builder.show()
     }
 
-    private fun showAlertDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
-    }
-
-    private fun showAlertCheckPayment(title: String, message: String, paymentMethod: PaymentMethod) {
+    private fun showAlertCheckPayment(message: String, paymentMethod: PaymentMethod) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
@@ -553,10 +538,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     mProgressDialog?.dismiss()
                 }
                 .setCancelable(false)
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
         builder.show()
     }
 
@@ -578,14 +559,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 if (response != null) {
                     handleShippingInforSuccess(type, response.paymentMethods)
                 } else {
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    showCommonDialog(resources.getString(R.string.some_thing_wrong))
                     mProgressDialog?.dismiss()
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                showCommonAPIErrorDialog(error)
             }
         })
     }
@@ -603,14 +584,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 if (response != null) {
                                     handleShippingInforSuccess(type, response.paymentMethods)
                                 } else {
-                                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                    showCommonDialog(resources.getString(R.string.some_thing_wrong))
                                     mProgressDialog?.dismiss()
                                 }
                             }
 
                             override fun failure(error: APIError) {
                                 mProgressDialog?.dismiss()
-                                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                                showCommonAPIErrorDialog(error)
                             }
                         })
     }
@@ -634,7 +615,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
                 override fun failure(error: APIError) {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             })
         }
@@ -644,7 +625,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
             selectPaymentTypes(paymentMethods)
         } else {
-            showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+            showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
         }
 
         mProgressDialog?.dismiss()
@@ -740,7 +721,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun getMembersT1C(mobile: String) {
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
         if (!isT1CMemberOn) { // t1c on?
-            showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+            showAlertDialogCheckSkip(resources.getString(R.string.not_have_user), true)
             mProgressDialog?.dismiss()
             return
         }
@@ -757,7 +738,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 analytics.trackCustomerSource(CustomerSource.T1)
                                 startMembersFragment()
                             } else {
-                                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                                showAlertDialogCheckSkip(resources.getString(R.string.not_have_user), true)
                             }
                         }
 
@@ -768,9 +749,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             mProgressDialog?.dismiss()
 
                             if (error.errorCode == null) {
-                                showAlertDialog("", getString(R.string.not_connected_network))
+                                showCommonDialog(resources.getString(R.string.some_thing_wrong))
                             } else {
-                                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                                showAlertDialogCheckSkip(resources.getString(R.string.not_have_user), true)
                             }
                         }
                     }
@@ -788,7 +769,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             T1MemberDialogFragment.newInstance().show(supportFragmentManager,
                                     T1MemberDialogFragment.TAG_FRAGMENT)
                         } else {
-                            this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                            showCommonDialog(getString(R.string.not_found_data))
                         }
                     }
 
@@ -796,9 +777,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         if (!isFinishing) {
                             mProgressDialog?.dismiss()
                             if (error.errorCode == null) {
-                                showAlertDialog("", getString(R.string.not_connected_network))
+                                showCommonDialog(getString(R.string.not_connected_network))
                             } else {
-                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
+                                showCommonDialog(getString(R.string.not_found_data))
                             }
                         }
                     }
@@ -814,16 +795,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     response.cardNo = theOneCardNo
                     startBilling(response)
                 } else {
-                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                    showAlertDialogCheckSkip(resources.getString(R.string.some_thing_wrong), false)
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
                 if (error.errorCode == null) {
-                    showAlertDialog("", getString(R.string.not_connected_network))
+                    showCommonDialog(getString(R.string.not_connected_network))
                 } else {
-                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                    showAlertDialogCheckSkip(resources.getString(R.string.some_thing_wrong), false)
                 }
             }
         })
@@ -839,14 +820,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 deliveryOptionsList = filterDeliveryOptions(response)
                                 startDeliveryOptions()
                             } else {
-                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                showCommonDialog(getString(R.string.some_thing_wrong))
                             }
                             mProgressDialog?.dismiss()
                         }
 
                         override fun failure(error: APIError) {
                             mProgressDialog?.dismiss()
-                            DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                            showCommonAPIErrorDialog(error)
                         }
                     })
         }
@@ -902,7 +883,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         }
                         startStorePickupFragment()
                     } else {
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        showCommonDialog(getString(R.string.some_thing_wrong))
                     }
                 }
             }
@@ -910,7 +891,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun failure(error: APIError) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             }
         })
@@ -942,7 +923,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         }
                     } else {
                         mProgressDialog?.dismiss()
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        showCommonDialog(getString(R.string.some_thing_wrong))
                     }
                 }
             }
@@ -955,7 +936,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         getOrder(orderId, url)
                     } else {
                         mProgressDialog?.dismiss()
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        showCommonDialog(getString(R.string.some_thing_wrong))
                     }
                 }
             }
@@ -963,7 +944,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun onFailure(error: APIError) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             }
         })

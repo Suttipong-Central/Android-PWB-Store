@@ -208,7 +208,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     override fun addProductToCompare(product: Product?) {
 //        product?.let { addToCompare(it) }
-        showAlertDialog(getString(R.string.developing_system_compare))
+        showCommonDialog(getString(R.string.developing_system_compare))
     }
 
     override fun addProductToCart(product: Product?) {
@@ -253,7 +253,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         if (database.cacheCartItems.size > 0) {
             ShoppingCartActivity.startActivity(this, view)
         } else {
-            showAlertDialog("", resources.getString(R.string.not_have_products_in_cart))
+            showCommonDialog(resources.getString(R.string.not_have_products_in_cart))
         }
     }
     // endregion
@@ -266,7 +266,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             val shareBottomSheetFragment = ShareBottomSheetDialogFragment.newInstance(shareText)
             shareBottomSheetFragment.show(supportFragmentManager, ShareBottomSheetDialogFragment.TAG)
         } else {
-            showAlertDialog(getString(R.string.some_thing_wrong))
+            showCommonDialog(getString(R.string.some_thing_wrong))
         }
     }
     // endregion
@@ -282,7 +282,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
                     override fun failure(error: APIError) {
                         dismissProgressDialog()
-                        DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
+                        showCommonAPIErrorDialog(error)
                     }
                 })
     }
@@ -297,7 +297,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
                     override fun failure(error: APIError) {
                         dismissProgressDialog()
-                        DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
+                        showCommonAPIErrorDialog(error)
                     }
                 })
     }
@@ -314,7 +314,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             override fun failure(error: APIError) {
                 runOnUiThread {
                     dismissProgressDialog()
-                    DialogHelper(this@ProductDetailActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             }
         })
@@ -411,25 +411,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun updateCompareBadge() {
         val count = database.compareProducts.size
         mBuyCompareView.updateCartCount(count)
-    }
-
-    private fun showAlertDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { _, _ -> dismissProgressDialog() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
-    }
-
-    private fun showAlertDialog(message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
-
-        builder.show()
     }
 
     private fun showProgressDialog() {
