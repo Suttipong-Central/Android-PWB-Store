@@ -349,19 +349,21 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         context?.let {
             HttpManagerMagento.getInstance(it).getAvailableStore(product.sku,
                     object : ApiResponseCallback<List<StoreAvailable>> {
-
                         override fun success(response: List<StoreAvailable>?) {
-                            activity?.runOnUiThread {
-                                handleStockSuccess(response)
-                                stockIndicatorLoading.dismiss()
+                            if (activity != null && !activity!!.isFinishing){
+                                activity!!.runOnUiThread {
+                                    handleStockSuccess(response)
+                                    stockIndicatorLoading.dismiss()
+                                }
                             }
                         }
 
                         override fun failure(error: APIError) {
-                            Log.e(TAG, "getAvailableStore: ${error.errorMessage}")
-                            activity?.runOnUiThread {
-                                handleStockFailure()
-                                stockIndicatorLoading.dismiss()
+                            if (activity != null && !activity!!.isFinishing) {
+                                activity!!.runOnUiThread {
+                                    handleStockFailure()
+                                    stockIndicatorLoading.dismiss()
+                                }
                             }
                         }
                     })
