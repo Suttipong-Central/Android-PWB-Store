@@ -455,15 +455,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         }
     }
 
-    private fun showAlertDialog(message: String) {
-        activity?.let {
-            val builder = AlertDialog.Builder(it, R.style.AlertDialogTheme)
-                    .setMessage(message)
-                    .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
-            builder.show()
-        }
-    }
-
     private fun showAlertFinishDialog(message: String) {
         activity?.let {
             val builder = AlertDialog.Builder(it, R.style.AlertDialogTheme)
@@ -509,18 +500,18 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
                 override fun onFailure(error: Throwable) {
                     mProgressDialog?.dismiss()
-                    showAlertDialog(error.message?: resources.getString(R.string.some_thing_wrong))
+                    showAlertFinishDialog(error.message?: resources.getString(R.string.some_thing_wrong))
                 }
             })
         } else {
             mProgressDialog?.dismiss()
-            showAlertDialog(resources.getString(R.string.some_thing_wrong))
+            showAlertFinishDialog(resources.getString(R.string.some_thing_wrong))
         }
     }
 
     override fun failure(error: APIError) {
         mProgressDialog?.dismiss()
-        showAlertDialog(error.errorMessage?: resources.getString(R.string.some_thing_wrong))
+        showAlertFinishDialog(error.errorMessage?: resources.getString(R.string.some_thing_wrong))
     }
     //endregion
 
