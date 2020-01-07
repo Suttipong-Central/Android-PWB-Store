@@ -112,8 +112,10 @@ class ValidationHelper(private val context: Context) {
         if (phoneNumber.isBlank()) {
             return context.getString(R.string.error_form_empty_data)
         }
-
-        val prefixNumber = phoneNumber.substring(0, 2)
+        var prefixNumber = ""
+        if (phoneNumber.length > PREFIX_PHONE_NUMBER){
+            prefixNumber = phoneNumber.substring(0, 2)
+        }
         if (isEmptyData(phoneNumber)) {
             return context.getString(R.string.error_form_empty_data)
         } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
@@ -150,6 +152,7 @@ class ValidationHelper(private val context: Context) {
     companion object {
         private const val MIN_PASSWORD_LENGTH = 9
         private const val MIN_PHONE_NUMBER = 10
+        private const val PREFIX_PHONE_NUMBER = 2
         private const val MIN_TAX_ID = 13
         private const val MIN_PASSPORT_LENGTH = 5
         private const val THE_ONE_NUMBER_LENGTH = 10
