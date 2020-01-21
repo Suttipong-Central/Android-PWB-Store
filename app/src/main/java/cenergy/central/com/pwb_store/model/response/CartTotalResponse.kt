@@ -1,8 +1,11 @@
 package cenergy.central.com.pwb_store.model.response
 
+import android.os.Parcelable
 import cenergy.central.com.pwb_store.model.TotalSegment
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 
 class CartTotalResponse(
         @SerializedName("subtotal_incl_tax")
@@ -17,6 +20,7 @@ class CartTotalResponse(
         var couponCode: String = ""
 )
 
+@Parcelize
 class ShoppingCartItem(
         @PrimaryKey
         @SerializedName("item_id")
@@ -30,17 +34,17 @@ class ShoppingCartItem(
         var extension: ItemExtension? = null,
         @SerializedName("discount_amount")
         var discount: Double? = 0.0
-)
+): Parcelable
 
+@Parcelize
 class ItemExtension(
-        @SerializedName("sales_rules")
-        var saleRules: List<Rules> = arrayListOf(),
         @SerializedName("free_items_added")
         var freebies: List<FreeItem> = arrayListOf(),
         @SerializedName("amasty_promo")
         var amastyPromo: FreeItemImage? = null
-)
+): Parcelable
 
+@Parcelize
 class FreeItem(
         @SerializedName("quote_id")
         var quoteId: Long = 0,
@@ -56,8 +60,9 @@ class FreeItem(
         var forItemId: Long = 0,
         @SerializedName("associated_item_id")
         var associatedItemId: Long = 0
-)
+): Parcelable
 
+@Parcelize
 class FreeItemImage(
         @SerializedName("image_src")
         var src: String = "",
@@ -67,26 +72,26 @@ class FreeItemImage(
         var width: String = "",
         @SerializedName("image_height")
         var height: String = ""
-)
+): Parcelable
 
-class Rules(
-        @SerializedName("quote_id")
-        var quoteId: Long? = 0,
-        @SerializedName("quote_item_id")
-        var itemId: Long? = 0,
-        @SerializedName("rule_id")
-        var ruleId: Long? = 0,
-        @SerializedName("discount_amount")
-        var discount: Double? = 0.0,
-        var order: Int? = 0,
-        @SerializedName("priority_order")
-        var orderPriority: Int? = 0,
-        @SerializedName("coupon_code")
-        var couponCode: String? = "",
-        @SerializedName("discount_tax")
-        var tax: Double? = 0.0,
-        @SerializedName("calculation_base_price")
-        var basePrice: Int? = 0,
-        @SerializedName("address_id")
-        var addressId: Long? = 0
-)
+//class Rules(
+//        @SerializedName("quote_id")
+//        var quoteId: Long? = 0,
+//        @SerializedName("quote_item_id")
+//        var itemId: Long? = 0,
+//        @SerializedName("rule_id")
+//        var ruleId: Long? = 0,
+//        @SerializedName("discount_amount")
+//        var discount: Double? = 0.0,
+//        var order: Int? = 0,
+//        @SerializedName("priority_order")
+//        var orderPriority: Int? = 0,
+//        @SerializedName("coupon_code")
+//        var couponCode: String? = "",
+//        @SerializedName("discount_tax")
+//        var tax: Double? = 0.0,
+//        @SerializedName("calculation_base_price")
+//        var basePrice: Int? = 0,
+//        @SerializedName("address_id")
+//        var addressId: Long? = 0
+//)

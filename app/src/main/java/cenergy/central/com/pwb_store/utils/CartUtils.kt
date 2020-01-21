@@ -4,9 +4,9 @@ import android.app.Dialog
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.extensions.hasProduct2h
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -51,9 +51,10 @@ class CartUtils(private val context: Context) {
     // data
     private val db = RealmController.getInstance()
     private var cacheCartItems = db.cacheCartItems
+    private var apiManager: HttpManagerMagento = HttpManagerMagento.getInstance(context)
 
     fun createCart(listener: CartListener) {
-        HttpManagerMagento.getInstance(context).getCart(object : ApiResponseCallback<String?> {
+        apiManager.getCart(object : ApiResponseCallback<String?> {
             override fun success(response: String?) {
                 if (response != null) {
                     prefManager.setCartId(response)
@@ -97,7 +98,7 @@ class CartUtils(private val context: Context) {
     }
 
     private fun retrieveCart(product: Product) {
-        HttpManagerMagento.getInstance(context).getCart(object : ApiResponseCallback<String?> {
+        apiManager.getCart(object : ApiResponseCallback<String?> {
             override fun success(response: String?) {
                 if (response != null) {
                     prefManager.setCartId(response)
@@ -145,7 +146,7 @@ class CartUtils(private val context: Context) {
     }
 
     private fun requestAddToCart(cartId: String, product: Product, cartItemBody: CartItemBody) {
-        HttpManagerMagento.getInstance(context).addProductToCart(cartId, cartItemBody,
+        apiManager.addProductToCart(cartId, cartItemBody,
                 object : ApiResponseCallback<CartItem> {
                     override fun success(response: CartItem?) {
                         // is product 2h
@@ -181,7 +182,7 @@ class CartUtils(private val context: Context) {
         val storePickup = StorePickup(branchResponse.branch.storeId)
         val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)
 
-        HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,
+        apiManager.setProduct2hShippingInformation(cartId,
                 storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
                 object : ApiResponseCallback<ShippingInformationResponse> {
                     override fun success(response: ShippingInformationResponse?) {
@@ -232,7 +233,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun addCoupon(cartId: String, couponCode: String, callback: ApiResponseCallback<Boolean>) {
-        HttpManagerMagento(context).cartService.addCoupon(cartId, couponCode).enqueue(object : Callback<Boolean> {
+        apiManager.cartService.addCoupon(cartId, couponCode).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
@@ -248,7 +249,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun deleteCoupon(cartId: String, callback: ApiResponseCallback<Boolean>) {
-        HttpManagerMagento(context).cartService.deleteCoupon(cartId).enqueue(object : Callback<Boolean> {
+        apiManager.cartService.deleteCoupon(cartId).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
@@ -264,7 +265,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCart(cartId: String, callback: ApiResponseCallback<CartResponse>) {
-        HttpManagerMagento(context).cartService.viewCart(requestLanguage(context), cartId).enqueue(object : Callback<CartResponse> {
+        apiManager.cartService.viewCart(apiManager.getLanguage(), cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
                 if (response.body() != null && response.isSuccessful) {
                     callback.success(response.body())
@@ -283,14 +284,14 @@ class CartUtils(private val context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("/rest/${requestLanguage(context)}/V1/guest-carts/$cartId/totals")
+                .addPathSegments("rest/${apiManager.getLanguage()}/V1/guest-carts/$cartId/totals")
                 .build()
 
         val request = Request.Builder()
                 .url(httpUrl)
                 .build()
 
-        HttpManagerMagento(context).defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+        apiManager.defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 if (response != null) {
                     val data = response.body()
@@ -441,22 +442,13 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    private fun List<CacheCartItem>.hasProduct2h(): Boolean {
-        if (cacheCartItems == null || cacheCartItems.isEmpty()) {
-            return false
-        }
-
-        val item = cacheCartItems.find { it.branch != null }
-        return item != null
-    }
-
     fun editStore2hPickup(branchResponse: BranchResponse, callback: EditStorePickupCallback) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
         val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)
         val cartId = prefManager.cartId
         if (cartId != null) {
-            HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,
+            apiManager.setProduct2hShippingInformation(cartId,
                     storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
                     object : ApiResponseCallback<ShippingInformationResponse> {
                         override fun success(response: ShippingInformationResponse?) {
@@ -488,18 +480,4 @@ class CartUtils(private val context: Context) {
     }
 
     private val defaultErrorMessage: String = context.getString(R.string.some_thing_wrong)
-
-    /**
-     * param language
-     * in PWB is th
-     * in CDS is cds_th
-     * */
-    private fun requestLanguage(context: Context): String {
-        val language = PreferenceManager(context).getDefaultLanguage()
-        return when (BuildConfig.FLAVOR) {
-            "cds" -> "cds_$language"
-            else -> language
-        }
-    }
-
 }

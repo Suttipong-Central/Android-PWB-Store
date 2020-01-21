@@ -1,11 +1,11 @@
 package cenergy.central.com.pwb_store.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
-import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 
@@ -39,10 +39,5 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
         if (isDescription) {
             holder.hideDeleteItem(item)
         }
-    }
-
-    interface ShoppingCartListener {
-        fun onDeleteItem(itemId: Long, sku: String)
-        fun onUpdateItem(itemId: Long, qty: Int)
     }
 }

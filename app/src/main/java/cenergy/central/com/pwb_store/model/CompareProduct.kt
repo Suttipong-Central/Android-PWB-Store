@@ -13,7 +13,8 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                           var inStock: Boolean = false,
                           var maxQty: Int? = 0,
                           var qtyInStock: Int? = 0,
-                          var brand: String? = "") : RealmObject(), IViewType {
+                          var brand: String? = "",
+                          var soldBy: String? = null) : RealmObject(), IViewType {
 
     // for set view type in adapter
     var viewTypeID: Int = 0
@@ -41,7 +42,8 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                     inStock = product.extension?.stokeItem?.isInStock ?: false,
                     brand = product.brand,
                     maxQty = product.extension?.stokeItem?.maxQTY ?: 1,
-                    qtyInStock = product.extension?.stokeItem?.qty ?: 0)
+                    qtyInStock = product.extension?.stokeItem?.qty ?: 0,
+                    soldBy = product.soldBy ?: Product.DEFAULT_SOLD_BY)
         }
     }
 }

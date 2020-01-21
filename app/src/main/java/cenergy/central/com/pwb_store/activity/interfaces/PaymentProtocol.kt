@@ -12,7 +12,6 @@ import java.util.*
  */
 
 interface PaymentProtocol {
-    fun getItems(): List<ShoppingCartItem>
     fun getTotalPrice(): Double
     fun getDiscount(): Double
     fun getPromotionDiscount(): Double
@@ -30,4 +29,5 @@ interface PaymentProtocol {
     fun getPaymentMethods(): List<PaymentMethod>
     fun getT1CardNumber(): String
     fun getCheckType(): CheckoutType
+    fun clearAllCache()
 }

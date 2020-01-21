@@ -399,10 +399,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun updateShoppingCartBadge() {
         var count = 0
-        val items = database.cacheCartItems
-        for (item in items!!) {
-            if (item.qty != null) {
-                count += item.qty!!
+        database.cacheCartItems.forEach{
+            if (it.qty != null) {
+                count += it.qty!!
             }
         }
         mBuyShoppingCartView.setBadgeCart(count)

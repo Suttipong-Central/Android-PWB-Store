@@ -17,12 +17,15 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.TextView
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
+import cenergy.central.com.pwb_store.adapter.NewShoppingCartAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
+import cenergy.central.com.pwb_store.extensions.getCartItem
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
@@ -101,7 +104,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
-    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private var paymentBillingListener: PaymentBillingListener? = null
@@ -216,7 +218,6 @@ class PaymentBillingFragment : Fragment() {
         defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
-        shoppingCartItem = paymentProtocol.getItems()
         discount = paymentProtocol.getDiscount()
         promotionDiscount = paymentProtocol.getPromotionDiscount()
         totalPrice = paymentProtocol.getTotalPrice()
@@ -254,11 +255,15 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun setupCartItems() {
-        val shoppingCartAdapter = ShoppingCartAdapter(null, true)
+        val shoppingCartAdapter = NewShoppingCartAdapter(null, true)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
+        shoppingCartAdapter.cartItem = if (BuildConfig.FLAVOR != "pwb"){
+            database.cacheCartItems.getCartItem()
+        } else {
+            database.cacheCartItems
+        }
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         if (discount > 0){

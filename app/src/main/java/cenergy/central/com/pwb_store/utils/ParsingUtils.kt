@@ -211,6 +211,13 @@ class ParsingUtils{
                             it.value = customAttrValue
                         }
                     }
+                    if (customAttrCode == "marketplace_seller"){
+                        if (attrOption.getString("value").isNullOrEmpty()){
+                            product.soldBy = Product.DEFAULT_SOLD_BY
+                        } else {
+                            product.soldBy = attrOption.getString("value")
+                        }
+                    }
                 }
                 productExtension.specifications = specifications // addd product spec to product extension
 

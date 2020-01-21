@@ -146,6 +146,13 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
 
+        if (BuildConfig.FLAVOR != "pwb"){
+            tvSoldBy.visibility = View.VISIBLE
+            tvSoldBy.text = "${getString(R.string.sold_by)} ${product.getSoldByProduct()}"
+        } else {
+            tvSoldBy.visibility = View.GONE
+        }
+
         if (product.isSpecialPrice()) {
             showSpecialPrice(unit, product)
         } else {
@@ -307,9 +314,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 tvSpecialPrice.text = product.getDisplaySpecialPrice(unit)
                 tvTitleSpecialPrice.text = getString(R.string.name_price)
                 tvNormalPrice.setEnableStrikeThrough(true)
+                productSpacialPriceLayout.visibility = View.VISIBLE
                 tvSpecialPrice.visibility = View.VISIBLE
                 tvTitleSpecialPrice.visibility = View.VISIBLE
             } else {
+                productSpacialPriceLayout.visibility = View.GONE
                 tvSpecialPrice.visibility = View.GONE
                 tvTitleSpecialPrice.visibility = View.GONE
             }
@@ -317,6 +326,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun hideSpecialPrice() {
+        productSpacialPriceLayout.visibility = View.GONE
         tvSpecialPrice.visibility = View.GONE
         tvTitleSpecialPrice.visibility = View.GONE
         tvNormalPrice.setEnableStrikeThrough(false)

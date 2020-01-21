@@ -1,9 +1,12 @@
 package cenergy.central.com.pwb_store.model
 
+import android.os.Parcelable
 import cenergy.central.com.pwb_store.realm.RealmController
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 open class Branch(
         @SerializedName("storepickup_id")
         var storeId: String = "",
@@ -37,7 +40,7 @@ open class Branch(
         var regionId: Int = 0,
         @SerializedName("region_code")
         var regionCode: String = "",
-        var ispuDelivery: String? = null) : RealmObject() {
+        var ispuDelivery: String? = null) : RealmObject(), Parcelable {
 
     fun getBranchAddress(): String {
         return if (regionId != 0) { //TODO: refactor should be have province name with store data

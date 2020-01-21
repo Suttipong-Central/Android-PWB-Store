@@ -353,4 +353,6 @@
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">คัดลอก</string>
     <string name="cannot_display_history">ไม่สามารถเปิดประวัติรายการนี้ได้</string>
+    <string name="sold_by">จัดจำหน่ายโดย:</string>
+    <string name="free_item">ฟรีของแถม</string>
 </resources>
