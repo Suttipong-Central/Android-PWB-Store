@@ -22,7 +22,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
-import cenergy.central.com.pwb_store.adapter.NewShoppingCartAdapter
+import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.extensions.getCartItem
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
@@ -251,7 +251,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun setupCartItems() {
-        val shoppingCartAdapter = NewShoppingCartAdapter(null, true)
+        val shoppingCartAdapter = ShoppingCartAdapter(null, true)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter

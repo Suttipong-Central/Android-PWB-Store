@@ -24,7 +24,7 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.math.min
 
-class NewShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     // widget view
     private val productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_shopping_cart)

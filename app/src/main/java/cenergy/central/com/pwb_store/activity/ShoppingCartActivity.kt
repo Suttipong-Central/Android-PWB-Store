@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.NewShoppingCartAdapter
+import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
 import cenergy.central.com.pwb_store.extensions.getCartItem
 import cenergy.central.com.pwb_store.extensions.mergeItems
@@ -43,7 +43,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
 
@@ -69,7 +68,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
     // data
-    private var shoppingCartAdapter = NewShoppingCartAdapter(this, false)
+    private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
     private var unit: String = ""
     private val database = RealmController.getInstance()
     private var hasChangingData: Boolean = false

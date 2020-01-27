@@ -7,10 +7,10 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
 import cenergy.central.com.pwb_store.adapter.viewholder.EmptyViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.HeaderCartItemViewHolder
-import cenergy.central.com.pwb_store.adapter.viewholder.NewShoppingCartViewHolder
+import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
 import cenergy.central.com.pwb_store.model.CacheCartItem
 
-class NewShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         const val HEADER_VIEW_TYPE = 0
         const val ITEM_VIEW_TYPE = 1
@@ -30,7 +30,7 @@ class NewShoppingCartAdapter(val listener: ShoppingCartListener?, private val is
                         .inflate(R.layout.list_header_item_shopping_cart, parent, false))
             }
             ITEM_VIEW_TYPE -> {
-                NewShoppingCartViewHolder(LayoutInflater.from(parent.context)
+                ShoppingCartViewHolder(LayoutInflater.from(parent.context)
                         .inflate(R.layout.list_item_new_shopping_cart, parent, false))
             }
             else -> {
@@ -50,7 +50,7 @@ class NewShoppingCartAdapter(val listener: ShoppingCartListener?, private val is
                 (holder as HeaderCartItemViewHolder).bindView(cartItem[position] as String)
             }
             ITEM_VIEW_TYPE -> {
-                val itemViewHolder = holder as NewShoppingCartViewHolder
+                val itemViewHolder = holder as ShoppingCartViewHolder
                 val item = cartItem[position] as CacheCartItem
                 itemViewHolder.bindProductView(item, listener)
                 if (isDescription) {
