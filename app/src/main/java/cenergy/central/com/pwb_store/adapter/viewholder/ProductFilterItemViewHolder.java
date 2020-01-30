@@ -3,8 +3,6 @@ package cenergy.central.com.pwb_store.adapter.viewholder;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.ProductFilterItem;
@@ -18,12 +16,11 @@ public class ProductFilterItemViewHolder extends RecyclerView.ViewHolder impleme
     private static final String TAG = "ProductFilterItemViewHolder";
 
 
-    @BindView(R.id.txt_item_filter)
-    PowerBuyTextView mTxtItem;
+    private PowerBuyTextView mTxtItem;
 
     public ProductFilterItemViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mTxtItem = itemView.findViewById(R.id.txt_item_filter);
     }
 
     public void setViewHolder(ProductFilterItem productFilterItem) {

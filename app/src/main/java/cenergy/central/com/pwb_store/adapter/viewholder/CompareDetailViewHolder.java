@@ -9,8 +9,6 @@ import android.view.View;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CompareDetailAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
@@ -22,20 +20,12 @@ import cenergy.central.com.pwb_store.model.CompareDetailItem;
  */
 
 public class CompareDetailViewHolder extends RecyclerView.ViewHolder{
-
-//    @BindView(R.id.grid_view)
-//    GridView mGridView;
-
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-
-    private CompareDetailAdapter mAdapter;
-    private GridLayoutManager mLayoutManager;
+    private RecyclerView mRecyclerView;
     private List<CompareDetailItem> mCompareDetailItems;
 
     public CompareDetailViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mRecyclerView = itemView.findViewById(R.id.recycler_view);
     }
 
     public void setViewHolder(Context context, CompareDao compareDao){
@@ -45,9 +35,9 @@ public class CompareDetailViewHolder extends RecyclerView.ViewHolder{
 //        mAdapter = new CompareDetailBaseAdapter(context, (ArrayList<CompareDetail>) compareDao.getCompareDetails(), (ArrayList<CompareDetailItem>) mCompareDetailItems);
 //       mGridView.setAdapter(mAdapter);
 
-        mAdapter = new CompareDetailAdapter(context);
+        CompareDetailAdapter mAdapter = new CompareDetailAdapter(context);
 
-        mLayoutManager = new GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false);
         mAdapter.setCompareDetail(compareDao);
 
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
@@ -58,7 +48,7 @@ public class CompareDetailViewHolder extends RecyclerView.ViewHolder{
         mRecyclerView.setNestedScrollingEnabled(false);
     }
 
-    RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
+    private RecyclerView.OnItemTouchListener mScrollTouchListener = new RecyclerView.OnItemTouchListener() {
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
             int action = e.getAction();

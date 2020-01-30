@@ -3,8 +3,6 @@ package cenergy.central.com.pwb_store.adapter.viewholder;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.model.CompareDetailItem;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
@@ -15,12 +13,11 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 public class CompareItemDetailViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.textView)
-    PowerBuyTextView detailItem;
+    private PowerBuyTextView detailItem;
 
     public CompareItemDetailViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        detailItem = itemView.findViewById(R.id.textView);
     }
 
     public void setViewHolder(CompareDetailItem compareDetailItem){

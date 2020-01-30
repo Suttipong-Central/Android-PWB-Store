@@ -1,7 +1,5 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,8 +8,6 @@ import com.bumptech.glide.Glide;
 
 import org.greenrobot.eventbus.EventBus;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductDetailOptionItemBus;
@@ -23,16 +19,14 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 
 public class ProductDetailOptionItemViewHolder implements View.OnClickListener {
-    @BindView(R.id.layout_option)
-    ViewGroup mLayoutOption;
-
-    @BindView(R.id.image_view)
-    ImageView mImageView;
+    private ViewGroup mLayoutOption;
+    private ImageView mImageView;
 
     private int position;
 
     public ProductDetailOptionItemViewHolder(View view) {
-        ButterKnife.bind(this, view);
+        mLayoutOption = view.findViewById(R.id.layout_option);
+        mImageView = view.findViewById(R.id.image_view);
     }
 
     public void setViewHolder(ProductDetailOptionItem productDetailOptionItem, int adapterPosition) {

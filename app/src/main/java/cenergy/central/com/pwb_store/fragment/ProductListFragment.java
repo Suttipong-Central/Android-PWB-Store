@@ -76,8 +76,6 @@ public class ProductListFragment extends Fragment implements View.OnClickListene
     // Analytic
     private Analytics analytics;
 
-    //View Members
-    RecyclerView mRecyclerView;
     private PowerBuyTextView productCount;
     private LinearLayout layoutProgress;
     private LinearLayout mProductLayout;
@@ -115,14 +113,14 @@ public class ProductListFragment extends Fragment implements View.OnClickListene
     private String keyWord;
     private ProductResponse productResponse = null;
 
-    final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
+    private final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
         @Override
         public void onDismiss() {
             isDoneFilter = false;
         }
     };
 
-    final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
+    private final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
@@ -225,8 +223,9 @@ public class ProductListFragment extends Fragment implements View.OnClickListene
         super.onCreate(savedInstanceState);
         init();
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
+        }
     }
 
     @Override
@@ -329,7 +328,8 @@ public class ProductListFragment extends Fragment implements View.OnClickListene
         PowerBuyTextView productTitle = rootView.findViewById(R.id.txt_title_product);
         ConstraintLayout layoutFilter = rootView.findViewById(R.id.layout_filter);
         productCount = rootView.findViewById(R.id.txt_product_count);
-        mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
+        //View Members
+        RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
         layoutProgress = rootView.findViewById(R.id.layout_progress);
 
         productTitle.setText(title);

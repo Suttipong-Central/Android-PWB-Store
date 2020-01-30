@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.ListDialogAbstractItemAdapter;
 
@@ -22,20 +20,13 @@ import cenergy.central.com.pwb_store.adapter.ListDialogAbstractItemAdapter;
 public class PowerBuyListDialog extends Dialog implements View.OnClickListener{
     private static final String TAG = PowerBuyListDialog.class.getSimpleName();
     //View Members
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-
-    @BindView(R.id.txt_ok)
-    PowerBuyTextView ok;
-
-    @BindView(R.id.txt_cancel)
-    PowerBuyTextView cancel;
+    private RecyclerView mRecyclerView;
+    private PowerBuyTextView ok;
+    private PowerBuyTextView cancel;
 
     //Data Members
     private View mView;
     private ListDialogAbstractItemAdapter mAdapter;
-    private LinearLayoutManager mLayoutManager;
-    private OnItemClickListener mListener;
 
     public PowerBuyListDialog(@NonNull Context context, ListDialogAbstractItemAdapter adapter) {
         super(context);
@@ -66,8 +57,12 @@ public class PowerBuyListDialog extends Dialog implements View.OnClickListener{
     }
 
     private void initInstance() {
-        ButterKnife.bind(this, mView);
-        mLayoutManager = new LinearLayoutManager(getContext());
+
+        mRecyclerView = findViewById(R.id.recycler_view);
+        ok = findViewById(R.id.txt_ok);
+        cancel = findViewById(R.id.txt_cancel);
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -81,9 +76,7 @@ public class PowerBuyListDialog extends Dialog implements View.OnClickListener{
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mListener = listener;
-
-        mAdapter.setListener(mListener);
+        mAdapter.setListener(listener);
     }
 
     @Override
@@ -98,5 +91,4 @@ public class PowerBuyListDialog extends Dialog implements View.OnClickListener{
     public interface OnItemClickListener {
         void onItemClick(Object object);
     }
-
 }

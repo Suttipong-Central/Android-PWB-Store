@@ -6,8 +6,6 @@ import android.widget.ImageView;
 
 import org.greenrobot.eventbus.EventBus;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.bus.event.StoreFilterHeaderBus;
 import cenergy.central.com.pwb_store.model.StoreFilterHeader;
@@ -20,20 +18,16 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 public class AvaliableFilterHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private static final String TAG = "AvaliableFilterHeaderViewHolder";
-
-    @BindView(R.id.txt_header_filter)
-    PowerBuyTextView mTxtHeader;
-
-    @BindView(R.id.img_filter_header)
-    ImageView mImgFilterHeader;
-
-    @BindView(R.id.img_fill_back)
-    ImageView mImgBack;
+    private PowerBuyTextView mTxtHeader;
+    private ImageView mImgFilterHeader;
+    private ImageView mImgBack;
 
 
     public AvaliableFilterHeaderViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mTxtHeader = itemView.findViewById(R.id.txt_header_filter);
+        mImgFilterHeader = itemView.findViewById(R.id.img_filter_header);
+        mImgBack = itemView.findViewById(R.id.img_fill_back);
         mImgFilterHeader.setBackgroundResource(R.drawable.ic_keyboard_arrow_right);
     }
 

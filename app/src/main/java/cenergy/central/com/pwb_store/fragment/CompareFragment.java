@@ -19,8 +19,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CompareProductAdapter;
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration;
@@ -55,7 +53,6 @@ public class CompareFragment extends Fragment {
     private static final String ARG_IS_DELETE = "ARG_IS_DELETE";
     private static final String ARG_RESULTS = "ARG_RESULTS";
 
-    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     //Data Member
@@ -228,9 +225,7 @@ public class CompareFragment extends Fragment {
 
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
-        // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
-
+        mRecyclerView = rootView.findViewById(R.id.recycler_view);
         mAdapter = new CompareProductAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 4, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSpanSizeLookup(mAdapter.getSpanSize());

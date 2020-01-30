@@ -17,8 +17,6 @@ import android.widget.PopupWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.AvaliableStoreFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.FilterByBrandAdapter;
@@ -39,9 +37,8 @@ import cenergy.central.com.pwb_store.model.StoreFilterList;
 
 public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickListener {
     private static final String TAG = "PowerBuyPopupWindow";
-    //View Members
-    @BindView(R.id.recycler_view_filter)
-    RecyclerView mRecyclerViewFilter;
+
+    private RecyclerView mRecyclerViewFilter;
 
     //Data Member
     private FilterByBrandAdapter mFilterByBrandAdapter;
@@ -57,7 +54,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     public PowerBuyPopupWindow(Context context, LayoutInflater layoutInflater) {
         super(layoutInflater.inflate(R.layout.popup_filter, null, false),
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        ButterKnife.bind(this, getContentView());
+        mRecyclerViewFilter = getContentView().findViewById(R.id.recycler_view_filter);
         this.mContext = context;
         setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.background_popup_window));
         setOutsideTouchable(true);

@@ -9,8 +9,6 @@ import com.bumptech.glide.Glide;
 
 import org.greenrobot.eventbus.EventBus;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus;
@@ -29,39 +27,29 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
  */
 
 public class CompareProductViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    private static final String TAG = CompareProductViewHolder.class.getSimpleName();
 
-    @BindView(R.id.img_cancel)
-    ImageView imgCancel;
+    private ImageView imgCancel;
+    private ImageView imgProduct;
+    private PowerBuyTextView productBrand;
+    private PowerBuyTextView productDescription;
+    private PowerBuyTextView oldPrice;
+    private PowerBuyTextView newPrice;
+    private RelativeLayout cardLayout;
 
-    @BindView(R.id.img_product)
-    ImageView imgProduct;
-
-    @BindView(R.id.txt_product_brand)
-    PowerBuyTextView productBrand;
-
-    @BindView(R.id.txt_product_description)
-    PowerBuyTextView productDescription;
-
-    @BindView(R.id.txt_product_old_price)
-    PowerBuyTextView oldPrice;
-
-    @BindView(R.id.txt_product_new_price)
-    PowerBuyTextView newPrice;
-
-    @BindView(R.id.layout_card)
-    RelativeLayout cardLayout;
-
-    private CompareList mCompareList;
     private RealmController database = RealmController.getInstance();
 
     public CompareProductViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        imgCancel = itemView.findViewById(R.id.img_cancel);
+        imgProduct = itemView.findViewById(R.id.img_product);
+        productBrand = itemView.findViewById(R.id.txt_product_brand);
+        productDescription = itemView.findViewById(R.id.txt_product_description);
+        oldPrice = itemView.findViewById(R.id.txt_product_old_price);
+        newPrice = itemView.findViewById(R.id.txt_product_new_price);
+        cardLayout = itemView.findViewById(R.id.layout_card);
     }
 
     public void setViewHolder(CompareList compareList, ProductCompareList productCompareList) {
-        this.mCompareList = compareList;
         String unit = Contextor.getInstance().getContext().getString(R.string.baht);
         ExtensionCompare extensionCompare = productCompareList.getExtensionCompare();
         if (extensionCompare != null){
