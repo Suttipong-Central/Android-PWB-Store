@@ -7,21 +7,25 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.LoginFragment
+import cenergy.central.com.pwb_store.fragment.interfaces.UserLoginListener
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DeepLink
 import cenergy.central.com.pwb_store.utils.Screen
+import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class LoginActivity : BaseActivity() {
+class LoginActivity : BaseActivity(), UserLoginListener {
 
     // widget view
     private lateinit var networkStateView: NetworkStateView
     private lateinit var languageButton: LanguageButton
+
     private val analytics by lazy { Analytics(this) }
 
     private var pathSegments = arrayOf("")
@@ -69,10 +73,18 @@ class LoginActivity : BaseActivity() {
 
     private fun initView() {
         networkStateView = findViewById(R.id.network_state_View)
+
         //Load Fragment
         supportFragmentManager.beginTransaction()
                 .replace(R.id.container, LoginFragment.newInstance())
                 .commit()
+    }
+
+    override fun userLogOut(){
+        showCommonDialog(resources.getString(R.string.some_thing_wrong))
+        preferenceManager.userLogout()
+        RealmController.getInstance().userLogout()
+        initView()
     }
 
     override fun onResume() {

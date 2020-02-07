@@ -2,12 +2,16 @@ package cenergy.central.com.pwb_store.manager
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.activity.LoginActivity
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import com.amazonaws.auth.AWSCredentials
@@ -24,33 +28,43 @@ import java.util.concurrent.TimeUnit
 
 
 class HttpMangerSiebel(context: Context) {
-    private var retrofit: Retrofit
+    private lateinit var retrofit: Retrofit
+    private val pref by lazy { PreferenceManager(context) }
+    private val database by lazy { RealmController.getInstance() }
 
     init {
-        val session = auth()
-        val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, Constants.CLIENT_SERVICE_NAME,
-                Constants.CLIENT_REGION, Constants.CLIENT_X_API_KEY)
-        val interceptor = HttpLoggingInterceptor()
-        if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val defaultHttpClient = OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor { chain ->
-                    val request = chain.request().newBuilder()
-                            .build()
+        if (checkSecretKey()) {
+            val session = auth(pref.accessKey!!, pref.secretKey!!)
+            val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
+            val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName!!, pref.region!!, pref.xApiKey!!)
+            val interceptor = HttpLoggingInterceptor()
+            if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
+            val defaultHttpClient = OkHttpClient.Builder()
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .addInterceptor { chain ->
+                        val request = chain.request().newBuilder()
+                                .build()
 
-                    chain.proceed(request)
-                }
+                        chain.proceed(request)
+                    }
                 .addInterceptor(awsInterceptor)
-                .addInterceptor(interceptor)
-                .build()
+                    .addInterceptor(interceptor)
+                    .build()
 
-        retrofit = Retrofit.Builder()
-                .baseUrl(Constants.CENTRAL_HOST_NAME)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(defaultHttpClient)
-                .build()
+            retrofit = Retrofit.Builder()
+                    .baseUrl(Constants.CENTRAL_HOST_NAME)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(defaultHttpClient)
+                    .build()
+        } else {
+            userLogout(context)
+        }
+    }
+
+    private fun checkSecretKey() : Boolean{
+        return pref.accessKey != null && pref.secretKey != null && pref.region != null &&
+                pref.xApiKey != null && pref.serviceName != null
     }
 
     private class PwbAWSCredentialsProvider internal constructor(private val session: Session) : AWSCredentialsProvider {
@@ -100,13 +114,18 @@ class HttpMangerSiebel(context: Context) {
         })
     }
 
-
-    private fun auth(): Session {
+    private fun auth(accessKey: String, secretKey: String): Session {
         val auth = Session()
-        auth.accessKey = Constants.CLIENT_ACCESS_KEY
-        auth.secretKey = Constants.CLIENT_SECRET_KEY
-
+        auth.accessKey = accessKey
+        auth.secretKey = secretKey
         return auth
+    }
+
+    private fun userLogout(context: Context) {
+        database.userLogout()
+        pref.userLogout()
+        val intent = Intent(context, LoginActivity::class.java)
+        context.startActivity(intent)
     }
 
     private inner class Session {

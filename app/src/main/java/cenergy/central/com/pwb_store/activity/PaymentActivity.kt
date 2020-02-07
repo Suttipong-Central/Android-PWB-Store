@@ -698,7 +698,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         showProgressDialog()
-        HttpManagerHDL.getInstance().getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse> {
+        HttpManagerHDL.getInstance(this).getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse> {
             override fun success(response: HDLMemberResponse?) {
                 if (response?.customerInfos != null) {
                     this@PaymentActivity.membersHDL = response.customerInfos ?: listOf()

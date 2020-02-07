@@ -122,7 +122,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 province = store?.province ?: "", postalId = store?.postalCode ?: "",
                 period = period, customDetail = customDetail)
         context?.let {
-            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            HttpManagerHDL.getInstance(context!!).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                 override fun success(response: ShippingSlotResponse?) {
                     if (response != null) {
                         if (response.shippingSlot.isNotEmpty()) {
@@ -182,7 +182,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 province = store?.province ?: "", postalId = store?.postalCode ?: "",
                 period = period, customDetail = customDetail)
         context?.let {
-            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            HttpManagerHDL.getInstance(context!!).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                 override fun success(response: ShippingSlotResponse?) {
                     if (response != null && response.shippingSlot.isNotEmpty()) {
                         for (i in response.shippingSlot.indices) {

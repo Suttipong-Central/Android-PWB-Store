@@ -33,11 +33,9 @@ class Constants {
 
         // UAT
         const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"
-        const val CLIENT_SERVICE_NAME = "execute-api"
-        const val CLIENT_REGION = "ap-southeast-1"
-        const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        const val CLIENT_ACCESS_KEY = "AKIAIIIW7RXNLIKRTSNQ"
-        const val CLIENT_SECRET_KEY = "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"
+        const val FIRE_STORE_COLLECTION_NAME = "secret-key"
+        const val FIRE_STORE_DOCUMENT_KEY = "staging"
+
         // endregion
 
         // region formatter
