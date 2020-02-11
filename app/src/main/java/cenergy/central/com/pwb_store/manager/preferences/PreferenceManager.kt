@@ -63,11 +63,16 @@ class PreferenceManager(private var context: Context) {
         editor.apply()
     }
 
-    val secretKey: String? = pref.getString(PREF_SECRET_KEY, null)
-    val accessKey: String? = pref.getString(PREF_ACCESS_KEY, null)
-    val region: String? = pref.getString(PREF_REGION, null)
-    val xApiKey: String? = pref.getString(PREF_X_API_KEY, null)
-    val serviceName: String? = pref.getString(PREF_SERVICE_NAME, null)
+    val secretKey: String?
+        get() = pref.getString(PREF_SECRET_KEY, null)
+    val accessKey: String?
+        get() = pref.getString(PREF_ACCESS_KEY, null)
+    val region: String?
+        get() = pref.getString(PREF_REGION, null)
+    val xApiKey: String?
+        get() = pref.getString(PREF_X_API_KEY, null)
+    val serviceName: String?
+        get() = pref.getString(PREF_SERVICE_NAME, null)
 
     private fun clearPreference() {
 //        pref.edit().clear().apply()

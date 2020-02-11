@@ -29,23 +29,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class HttpManagerHDL(var context: Context) {
-    private  var retrofit: Retrofit
+    private var retrofit: Retrofit
     private val pref by lazy { PreferenceManager(context) }
     private val database by lazy { RealmController.getInstance() }
 
     init {
-        val session = auth(pref.accessKey!!, pref.secretKey!!)
+        val session = auth(pref.accessKey?:"", pref.secretKey?:"")
         val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName!!, pref.region!!, pref.xApiKey!!)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName?:"", pref.region?:"", pref.xApiKey?:"")
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val defaultHttpClient = OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
-                .connectTimeout(30, TimeUnit.SECONDS)
+        val defaultHttpClient = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
                     val request = chain.request().newBuilder()
                             .build()
-
                     chain.proceed(request)
                 }
                 .addInterceptor(awsInterceptor)
@@ -60,17 +57,17 @@ class HttpManagerHDL(var context: Context) {
 
     }
 
-    private fun isSecretKeyNotNull() : Boolean{
+    private fun isSecretKeyNotNull(): Boolean {
         return pref.accessKey != null && pref.secretKey != null && pref.region != null &&
                 pref.xApiKey != null && pref.serviceName != null
     }
 
-    fun getHDLCustomer(number: String, callback: ApiResponseCallback<HDLMemberResponse>){
-        if (isSecretKeyNotNull()){
+    fun getHDLCustomer(number: String, callback: ApiResponseCallback<HDLMemberResponse>) {
+        if (isSecretKeyNotNull()) {
             val mHDLService = retrofit.create(HDLService::class.java)
-            mHDLService.getHDLMembers(number, true).enqueue(object : Callback<HDLMemberResponse>{
+            mHDLService.getHDLMembers(number, true).enqueue(object : Callback<HDLMemberResponse> {
                 override fun onResponse(call: Call<HDLMemberResponse>, response: Response<HDLMemberResponse>) {
-                    if (response.body() != null){
+                    if (response.body() != null) {
                         callback.success(response.body())
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
@@ -87,7 +84,7 @@ class HttpManagerHDL(var context: Context) {
     }
 
     fun getShippingSlot(shippingSlotBody: ShippingSlotBody, callback: ApiResponseCallback<ShippingSlotResponse>) {
-        if (isSecretKeyNotNull()){
+        if (isSecretKeyNotNull()) {
             val mHDLService = retrofit.create(HDLService::class.java)
             mHDLService.getShippingSlot("application/json", shippingSlotBody).enqueue(object : Callback<ShippingSlotResponse> {
                 override fun onResponse(call: Call<ShippingSlotResponse>?, response: Response<ShippingSlotResponse>?) {
@@ -147,6 +144,7 @@ class HttpManagerHDL(var context: Context) {
         database.userLogout()
         pref.userLogout()
         val intent = Intent(context, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
     }
 

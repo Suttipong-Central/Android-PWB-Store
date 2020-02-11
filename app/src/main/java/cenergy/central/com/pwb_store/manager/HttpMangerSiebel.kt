@@ -33,9 +33,9 @@ class HttpMangerSiebel(var context: Context) {
     private val database by lazy { RealmController.getInstance() }
 
     init {
-        val session = auth(pref.accessKey!!, pref.secretKey!!)
+        val session = auth(pref.accessKey ?:"", pref.secretKey ?:"")
         val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName!!, pref.region!!, pref.xApiKey!!)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName ?:"", pref.region ?:"", pref.xApiKey ?:"")
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         val defaultHttpClient = OkHttpClient.Builder()
@@ -129,6 +129,7 @@ class HttpMangerSiebel(var context: Context) {
         database.userLogout()
         pref.userLogout()
         val intent = Intent(context, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
     }
 
