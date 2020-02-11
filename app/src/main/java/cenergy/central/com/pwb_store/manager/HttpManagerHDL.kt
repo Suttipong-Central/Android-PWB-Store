@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.manager
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import cenergy.central.com.pwb_store.BuildConfig
@@ -29,79 +28,84 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class HttpManagerHDL(context: Context) {
-    private lateinit var retrofit: Retrofit
+class HttpManagerHDL(var context: Context) {
+    private  var retrofit: Retrofit
     private val pref by lazy { PreferenceManager(context) }
     private val database by lazy { RealmController.getInstance() }
 
     init {
-        if (checkSecretKey()){
-            val session = auth(pref.accessKey!!, pref.secretKey!!)
-            val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-            val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName!!, pref.region!!, pref.xApiKey!!)
-            val interceptor = HttpLoggingInterceptor()
-            if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
-            val defaultHttpClient = OkHttpClient.Builder()
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .addInterceptor { chain ->
-                        val request = chain.request().newBuilder()
-                                .build()
+        val session = auth(pref.accessKey!!, pref.secretKey!!)
+        val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName!!, pref.region!!, pref.xApiKey!!)
+        val interceptor = HttpLoggingInterceptor()
+        if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
+        val defaultHttpClient = OkHttpClient.Builder()
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor { chain ->
+                    val request = chain.request().newBuilder()
+                            .build()
 
-                        chain.proceed(request)
-                    }
-                    .addInterceptor(awsInterceptor)
-                    .addInterceptor(interceptor)
-                    .build()
+                    chain.proceed(request)
+                }
+                .addInterceptor(awsInterceptor)
+                .addInterceptor(interceptor)
+                .build()
 
-            retrofit = Retrofit.Builder()
-                    .baseUrl(Constants.CENTRAL_HOST_NAME)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(defaultHttpClient)
-                    .build()
-        } else {
-            userLogout(context)
-        }
+        retrofit = Retrofit.Builder()
+                .baseUrl(Constants.CENTRAL_HOST_NAME)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(defaultHttpClient)
+                .build()
+
     }
 
-    private fun checkSecretKey() : Boolean{
+    private fun isSecretKeyNotNull() : Boolean{
         return pref.accessKey != null && pref.secretKey != null && pref.region != null &&
                 pref.xApiKey != null && pref.serviceName != null
     }
 
     fun getHDLCustomer(number: String, callback: ApiResponseCallback<HDLMemberResponse>){
-        val mHDLService = retrofit.create(HDLService::class.java)
-        mHDLService.getHDLMembers(number, true).enqueue(object : Callback<HDLMemberResponse>{
-            override fun onResponse(call: Call<HDLMemberResponse>, response: Response<HDLMemberResponse>) {
-                if (response.body() != null){
-                    callback.success(response.body())
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+        if (isSecretKeyNotNull()){
+            val mHDLService = retrofit.create(HDLService::class.java)
+            mHDLService.getHDLMembers(number, true).enqueue(object : Callback<HDLMemberResponse>{
+                override fun onResponse(call: Call<HDLMemberResponse>, response: Response<HDLMemberResponse>) {
+                    if (response.body() != null){
+                        callback.success(response.body())
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<HDLMemberResponse>, t: Throwable) {
-                callback.failure(t.getResultError())
-            }
-        })
+                override fun onFailure(call: Call<HDLMemberResponse>, t: Throwable) {
+                    callback.failure(t.getResultError())
+                }
+            })
+        } else {
+            userLogout(context)
+        }
     }
 
     fun getShippingSlot(shippingSlotBody: ShippingSlotBody, callback: ApiResponseCallback<ShippingSlotResponse>) {
-        val mHDLService = retrofit.create(HDLService::class.java)
-        mHDLService.getShippingSlot("application/json", shippingSlotBody).enqueue(object : Callback<ShippingSlotResponse> {
-            override fun onResponse(call: Call<ShippingSlotResponse>?, response: Response<ShippingSlotResponse>?) {
-                if (response != null && response.isSuccessful) {
-                    val orderResponse = response.body()
-                    callback.success(orderResponse)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+        if (isSecretKeyNotNull()){
+            val mHDLService = retrofit.create(HDLService::class.java)
+            mHDLService.getShippingSlot("application/json", shippingSlotBody).enqueue(object : Callback<ShippingSlotResponse> {
+                override fun onResponse(call: Call<ShippingSlotResponse>?, response: Response<ShippingSlotResponse>?) {
+                    if (response != null && response.isSuccessful) {
+                        val orderResponse = response.body()
+                        callback.success(orderResponse)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<ShippingSlotResponse>?, t: Throwable) {
-                callback.failure(t.getResultError())
-            }
-        })
+                override fun onFailure(call: Call<ShippingSlotResponse>?, t: Throwable) {
+                    callback.failure(t.getResultError())
+                }
+            })
+        } else {
+            userLogout(context)
+        }
     }
 
     fun createBooking(bookingShippingSlotBody: BookingShippingSlotBody, callback: ApiResponseCallback<BookingNumberResponse>) {
