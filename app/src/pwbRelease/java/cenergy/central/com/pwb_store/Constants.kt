@@ -24,7 +24,7 @@ class Constants {
 
         // region central
         const val CENTRAL_HOST_NAME = "https://api.central.tech"
-        const val FIRE_STORE_DOCUMENT_NAME = "secret-key"
+        const val FIRE_STORE_COLLECTION_NAME = "secret-key"
         const val FIRE_STORE_DOCUMENT_KEY = "production"
         // endregion
 
