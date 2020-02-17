@@ -16,7 +16,6 @@ import com.google.android.material.textfield.TextInputEditText
 
 class PowerBuyEditTextBorder : LinearLayout {
 
-    private lateinit var inputLayout: LinearLayout
     private var header: PowerBuyTextView? = null
     private var requiredField: PowerBuyTextView? = null
     lateinit var editText: TextInputEditText
@@ -40,7 +39,6 @@ class PowerBuyEditTextBorder : LinearLayout {
 
     private fun prepareView() {
         val view = View.inflate(context, R.layout.view_edit_text_boder, this)
-        inputLayout = view.findViewById(R.id.input_layout)
         header = view.findViewById(R.id.txt_header)
         requiredField = view.findViewById(R.id.required_field)
         editText = view.findViewById(R.id.edit_text)
@@ -70,7 +68,7 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     private fun notifyAttributeChanged() {
-        inputLayout.background = ContextCompat.getDrawable(context,
+        editText.background = ContextCompat.getDrawable(context,
                 if (isEnable) R.drawable.bg_input_enable else R.drawable.bg_input_disable)
         header?.text = textHeader
         requiredField?.visibility = if (required) View.VISIBLE else View.GONE

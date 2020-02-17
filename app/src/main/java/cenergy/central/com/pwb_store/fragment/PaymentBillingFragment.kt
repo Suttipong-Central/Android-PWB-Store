@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.Group
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -70,8 +71,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingHomeRoadEdt: PowerBuyEditTextBorder
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
-    private lateinit var layoutDiscountPrice: LinearLayout
-    private lateinit var layoutPromotionPrice: LinearLayout
     private lateinit var discountPriceTextView: PowerBuyTextView
     private lateinit var promotionPriceTextView: PowerBuyTextView
     private lateinit var totalPriceTextView: PowerBuyTextView
@@ -90,8 +89,9 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingSubDistrictInput: PowerBuyAutoCompleteTextStroke
     private lateinit var billingPostcodeInput: PowerBuyAutoCompleteTextStroke
 
-    private lateinit var billingLayout: LinearLayout
-    private lateinit var taxInvoiceLayout: LinearLayout
+    private lateinit var billingLayout: Group
+    private lateinit var layoutDiscountPrice: Group
+    private lateinit var layoutPromotionPrice: Group
 
     private var mProgressDialog: ProgressDialog? = null
     private val analytics by lazy { context?.let { Analytics(it) } }
@@ -626,12 +626,11 @@ class PaymentBillingFragment : Fragment() {
         postcodeInput = rootView.findViewById(R.id.input_postcode)
 
         // Tax invoice layout
-        taxInvoiceLayout = rootView.findViewById(R.id.tax_invoice_layout)
         companyEdt = rootView.findViewById(R.id.input_company)
         taxIdEdt = rootView.findViewById(R.id.input_tax_id)
 
         // Billing address
-        billingLayout = rootView.findViewById(R.id.billing_address_layout_payment)
+        billingLayout = rootView.findViewById(R.id.group_billing_address)
         billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
         billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
         billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
@@ -645,12 +644,12 @@ class PaymentBillingFragment : Fragment() {
         billingSubDistrictInput = rootView.findViewById(R.id.billing_input_sub_district)
         billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
 
-        recycler = rootView.findViewById(R.id.recycler_product_list_payment)
-        layoutDiscountPrice = rootView.findViewById(R.id.layout_discount)
-        layoutPromotionPrice = rootView.findViewById(R.id.layout_promotion_code)
+        recycler = rootView.findViewById(R.id.recycler_cart_items)
+        layoutDiscountPrice = rootView.findViewById(R.id.group_discount)
+        layoutPromotionPrice = rootView.findViewById(R.id.group_promotion)
         discountPriceTextView = rootView.findViewById(R.id.txt_discount)
         promotionPriceTextView = rootView.findViewById(R.id.txt_promotion)
-        totalPriceTextView = rootView.findViewById(R.id.txt_total_price_payment_description)
+        totalPriceTextView = rootView.findViewById(R.id.txt_total)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
         // Set Input type
@@ -695,7 +694,7 @@ class PaymentBillingFragment : Fragment() {
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
 
         // is checkout type ispu
-        val billingOptionLayout = rootView.findViewById<LinearLayout>(R.id.billing_option_layout)
+        val billingOptionLayout = rootView.findViewById<Group>(R.id.group_radio_same_billing)
         if (this.checkoutType == CheckoutType.ISPU) {
             val shippingLabel = rootView.findViewById<TextView>(R.id.shipping_label_text_view)
             billingOptionLayout.visibility = View.GONE
@@ -743,9 +742,11 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkRequireTaxInvoice() {
         if (!isRequireTaxInvoice) {
-            taxInvoiceLayout.visibility = View.GONE
+            companyEdt.visibility = View.GONE
+            taxIdEdt.visibility = View.GONE
         } else {
-            taxInvoiceLayout.visibility = View.VISIBLE
+            companyEdt.visibility = View.VISIBLE
+            taxIdEdt.visibility = View.VISIBLE
         }
     }
 
