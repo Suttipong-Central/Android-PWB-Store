@@ -1166,7 +1166,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentSelectMethodFragment) {
-            startDeliveryOptions()
+            if(checkoutType == CheckoutType.ISPU){
+                startBilling()
+            } else {
+                startDeliveryOptions()
+            }
             return
         }
 
