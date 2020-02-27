@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import java.text.NumberFormat
@@ -43,7 +44,7 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                     brand = product.brand,
                     maxQty = product.extension?.stokeItem?.maxQTY ?: 1,
                     qtyInStock = product.extension?.stokeItem?.qty ?: 0,
-                    soldBy = product.soldBy ?: Product.DEFAULT_SOLD_BY)
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY)
         }
     }
 }

@@ -33,5 +33,8 @@ class Constants {
         // region formatter
         val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
         // endregion
+
+        const val DEFAULT_SOLD_BY = "Central"
+
     }
 }

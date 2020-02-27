@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.model
 import android.os.Parcelable
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import java.text.NumberFormat
@@ -106,6 +107,5 @@ class Product(
 
     companion object {
         const val PRODUCT_ONE_HOUR = "storepickup_ispu"
-        const val DEFAULT_SOLD_BY = "Central"
     }
 }

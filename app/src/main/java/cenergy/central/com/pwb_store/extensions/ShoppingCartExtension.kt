@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.extensions
 
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CacheFreeItem
 import cenergy.central.com.pwb_store.model.CartItem
@@ -49,9 +50,9 @@ fun List<CacheCartItem>.getCartItem(): ArrayList<Any> {
             header.add(it.soldBy!!)
         }
     }
-    val centralIndex = header.indexOf(Product.DEFAULT_SOLD_BY)
+    val centralIndex = header.indexOf(DEFAULT_SOLD_BY)
     if (centralIndex > 0){
-        Collections.swap(header, centralIndex, 0) // swap "central" to fist index
+        Collections.swap(header, centralIndex, 0)
     }
     header.forEach { headerItem ->
         cartItems.add(headerItem)

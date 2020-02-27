@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -50,7 +51,7 @@ open class CacheCartItem(
                     qtyInStock = product.extension?.stokeItem?.qty,
                     imageUrl = product.getImageUrl(),
                     paymentMethod = product.paymentMethod,
-                    soldBy = product.soldBy ?: Product.DEFAULT_SOLD_BY) // cache payment_method
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY) // cache payment_method
         }
 
         @JvmStatic
@@ -66,7 +67,7 @@ open class CacheCartItem(
                     maxQTY = compareProduct.maxQty ?: 1,
                     qtyInStock = compareProduct.qtyInStock,
                     imageUrl = compareProduct.imageUrl,
-                    soldBy = compareProduct.soldBy ?: Product.DEFAULT_SOLD_BY)
+                    soldBy = compareProduct.soldBy ?: DEFAULT_SOLD_BY)
         }
 
         @JvmStatic
@@ -83,7 +84,7 @@ open class CacheCartItem(
                     qtyInStock = branchResponse.sourceItem?.quantity ?: 0,
                     imageUrl = product.getImageUrl(),
                     branch = branchResponse.branch,
-                    soldBy = product.soldBy ?: Product.DEFAULT_SOLD_BY)
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY)
         }
     }
 }

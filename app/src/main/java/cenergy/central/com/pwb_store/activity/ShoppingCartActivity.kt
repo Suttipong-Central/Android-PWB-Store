@@ -367,11 +367,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
                 database.saveCartItem(it)
             }
 
-            shoppingCartAdapter.cartItem = if (BuildConfig.FLAVOR != "pwb"){
-                database.cacheCartItems.getCartItem()
-            } else {
-                database.cacheCartItems
-            }
+            shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
 
             updateTitle(shoppingCartResponse.qty)
             val t1Points = (total - (total % 50)) / 50

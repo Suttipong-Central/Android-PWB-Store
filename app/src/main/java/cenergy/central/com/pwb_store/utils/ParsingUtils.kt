@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.utils
 
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import org.json.JSONObject
@@ -213,7 +214,7 @@ class ParsingUtils{
                     }
                     if (customAttrCode == "marketplace_seller"){
                         if (attrOption.getString("value").isNullOrEmpty()){
-                            product.soldBy = Product.DEFAULT_SOLD_BY
+                            product.soldBy = DEFAULT_SOLD_BY
                         } else {
                             product.soldBy = attrOption.getString("value")
                         }

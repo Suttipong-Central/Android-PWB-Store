@@ -255,11 +255,8 @@ class PaymentBillingFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.cartItem = if (BuildConfig.FLAVOR != "pwb"){
-            database.cacheCartItems.getCartItem()
-        } else {
-            database.cacheCartItems
-        }
+
+        shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         if (discount > 0){
