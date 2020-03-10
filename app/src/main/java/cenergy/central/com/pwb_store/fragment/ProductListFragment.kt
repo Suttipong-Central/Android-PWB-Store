@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -72,19 +71,22 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var database = RealmController.getInstance()
 
     private var products = arrayListOf<Product>()
+    private var offlineProducts = arrayListOf<Product>()
     private var brands: ArrayList<FilterItem> = ArrayList()
+    private var offlineBrands: ArrayList<FilterItem> = ArrayList()
     private var isClearBrands = true
 
-    private val PER_PAGE = 20
+    private val PER_PAGE = 100
     private var currentPage = 0
-    private var totalPage = 0
-
 
     @Subscribe
     fun onEvent(productFilterItemBus: ProductFilterItemBus) {
         showProgressDialog()
         isDoneFilter = true
         isSorting = true
+        currentPage = 0
+        products.clear()
+        offlineProducts.clear()
         brandName = "" // clear filter brand name
         val categoryLv3 = productFilterItemBus.productFilterItem
         val clickPosition = productFilterItemBus.position
@@ -96,6 +98,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             categoryId = categoryLv2!!.id
         }
         isClearBrands = true
+        brands.clear()
         retrieveProductList()
         if (mPowerBuyPopupWindow!!.isShowing) {
             mPowerBuyPopupWindow!!.dismiss()
@@ -117,16 +120,16 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         when(sortingItem.slug){
             "price" -> {
                 if (sortingItem.value == "ASC"){
-                    productsSorted.addAll(products.sortedBy { it.price })
+                    productsSorted.addAll(offlineProducts.sortedBy { it.price })
                 } else {
-                    productsSorted.addAll(products.sortedByDescending { it.price })
+                    productsSorted.addAll(offlineProducts.sortedByDescending { it.price })
                 }
             }
             "brand" -> {
                 if (sortingItem.value == "ASC"){
-                    productsSorted.addAll(products.sortedBy { it.brand })
+                    productsSorted.addAll(offlineProducts.sortedBy { it.brand })
                 } else {
-                    productsSorted.addAll(products.sortedByDescending { it.brand })
+                    productsSorted.addAll(offlineProducts.sortedByDescending { it.brand })
                 }
             }
         }
@@ -141,6 +144,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     // region {@link OnBrandFilterClickListener}
     override fun onClickedItem(filterItem: FilterItem?) {
         isDoneFilter = true
+        currentPage = 0
+        products.clear()
+        offlineProducts.clear()
         if (filterItem != null) {
             isClearBrands = false
             brandName = filterItem.value // brand name
@@ -159,6 +165,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     private fun clearBrandFilter() {
         isClearBrands = true
+        brands.clear()
         brandName = "" // clear brand
         if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
             showProgressDialog()
@@ -223,16 +230,16 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 mPowerBuyPopupWindow!!.showAsDropDown(v)
             }
             R.id.layout_sort ->  // Create productResponse for check because we mock up sort items
-                if (mSortingList == null || products.isEmpty()) {
+                if (mSortingList == null || offlineProducts.isEmpty()) {
                     mPowerBuyPopupWindow!!.dismiss()
                 } else {
                     mPowerBuyPopupWindow!!.setRecyclerViewSorting(mSortingList)
                     mPowerBuyPopupWindow!!.showAsDropDown(v)
                 }
-            R.id.layout_brand -> if (brands.isEmpty()) {
+            R.id.layout_brand -> if (offlineBrands.isEmpty()) {
                 mPowerBuyPopupWindow!!.dismiss()
             } else {
-                mPowerBuyPopupWindow!!.setRecyclerViewFilterByBrand(brands, this)
+                mPowerBuyPopupWindow!!.setRecyclerViewFilterByBrand(offlineBrands, this)
                 mPowerBuyPopupWindow!!.showAsDropDown(v)
             }
         }
@@ -356,45 +363,24 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
             }
 
-            retrieveProducts(context!!, 100, 1, filterGroupsList, object : ApiResponseCallback<ProductResponse> {
+            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {
-                            retrieveOfflinePrice(response)
-                        }
-                    }
-                }
-
-                override fun failure(error: APIError) {
-                    if (activity != null) {
-                        activity!!.runOnUiThread {
-                            mProgressDialog!!.dismiss()
-                            if (context != null) {
-                                DialogHelper(context!!).showErrorDialog(error)
-                            }
-                        }
-                    }
-                }
-            })
-        }
-    }
-
-    private fun getNextPage(): Int{
-        return currentPage + 1
-    }
-
-    private fun retrieveOfflinePrice(productResponse: ProductResponse?) {
-        if (context != null && productResponse != null) {
-            userInformation = database.userInformation
-            val retailerId = userInformation?.store?.storeId?.toString()
-            val productListIds = productResponse.products.map { it.id }
-            val productIds = TextUtils.join(",", productListIds)
-            OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, retailerId!!, object : ApiResponseCallback<OfflinePriceProductsResponse>{
-                override fun success(response: OfflinePriceProductsResponse?) {
-                    if (activity != null) {
-                        activity!!.runOnUiThread {
-                            if (response != null && response.items.isNotEmpty()){
-                                filterProductsOfflinePrice(productResponse, response.items)
+                            if (response != null){
+                                totalItem = response.totalCount
+                                if (response.products.isNotEmpty()){
+                                    products.addAll(response.products)
+                                }
+                                if (response.filters.isNotEmpty()){
+                                    brands.addAll(response.filters[0].items)
+                                }
+                                if (products.size < totalItem){
+                                    currentPage = nextPage
+                                    retrieveProductList()
+                                } else {
+                                    retrieveOfflinePrice()
+                                }
                             } else {
                                 mProgressDialog!!.dismiss()
                                 setTextHeader(0, title)
@@ -405,12 +391,14 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 }
 
                 override fun failure(error: APIError) {
-                    if (activity != null && context != null) {
+                    if (activity != null) {
                         activity!!.runOnUiThread {
                             mProgressDialog!!.dismiss()
                             setTextHeader(0, title)
                             mProductListAdapter!!.setError()
-                            DialogHelper(context!!).showErrorDialog(error)
+                            if (context != null) {
+                                DialogHelper(context!!).showErrorDialog(error)
+                            }
                         }
                     }
                 }
@@ -418,33 +406,78 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
     }
 
-    private fun filterProductsOfflinePrice(productResponse: ProductResponse, offlinePriceItems: ArrayList<OfflinePriceItem>){
-        products.clear()
+    private val nextPage: Int
+        get() = currentPage + 1
+
+    private fun retrieveOfflinePrice() {
+        if (context != null) {
+            userInformation = database.userInformation
+            val retailerId = userInformation?.store?.storeId?.toString()
+            if (products.isNotEmpty() && totalItem != 0){
+                products.chunked(PER_PAGE).forEach {
+                    val productIds = TextUtils.join(",", it.map { product -> product.id })
+                    OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, retailerId!!,
+                            object : ApiResponseCallback<OfflinePriceProductsResponse> {
+                                override fun success(response: OfflinePriceProductsResponse?) {
+                                    if (activity != null) {
+                                        activity!!.runOnUiThread {
+                                            if (response != null) {
+                                                filterProductsOfflinePrice(response.items)
+                                            } else {
+                                                mProgressDialog!!.dismiss()
+                                                setTextHeader(0, title)
+                                                mProductListAdapter!!.setError()
+                                            }
+                                        }
+                                    }
+                                }
+
+                                override fun failure(error: APIError) {
+                                    if (activity != null && context != null) {
+                                        activity!!.runOnUiThread {
+                                            mProgressDialog!!.dismiss()
+                                            setTextHeader(0, title)
+                                            mProductListAdapter!!.setError()
+                                            DialogHelper(context!!).showErrorDialog(error)
+                                        }
+                                    }
+                                }
+                            })
+                }
+            } else {
+                mProgressDialog!!.dismiss()
+                setTextHeader(0, title)
+                mProductListAdapter!!.setError()
+            }
+        }
+    }
+
+    private fun filterProductsOfflinePrice(offlinePriceItems: ArrayList<OfflinePriceItem>){
         offlinePriceItems.forEach { offlinePriceItem ->
-            val offlineProduct = productResponse.products.firstOrNull { it.id.toString() == offlinePriceItem.productId}
-            if (offlineProduct != null && !products.contains(offlineProduct)){
+            val offlineProduct = products.firstOrNull { it.id.toString() == offlinePriceItem.productId}
+            if (offlineProduct != null && !offlineProducts.contains(offlineProduct)){
                 offlineProduct.price = offlinePriceItem.price
                 offlineProduct.specialPrice = offlinePriceItem.specialPrice
                 offlineProduct.specialFromDate = offlinePriceItem.specialFromDate
                 offlineProduct.specialToDate = offlinePriceItem.specialToDate
-                products.add(offlineProduct)
+                offlineProducts.add(offlineProduct)
             }
         }
         if (isClearBrands){
-            brands.clear()
-            products.distinctBy { it.brand }.forEach { product ->
-                val brandOfflineProduct = productResponse.filters[0].items.firstOrNull { it.value == product.brand }
+            offlineBrands.clear()
+            offlineProducts.distinctBy { it.brand }.forEach { product ->
+                val brandOfflineProduct = brands.firstOrNull { it.value == product.brand }
                 if (brandOfflineProduct != null){
-                    brands.add(brandOfflineProduct)
+                    offlineBrands.add(brandOfflineProduct)
                 }
             }
         }
-        updateProductList(products)
+        updateProductList(offlineProducts)
     }
 
     private fun updateProductList(products: ArrayList<Product>) {
         if (products.isNotEmpty()) {
-            for (filterItem in brands) {
+            for (filterItem in offlineBrands) {
                 if (brandName != null && brandName == filterItem.value) {
                     filterItem.isSelected = true
                 }
@@ -456,27 +489,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             setTextHeader(0, title)
         }
         mProgressDialog!!.dismiss()
-    }
-
-    private fun loadMore(){
-        if (isStillHavePages()){
-            retrieveProductList()
-        } else {
-            updateProductList(products)
-        }
-    }
-
-    private fun totalPageCal(total: Int): Int {
-        val num: Int
-        val x: Float = total.toFloat() / PER_PAGE
-        num = Math.ceil(x.toDouble()).toInt()
-        return num
-    }
-
-    private fun isStillHavePages(): Boolean {
-        Log.d(TAG, "Calculator -> : $currentPage")
-        Log.d(TAG, "Calculator = : $totalPage")
-        return currentPage < totalPage
     }
 
     private fun loadCategoryLv3(categoryLv2: Category?) {
