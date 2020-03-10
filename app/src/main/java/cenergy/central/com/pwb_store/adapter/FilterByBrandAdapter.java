@@ -34,12 +34,10 @@ public class FilterByBrandAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.filterItems = filterItems;
         mListViewType.clear();
         mListViewType.add(new ViewType(VIEW_TYPE_ID_CANCEL_FILTER)); // add menu clear filter
-
         for (FilterItem item : this.filterItems) {
             item.setViewTypeId(VIEW_TYPE_ID_FILTER_ITEM);
             mListViewType.add(item);
         }
-
         notifyDataSetChanged();
     }
 

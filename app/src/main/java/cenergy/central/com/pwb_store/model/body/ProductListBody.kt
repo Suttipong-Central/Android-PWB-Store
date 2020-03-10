@@ -3,14 +3,11 @@ package cenergy.central.com.pwb_store.model.body
 class ProductListBody(
         var size: Int = 0,
         var currentPage: Int = 0,
-        var filterGroups: ArrayList<FilterGroups> = arrayListOf(),
-        var sortOrders: ArrayList<SortOrder> = arrayListOf()
+        var filterGroups: ArrayList<FilterGroups> = arrayListOf()
 ) {
     companion object {
-        fun createBody(size: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
-                       sortOrders: ArrayList<SortOrder>): ProductListBody {
-            return ProductListBody(size = size, currentPage = currentPage,
-                    filterGroups = filterGroups, sortOrders = sortOrders)
+        fun createBody(size: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>): ProductListBody {
+            return ProductListBody(size, currentPage, filterGroups)
         }
     }
 }

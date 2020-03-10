@@ -340,10 +340,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             val result = TextUtils.join(",", productLinks)
             val filterGroupsList = java.util.ArrayList<FilterGroups>()
             filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
-            val sortOrders = java.util.ArrayList<SortOrder>()
 
             ProductListAPI.retrieveProducts(this, productLinks.size, 1,
-                    filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
+                    filterGroupsList, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     runOnUiThread {
                         if (response != null) {

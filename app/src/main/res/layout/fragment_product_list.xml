@@ -165,44 +165,15 @@
                 android:contentDescription="@string/app_name" />
 
         </LinearLayout>
-
     </RelativeLayout>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toTopOf="@id/layout_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_category" />
-
-    <LinearLayout
-        android:id="@+id/layout_progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/lightGray2"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_view_list"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:gravity="center">
-
-        <ProgressBar
-            android:padding="6dp"
-            android:layout_width="40dp"
-            android:layout_height="40dp"/>
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/loading"
-            android:layout_marginStart="6dp"
-            style="@style/textNameProduct"
-            android:textColor="@color/white"
-            android:textSize="16sp"/>
-
-    </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
