@@ -360,7 +360,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 override fun success(response: ProductResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {
-                            Log.d(TAG, "Calculator totalCount: ${response?.totalCount}")
                             retrieveOfflinePrice(response)
                         }
                     }
@@ -390,7 +389,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             val retailerId = userInformation?.store?.retailerId ?: ""
             //todo force send retailer id is 13
             val productListIds = productResponse.products.map { it.id }
-            Log.d("Size", "${productListIds.size}")
             val productIds = TextUtils.join(",", productListIds)
             OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, "13", object : ApiResponseCallback<OfflinePriceProductsResponse>{
                 override fun success(response: OfflinePriceProductsResponse?) {

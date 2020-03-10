@@ -26,16 +26,16 @@ import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
 import cenergy.central.com.pwb_store.fragment.WebViewFragment
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.api.OfflinePriceAPI
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.DeliveryInfo
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
-import cenergy.central.com.pwb_store.model.body.SortOrder
+import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
@@ -320,18 +320,48 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         })
     }
 
-    private fun handleGetProductSuccess(response: Product?) {
-        if (response != null) {
-            if (response.typeId == "configurable") {
-                checkProductConfig(response)
-            } else {
-                checkHDLOption(response)
-            }
+    private fun handleGetProductSuccess(product: Product?) {
+        if (product != null) {
+            retrieveOfflinePrice(product)
         } else {
             dismissProgressDialog()
             tvNotFound.visibility = View.VISIBLE
             containerGroupView.visibility = View.INVISIBLE
         }
+    }
+
+    private fun retrieveOfflinePrice(product: Product){
+        val retailerId = database.userInformation?.store?.retailerId ?: ""
+        //todo force send retailer id is 13
+        OfflinePriceAPI.retrieveOfflinePriceBySKU(this, product.sku, "13", object : ApiResponseCallback<OfflinePriceItem>{
+            override fun success(response: OfflinePriceItem?) {
+                runOnUiThread {
+                    if (response != null){
+                        product.price = response.price
+                        product.specialPrice = response.specialPrice
+                        product.specialFromDate = response.specialFromDate
+                        product.specialToDate = response.specialToDate
+                        if (product.typeId == "configurable") {
+                            checkProductConfig(product)
+                        } else {
+                            checkHDLOption(product)
+                        }
+                    } else {
+                        dismissProgressDialog()
+                        tvNotFound.visibility = View.VISIBLE
+                        containerGroupView.visibility = View.INVISIBLE
+                    }
+                }
+            }
+
+            override fun failure(error: APIError) {
+                runOnUiThread {
+                    dismissProgressDialog()
+                    tvNotFound.visibility = View.VISIBLE
+                    containerGroupView.visibility = View.INVISIBLE
+                }
+            }
+        })
     }
 
     private fun checkProductConfig(product: Product) {
