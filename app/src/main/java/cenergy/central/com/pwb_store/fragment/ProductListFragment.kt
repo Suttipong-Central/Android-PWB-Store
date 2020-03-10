@@ -386,11 +386,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun retrieveOfflinePrice(productResponse: ProductResponse?) {
         if (context != null && productResponse != null) {
             userInformation = database.userInformation
-            val retailerId = userInformation?.store?.retailerId ?: ""
-            //todo force send retailer id is 13
+            val retailerId = userInformation?.store?.storeId?.toString()
             val productListIds = productResponse.products.map { it.id }
             val productIds = TextUtils.join(",", productListIds)
-            OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, "13", object : ApiResponseCallback<OfflinePriceProductsResponse>{
+            OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, retailerId!!, object : ApiResponseCallback<OfflinePriceProductsResponse>{
                 override fun success(response: OfflinePriceProductsResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {

@@ -746,12 +746,13 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     fun updateItem(cartId: String, itemId: Long, qty: Int, branch: Branch? = null,
                    callback: ApiResponseCallback<CartItem>) {
+        val retailerId = database.userInformation?.store?.storeId?.toInt()
         val cartService = retrofit.create(CartService::class.java)
 
         val updateItemBody = if (branch != null) {
-            UpdateItemBody.create(cartId, itemId, qty, branch)
+            UpdateItemBody.create(cartId, itemId, qty, branch, retailerId!!)
         } else {
-            UpdateItemBody.create(cartId, itemId, qty)
+            UpdateItemBody.create(cartId, itemId, qty, retailerId!!)
         }
 
         cartService.updateItem(getLanguage(), cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {

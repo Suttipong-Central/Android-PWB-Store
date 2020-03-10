@@ -331,9 +331,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun retrieveOfflinePrice(product: Product){
-        val retailerId = database.userInformation?.store?.retailerId ?: ""
-        //todo force send retailer id is 13
-        OfflinePriceAPI.retrieveOfflinePriceBySKU(this, product.sku, "13", object : ApiResponseCallback<OfflinePriceItem>{
+        val retailerId = database.userInformation?.store?.storeId?.toString()
+        OfflinePriceAPI.retrieveOfflinePriceBySKU(this, product.sku, retailerId!!, object : ApiResponseCallback<OfflinePriceItem>{
             override fun success(response: OfflinePriceItem?) {
                 runOnUiThread {
                     if (response != null){

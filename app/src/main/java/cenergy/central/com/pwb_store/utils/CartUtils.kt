@@ -116,18 +116,19 @@ class CartUtils(private val context: Context) {
 
     private fun requestAddToCart(cartId: String, product: Product) {
         // is empty cart?
+        val retailerId = db?.userInformation?.store?.storeId?.toInt()
         if (cacheCartItems == null || cacheCartItems.isEmpty()) {
             val cartItemBody = if (branchResponse != null) {
-                CartItemBody.create(cartId, product, branchResponse!!)  // ispu
+                CartItemBody.create(cartId, product, branchResponse!!, retailerId!!)  // ispu
             } else {
-                CartItemBody.create(cartId, product) // normal
+                CartItemBody.create(cartId, product, retailerId!!) // normal
             }
             requestAddToCart(cartId, product, cartItemBody)
         } else {
             // is product ispu
             if (branchResponse != null) {
                 if (cacheCartItems.hasProduct2h()) {
-                    val body = CartItemBody.create(cartId, product, branchResponse!!)  // ispu
+                    val body = CartItemBody.create(cartId, product, branchResponse!!, retailerId!!)  // ispu
                     requestAddToCart(cartId, product, body)
                 } else {
                     clearCartAndRecreateCart(product)
@@ -137,7 +138,7 @@ class CartUtils(private val context: Context) {
                 if (cacheCartItems.hasProduct2h()) {
                     clearCartAndRecreateCart(product)
                 } else {
-                    val body = CartItemBody.create(cartId, product)  // normal
+                    val body = CartItemBody.create(cartId, product, retailerId!!)  // normal
                     requestAddToCart(cartId, product, body)
                 }
             }
