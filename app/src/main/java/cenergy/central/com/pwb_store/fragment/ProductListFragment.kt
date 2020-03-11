@@ -454,12 +454,24 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     private fun filterProductsOfflinePrice(offlinePriceItems: ArrayList<OfflinePriceItem>){
         offlinePriceItems.forEach { offlinePriceItem ->
-            val offlineProduct = products.firstOrNull { it.id.toString() == offlinePriceItem.productId}
-            if (offlineProduct != null && !offlineProducts.contains(offlineProduct)){
+            val offlineProduct = products.firstOrNull { it.id.toString() == offlinePriceItem.productId }
+            if (offlineProduct != null && !offlineProducts.contains(offlineProduct)) {
                 offlineProduct.price = offlinePriceItem.price
-                offlineProduct.specialPrice = offlinePriceItem.specialPrice
-                offlineProduct.specialFromDate = offlinePriceItem.specialFromDate
-                offlineProduct.specialToDate = offlinePriceItem.specialToDate
+                if (offlinePriceItem.specialPrice > 0) {
+                    offlineProduct.specialPrice = offlinePriceItem.specialPrice
+                    offlineProduct.specialFromDate = null
+                    offlineProduct.specialToDate = null
+                    if (offlinePriceItem.specialFromDate != null) {
+                        offlineProduct.specialFromDate = offlinePriceItem.specialFromDate
+                    }
+                    if (offlinePriceItem.specialToDate != null) {
+                        offlineProduct.specialToDate = offlinePriceItem.specialToDate
+                    }
+                } else {
+                    offlineProduct.specialPrice = 0.0
+                    offlineProduct.specialFromDate = null
+                    offlineProduct.specialToDate = null
+                }
                 offlineProducts.add(offlineProduct)
             }
         }
