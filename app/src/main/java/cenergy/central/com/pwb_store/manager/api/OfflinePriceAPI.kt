@@ -11,11 +11,8 @@ import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import okhttp3.HttpUrl
 import okhttp3.Request
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
-import java.util.*
-import kotlin.collections.ArrayList
 
 class OfflinePriceAPI {
     companion object{
@@ -122,9 +119,7 @@ class OfflinePriceAPI {
                             if (offlinePriceObj.has("entity_id")){
                                 offlinePriceItem.entityId = offlinePriceObj.getString("entity_id")
                             }
-                            if (offlinePriceObj.has("product_id")){
-                                offlinePriceItem.productId = offlinePriceObj.getString("product_id")
-                            }
+                            offlinePriceItem.productId = offlinePriceObj.getString("product_id")
                             if (offlinePriceObj.has("price")){
                                 offlinePriceItem.price = offlinePriceObj.getDouble("price")
                             }
@@ -155,7 +150,7 @@ class OfflinePriceAPI {
                             Log.e("JSON Parser", "Error parsing data $e")
                         }
                     } else {
-                        callback.failure(APIErrorUtils.parseError(response))
+                        APIErrorUtils.parseError(response)?.let { callback.failure(it) }
                     }
                     response?.close()
                 }

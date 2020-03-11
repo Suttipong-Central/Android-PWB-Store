@@ -379,6 +379,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                                     currentPage = nextPage
                                     retrieveProductList()
                                 } else {
+                                    offlineProducts.addAll(products.filter { it.soldBy != null })
                                     retrieveOfflinePrice()
                                 }
                             } else {
@@ -455,7 +456,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun filterProductsOfflinePrice(offlinePriceItems: ArrayList<OfflinePriceItem>){
         offlinePriceItems.forEach { offlinePriceItem ->
             val offlineProduct = products.firstOrNull { it.id.toString() == offlinePriceItem.productId }
-            if (offlineProduct != null && !offlineProducts.contains(offlineProduct)) {
+            if (offlineProduct != null) {
+                val indexOfflineProduct = offlineProducts.indexOf(offlineProduct)
                 offlineProduct.price = offlinePriceItem.price
                 if (offlinePriceItem.specialPrice > 0) {
                     offlineProduct.specialPrice = offlinePriceItem.specialPrice
@@ -472,7 +474,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                     offlineProduct.specialFromDate = null
                     offlineProduct.specialToDate = null
                 }
-                offlineProducts.add(offlineProduct)
+                if (indexOfflineProduct == -1){
+                    offlineProducts.add(offlineProduct)
+                } else {
+                    offlineProducts[indexOfflineProduct] = offlineProduct
+                }
             }
         }
         if (isClearBrands){

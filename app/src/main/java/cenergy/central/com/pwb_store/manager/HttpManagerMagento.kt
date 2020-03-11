@@ -545,7 +545,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                     product.soldBy = DEFAULT_SOLD_BY
                                 } else {
                                     product.soldBy = attrOption.getString("value")
-                                }                            }
+                                }
+                            }
                         }
                         productExtension.specifications = specifications // addd product spec to product extension
                         product.extension = productExtension // add product extension to product

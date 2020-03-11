@@ -47,6 +47,10 @@ class ParsingUtils{
                     product.image = productObj.getString("image")
                 }
 
+                if (productObj.has("marketplace_seller")){
+                    product.soldBy = productObj.getString("marketplace_seller")
+                }
+
                 val extensionObj = productObj.getJSONObject("extension_attributes")
                 if(extensionObj.has("stock_item")){
                     val stockObject = extensionObj.getJSONObject("stock_item")
@@ -210,13 +214,6 @@ class ParsingUtils{
                         if (it.code == customAttrCode) {
                             val customAttrValue = attrOption.getString("value")
                             it.value = customAttrValue
-                        }
-                    }
-                    if (customAttrCode == "marketplace_seller"){
-                        if (attrOption.getString("value").isNullOrEmpty()){
-                            product.soldBy = DEFAULT_SOLD_BY
-                        } else {
-                            product.soldBy = attrOption.getString("value")
                         }
                     }
                 }

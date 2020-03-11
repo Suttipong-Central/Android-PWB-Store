@@ -340,24 +340,22 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                         product.specialPrice = response.specialPrice
                         product.specialFromDate = response.specialFromDate
                         product.specialToDate = response.specialToDate
-                        if (product.typeId == "configurable") {
-                            checkProductConfig(product)
-                        } else {
-                            checkHDLOption(product)
-                        }
+                    }
+                    if (product.typeId == "configurable") {
+                        checkProductConfig(product)
                     } else {
-                        dismissProgressDialog()
-                        tvNotFound.visibility = View.VISIBLE
-                        containerGroupView.visibility = View.INVISIBLE
+                        checkHDLOption(product)
                     }
                 }
             }
 
             override fun failure(error: APIError) {
                 runOnUiThread {
-                    dismissProgressDialog()
-                    tvNotFound.visibility = View.VISIBLE
-                    containerGroupView.visibility = View.INVISIBLE
+                    if (product.typeId == "configurable") {
+                        checkProductConfig(product)
+                    } else {
+                        checkHDLOption(product)
+                    }
                 }
             }
         })
