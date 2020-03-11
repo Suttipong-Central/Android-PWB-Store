@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.interfaces.UserLoginListener
+import cenergy.central.com.pwb_store.BuildConfig
+import org.greenrobot.eventbus.EventBus
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus
@@ -21,13 +23,14 @@ import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.SecretKey
 import cenergy.central.com.pwb_store.model.UserInformation
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.showCommonAPIErrorDialog
 import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.google.firebase.firestore.FirebaseFirestore
-import org.greenrobot.eventbus.EventBus
+import cenergy.central.com.pwb_store.model.*
 
 class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
 
@@ -114,26 +117,30 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
     }
 
     private fun login() {
-        if (context != null) {
-            HttpManagerMagento.getInstance(context!!).userLogin(username, password,
-                    object : ApiResponseCallback<UserInformation> {
-                        override fun success(response: UserInformation?) {
-                            if (response != null) {
-                                if (checkUserLogin(response)) {
-                                    retrieveSecretKey(response)
-                                } else {
+        context?.let {
+            if (BuildConfig.FLAVOR == "cds"){
+                mockUpUser()
+            } else {
+                HttpManagerMagento.getInstance(it).userLogin(username, password,
+                        object : ApiResponseCallback<UserInformation> {
+                            override fun success(response: UserInformation?) {
+                                if (response != null) {
                                     dismissDialog()
-                                    activity?.showCommonDialog(getString(R.string.some_thing_wrong))
-                                    listener.userLogOut()
+                                    if (checkUserLogin(response)) {
+                                        retrieveSecretKey(response)
+                                    } else {
+                                        activity?.showCommonDialog(getString(R.string.some_thing_wrong))
+                                        listener.userLogOut()
+                                    }
                                 }
                             }
-                        }
 
-                        override fun failure(error: APIError) {
-                            dismissDialog()
-                            activity?.showCommonAPIErrorDialog(error)
-                        }
-                    })
+                            override fun failure(error: APIError) {
+                                dismissDialog()
+                                activity?.showCommonAPIErrorDialog(error)
+                            }
+                        })
+            }
         }
     }
 
@@ -142,7 +149,7 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         val secretKey = document.toObject(SecretKey::class.java)
-                        if (checkSecretKey(secretKey)){
+                        if (checkSecretKey(secretKey)) {
                             preferenceManager.setSecretKey(secretKey!!)
                             dismissDialog()
                             EventBus.getDefault().post(LoginSuccessBus(true, userInformation))
@@ -162,6 +169,20 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
                     dismissDialog()
                     listener.userLogOut()
                 }
+    }
+
+    private fun mockUpUser() {
+        val database = RealmController.getInstance()
+        val user = User(12345678L, "", "12345678", 223L,
+                "chuan@central.tech", username, "", 0, "")
+        val store = Store()
+
+        database.saveUserToken(UserToken(Constants.CLIENT_MAGENTO))
+        // save user information
+        val userInformation = UserInformation(user.userId, user, store)
+        database.saveUserInformation(userInformation)
+        dismissDialog()
+        EventBus.getDefault().post(LoginSuccessBus(true, userInformation))
     }
 
     private fun checkSecretKey(secretKey: SecretKey?): Boolean{

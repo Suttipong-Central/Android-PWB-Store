@@ -1,8 +1,8 @@
 package cenergy.central.com.pwb_store.model
 
-import android.os.Parcel
-import android.os.Parcelable
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.response.BranchResponse
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -19,21 +19,10 @@ open class CacheCartItem(
         var maxQTY: Int? = 0,
         var qtyInStock: Int? = null,
         var paymentMethod: String = "",
-        var branch: Branch? = null) : RealmObject(), Parcelable {
-
-    constructor(parcel: Parcel) : this(
-            parcel.readValue(Long::class.java.classLoader) as? Long,
-            parcel.readString(),
-            parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readString(),
-            parcel.readValue(Double::class.java.classLoader) as? Double,
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString() ?: "",
-            parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readString() ?: "")
-
+        var branch: Branch? = null,
+        var soldBy: String? = null,
+        var freeItems: RealmList<CacheFreeItem>? = RealmList()) : RealmObject()
+{
     fun updateItem(cartItem: CartItem) {
         this.itemId = cartItem.id
         this.sku = cartItem.sku
@@ -44,25 +33,7 @@ open class CacheCartItem(
         this.cartId = cartItem.cartId
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeValue(itemId)
-        parcel.writeString(sku)
-        parcel.writeValue(qty)
-        parcel.writeString(name)
-        parcel.writeValue(price)
-        parcel.writeString(type)
-        parcel.writeString(cartId)
-        parcel.writeString(imageUrl)
-        parcel.writeValue(maxQTY)
-        parcel.writeValue(qtyInStock)
-        parcel.writeValue(paymentMethod)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<CacheCartItem> {
+    companion object {
         const val FIELD_ID = "itemId"
         const val FIELD_SKU = "sku"
 
@@ -79,7 +50,8 @@ open class CacheCartItem(
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
                     qtyInStock = product.extension?.stokeItem?.qty,
                     imageUrl = product.getImageUrl(),
-                    paymentMethod = product.paymentMethod) // cache payment_method
+                    paymentMethod = product.paymentMethod,
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY) // cache payment_method
         }
 
         @JvmStatic
@@ -94,7 +66,8 @@ open class CacheCartItem(
                     cartId = cartItem.cartId,
                     maxQTY = compareProduct.maxQty ?: 1,
                     qtyInStock = compareProduct.qtyInStock,
-                    imageUrl = compareProduct.imageUrl)
+                    imageUrl = compareProduct.imageUrl,
+                    soldBy = compareProduct.soldBy ?: DEFAULT_SOLD_BY)
         }
 
         @JvmStatic
@@ -108,17 +81,17 @@ open class CacheCartItem(
                     type = cartItem.type,
                     cartId = cartItem.cartId,
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
-                    qtyInStock = branchResponse.sourceItem?.quantity?: 0,
+                    qtyInStock = branchResponse.sourceItem?.quantity ?: 0,
                     imageUrl = product.getImageUrl(),
-                    branch = branchResponse.branch)
-        }
-
-        override fun createFromParcel(parcel: Parcel): CacheCartItem {
-            return CacheCartItem(parcel)
-        }
-
-        override fun newArray(size: Int): Array<CacheCartItem?> {
-            return arrayOfNulls(size)
+                    branch = branchResponse.branch,
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY)
         }
     }
 }
+
+open class CacheFreeItem(
+        var sku: String = "",
+        var imageUrl: String = "",
+        var forItemId: Long = 0,
+        var qty: Int = 0
+) : RealmObject()

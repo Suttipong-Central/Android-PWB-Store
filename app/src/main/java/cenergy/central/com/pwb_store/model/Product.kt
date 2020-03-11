@@ -1,15 +1,16 @@
 package cenergy.central.com.pwb_store.model
 
-import android.os.Parcel
 import android.os.Parcelable
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+@Parcelize
 class Product(
         var id: Long = 0,
         var sku: String = "",
@@ -37,30 +38,8 @@ class Product(
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
-        var urlKey: String = "") : IViewType, Parcelable {
-
-    constructor(parcel: Parcel) : this(
-            parcel.readLong(),
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.readDouble(),
-            parcel.readString() ?: "",
-            parcel.readDouble(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.createTypedArrayList(ProductGallery) ?: arrayListOf(),
-            parcel.readInt(),
-            parcel.readInt(),
-            parcel.readInt(),
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.readByte() != 0.toByte(),
-            parcel.readParcelable(ProductExtension::class.java.classLoader),
-            parcel.readParcelable(ProductDetailImage::class.java.classLoader),
-            parcel.readString() ?: "")
+        var urlKey: String = "",
+        var soldBy: String? = null) : IViewType, Parcelable {
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -118,43 +97,15 @@ class Product(
         }
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(sku)
-        parcel.writeString(name)
-        parcel.writeDouble(price)
-        parcel.writeString(typeId)
-        parcel.writeDouble(specialPrice)
-        parcel.writeString(specialFromDate)
-        parcel.writeString(specialToDate)
-        parcel.writeString(brand)
-        parcel.writeString(image)
-        parcel.writeString(deliveryMethod)
-        parcel.writeTypedList(gallery)
-        parcel.writeInt(viewTypeID)
-        parcel.writeInt(attributeID)
-        parcel.writeInt(status)
-        parcel.writeString(shippingMethods)
-        parcel.writeString(paymentMethod)
-        parcel.writeByte(if (isHDL) 1 else 0)
-        parcel.writeParcelable(extension, flags)
-        parcel.writeParcelable(productImageList, flags)
-        parcel.writeString(urlKey)
+    fun getSoldByProduct(): String {
+        return if(!soldBy.isNullOrEmpty()){
+            soldBy!!
+        } else {
+            DEFAULT_SOLD_BY
+        }
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Product> {
-        const val PRODUCT_TWO_HOUR = "storepickup_ispu"
-
-        override fun createFromParcel(parcel: Parcel): Product {
-            return Product(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Product?> {
-            return arrayOfNulls(size)
-        }
+    companion object {
+        const val PRODUCT_ONE_HOUR = "storepickup_ispu"
     }
 }

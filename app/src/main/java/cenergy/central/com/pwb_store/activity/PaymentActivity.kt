@@ -20,13 +20,12 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
+import cenergy.central.com.pwb_store.extensions.mergeItems
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL
@@ -68,7 +67,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // data
     private val database = RealmController.getInstance()
     private var cartId: String? = null
-    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
     private var eOrderingMembers: List<EOrderingMember> = listOf()
     private var membersHDL: List<HDLCustomerInfos> = listOf()
@@ -275,7 +273,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         cacheCartItems = database.cacheCartItems
         paymentMethods = cacheCartItems.getPaymentType(this)
         startCheckOut() // default page
-        getItemTotal()
+        getCartTotal()
     }
 
     private fun checkoutWithProduct2hr(product: Product) {
@@ -364,18 +362,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startCreatedOrderFragment() {
         languageButton.visibility = View.VISIBLE
-        val cacheCart = ArrayList<CacheCartItem>()
-        cacheCart.addAll(cacheCartItems)
         startFragment(PaymentCreatedOrder.newInstance())
         clearCachedCart() // clear cache item
     }
 
     private fun startSuccessfullyFragment(orderId: String, urlRedirect: String) {
         languageButton.visibility = View.VISIBLE
-        val cacheCart = ArrayList<CacheCartItem>()
-        cacheCart.addAll(cacheCartItems)
-        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart, urlRedirect))
-        clearCachedCart() // clear cache item
+        startFragment(PaymentSuccessFragment.newInstance(orderId, urlRedirect))
     }
 
     private fun startStorePickupFragment() {
@@ -459,7 +452,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun getItemTotal() {
+    private fun getCartTotal() {
         preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
                 override fun success(response: CartTotalResponse?) {
@@ -484,7 +477,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
-        this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
         if (discount != null) {
@@ -955,9 +947,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mProgressDialog?.dismiss()
     }
 
-    // region {@link PaymentProtocol}
-    override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
-
     override fun getDiscount(): Double = this.discountPrice
 
     override fun getPromotionDiscount(): Double = this.promotionDiscount
@@ -997,6 +986,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getT1CardNumber(): String = this.theOneCardNo
 
     override fun getCheckType(): CheckoutType = this.checkoutType
+
+    override fun clearAllCache() {
+        clearCachedCart()
+    }
     // endregion
 
     // region {@link StorePickUpListener}

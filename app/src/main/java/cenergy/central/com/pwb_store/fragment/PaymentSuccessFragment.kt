@@ -93,7 +93,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     private var orderId: String? = null
     private var cacheOrderId: String? = null
     private var orderProductListAdapter = OrderProductListAdapter()
-    private var cacheCartItems: ArrayList<CacheCartItem>? = arrayListOf()
     private var database = RealmController.getInstance()
     private var cacheOrder: Order? = null
     private var urlRedirect: String = ""
@@ -110,16 +109,14 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
     companion object {
         private const val TAG = "PaymentSuccessFragment"
         private const val ARG_ORDER_ID = "ARG_ORDER_ID"
-        private const val ARG_CART_ITEMS = "ARG_CART_ITEMS"
         private const val ARG_CACHE_ORDER_ID = "ARG_CACHE_ORDER_ID"
         private const val ARG_URL_REDIRECT = "ARG_URL_REDIRECT"
         private const val SAME_BILLING = 1
 
-        fun newInstance(orderId: String, cacheCartItems: ArrayList<CacheCartItem>, urlRedirect: String): PaymentSuccessFragment {
+        fun newInstance(orderId: String, urlRedirect: String): PaymentSuccessFragment {
             val fragment = PaymentSuccessFragment()
             val args = Bundle()
             args.putString(ARG_ORDER_ID, orderId)
-            args.putParcelableArrayList(ARG_CART_ITEMS, cacheCartItems)
             args.putString(ARG_URL_REDIRECT, urlRedirect)
             fragment.arguments = args
             return fragment
@@ -153,7 +150,6 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         arguments?.let {
             orderId = it.getString(ARG_ORDER_ID)
             cacheOrderId = it.getString(ARG_CACHE_ORDER_ID)
-            cacheCartItems = it.getParcelableArrayList(ARG_CART_ITEMS)
             urlRedirect = it.getString(ARG_URL_REDIRECT, "")
         }
     }
@@ -310,6 +306,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         totalPrice.text = getDisplayPrice(unit, order.baseTotal.toString())
         tvAmount.text = getDisplayPrice(unit, order.total.toString())
         finishButton.setOnClickListener {
+            paymentListener.clearAllCache()
             finishThisPage()
         }
         mProgressDialog?.dismiss()
@@ -482,7 +479,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
                     ?: DeliveryType.STORE_PICK_UP.methodCode
 
             response.items?.forEach { item ->
-                val isCacheItem = cacheCartItems?.firstOrNull { it.sku == item.sku }
+                val isCacheItem = database.cacheCartItems?.firstOrNull { it.sku == item.sku }
                 if (isCacheItem != null) {
                     item.imageUrl = isCacheItem.imageUrl
                 } else {

@@ -7,12 +7,9 @@ import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -26,7 +23,6 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.OptionBody
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
@@ -145,6 +141,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvProductName.text = product.name
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
+
+        tvSoldBy.text = product.getSoldByProduct()
 
         if (product.isSpecialPrice()) {
             showSpecialPrice(unit, product)
@@ -307,9 +305,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 tvSpecialPrice.text = product.getDisplaySpecialPrice(unit)
                 tvTitleSpecialPrice.text = getString(R.string.name_price)
                 tvNormalPrice.setEnableStrikeThrough(true)
+                productSpacialPriceLayout.visibility = View.VISIBLE
                 tvSpecialPrice.visibility = View.VISIBLE
                 tvTitleSpecialPrice.visibility = View.VISIBLE
             } else {
+                productSpacialPriceLayout.visibility = View.GONE
                 tvSpecialPrice.visibility = View.GONE
                 tvTitleSpecialPrice.visibility = View.GONE
             }
@@ -317,6 +317,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun hideSpecialPrice() {
+        productSpacialPriceLayout.visibility = View.GONE
         tvSpecialPrice.visibility = View.GONE
         tvTitleSpecialPrice.visibility = View.GONE
         tvNormalPrice.setEnableStrikeThrough(false)

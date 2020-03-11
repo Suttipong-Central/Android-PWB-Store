@@ -66,12 +66,12 @@
         android:id="@+id/shareButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_share"
         android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_share"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvProductName"
-        android:contentDescription="@string/app_name" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/productIdLayout"
@@ -94,7 +94,7 @@
             android:textColor="@color/nameProductColor"
             android:textSize="18sp"
             app:typeFaceAsset="RobotoLight.ttf"
-            tools:text="Product Code : " />
+            tools:text="Product Code: " />
 
         <!--<cenergy.central.com.pwb_store.view.PowerBuyTextView-->
         <!--android:id="@+id/txt_stock"-->
@@ -110,6 +110,38 @@
 
     </LinearLayout>
 
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/soldByTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sold_by_title"
+        android:textColor="@color/nameProductColor"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tvSoldBy"
+        app:layout_constraintStart_toStartOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productIdLayout" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tvSoldBy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/nameProductColor"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/soldByTitle"
+        app:layout_constraintTop_toBottomOf="@+id/productIdLayout"
+        tools:text="POWER BUY" />
+
     <LinearLayout
         android:id="@+id/productSpacialPriceLayout"
         android:layout_width="0dp"
@@ -120,26 +152,22 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
-        app:layout_constraintTop_toBottomOf="@+id/productIdLayout">
+        app:layout_constraintTop_toBottomOf="@+id/tvSoldBy">
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/tvTitleSpecialPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="0dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="5dp"
-            android:paddingBottom="5dp"
             android:textColor="@color/specialPriceColor"
             android:textSize="20sp"
             app:typeFaceAsset="RobotoLight.ttf"
-            tools:text="Price : " />
+            tools:text="Price: " />
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/tvSpecialPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:layout_marginStart="5dp"
             android:textColor="@color/specialPriceColor"
             android:textSize="20sp"
             app:typeFaceAsset="Roboto-Medium.ttf"
@@ -152,6 +180,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -161,10 +190,6 @@
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="0dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="5dp"
-            android:paddingBottom="5dp"
             android:text="@string/regular_price"
             android:textColor="@color/nameProductColor"
             android:textSize="18sp"
@@ -174,7 +199,7 @@
             android:id="@+id/tvNormalPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:layout_marginStart="5dp"
             android:textColor="@color/nameProductColor"
             android:textSize="18sp"
             app:typeFaceAsset="RobotoLight.ttf"
@@ -184,7 +209,7 @@
             android:id="@+id/txt_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:layout_marginStart="5dp"
             android:textColor="@color/powerBuyPurple"
             android:textSize="18sp"
             app:typeFaceAsset="RobotoLight.ttf"
@@ -337,7 +362,7 @@
             android:id="@+id/layoutBottomButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="availableStoreButton,addToCompareButton"/>
+            app:constraint_referenced_ids="availableStoreButton,addToCompareButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
