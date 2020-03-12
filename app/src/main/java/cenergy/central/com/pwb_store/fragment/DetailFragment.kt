@@ -142,7 +142,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
 
-        tvSoldBy.text = product.getSoldByProduct()
+        // TODO now we have to do not display sold by
+        soldByTitle.visibility = View.GONE
+        tvSoldBy.visibility = View.GONE
+//        tvSoldBy.text = product.getSoldByProduct()
 
         if (product.isSpecialPrice()) {
             showSpecialPrice(unit, product)

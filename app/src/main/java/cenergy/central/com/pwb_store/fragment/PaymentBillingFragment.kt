@@ -254,7 +254,9 @@ class PaymentBillingFragment : Fragment() {
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
 
-        shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
+        // TODO we have to do not display sold by
+//        shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
+        shoppingCartAdapter.cartItem = database.cacheCartItems
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         if (discount > 0){

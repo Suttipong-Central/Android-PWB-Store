@@ -10,13 +10,13 @@ import com.google.gson.annotations.SerializedName
  */
 data class UpdateItemBody(var cartItem: ItemBody? = null) {
     companion object {
-        fun create(cartId: String, itemId: Long, qty: Int, retailerId: Int): UpdateItemBody {
+        fun create(cartId: String, itemId: Long, qty: Int, retailerId: Int? = null): UpdateItemBody {
             val extensionAttr = CartExtensionAttr.create(retailerId)
             val body = ItemBody(cartId = cartId, itemId = itemId, qty = qty, extensionAttr = extensionAttr)
             return UpdateItemBody(body)
         }
 
-        fun create(cartId: String, itemId: Long, qty: Int, branch: Branch, retailerId: Int): UpdateItemBody {
+        fun create(cartId: String, itemId: Long, qty: Int, branch: Branch, retailerId: Int? = null): UpdateItemBody {
             val shippingAssignment = ShippingAssignment(shippingMethod = "storepickup_ispu")
             val pickupStore = PickupStore(branch.storeId)
             val extensionAttr = CartExtensionAttr(shippingAssignment, pickupStore, retailerId)

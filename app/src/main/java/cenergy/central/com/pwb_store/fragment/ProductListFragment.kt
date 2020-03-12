@@ -67,7 +67,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
-    private var userInformation: UserInformation? = null
     private var database = RealmController.getInstance()
 
     private var products = arrayListOf<Product>()
@@ -379,8 +378,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                                     currentPage = nextPage
                                     retrieveProductList()
                                 } else {
-                                    offlineProducts.addAll(products.filter { it.soldBy != null })
-                                    retrieveOfflinePrice()
+                                    // TODO We have to do not display market place product
+                                    // TODO We have to display just product offline price per store
+                                    offlineProducts.addAll(products.filter { it.soldBy == null && it.isOfflinePrice})
+                                    filterProductsOfflinePrice()
                                 }
                             } else {
                                 mProgressDialog!!.dismiss()
@@ -410,77 +411,101 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private val nextPage: Int
         get() = currentPage + 1
 
-    private fun retrieveOfflinePrice() {
-        if (context != null) {
-            userInformation = database.userInformation
-            val retailerId = userInformation?.store?.storeId?.toString()
-            if (products.isNotEmpty() && totalItem != 0){
-                products.chunked(PER_PAGE).forEach {
-                    val productIds = TextUtils.join(",", it.map { product -> product.id })
-                    OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, retailerId!!,
-                            object : ApiResponseCallback<OfflinePriceProductsResponse> {
-                                override fun success(response: OfflinePriceProductsResponse?) {
-                                    if (activity != null) {
-                                        activity!!.runOnUiThread {
-                                            if (response != null) {
-                                                filterProductsOfflinePrice(response.items)
-                                            } else {
-                                                mProgressDialog!!.dismiss()
-                                                setTextHeader(0, title)
-                                                mProductListAdapter!!.setError()
-                                            }
-                                        }
-                                    }
-                                }
+//    private fun retrieveOfflinePrice() {
+//        if (context != null) {
+//            userInformation = database.userInformation
+//            val retailerId = userInformation?.store?.storeId?.toString()
+//            if (products.isNotEmpty() && totalItem != 0){
+//                products.chunked(PER_PAGE).forEach {
+//                    val productIds = TextUtils.join(",", it.map { product -> product.id })
+//                    OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, retailerId!!,
+//                            object : ApiResponseCallback<OfflinePriceProductsResponse> {
+//                                override fun success(response: OfflinePriceProductsResponse?) {
+//                                    if (activity != null) {
+//                                        activity!!.runOnUiThread {
+//                                            if (response != null) {
+//                                                filterProductsOfflinePrice(response.items)
+//                                            } else {
+//                                                mProgressDialog!!.dismiss()
+//                                                setTextHeader(0, title)
+//                                                mProductListAdapter!!.setError()
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//
+//                                override fun failure(error: APIError) {
+//                                    if (activity != null && context != null) {
+//                                        activity!!.runOnUiThread {
+//                                            mProgressDialog!!.dismiss()
+//                                            setTextHeader(0, title)
+//                                            mProductListAdapter!!.setError()
+//                                            DialogHelper(context!!).showErrorDialog(error)
+//                                        }
+//                                    }
+//                                }
+//                            })
+//                }
+//            } else {
+//                mProgressDialog!!.dismiss()
+//                setTextHeader(0, title)
+//                mProductListAdapter!!.setError()
+//            }
+//        }
+//    }
 
-                                override fun failure(error: APIError) {
-                                    if (activity != null && context != null) {
-                                        activity!!.runOnUiThread {
-                                            mProgressDialog!!.dismiss()
-                                            setTextHeader(0, title)
-                                            mProductListAdapter!!.setError()
-                                            DialogHelper(context!!).showErrorDialog(error)
-                                        }
-                                    }
-                                }
-                            })
+    private fun filterProductsOfflinePrice(){
+        val retailerId = database.userInformation?.store?.storeId?.toString()
+        offlineProducts.forEach { product ->
+            if (product.extension != null && product.extension!!.pricingPerStore.isNotEmpty()){
+                val offlinePriceItem = product.extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId }
+                if (offlinePriceItem != null){
+                    val index = offlineProducts.indexOf(product)
+                    product.price = offlinePriceItem.price
+                    if (offlinePriceItem.specialPrice > 0) {
+                        product.specialPrice = offlinePriceItem.specialPrice
+                        product.specialFromDate = null
+                        product.specialToDate = null
+                        if (offlinePriceItem.specialFromDate != null) {
+                            product.specialFromDate = offlinePriceItem.specialFromDate
+                        }
+                        if (offlinePriceItem.specialToDate != null) {
+                            product.specialToDate = offlinePriceItem.specialToDate
+                        }
+                    } else {
+                        product.specialPrice = 0.0
+                        product.specialFromDate = null
+                        product.specialToDate = null
+                    }
+                    offlineProducts[index] = product
                 }
-            } else {
-                mProgressDialog!!.dismiss()
-                setTextHeader(0, title)
-                mProductListAdapter!!.setError()
             }
         }
-    }
-
-    private fun filterProductsOfflinePrice(offlinePriceItems: ArrayList<OfflinePriceItem>){
-        offlinePriceItems.forEach { offlinePriceItem ->
-            val offlineProduct = products.firstOrNull { it.id.toString() == offlinePriceItem.productId }
-            if (offlineProduct != null) {
-                val indexOfflineProduct = offlineProducts.indexOf(offlineProduct)
-                offlineProduct.price = offlinePriceItem.price
-                if (offlinePriceItem.specialPrice > 0) {
-                    offlineProduct.specialPrice = offlinePriceItem.specialPrice
-                    offlineProduct.specialFromDate = null
-                    offlineProduct.specialToDate = null
-                    if (offlinePriceItem.specialFromDate != null) {
-                        offlineProduct.specialFromDate = offlinePriceItem.specialFromDate
-                    }
-                    if (offlinePriceItem.specialToDate != null) {
-                        offlineProduct.specialToDate = offlinePriceItem.specialToDate
-                    }
-                } else {
-                    offlineProduct.specialPrice = 0.0
-                    offlineProduct.specialFromDate = null
-                    offlineProduct.specialToDate = null
-                }
-                if (indexOfflineProduct == -1){
-                    offlineProducts.add(offlineProduct)
-                } else {
-                    offlineProducts[indexOfflineProduct] = offlineProduct
-                }
-            }
-        }
+//        if (offlineProduct != null) {
+//            val indexOfflineProduct = offlineProducts.indexOf(offlineProduct)
+//            offlineProduct.isOfflinePrice = true
+//            offlineProduct.price = offlinePriceItem.price
+//            if (offlinePriceItem.specialPrice > 0) {
+//                offlineProduct.specialPrice = offlinePriceItem.specialPrice
+//                offlineProduct.specialFromDate = null
+//                offlineProduct.specialToDate = null
+//                if (offlinePriceItem.specialFromDate != null) {
+//                    offlineProduct.specialFromDate = offlinePriceItem.specialFromDate
+//                }
+//                if (offlinePriceItem.specialToDate != null) {
+//                    offlineProduct.specialToDate = offlinePriceItem.specialToDate
+//                }
+//            } else {
+//                offlineProduct.specialPrice = 0.0
+//                offlineProduct.specialFromDate = null
+//                offlineProduct.specialToDate = null
+//            }
+//            if (indexOfflineProduct == -1){
+//                offlineProducts.add(offlineProduct)
+//            } else {
+//                offlineProducts[indexOfflineProduct] = offlineProduct
+//            }
+//        }
         if (isClearBrands){
             offlineBrands.clear()
             offlineProducts.distinctBy { it.brand }.forEach { product ->

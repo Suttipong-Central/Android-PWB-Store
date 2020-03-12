@@ -79,7 +79,9 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             qtyAdepter.setCallback(object : QtyAdapter.QtyClickListener {
                 override fun onQtyClickListener(qty: Int) {
                     productQty.clearAllFocus()
-                    item.itemId?.let { itemId -> listener?.onUpdateItem(itemId, qty) }
+                    if (item.itemId != null && item.isOfflinePrice != null){
+                        listener?.onUpdateItem(item.itemId!!, qty, item.isOfflinePrice!!)
+                    }
                 }
             })
             productQty.setOnEnterKeyListener(object : View.OnKeyListener {
@@ -87,7 +89,9 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                         productQty.clearAllFocus()
                         if (productQty.getText() != "" && productQty.getText().toInt() > 0) {
-                            item.itemId?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt()) }
+                            if (item.itemId != null && item.isOfflinePrice != null){
+                                listener?.onUpdateItem(item.itemId!!, productQty.getText().toInt(), item.isOfflinePrice!!)
+                            }
                         } else {
                             productQty.setText(item.qty.toString())
                             showAlertDialog(context.getString(R.string.empty_value))

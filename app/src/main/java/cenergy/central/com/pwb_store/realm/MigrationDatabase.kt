@@ -296,5 +296,15 @@ class MigrationDatabase : RealmMigration {
                 addField("soldBy", String::class.java)
             }
         }
+
+        if (oldVersion < 12) {
+            realm.schema.get("CacheCartItem")?.apply {
+                addField("isOfflinePrice", Boolean::class.java)
+            }
+
+            realm.schema.get("CompareProduct")?.apply {
+                addField("isOfflinePrice", Boolean::class.java)
+            }
+        }
     }
 }

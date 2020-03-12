@@ -15,7 +15,8 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                           var maxQty: Int? = 0,
                           var qtyInStock: Int? = 0,
                           var brand: String? = "",
-                          var soldBy: String? = null) : RealmObject(), IViewType {
+                          var soldBy: String? = null,
+                          var isOfflinePrice: Boolean = false) : RealmObject(), IViewType {
 
     // for set view type in adapter
     var viewTypeID: Int = 0

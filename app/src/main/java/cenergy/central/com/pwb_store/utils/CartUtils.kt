@@ -117,19 +117,23 @@ class CartUtils(private val context: Context) {
 
     private fun requestAddToCart(cartId: String, product: Product) {
         // is empty cart?
-        val retailerId = db?.userInformation?.store?.storeId?.toInt()
+        val retailerId = if (product.isOfflinePrice){
+            db?.userInformation?.store?.storeId?.toInt()
+        } else {
+            null
+        }
         if (cacheCartItems == null || cacheCartItems.isEmpty()) {
             val cartItemBody = if (branchResponse != null) {
-                CartItemBody.create(cartId, product, branchResponse!!, retailerId!!)  // ispu
+                CartItemBody.create(cartId, product, branchResponse!!, retailerId)  // ispu
             } else {
-                CartItemBody.create(cartId, product, retailerId!!) // normal
+                CartItemBody.create(cartId, product, retailerId) // normal
             }
             requestAddToCart(cartId, product, cartItemBody)
         } else {
             // is product ispu
             if (branchResponse != null) {
                 if (cacheCartItems.hasProduct2h()) {
-                    val body = CartItemBody.create(cartId, product, branchResponse!!, retailerId!!)  // ispu
+                    val body = CartItemBody.create(cartId, product, branchResponse!!, retailerId)  // ispu
                     requestAddToCart(cartId, product, body)
                 } else {
                     clearCartAndRecreateCart(product)
@@ -139,7 +143,7 @@ class CartUtils(private val context: Context) {
                 if (cacheCartItems.hasProduct2h()) {
                     clearCartAndRecreateCart(product)
                 } else {
-                    val body = CartItemBody.create(cartId, product, retailerId!!)  // normal
+                    val body = CartItemBody.create(cartId, product, retailerId)  // normal
                     requestAddToCart(cartId, product, body)
                 }
             }
@@ -177,8 +181,7 @@ class CartUtils(private val context: Context) {
                 })
     }
 
-    private fun setProduct2hShippingAddress(cartId: String, cartItem: CartItem, product: Product,
-                                            branchResponse: BranchResponse) {
+    private fun setProduct2hShippingAddress(cartId: String, cartItem: CartItem, product: Product, branchResponse: BranchResponse) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
         val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)

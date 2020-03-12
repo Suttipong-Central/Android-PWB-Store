@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
 import android.os.Parcelable
+import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
@@ -17,4 +18,6 @@ class ProductExtension(
         var productConfigOptions: List<ProductOption>? = arrayListOf(),
         @SerializedName("configurable_product_links")
         var productConfigLinks: List<String>? = arrayListOf(),
-        var specifications: List<Specification> = arrayListOf()) : Parcelable
+        var specifications: List<Specification> = arrayListOf(),
+        @SerializedName("pricing_per_store")
+        var pricingPerStore: List<OfflinePriceItem> = arrayListOf()) : Parcelable

@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model
 
 import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.response.BranchResponse
+import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -21,6 +22,7 @@ open class CacheCartItem(
         var paymentMethod: String = "",
         var branch: Branch? = null,
         var soldBy: String? = null,
+        var isOfflinePrice: Boolean = false,
         var freeItems: RealmList<CacheFreeItem>? = RealmList()) : RealmObject()
 {
     fun updateItem(cartItem: CartItem) {
@@ -51,6 +53,7 @@ open class CacheCartItem(
                     qtyInStock = product.extension?.stokeItem?.qty,
                     imageUrl = product.getImageUrl(),
                     paymentMethod = product.paymentMethod,
+                    isOfflinePrice = product.isOfflinePrice,
                     soldBy = product.soldBy ?: DEFAULT_SOLD_BY) // cache payment_method
         }
 
@@ -67,7 +70,8 @@ open class CacheCartItem(
                     maxQTY = compareProduct.maxQty ?: 1,
                     qtyInStock = compareProduct.qtyInStock,
                     imageUrl = compareProduct.imageUrl,
-                    soldBy = compareProduct.soldBy ?: DEFAULT_SOLD_BY)
+                    soldBy = compareProduct.soldBy ?: DEFAULT_SOLD_BY,
+                    isOfflinePrice = compareProduct.isOfflinePrice)
         }
 
         @JvmStatic
@@ -84,7 +88,8 @@ open class CacheCartItem(
                     qtyInStock = branchResponse.sourceItem?.quantity ?: 0,
                     imageUrl = product.getImageUrl(),
                     branch = branchResponse.branch,
-                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY)
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY,
+                    isOfflinePrice = product.isOfflinePrice)
         }
     }
 }

@@ -1,11 +1,14 @@
 package cenergy.central.com.pwb_store.model.response
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 class OfflinePriceProductsResponse(
         var items: ArrayList<OfflinePriceItem> = arrayListOf()
 )
 
+@Parcelize
 class OfflinePriceItem(
         @SerializedName("entity_id")
         var entityId: String = "",
@@ -25,5 +28,4 @@ class OfflinePriceItem(
         @SerializedName("created_at")
         var createdAt: String = "",
         @SerializedName("updated_at")
-        var updatedAt: String = ""
-)
+        var updatedAt: String = "") : Parcelable

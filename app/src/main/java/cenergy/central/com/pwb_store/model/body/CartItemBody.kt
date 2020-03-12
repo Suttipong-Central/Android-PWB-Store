@@ -6,14 +6,14 @@ import com.google.gson.annotations.SerializedName
 
 data class CartItemBody(var cartItem: CartBody? = null) {
     companion object {
-        fun create(cartId: String, product: Product, retailerId: Int): CartItemBody {
+        fun create(cartId: String, product: Product, retailerId: Int? = null): CartItemBody {
             val cartExtensionAttr = CartExtensionAttr.create(retailerId)
             val cartBody = CartBody(cartId = cartId,sku =  product.sku,qty =  product.getMinSaleQty(),extensionAttr =  cartExtensionAttr)
 
             return CartItemBody(cartBody) // default add qty 1
         }
 
-        fun create(cartId: String, product: Product, branchResponse: BranchResponse, retailerId: Int): CartItemBody {
+        fun create(cartId: String, product: Product, branchResponse: BranchResponse, retailerId: Int? = null): CartItemBody {
             val shippingAssignment = ShippingAssignment(shippingMethod = "storepickup_ispu")
             val pickupStore = PickupStore(branchResponse.branch.storeId)
             val cartExtensionAttr = CartExtensionAttr.create(shippingAssignment = shippingAssignment,
@@ -79,13 +79,13 @@ data class CartExtensionAttr(
         @SerializedName("pickup_store")
         val pickupStore: PickupStore? = null,
         @SerializedName("allocated_store_id")
-        val retailerId: Int){
+        val retailerId: Int? = null){
     companion object{
-        fun create(shippingAssignment: ShippingAssignment, pickupStore: PickupStore, retailerId: Int): CartExtensionAttr{
+        fun create(shippingAssignment: ShippingAssignment, pickupStore: PickupStore, retailerId: Int? = null): CartExtensionAttr{
             return CartExtensionAttr(shippingAssignment, pickupStore, retailerId)
         }
 
-        fun create(retailerId: Int): CartExtensionAttr{
+        fun create(retailerId: Int? = null): CartExtensionAttr{
             return CartExtensionAttr(retailerId = retailerId)
         }
     }

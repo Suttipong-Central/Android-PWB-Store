@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.utils
 
 import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import org.json.JSONObject
 
@@ -28,6 +29,7 @@ class ParsingUtils{
                 val productOptions = arrayListOf<ProductOption>()
                 val specifications = arrayListOf<Specification>()
                 val filterItem = arrayListOf<FilterItem>()
+                val pricingPerStore = arrayListOf<OfflinePriceItem>()
 
                 product.id = productObj.getLong("id")
                 product.sku = productObj.getString("sku")
@@ -70,6 +72,48 @@ class ParsingUtils{
                 if (extensionObj.has("salable")){
                     stockItem.isSalable = extensionObj.getBoolean("salable")
                 }
+                if (extensionObj.has("pricing_per_store")){
+                    // TODO Set product offline price is true for filter
+                    product.isOfflinePrice = true
+                    val attrArray = extensionObj.getJSONArray("pricing_per_store")
+                    for (index in 0 until attrArray.length()){
+                        val offlinePriceObj = attrArray.getJSONObject(index)
+                        val offlinePriceItem = OfflinePriceItem()
+                        if (offlinePriceObj.has("entity_id")){
+                            offlinePriceItem.entityId = offlinePriceObj.getString("entity_id")
+                        }
+                        if (offlinePriceObj.has("product_id")){
+                            offlinePriceItem.productId = offlinePriceObj.getString("product_id")
+                        }
+                        if (offlinePriceObj.has("price")){
+                            offlinePriceItem.price = offlinePriceObj.getDouble("price")
+                        }
+                        if (offlinePriceObj.has("special_price") && !offlinePriceObj.isNull("special_price")){
+                            val specialPrice = offlinePriceObj.getString("special_price")
+                            offlinePriceItem.specialPrice = if (specialPrice.trim() == "") 0.0 else specialPrice.toDouble()
+                        }
+                        if (offlinePriceObj.has("special_price_start") && !offlinePriceObj.isNull("special_price_start")){
+                            offlinePriceItem.specialFromDate = offlinePriceObj.getString("special_price_start")
+                        }
+                        if (offlinePriceObj.has("special_price_end") && !offlinePriceObj.isNull("special_price_end")){
+                            offlinePriceItem.specialToDate = offlinePriceObj.getString("special_price_end")
+                        }
+                        if (offlinePriceObj.has("retailer_id")){
+                            offlinePriceItem.retailerId = offlinePriceObj.getString("retailer_id")
+                        }
+                        if (offlinePriceObj.has("product_sku")){
+                            offlinePriceItem.productSku = offlinePriceObj.getString("product_sku")
+                        }
+                        if (offlinePriceObj.has("created_at")){
+                            offlinePriceItem.createdAt = offlinePriceObj.getString("created_at")
+                        }
+                        if (offlinePriceObj.has("updated_at")){
+                            offlinePriceItem.updatedAt = offlinePriceObj.getString("updated_at")
+                        }
+                        pricingPerStore.add(offlinePriceItem)
+                    }
+                }
+                productExtension.pricingPerStore = pricingPerStore
                 productExtension.stokeItem = stockItem // add stockItem to productExtension
                 product.extension = productExtension // set productExtension to product
 

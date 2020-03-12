@@ -22,7 +22,6 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
-import cenergy.central.com.pwb_store.extensions.getCartItem
 import cenergy.central.com.pwb_store.extensions.mergeItems
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -233,8 +232,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
         deleteItem(itemId, sku)
     }
 
-    override fun onUpdateItem(itemId: Long, qty: Int) {
-        updateItem(itemId, qty)
+    override fun onUpdateItem(itemId: Long, qty: Int, isOfflinePrice: Boolean) {
+        updateItem(itemId, qty, isOfflinePrice)
     }
     //end region
 
@@ -367,7 +366,9 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
                 database.saveCartItem(it)
             }
 
-            shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
+            // TODO we have to do not display sold by
+//            shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
+            shoppingCartAdapter.cartItem = database.cacheCartItems
 
             updateTitle(shoppingCartResponse.qty)
             val t1Points = (total - (total % 50)) / 50
@@ -476,11 +477,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
         }
     }
 
-    private fun updateItem(itemId: Long, qty: Int) {
+    private fun updateItem(itemId: Long, qty: Int, isOfflinePrice: Boolean) {
         hasChangingData = true
         showProgressDialog()
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch,
+            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch, isOfflinePrice,
                     object : ApiResponseCallback<CartItem> {
                         override fun success(response: CartItem?) {
                             saveCartItemInLocal(response)

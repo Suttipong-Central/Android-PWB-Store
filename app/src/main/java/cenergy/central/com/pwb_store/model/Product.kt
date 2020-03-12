@@ -39,7 +39,8 @@ class Product(
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
         var urlKey: String = "",
-        var soldBy: String? = null) : IViewType, Parcelable {
+        var soldBy: String? = null,
+        var isOfflinePrice: Boolean = false) : IViewType, Parcelable {
 
     override fun getViewTypeId(): Int {
         return viewTypeID

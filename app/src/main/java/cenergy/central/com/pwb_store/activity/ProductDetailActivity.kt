@@ -336,10 +336,12 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             override fun success(response: OfflinePriceItem?) {
                 runOnUiThread {
                     if (response != null){
+                        product.isOfflinePrice = true
                         product.price = response.price
                         product.specialPrice = response.specialPrice
                         product.specialFromDate = response.specialFromDate
                         product.specialToDate = response.specialToDate
+                        this@ProductDetailActivity.product = product
                     }
                     if (product.typeId == "configurable") {
                         checkProductConfig(product)
@@ -409,7 +411,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun startProductDetailFragment(product: Product) {
         // set product
         this@ProductDetailActivity.productSku = product.sku
-        this.product = product
+        this@ProductDetailActivity.product = product
 
         // setup
         supportFragmentManager.beginTransaction().replace(R.id.containerDetail,
