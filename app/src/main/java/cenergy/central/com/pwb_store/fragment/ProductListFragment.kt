@@ -33,6 +33,8 @@ import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFilterGroups
+import cenergy.central.com.pwb_store.model.body.SortOrder
+import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.response.OfflinePriceProductsResponse
 import cenergy.central.com.pwb_store.model.response.ProductResponse
@@ -64,7 +66,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     // Page
     private var isSorting = false
     private var totalItem = 0
-    private var mContext: Context? = null
+    private var sortName: String = ""
+    private var sortType: String = ""
     private var keyWord: String? = null
     private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
     private var database = RealmController.getInstance()
@@ -115,25 +118,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         val sortingItem = sortingItemBus.sortingItem
         isDoneFilter = true
         isSorting = true
-        val productsSorted = ArrayList<Product>()
-        when(sortingItem.slug){
-            "price" -> {
-                if (sortingItem.value == "ASC"){
-                    productsSorted.addAll(offlineProducts.sortedBy { it.price })
-                } else {
-                    productsSorted.addAll(offlineProducts.sortedByDescending { it.price })
-                }
-            }
-            "brand" -> {
-                if (sortingItem.value == "ASC"){
-                    productsSorted.addAll(offlineProducts.sortedBy { it.brand })
-                } else {
-                    productsSorted.addAll(offlineProducts.sortedByDescending { it.brand })
-                }
-            }
-        }
-        mProductListAdapter?.setProduct(productsSorted)
-        mProgressDialog?.dismiss()
+        currentPage = 0
+        products.clear()
+        offlineProducts.clear()
+        sortName = sortingItem.slug
+        sortType = sortingItem.value
+        retrieveProductList()
         mPowerBuyPopupWindow!!.updateSingleSortingItem(sortingItem)
         if (mPowerBuyPopupWindow!!.isShowing) {
             mPowerBuyPopupWindow!!.dismiss()
@@ -294,7 +284,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     override fun onAttach(context: Context) {
         super.onAttach(context)
         EventBus.getDefault().register(this)
-        mContext = context
     }
 
     override fun onDetach() {
@@ -341,7 +330,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     @SuppressLint("SetTextI18n")
     private fun setTextHeader(total: Int, name: String?) {
-        productCount!!.text = name + " " + mContext!!.getString(R.string.filter_count, total.toString())
+        productCount!!.text = name + " " + context!!.getString(R.string.filter_count, total.toString())
     }
 
     private fun retrieveProductList() {
@@ -358,11 +347,21 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("status", "1", "eq"))
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
+
+            // TODO We have to do not display market place product
+            filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
+
             if (brandName != null && brandName!!.isNotEmpty()) {
                 filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
             }
 
-            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, object : ApiResponseCallback<ProductResponse> {
+            val sortOrders = ArrayList<SortOrder>()
+            if (sortName.isNotEmpty() && sortType.isNotEmpty()) {
+                val sortOrder = createSortOrder(sortName, sortType)
+                sortOrders.add(sortOrder)
+            }
+
+            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {
@@ -378,9 +377,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                                     currentPage = nextPage
                                     retrieveProductList()
                                 } else {
-                                    // TODO We have to do not display market place product
                                     // TODO We have to display just product offline price per store
-                                    offlineProducts.addAll(products.filter { it.soldBy == null && it.isOfflinePrice})
+                                    offlineProducts.addAll(products.filter { it.isOfflinePrice })
                                     filterProductsOfflinePrice()
                                 }
                             } else {
@@ -481,31 +479,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 }
             }
         }
-//        if (offlineProduct != null) {
-//            val indexOfflineProduct = offlineProducts.indexOf(offlineProduct)
-//            offlineProduct.isOfflinePrice = true
-//            offlineProduct.price = offlinePriceItem.price
-//            if (offlinePriceItem.specialPrice > 0) {
-//                offlineProduct.specialPrice = offlinePriceItem.specialPrice
-//                offlineProduct.specialFromDate = null
-//                offlineProduct.specialToDate = null
-//                if (offlinePriceItem.specialFromDate != null) {
-//                    offlineProduct.specialFromDate = offlinePriceItem.specialFromDate
-//                }
-//                if (offlinePriceItem.specialToDate != null) {
-//                    offlineProduct.specialToDate = offlinePriceItem.specialToDate
-//                }
-//            } else {
-//                offlineProduct.specialPrice = 0.0
-//                offlineProduct.specialFromDate = null
-//                offlineProduct.specialToDate = null
-//            }
-//            if (indexOfflineProduct == -1){
-//                offlineProducts.add(offlineProduct)
-//            } else {
-//                offlineProducts[indexOfflineProduct] = offlineProduct
-//            }
-//        }
         if (isClearBrands){
             offlineBrands.clear()
             offlineProducts.distinctBy { it.brand }.forEach { product ->

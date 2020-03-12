@@ -35,6 +35,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.DeliveryInfo
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
+import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -369,9 +370,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             val result = TextUtils.join(",", productLinks)
             val filterGroupsList = java.util.ArrayList<FilterGroups>()
             filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
+            val sortOrders = ArrayList<SortOrder>()
 
             ProductListAPI.retrieveProducts(this, productLinks.size, 1,
-                    filterGroupsList, object : ApiResponseCallback<ProductResponse> {
+                    filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     runOnUiThread {
                         if (response != null) {

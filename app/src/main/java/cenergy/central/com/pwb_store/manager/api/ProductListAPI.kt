@@ -23,9 +23,10 @@ import java.util.ArrayList
 class ProductListAPI {
     companion object{
         @JvmStatic
-        fun retrieveProducts(context: Context, size: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>, callback: ApiResponseCallback<ProductResponse>){
+        fun retrieveProducts(context: Context, size: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
+                             sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
             val apiManager = HttpManagerMagento.getInstance(context)
-            val body = ProductListBody.createBody(size, currentPage, filterGroups)
+            val body = ProductListBody.createBody(size, currentPage, filterGroups, sortOrders)
             val httpUrl = HttpUrl.Builder()
                     .scheme("https")
                     .host(Constants.PWB_HOST_NAME)
