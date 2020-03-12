@@ -285,12 +285,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         HttpManagerMagento.getInstance(this).getProductByBarcode(barcode,
                 object : ApiResponseCallback<Product?> {
                     override fun success(response: Product?) {
-                        handleGetProductSuccess(response)
+                        runOnUiThread {
+                            handleGetProductSuccess(response)
+                        }
                     }
 
                     override fun failure(error: APIError) {
-                        dismissProgressDialog()
-                        showCommonAPIErrorDialog(error)
+                        runOnUiThread {
+                            dismissProgressDialog()
+                            showCommonAPIErrorDialog(error)
+                        }
                     }
                 })
     }
@@ -300,12 +304,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         HttpManagerMagento.getInstance(this).getProductByProductJda(jdaSku,
                 object : ApiResponseCallback<Product?> {
                     override fun success(response: Product?) {
-                        handleGetProductSuccess(response)
+                        runOnUiThread {
+                            handleGetProductSuccess(response)
+                        }
                     }
 
                     override fun failure(error: APIError) {
-                        dismissProgressDialog()
-                        showCommonAPIErrorDialog(error)
+                        runOnUiThread {
+                            dismissProgressDialog()
+                            showCommonAPIErrorDialog(error)
+                        }
                     }
                 })
     }

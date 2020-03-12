@@ -112,6 +112,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private FirebaseRemoteConfig fbRemoteConfig;
     private long cacheExpiration = 3600; // 1 hour in seconds.
     private boolean isLoadingCategory = false;
+    private boolean isScanBarcode = false;
     private ArrayList<String> specialCategoryIds = new ArrayList<>();
 
     @Subscribe
@@ -273,6 +274,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() != null) {
+                // Set isScanBarcode is true because don't need to load category
+                isScanBarcode = true;
                 Log.d(TAG, "barcode : " + result.getContents());
                 if (analytics != null) {
                     analytics.trackSearchByBarcode(result.getContents());
@@ -344,7 +347,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     private void retrieveCategories() {
-        if (isLoadingCategory) return;
+        if (isLoadingCategory && !isScanBarcode) return;
 
         showProgressDialog();
         this.isLoadingCategory = true;
@@ -442,12 +445,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void showAlertDialog(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss());
 
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title);
@@ -458,18 +456,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void showAlertLogoutDialog(String message) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        userLogout();
-                    }
-                })
-                .setNegativeButton(getString(R.string.cancel_alert), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton(getString(R.string.ok_alert), (dialog, which) -> userLogout())
+                .setNegativeButton(getString(R.string.cancel_alert), (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
@@ -508,12 +496,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
         // post delay start login
         showProgressDialog();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startLogin();
-            }
-        }, TIME_TO_WAIT);
+        handler.postDelayed(this::startLogin, TIME_TO_WAIT);
     }
 
     private void startLogin() {
