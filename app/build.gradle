@@ -101,7 +101,7 @@ android {
         pwb {
             applicationId "cenergy.central.com.eordering.pwb"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 76
+            versionCode 104
             versionName "1.2.0"
         }
 
@@ -116,6 +116,13 @@ android {
             applicationId "cenergy.central.com.eordering.rbs"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 94
+            versionName "1.2.0"
+        }
+
+        pwbOmniTV {
+            applicationId "cenergy.central.com.eordering.pwbOmniTV"
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
+            versionCode 104
             versionName "1.2.0"
         }
     }

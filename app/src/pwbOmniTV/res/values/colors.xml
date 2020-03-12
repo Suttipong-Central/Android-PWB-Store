@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- drawer sub header -->
+    <color name="drawerSubHeaderColor">#F4893F</color>
+
+    <color name="specialPriceColor">#D0021B</color>
+    <color name="categoryColor">#F4893F</color>
+</resources>

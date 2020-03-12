@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ToolbarBack">
+        <item name="navigationIcon">@drawable/ic_arrow_back_white</item>
+    </style>
+
+    <style name="ToolbarCancel">
+        <item name="navigationIcon">@drawable/ic_clear_white</item>
+    </style>
+
+    <style name="textNameCategory">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/defaultButtonColor</item>
+    </style>
+
+    <style name="textCompare">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/defaultButtonColor</item>
+    </style>
+
+    <style name="textSubHeader">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/powerBuyPurple</item>
+    </style>
+
+    <!-- Form -->
+    <style name="Form" />
+
+    <style name="Form.EditTextLayoutTheme" parent="AppTheme">
+        <item name="colorAccent">@color/pwbOrange</item>
+        <item name="colorControlNormal">@color/pwbOrange</item>
+        <item name="colorControlActivated">@color/pwbOrange</item>
+    </style>
+
+    <style name="RadioButtonStyle">
+        <item name="colorControlNormal">@color/graySelect</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/graySelect</item>
+    </style>
+</resources>

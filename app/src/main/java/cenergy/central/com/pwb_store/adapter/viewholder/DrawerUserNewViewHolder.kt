@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -17,12 +18,14 @@ class DrawerUserNewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
     private val storeName: PowerBuyTextView = itemView.findViewById(R.id.txt_store)
 
     fun setViewHolder() {
-        val userInformation = RealmController.getInstance().userInformation
+        if (BuildConfig.FLAVOR != "pwbOmniTV"){
+            val userInformation = RealmController.getInstance().userInformation
 //        imgProfile.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_person))
-        staffId.text = userInformation.user?.staffId ?: ""
-        fullName.text = userInformation.user?.username ?: ""
-        if (userInformation.store != null) {
-            storeName.text = userInformation.store!!.storeName ?: ""
+            staffId.text = userInformation.user?.staffId ?: ""
+            fullName.text = userInformation.user?.username ?: ""
+            if (userInformation.store != null) {
+                storeName.text = userInformation.store!!.storeName ?: ""
+            }
         }
     }
 }

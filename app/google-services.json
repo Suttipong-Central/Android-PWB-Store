@@ -37,6 +37,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:e644fe1fc054034a4e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.cds.lte"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:284179438681:android:ff9abba5f6be92ba4e6548",
         "android_client_info": {
           "package_name": "cenergy.central.com.eordering.cds.staging"
@@ -101,6 +130,43 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:3a2f1e429f0b0ca04e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.pwbOmniTV.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-hbr3nstoqbqru5q1kba9j2dv16i66rq5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cenergy.central.com.eordering.pwbOmniTV.staging",
+            "certificate_hash": "45d16013f8b11c5a154f123573c5d4a69d81bb22"
+          }
+        },
         {
           "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
           "client_type": 3

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.appcompat.app.AppCompatActivity
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DeepLink
@@ -15,12 +16,15 @@ class SplashScreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        database = RealmController.getInstance()
-
-        if (database.userToken != null) {
-            checkStart(intent)
+        if (BuildConfig.FLAVOR != "pwbOmniTV"){
+            database = RealmController.getInstance()
+            if (database.userToken != null) {
+                checkStart(intent)
+            } else {
+                forceLogin(intent)
+            }
         } else {
-            forceLogin(intent)
+            start()
         }
     }
 
