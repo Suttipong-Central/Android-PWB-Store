@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
@@ -44,7 +44,7 @@
                 android:layout_marginRight="16dp"
                 android:src="@drawable/ic_keyboard_arrow_right"/>
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_add_time"
                 style="@style/RaisedButtonCard"
                 android:layout_width="180dp"
@@ -64,7 +64,7 @@
                     android:textSize="16sp"
                     android:textColor="@android:color/white"
                     app:typeFaceAsset="RobotoLight.ttf"/>
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
         </RelativeLayout>
 
         <cenergy.central.com.pwb_store.view.CalendarViewCustom
@@ -75,4 +75,4 @@
         </cenergy.central.com.pwb_store.view.CalendarViewCustom>
 
     </LinearLayout>
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

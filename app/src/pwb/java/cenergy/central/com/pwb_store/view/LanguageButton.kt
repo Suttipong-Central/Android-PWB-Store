@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RadioButton
@@ -24,7 +24,7 @@ class LanguageButton : RadioGroup {
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init(context, attrs)
+        init()
     }
 
     fun setOnLanguageChangeListener(listener: LanguageListener) {
@@ -52,7 +52,7 @@ class LanguageButton : RadioGroup {
         thaiToggle = view.findViewById(R.id.lang_th)
         engToggle = view.findViewById(R.id.lang_en)
 
-        languageToggleGroup.setOnCheckedChangeListener { group, checkedId ->
+        languageToggleGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.lang_th -> {
                     thaiToggle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
@@ -70,18 +70,8 @@ class LanguageButton : RadioGroup {
         }
     }
 
-    private fun init(context: Context, attrs: AttributeSet?) {
-//        val typedArray = context.theme
-//                .obtainStyledAttributes(attrs, R.styleable.LanguageButton, 0, 0)
-
-        //Get attribute values
-//        textHeader = typedArray.getString(R.styleable.PowerBuyAutoCompleteTextStroke_act_header)
-//        required = typedArray.getBoolean(R.styleable.PowerBuyAutoCompleteTextStroke_act_required, false)
-
-//        typedArray.recycle()
-
+    private fun init() {
         prepareView()
-
         notifyAttributeChanged()
     }
 

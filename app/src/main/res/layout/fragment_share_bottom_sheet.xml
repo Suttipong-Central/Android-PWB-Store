@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/margin_padding_normal">
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tvShareLabel"
+        style="@style/textHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/title_share_to"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvShareLabel" />
+
+    <!--TODO: Refactor to recycler view if have more than 3 menus-->
+    <LinearLayout
+        android:id="@+id/shareToLineView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_padding_normal"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_padding_small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/line">
+
+        <ImageView
+            android:layout_width="@dimen/share_menu_size"
+            android:layout_height="@dimen/share_menu_size"
+            android:background="@drawable/bg_line_app"
+            android:contentDescription="@string/share_line"
+            android:padding="@dimen/margin_padding_normal"
+            android:src="@drawable/ic_line_app" />
+
+        <TextView
+            style="@style/textSize18Sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_padding_small"
+            android:text="@string/share_line" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/copyToClipboardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_padding_normal"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_padding_small"
+        app:layout_constraintStart_toEndOf="@+id/shareToLineView"
+        app:layout_constraintTop_toTopOf="@+id/line">
+
+        <ImageView
+            android:layout_width="@dimen/share_menu_size"
+            android:layout_height="@dimen/share_menu_size"
+            android:background="@drawable/bg_menu_share"
+            android:contentDescription="@string/share_line"
+            android:padding="@dimen/margin_padding_large"
+            android:src="@drawable/ic_content_copy" />
+
+        <TextView
+            style="@style/textSize18Sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_padding_small"
+            android:text="@string/share_copy" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

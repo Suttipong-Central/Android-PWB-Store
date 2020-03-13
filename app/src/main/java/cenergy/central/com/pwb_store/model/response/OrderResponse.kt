@@ -18,8 +18,12 @@ open class OrderResponse(
         var orderId: String? = "",
         @SerializedName("base_currency_code")
         var currencyCode: String? = "",
+        @SerializedName("base_subtotal_incl_tax")
+        var total: Double = 0.0,
         @SerializedName("base_grand_total")
         var baseTotal: Double = 0.0,
+        @SerializedName("base_discount_amount")
+        var discount: Double = 0.0,
         @SerializedName("base_tax_amount")
         var baseTax: Double = 0.0,
         @SerializedName("customer_email")

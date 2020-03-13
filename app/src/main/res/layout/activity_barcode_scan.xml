@@ -1,8 +1,9 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,22 +16,24 @@
             android:id="@+id/image_button_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             android:minHeight="?attr/actionBarSize"
             android:minWidth="?attr/actionBarSize"
-            android:src="@drawable/ic_arrow_back"/>
+            android:src="@drawable/ic_arrow_back_white"
+            android:contentDescription="@string/app_name" />
 
         <ImageButton
             android:id="@+id/image_button_flashlight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
             android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:minHeight="?attr/actionBarSize"
             android:minWidth="?attr/actionBarSize"
-            android:src="@drawable/ic_flash_on" />
-    </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
+            android:src="@drawable/ic_flash_on"
+            android:contentDescription="@string/app_name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

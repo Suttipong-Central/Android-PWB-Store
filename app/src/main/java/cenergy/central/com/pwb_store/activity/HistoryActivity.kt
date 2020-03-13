@@ -3,17 +3,20 @@ package cenergy.central.com.pwb_store.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.PaymentHistoryFragment
 import cenergy.central.com.pwb_store.fragment.PaymentSuccessFragment
 import cenergy.central.com.pwb_store.manager.listeners.HistoryClickListener
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 
 class HistoryActivity : BaseActivity(), HistoryClickListener {
 
+    private val analytics: Analytics? by lazy { Analytics(this) }
     private lateinit var mToolbar: Toolbar
     private lateinit var networkStateView: NetworkStateView
 
@@ -33,6 +36,11 @@ class HistoryActivity : BaseActivity(), HistoryClickListener {
         initView()
         setToolbar()
         startHistoryFragment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.HISTORY)
     }
 
     private fun initView() {

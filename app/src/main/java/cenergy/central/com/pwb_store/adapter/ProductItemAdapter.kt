@@ -1,8 +1,8 @@
 package cenergy.central.com.pwb_store.adapter
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.adapter.viewholder.ProductItemViewHolder

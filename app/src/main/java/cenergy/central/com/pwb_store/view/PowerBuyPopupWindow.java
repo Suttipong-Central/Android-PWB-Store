@@ -2,11 +2,10 @@ package cenergy.central.com.pwb_store.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,8 +17,6 @@ import android.widget.PopupWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.AvaliableStoreFilterAdapter;
 import cenergy.central.com.pwb_store.adapter.FilterByBrandAdapter;
@@ -28,9 +25,6 @@ import cenergy.central.com.pwb_store.adapter.SortingAdapter;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.FilterItem;
-import cenergy.central.com.pwb_store.model.ProductFilterItem;
-import cenergy.central.com.pwb_store.model.ProductFilterList;
-import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.model.SortingHeader;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.model.SortingList;
@@ -43,9 +37,8 @@ import cenergy.central.com.pwb_store.model.StoreFilterList;
 
 public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickListener {
     private static final String TAG = "PowerBuyPopupWindow";
-    //View Members
-    @BindView(R.id.recycler_view_filter)
-    RecyclerView mRecyclerViewFilter;
+
+    private RecyclerView mRecyclerViewFilter;
 
     //Data Member
     private FilterByBrandAdapter mFilterByBrandAdapter;
@@ -61,7 +54,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
     public PowerBuyPopupWindow(Context context, LayoutInflater layoutInflater) {
         super(layoutInflater.inflate(R.layout.popup_filter, null, false),
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        ButterKnife.bind(this, getContentView());
+        mRecyclerViewFilter = getContentView().findViewById(R.id.recycler_view_filter);
         this.mContext = context;
         setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.background_popup_window));
         setOutsideTouchable(true);

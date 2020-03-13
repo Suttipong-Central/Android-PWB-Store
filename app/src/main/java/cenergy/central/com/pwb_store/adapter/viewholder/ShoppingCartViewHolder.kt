@@ -1,32 +1,36 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
+
+import android.text.TextUtils
+import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView
-import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.ACTION_DECREASE
-import cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView.QuantityAction.ACTION_INCREASE
+import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
+import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.min
 import kotlin.math.roundToInt
 
-class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), PowerBuyIncreaseOrDecreaseView.OnViewClickListener {
+class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     // widget view
     private val productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_shopping_cart)
     private val productCode: PowerBuyTextView = itemView.findViewById(R.id.product_code_list_shopping_card)
     private val productPrice: PowerBuyTextView = itemView.findViewById(R.id.price_list_shopping_cart)
-    private val productQty: PowerBuyIncreaseOrDecreaseView = itemView.findViewById(R.id.qty_list_shopping_cart)
+    private val productQty: PowerBuyAutoCompleteTextStroke = itemView.findViewById(R.id.qty_list_shopping_cart)
     private val qtyText: PowerBuyTextView = itemView.findViewById(R.id.txt_qty_title_list_shopping_cart)
     private val qtyTextTitle: PowerBuyTextView = itemView.findViewById(R.id.qty_title_list_shopping_cart)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
@@ -37,96 +41,90 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     // data
     private var listener: ShoppingCartAdapter.ShoppingCartListener? = null
-    private lateinit var item: CartItem
+    private lateinit var item: ShoppingCartItem
     private var cacheCartItem: CacheCartItem? = null
 
     @SuppressLint("SetTextI18n")
-    fun bindProductView(item: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
-        qtyTextTitle.text = itemView.resources.getString(R.string.qty)
-        deleteItemTextView.text = itemView.resources.getString(R.string.shopping_delete)
+    fun bindProductView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
+        itemView.context?.let { context ->
+            qtyTextTitle.text = context.resources.getString(R.string.qty)
+            deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
 
-        tvTitleFreebie.visibility = View.GONE // hide title free item
-        val unit = itemView.context.getString(R.string.baht)
-        this.listener = listener
-        this.item = item
-        this.cacheCartItem = cacheCartItem
-        productName.text = item.name
-        productCode.text = "${itemView.context.resources.getString(
-                R.string.product_code)} ${item.sku}"
-        productPrice.text = "${itemView.context.resources.getString(
-                R.string.product_price)} ${getDisplayPrice(unit, item.price!!)}"
+            tvTitleFreebie.visibility = View.GONE // hide title free item
+            val unit = context.getString(R.string.baht)
+            this.listener = listener
+            this.item = item
+            this.cacheCartItem = cacheCartItem
+            productName.text = cacheCartItem.name
+            productCode.text = "${context.resources.getString(R.string.product_code)} ${item.sku}"
+            productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
 
-        // get image from cache
-        Glide.with(itemView.context)
-                .load(cacheCartItem.imageUrl)
-                .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
-                .fitCenter()
-                .into(productImage)
+            // get image from cache
+            Glide.with(context)
+                    .load(cacheCartItem.imageUrl)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .crossFade()
+                    .fitCenter()
+                    .into(productImage)
 
-        productQty.setOnClickQuantity(this, true)
-        deleteItemTextView.visibility = View.VISIBLE
-        deleteItemTextView.setOnClickListener {
-            confirmDelete(item, listener)
+            deleteItemTextView.visibility = View.VISIBLE
+            deleteItemTextView.setOnClickListener {
+                confirmDelete(item, listener)
+            }
+
+            val max = min(cacheCartItem.qtyInStock ?: 1, cacheCartItem.maxQTY ?: 1)
+            productQty.setText(item.qty.toString())
+            val qtyAdepter = QtyAdapter(context, R.layout.layout_text_item, arrayListOf())
+            qtyAdepter.setItems(max)
+            productQty.setAdapter(qtyAdepter)
+            productQty.setQtyFocusable(true)
+            productQty.setIsQtyEdit(true)
+            qtyAdepter.setCallback(object : QtyAdapter.QtyClickListener {
+                override fun onQtyClickListener(qty: Int) {
+                    productQty.clearAllFocus()
+                    item.id?.let { itemId -> listener?.onUpdateItem(itemId, qty) }
+                }
+            })
+            productQty.setOnEnterKeyListener(object : View.OnKeyListener {
+                override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                    if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        productQty.clearAllFocus()
+                        if (productQty.getText() != "" && productQty.getText().toInt() > 0) {
+                            item.id?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt()) }
+                        } else {
+                            productQty.setText(item.qty.toString())
+                            showAlertDialog(context.getString(R.string.empty_value))
+                        }
+                        return true
+                    }
+                    return false
+                }
+            })
+            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price ?: 0.0))
         }
-
-        val max = Math.min(cacheCartItem.qtyInStock ?: 1, cacheCartItem.maxQTY ?: 1)
-        productQty.setMaximum(max)
-        productQty.setQty(item.qty!!)
-        checkOverAddQty(item.qty!!)
-        totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getQty(), item.price!!))
     }
 
 
     // region freebie item
     @SuppressLint("SetTextI18n")
-    fun bindFreebieView(item: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
-        qtyTextTitle.text = itemView.resources.getString(R.string.qty)
-        deleteItemTextView.text = itemView.resources.getString(R.string.shopping_delete)
-        tvTitleFreebie.visibility = View.VISIBLE // visible title free item
+    fun bindFreebieView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
+        itemView.context?.let { context ->
+            qtyTextTitle.text = context.resources.getString(R.string.qty)
+            deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
+            tvTitleFreebie.visibility = View.VISIBLE // visible title free item
 
-        val unit = itemView.context.getString(R.string.baht)
-        this.listener = listener
-        this.item = item
-        productName.text = item.name
-        productCode.text = "${itemView.context.resources.getString(R.string.product_code)} ${item.sku}"
-        productPrice.text = "${itemView.context.resources.getString(
-                R.string.product_price)} ${getDisplayPrice(unit, item.price!!)}"
+            val unit = context.getString(R.string.baht)
+            this.listener = listener
+            this.item = item
+            productName.text = item.name
+            productCode.text = "${context.resources.getString(R.string.product_code)} ${item.sku}"
+            productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
 
-        // hide for freebie
-        productQty.setOnClickQuantity(this, false)
-        deleteItemTextView.visibility = View.GONE
-        productQty.setQty(item.qty!!)
-        totalPrice.text = "FREE"
-        totalPrice.setTextColor(ContextCompat.getColor(itemView.context, R.color.freeColor))
-    }
-    // endregion
-
-    // region {@link implement PowerBuyIncreaseOrDecreaseView.OnViewClickListener}
-    override fun onClickQuantity(action: PowerBuyIncreaseOrDecreaseView.QuantityAction, qty: Int) {
-        val resultQty = when (action) {
-            ACTION_INCREASE -> {
-                qty + 1
-            }
-            ACTION_DECREASE -> {
-                qty - 1
-            }
-        }
-
-        checkOverAddQty(qty)
-
-        item.id?.let { itemId -> item.cartId?.let { listener?.onUpdateItem(it, itemId, resultQty) } }
-    }
-
-    private fun checkOverAddQty(qty: Int) {
-        // over qty?
-        if (cacheCartItem != null) {
-            val max = Math.min(cacheCartItem!!.qtyInStock ?: 1, cacheCartItem!!.maxQTY ?: 1)
-            tvOverQty.visibility = if (qty >= max) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+            // hide for freebie
+            deleteItemTextView.visibility = View.GONE
+            productQty.setText(item.qty.toString())
+            totalPrice.text = "FREE"
+            totalPrice.setTextColor(ContextCompat.getColor(context, R.color.freeColor))
         }
     }
     // endregion
@@ -136,32 +134,42 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
 
     private fun getDisplayPrice(unit: String, price: Double): String {
-        val vat = price * 0.07
-        val total = (price + vat).roundToInt()
-        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(total))
+        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(price))
     }
 
-    private fun confirmDelete(cartItem: CartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
-        val context = itemView.context
-        val builder = AlertDialog.Builder(itemView.context, R.style.AlertDialogTheme)
-        builder.setMessage(context.getString(R.string.title_confirm_delete_item))
-        builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
-            cartItem.cartId?.let { cartId ->
-                cartItem.id?.let { itemId -> listener?.onDeleteItem(cartId, itemId) }
+    private fun confirmDelete(shoppingCartItem: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
+        itemView.context?.let { context ->
+            val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
+            builder.setMessage(context.getString(R.string.title_confirm_delete_item))
+            builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
+                if (shoppingCartItem.id != null && shoppingCartItem.sku != null) {
+                    listener?.onDeleteItem(shoppingCartItem.id!!, shoppingCartItem.sku!!)
+                } else {
+                    showAlertDialog(context.getString(R.string.some_thing_wrong))
+                }
                 dialog?.dismiss()
             }
+            builder.setNegativeButton(context.getString(R.string.no)) { dialog, _ -> dialog?.dismiss() }
+            builder.create().show()
         }
-
-        builder.setNegativeButton(context.getString(R.string.no)) { dialog, _ -> dialog?.dismiss() }
-        builder.create().show()
     }
 
-    fun hideDeleteItem(cartItem: CartItem) {
-        tvOverQty.visibility = View.GONE
-        deleteItemTextView.visibility = View.GONE
-        qtyTextTitle.text = itemView.resources.getString(R.string.qty_title)
-        productQty.visibility = View.GONE
-        qtyText.text = cartItem.qty.toString()
+    fun hideDeleteItem(shoppingCartItem: ShoppingCartItem) {
+        itemView.context?.let { context ->
+            tvOverQty.visibility = View.GONE
+            deleteItemTextView.visibility = View.GONE
+            qtyTextTitle.text = context.resources.getString(R.string.qty_title)
+            productQty.visibility = View.GONE
+            qtyText.text = shoppingCartItem.qty.toString()
+        }
     }
 
+    private fun showAlertDialog(message: String) {
+        itemView.context?.let { context ->
+            val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
+            builder.show()
+        }
+    }
 }

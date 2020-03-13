@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.CompareProtocol
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
@@ -185,7 +185,7 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
 
     override fun onShoppingCartClick(view: View) {
         if (database.cacheCartItems!!.size > 0) {
-            ShoppingCartActivity.startActivity(this, preferenceManager.cartId)
+            ShoppingCartActivity.startActivity(this, view)
         } else {
             showAlertDialog("", resources.getString(R.string.not_have_products_in_cart))
         }
@@ -222,13 +222,13 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
 
     // region {@link {Implement CompareItemListener}
     override fun onClickAddToCart(compareProduct: CompareProduct) {
-        showProgressDialog()
-        val cartId = preferenceManager.cartId
-        if (cartId != null) {
-            addProductToCart(cartId, compareProduct)
-        } else {
-            retrieveCart(compareProduct)
-        }
+//        showProgressDialog()
+//        val cartId = preferenceManager.cartId
+//        if (cartId != null) {
+//            addProductToCart(cartId, compareProduct)
+//        } else {
+//            retrieveCart(compareProduct)
+//        }
     }
 
     override fun onClearAllProductCompare() {
@@ -249,69 +249,69 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         }
     }
 
-    private fun retrieveCart(compareProduct: CompareProduct) {
-        showProgressDialog()
-        HttpManagerMagento.getInstance(this).getCart(object : ApiResponseCallback<String?> {
-            override fun success(response: String?) {
-                if (response != null) {
-                    preferenceManager.setCartId(response)
-                    addProductToCart(response, compareProduct)
-                }
-            }
+//    private fun retrieveCart(compareProduct: CompareProduct) {
+//        showProgressDialog()
+//        HttpManagerMagento.getInstance(this).getCart(object : ApiResponseCallback<String?> {
+//            override fun success(response: String?) {
+//                if (response != null) {
+//                    preferenceManager.setCartId(response)
+//                    addProductToCart(response, compareProduct)
+//                }
+//            }
+//
+//            override fun failure(error: APIError) {
+//                showAlertDialog("", error.errorUserMessage)
+//            }
+//        })
+//    }
 
-            override fun failure(error: APIError) {
-                showAlertDialog("", error.errorUserMessage)
-            }
-        })
-    }
+//    private fun addProductToCart(cartId: String, compareProduct: CompareProduct) {
+//        val cartItemBody = CartItemBody.create(cartId, compareProduct.sku, arrayListOf())
+//        HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
+//            override fun success(response: CartItem?) {
+//                runOnUiThread {
+//                    saveCartItem(response, compareProduct)
+//                }
+//            }
+//
+//            override fun failure(error: APIError) {
+//                dismissProgressDialog()
+//                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
+//                    showClearCartDialog()
+//                } else {
+//                    DialogHelper(this@CompareActivity).showErrorDialog(error)
+//                }
+//            }
+//        })
+//    }
 
-    private fun addProductToCart(cartId: String, compareProduct: CompareProduct) {
-        val cartItemBody = CartItemBody.create(cartId, compareProduct.sku, arrayListOf())
-        HttpManagerMagento.getInstance(this).addProductToCart(cartId, cartItemBody, object : ApiResponseCallback<CartItem> {
-            override fun success(response: CartItem?) {
-                runOnUiThread {
-                    saveCartItem(response, compareProduct)
-                }
-            }
+//    private fun saveCartItem(cartItem: CartItem?, compareProduct: CompareProduct) {
+//        cartItem ?: return
+//        database.saveCartItem(CacheCartItem.asCartItem(cartItem, compareProduct), object : DatabaseListener {
+//            override fun onSuccessfully() {
+//                dismissProgressDialog()
+//                updateShoppingCartBadge()
+//                Toast.makeText(this@CompareActivity, getString(R.string.added_to_cart),
+//                        Toast.LENGTH_SHORT).show()
+//
+//                updateCompareList(compareProduct)
+//            }
+//
+//            override fun onFailure(error: Throwable) {
+//                showAlertDialog("", error.message ?: getString(R.string.some_thing_wrong))
+//            }
+//        })
+//    }
 
-            override fun failure(error: APIError) {
-                dismissProgressDialog()
-                if (error.errorCode == APIError.INTERNAL_SERVER_ERROR.toString()) {
-                    showClearCartDialog()
-                } else {
-                    DialogHelper(this@CompareActivity).showErrorDialog(error)
-                }
-            }
-        })
-    }
-
-    private fun saveCartItem(cartItem: CartItem?, compareProduct: CompareProduct) {
-        cartItem ?: return
-        database.saveCartItem(CacheCartItem.asCartItem(cartItem, compareProduct), object : DatabaseListener {
-            override fun onSuccessfully() {
-                dismissProgressDialog()
-                updateShoppingCartBadge()
-                Toast.makeText(this@CompareActivity, getString(R.string.added_to_cart),
-                        Toast.LENGTH_SHORT).show()
-
-                updateCompareList(compareProduct)
-            }
-
-            override fun onFailure(error: Throwable) {
-                showAlertDialog("", error.message ?: getString(R.string.some_thing_wrong))
-            }
-        })
-    }
-
-    private fun updateCompareList(compareProduct: CompareProduct) {
-        // is no have in stock? force update
-        if (!this@CompareActivity.isProductInStock(compareProduct)) {
-            val fragment = supportFragmentManager.findFragmentByTag(CompareFragment.tag)
-            if (fragment != null) {
-                (fragment as CompareFragment).updateCompareList()
-            }
-        }
-    }
+//    private fun updateCompareList(compareProduct: CompareProduct) {
+//        // is no have in stock? force update
+//        if (!this@CompareActivity.isProductInStock(compareProduct)) {
+//            val fragment = supportFragmentManager.findFragmentByTag(CompareFragment.tag)
+//            if (fragment != null) {
+//                (fragment as CompareFragment).updateCompareList()
+//            }
+//        }
+//    }
 
     private fun updateShoppingCartBadge() {
         var count = 0
@@ -324,22 +324,22 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         mBuyShoppingCartView.setBadgeCart(count)
     }
 
-    private fun clearCart() {
-        database.deleteAllCacheCartItem()
-        preferenceManager.clearCartId()
-    }
+//    private fun clearCart() {
+//        database.deleteAllCacheCartItem()
+//        preferenceManager.clearCartId()
+//    }
 
-    private fun showClearCartDialog() {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setCancelable(false)
-                .setMessage(getString(R.string.title_clear_cart))
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
-                    clearCart() // clear item cart
-                    updateShoppingCartBadge() // update ui
-                    dialog.dismiss()
-                }
-        builder.show()
-    }
+//    private fun showClearCartDialog() {
+//        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+//                .setCancelable(false)
+//                .setMessage(getString(R.string.title_clear_cart))
+//                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
+//                    clearCart() // clear item cart
+//                    updateShoppingCartBadge() // update ui
+//                    dialog.dismiss()
+//                }
+//        builder.show()
+//    }
 
     private fun dismissProgressDialog() {
         loadingProgressBar?.visibility = View.INVISIBLE

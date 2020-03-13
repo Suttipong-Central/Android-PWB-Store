@@ -10,8 +10,7 @@ fun Date.formatter(): String {
 
 fun Date.formatterUTC(defaultLanguage: String): String {
     val dateFormatter = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale(defaultLanguage))
-    val timezone = TimeZone.getTimeZone("GMT+7").id
-    dateFormatter.timeZone = TimeZone.getTimeZone(timezone)
+    dateFormatter.timeZone = TimeZone.getDefault()
     return dateFormatter.format(this)
 }
 
@@ -20,7 +19,6 @@ fun String.toOrderDateTime(defaultLanguage: String): String {
     val dateFormatter = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale(defaultLanguage))
     val timezone = TimeZone.getTimeZone("GMT+7").id
     dateFormatter.timeZone = TimeZone.getTimeZone(timezone)
-
     // old data we save with "dd MMM yyyy, HH:mm:ss" :(
     return try {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)

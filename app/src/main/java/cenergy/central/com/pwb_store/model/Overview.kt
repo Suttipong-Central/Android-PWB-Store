@@ -15,8 +15,8 @@ class Overview() : IViewType, Parcelable{
     }
 
     constructor(parcel: Parcel) : this() {
-        productId = parcel.readString()
-        overviewHTML = parcel.readString()
+        productId = parcel.readString() ?: ""
+        overviewHTML = parcel.readString() ?: ""
         viewTypeId = parcel.readInt()
     }
 

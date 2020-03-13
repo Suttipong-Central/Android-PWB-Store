@@ -22,8 +22,10 @@ open class Order(
         var baseTotal: Double = 0.0,
         var shippingAmount: Double = 0.0,
         var paymentRedirect: String = "",
-        var t1cEarnCardNumber: String = ""
-) : RealmObject() {
+        var discountPrice: Double = 0.0,
+        var total: Double = 0.0,
+        var t1cEarnCardNumber: String = "",
+        var coupon: OrderCoupon? = null) : RealmObject() {
 
     fun getDisplayTimeCreated(context: Context): String {
         val language = PreferenceManager(context).getDefaultLanguage()
@@ -39,14 +41,17 @@ open class Order(
                     memberName = orderResponse.billingAddress!!.getDisplayName(),
                     shippingType = orderResponse.shippingType!!,
                     items = asItems(orderResponse.items),
-                    shippingAddress = orderResponse.orderExtension!!.shippingAssignments!![0]!!.shipping!!.shippingAddress!!,
-                    billingAddress = orderResponse.billingAddress!!,
+                    shippingAddress = orderResponse.orderExtension?.shippingAssignments!![0]?.shipping?.shippingAddress,
+                    billingAddress = orderResponse.billingAddress,
                     branchShipping = branchShipping,
                     shippingDescription = orderResponse.shippingDescription,
                     baseTotal = orderResponse.baseTotal,
                     shippingAmount = orderResponse.shippingAmount,
                     paymentRedirect = paymentRedirect,
-                    t1cEarnCardNumber = theOneNumber)
+                    discountPrice = orderResponse.discount,
+                    total = orderResponse.total,
+                    t1cEarnCardNumber = theOneNumber,
+                    coupon = orderResponse.orderExtension?.coupon)
         }
 
         private fun asItems(items: RealmList<Item>?): RealmList<Item> {

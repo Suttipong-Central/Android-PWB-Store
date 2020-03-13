@@ -1,9 +1,9 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.os.Build
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.view.PowerBuyTextView

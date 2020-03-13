@@ -4,11 +4,6 @@ import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
 class MigrationDatabase : RealmMigration {
-
-    companion object {
-        const val SCHEMA_VERSION = 9
-    }
-
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
         if (oldVersion < 1) {
             // Update Product model
@@ -198,17 +193,49 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
-        // app version 1.1.0
         if (oldVersion < 8) {
+            // Update Branch model
+            val branchSchema = realm.schema.get("Branch")?.apply {
+                // Add ispuDelivery 'ispu_promise_delivery'
+                addField("ispuDelivery", String::class.java)
+            }
+
+            // Update CacheCartItem model
+            realm.schema.get("CacheCartItem")?.apply {
+                // Add branch
+                branchSchema?.let {
+                    addRealmObjectField("branch", it)
+                }
+            }
+
+            // Add StorePickupList model
+            realm.schema.create("StorePickupList")?.apply {
+                addField("sku", String::class.java)
+                        .addPrimaryKey("sku")
+                        .setNullable("sku", false)
+                // Add list branch
+                branchSchema?.let {
+                    addRealmListField("stores", it)
+                }
+
+            }
+
             // Update Order model
             realm.schema.get("Order")?.apply {
-                // add payment redirect
-                addField("paymentRedirect", String::class.java)
-                        .setNullable("paymentRedirect", false)
+                // Add discountPrice
+                addField("discountPrice", Double::class.java)
+                addField("total", Double::class.java)
+            }
+
+            // Update OrderResponse model
+            realm.schema.get("OrderResponse")?.apply {
+                // Add discount
+                addField("discount", Double::class.java)
+                addField("total", Double::class.java)
             }
         }
 
-        // app version 1.2.0
+        // app version 1.1.1
         if (oldVersion < 9) {
             // Update Product for get rating
             realm.schema.get("Product")?.apply {
@@ -220,11 +247,40 @@ class MigrationDatabase : RealmMigration {
                 // add rating
                 addField("rating", Int::class.java)
             }
-
+            // Update Order model
             realm.schema.get("Order")?.apply {
-                // add t1cEarnCardNumber
+                // add payment redirect
+                addField("paymentRedirect", String::class.java)
+                        .setNullable("paymentRedirect", false)
+
+                // add t1c number
                 addField("t1cEarnCardNumber", String::class.java)
                         .setNullable("t1cEarnCardNumber", false)
+            }
+        }
+
+        // app version 1.1.1  
+        if (oldVersion < 10) {
+            // Create OrderCoupon
+            val coupon = realm.schema.create("OrderCoupon").apply {
+                addField("discountAmount", Double::class.java)
+                addField("discountFormat", String::class.java)
+                        .setNullable("discountFormat", false)
+                addField("couponCode", String::class.java)
+                        .setNullable("couponCode", false)
+            }
+
+            // Order add coupon object
+            realm.schema.get("Order")?.apply {
+                // add coupon
+                addRealmObjectField("coupon", coupon)
+            }
+
+            // OrderResponse add coupon object
+            realm.schema.get("OrderResponse")?.apply {
+                realm.schema.get("OderExtension")?.apply{
+                    addRealmObjectField("coupon", coupon)
+                }
             }
         }
     }

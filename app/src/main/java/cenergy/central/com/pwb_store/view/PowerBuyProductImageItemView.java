@@ -12,8 +12,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.BundleSavedState;
@@ -30,7 +28,6 @@ public class PowerBuyProductImageItemView extends FrameLayout {
     private static final String ARG_PRODUCT_IMAGE_ITEM = "productDetailImageItem";
 
     //View Members
-    @BindView(R.id.image_view)
     ImageView mImageView;
 
     //Data Members
@@ -67,7 +64,7 @@ public class PowerBuyProductImageItemView extends FrameLayout {
     }
 
     private void initInstance() {
-        ButterKnife.bind(this);
+        mImageView = findViewById(R.id.image_view);
     }
 
     public void setProductDetailImageItem(ProductDetailImageItem productDetailImageItem) {

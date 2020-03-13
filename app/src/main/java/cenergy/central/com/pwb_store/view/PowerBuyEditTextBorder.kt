@@ -3,19 +3,19 @@ package cenergy.central.com.pwb_store.view
 import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.design.widget.TextInputEditText
-import android.support.v4.content.ContextCompat
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import cenergy.central.com.pwb_store.R
+import com.google.android.material.textfield.TextInputEditText
 
 
 class PowerBuyEditTextBorder : LinearLayout {
 
-    private lateinit var inputLayout: LinearLayout
     private var header: PowerBuyTextView? = null
     private var requiredField: PowerBuyTextView? = null
     lateinit var editText: TextInputEditText
@@ -39,7 +39,6 @@ class PowerBuyEditTextBorder : LinearLayout {
 
     private fun prepareView() {
         val view = View.inflate(context, R.layout.view_edit_text_boder, this)
-        inputLayout = view.findViewById(R.id.input_layout)
         header = view.findViewById(R.id.txt_header)
         requiredField = view.findViewById(R.id.required_field)
         editText = view.findViewById(R.id.edit_text)
@@ -69,10 +68,10 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     private fun notifyAttributeChanged() {
-        inputLayout.background = ContextCompat.getDrawable(context,
+        editText.background = ContextCompat.getDrawable(context,
                 if (isEnable) R.drawable.bg_input_enable else R.drawable.bg_input_disable)
         header?.text = textHeader
-        requiredField?.visibility =if (required) View.VISIBLE else View.GONE
+        requiredField?.visibility = if (required) View.VISIBLE else View.GONE
         editText.setText(textEditText)
 
         // set icon
@@ -82,15 +81,15 @@ class PowerBuyEditTextBorder : LinearLayout {
     }
 
     fun getText(): String {
-        return if (editText.text != null) {
+        return if (editText.text != null && editText.text!!.trim() != "") {
             this.editText.text.toString()
         } else {
             ""
         }
     }
 
-    fun setText(input: String) {
-        this.textEditText = input
+    fun setText(input: String?) {
+        this.textEditText = input ?: ""
         notifyAttributeChanged()
     }
 
@@ -134,5 +133,9 @@ class PowerBuyEditTextBorder : LinearLayout {
         this.isEnable = isEnable
         editText.isEnabled = this.isEnable
         notifyAttributeChanged()
+    }
+
+    fun setOnTextChanging(callback: TextWatcher) {
+        editText.addTextChangedListener(callback)
     }
 }

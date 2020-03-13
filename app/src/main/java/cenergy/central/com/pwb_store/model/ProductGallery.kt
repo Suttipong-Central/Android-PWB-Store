@@ -16,12 +16,12 @@ data class ProductGallery(var id: String = "",
                           var disabled: Boolean = false,
                           var file: String = ""): Parcelable {
     constructor(parcel: Parcel) : this(
-            parcel.readString(),
+            parcel.readString() ?: "",
             parcel.readString(),
             parcel.readString(),
             parcel.readInt(),
             parcel.readByte() != 0.toByte(),
-            parcel.readString())
+            parcel.readString() ?: "")
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)

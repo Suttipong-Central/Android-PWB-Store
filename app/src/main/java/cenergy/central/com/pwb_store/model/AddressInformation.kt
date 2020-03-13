@@ -95,7 +95,7 @@ open class AddressInformation(
                     firstname = branch.storeName,
                     lastname = branch.sellerCode,
                     email = branch.email,
-                    telephone = "",
+                    telephone = branch.phone,
                     subAddress = subAddress,
                     company = "",
                     vatId = "",

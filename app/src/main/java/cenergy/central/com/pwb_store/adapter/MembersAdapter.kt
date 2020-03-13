@@ -1,12 +1,13 @@
 package cenergy.central.com.pwb_store.adapter
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.MembersViewHolder
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.EOrderingMember
+import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adapter<MembersViewHolder>() {
@@ -17,7 +18,7 @@ class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adap
             notifyDataSetChanged()
         }
 
-    var memberClickListener: MemberClickListener? = null
+    private var memberClickListener: MemberClickListener? = null
 
     fun setOnMemberClickListener(memberClickListener: MemberClickListener){
         this.memberClickListener = memberClickListener
@@ -34,8 +35,12 @@ class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adap
 
     override fun onBindViewHolder(holder: MembersViewHolder, position: Int) {
         when(getItemViewType(position)){
+            HDLMember -> {
+                holder.bindHDLMemberView(position, memberList[position] as HDLCustomerInfos)
+                holder.itemView.setOnClickListener { memberClickListener?.onClickedHDLMember(position) }
+            }
             PWBMember -> {
-                holder.bindPwbMemberView(position, memberList[position] as PwbMember)
+                holder.bindPwbMemberView(position, memberList[position] as EOrderingMember)
                 holder.itemView.setOnClickListener { memberClickListener?.onClickedPwbMember(position) }
             }
             T1CMember -> {
@@ -47,15 +52,22 @@ class MembersAdapter(private val showDetail: Boolean = false): RecyclerView.Adap
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (memberList[position] is PwbMember) {
-            PWBMember
-        } else {
-            T1CMember
+        return when(memberList[position]){
+            is HDLCustomerInfos -> {
+                HDLMember
+            }
+            is EOrderingMember -> {
+                PWBMember
+            }
+            else -> {
+                T1CMember
+            }
         }
     }
 
     companion object {
-        private const val PWBMember = 0
-        private const val T1CMember = 1
+        private const val HDLMember = 0
+        private const val PWBMember = 1
+        private const val T1CMember = 2
     }
 }

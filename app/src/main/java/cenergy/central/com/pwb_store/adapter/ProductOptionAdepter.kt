@@ -9,9 +9,9 @@ import android.widget.ArrayAdapter
 import cenergy.central.com.pwb_store.model.ProductValue
 import kotlinx.android.synthetic.main.layout_text_item.view.*
 
-class ProductOptionAdepter(private val mContext: Context, private var mLayoutResourceId: Int,
-                           private var items: List<ProductValue>) : ArrayAdapter<ProductValue>(mContext, mLayoutResourceId, items) {
+class ProductOptionAdepter(private val mContext: Context, private var mLayoutResourceId: Int) : ArrayAdapter<ProductValue>(mContext, mLayoutResourceId) {
 
+    private var items: List<ProductValue> = arrayListOf()
     private var listener: OptionClickListener? = null
 
     fun setItems(items: List<ProductValue>) {
@@ -36,18 +36,18 @@ class ProductOptionAdepter(private val mContext: Context, private var mLayoutRes
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rootView = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false)
-        val item = items[position]
+        val size = items[position]
         val titleTextView = rootView.tvTitle
-        titleTextView.text = item.valueExtension?.label ?: "0"
+        titleTextView.text = size.valueExtension?.label ?: ""
         titleTextView.setOnClickListener {
-            listener?.onOptionClickListener(item.index, item.valueExtension?.label ?: "")
+            listener?.onOptionClickListener(size)
         }
         return rootView
     }
 
     interface OptionClickListener {
-        fun onOptionClickListener(optionValue: Int, label: String)
+        fun onOptionClickListener(size: ProductValue)
     }
 }

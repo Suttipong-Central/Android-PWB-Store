@@ -3,25 +3,17 @@ package cenergy.central.com.pwb_store.view
 import android.animation.Animator
 import android.content.Context
 import android.os.Build
-import android.os.Bundle
-import android.os.Parcelable
-import android.support.annotation.AttrRes
-import android.support.annotation.RequiresApi
-import android.support.annotation.StyleRes
 import android.util.AttributeSet
-import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
-
+import androidx.annotation.AttrRes
+import androidx.annotation.RequiresApi
+import androidx.annotation.StyleRes
+import cenergy.central.com.pwb_store.R
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
-
-import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.model.BundleSavedState
-import cenergy.central.com.pwb_store.model.CompareCount
-import io.realm.Realm
 
 /**
  * Created by napabhat on 7/19/2017 AD.

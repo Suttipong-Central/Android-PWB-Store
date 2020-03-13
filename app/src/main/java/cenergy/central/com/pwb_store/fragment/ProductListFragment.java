@@ -4,23 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,6 +33,7 @@ import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListen
 import cenergy.central.com.pwb_store.helpers.DialogHelper;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.api.ProductListAPI;
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus;
@@ -50,31 +47,35 @@ import cenergy.central.com.pwb_store.model.SortingList;
 import cenergy.central.com.pwb_store.model.body.FilterGroups;
 import cenergy.central.com.pwb_store.model.body.SortOrder;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
+import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
+import cenergy.central.com.pwb_store.utils.Screen;
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
 import static java.lang.Math.ceil;
 
-public class ProductListFragment extends Fragment implements ObservableScrollViewCallbacks, View.OnClickListener, OnBrandFilterClickListener {
+public class ProductListFragment extends Fragment implements View.OnClickListener, OnBrandFilterClickListener {
     private static final String TAG = ProductListFragment.class.getSimpleName();
     private static final String ARG_TITLE = "ARG_TITLE";
     private static final String ARG_SEARCH = "ARG_SEARCH";
     private static final String ARG_DEPARTMENT_ID = "ARG_DEPARTMENT_ID";
     private static final String ARG_STORE_ID = "ARG_STORE_ID";
     private static final String ARG_PRODUCT_FILTER = "ARG_PRODUCT_FILTER";
-//    private static final String ARG_PRODUCT_FILTER_TEMP = "ARG_PRODUCT_FILTER_TEMP";
     private static final String ARG_SORT_NAME = "ARG_SORT_NAME";
     private static final String ARG_SORT_TYPE = "ARG_SORT_TYPE";
     private static final String ARG_IS_DONE = "ARG_IS_DONE";
     private static final String ARG_PAGE = "ARG_PAGE";
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
-//    private static final String ARG_PRODUCT_FILTER_SUB_HEADER = "ARG_PRODUCT_FILTER_SUB_HEADER";
     private static final String ARG_KEY_WORD = "ARG_KEY_WORD";
     private static final String ARG_IS_SORTING = "ARG_IS_SORTING";
 
-    //View Members
-    ObservableRecyclerView mRecyclerView;
+    private static final String PRODUCT_2H_FIELD = "expr-p";
+    private static final String PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))";
+
+    // Analytic
+    private Analytics analytics;
+
     private PowerBuyTextView productCount;
     private LinearLayout layoutProgress;
     private LinearLayout mProductLayout;
@@ -112,14 +113,14 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private String keyWord;
     private ProductResponse productResponse = null;
 
-    final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
+    private final PowerBuyPopupWindow.OnDismissListener ON_POPUP_DISMISS_LISTENER = new PopupWindow.OnDismissListener() {
         @Override
         public void onDismiss() {
             isDoneFilter = false;
         }
     };
 
-    final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
+    private final RecyclerView.OnScrollListener SCROLL = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
@@ -153,19 +154,20 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         Category categoryLv3 = productFilterItemBus.getProductFilterItem();
         int clickPosition = productFilterItemBus.getPosition();
         if (categoryLv3 != null && clickPosition != 0) {
-            Log.d(TAG, "productFilterItemBus" + categoryLv3.getId());
             title = categoryLv3.getDepartmentName();
             categoryId = categoryLv3.getId();
-            mPowerBuyPopupWindow.updateSingleProductFilterItem(categoryLv3);
+            // Don't update because categoryLv3 is Header
+//            mPowerBuyPopupWindow.updateSingleProductFilterItem(categoryLv3);
         } else  {
-            Log.d(TAG, "productFilterItemBus -> clear filter");
             // clear filter
             title = categoryLv2.getDepartmentName();
             categoryId = categoryLv2.getId();
         }
         resetPage();
         retrieveProductList();
-        Log.d(TAG, "productFilterItemBus" + isDoneFilter);
+        if(mPowerBuyPopupWindow.isShowing()){
+            mPowerBuyPopupWindow.dismiss();
+        }
     }
 
     @Subscribe
@@ -183,7 +185,10 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         sortName = sortingItem.getSlug();
         sortType = sortingItem.getValue();
         retrieveProductList();
-        mPowerBuyPopupWindow.updateSingleSortingItem(sortingItemBus.getSortingItem());
+        mPowerBuyPopupWindow.updateSingleSortingItem(sortingItem);
+        if(mPowerBuyPopupWindow.isShowing()){
+            mPowerBuyPopupWindow.dismiss();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -218,8 +223,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         super.onCreate(savedInstanceState);
         init();
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
+        }
     }
 
     @Override
@@ -230,7 +236,17 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        analytics.trackScreen(Screen.PRODUCT_LIST);
+    }
+
     private void init() {
+        if (getContext() != null) {
+            analytics = new Analytics(getContext());
+        }
+
         // Init Fragment level's variable(s) here
         if (getArguments() != null) {
             title = getArguments().getString(ARG_TITLE);
@@ -312,7 +328,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         PowerBuyTextView productTitle = rootView.findViewById(R.id.txt_title_product);
         ConstraintLayout layoutFilter = rootView.findViewById(R.id.layout_filter);
         productCount = rootView.findViewById(R.id.txt_product_count);
-        mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
+        //View Members
+        RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
         layoutProgress = rootView.findViewById(R.id.layout_progress);
 
         productTitle.setText(title);
@@ -345,7 +362,6 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         mLayoutManger.setSpanSizeLookup(mProductListAdapter.getSpanSize());
         mRecyclerView.setLayoutManager(mLayoutManger);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(0, LinearLayoutManager.VERTICAL));
-        mRecyclerView.setScrollViewCallbacks(this);
         mRecyclerView.setAdapter(mProductListAdapter);
 
         if (savedInstanceState == null) {
@@ -470,37 +486,31 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
         return num;
     }
 
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-    }
-
     private void retrieveProductList() {
-        if (getContext() != null) {
+//        if (isSearch) {
+//            getProductsFromSearch();
+//        } else {
+//            getProducts();
+//        }
 
+        getProducts();
+    }
+
+    private void getProducts(){
+        if (getContext() != null){
             ArrayList<FilterGroups> filterGroupsList = new ArrayList<>();
-            if (isSearch) {
+            if (isSearch){
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("search_term", keyWord, "eq"));
             } else {
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("category_id", categoryId, "eq"));
             }
-            if (BuildConfig.FLAVOR == "pwb") {
-                filterGroupsList.add(FilterGroups.Companion.createFilterGroups("stock.salable", "1", "eq"));
+            if (BuildConfig.FLAVOR != "cds") {
+                filterGroupsList.add(FilterGroups.Companion.createFilterGroups(PRODUCT_2H_FIELD, PRODUCT_2H_VALUE, "eq"));
             }
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("status", "1", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("visibility", "4", "eq"));
             filterGroupsList.add(FilterGroups.Companion.createFilterGroups("price", "0", "gt"));
-            if (brandName!= null && !brandName.isEmpty()){
+            if (brandName != null && !brandName.isEmpty()) {
                 filterGroupsList.add(FilterGroups.Companion.createFilterGroups("brand", brandName, "eq"));
             }
 
@@ -510,12 +520,8 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                 sortOrders.add(sortOrder);
             }
 
-            HttpManagerMagento.Companion.getInstance(getContext()).retrieveProducts(
-                    PER_PAGE,
-                    getNextPage(),
-                    filterGroupsList,
-                    sortOrders,
-                    new ApiResponseCallback<ProductResponse>() {
+            ProductListAPI.retrieveProducts(getContext(), PER_PAGE,
+                    getNextPage(), filterGroupsList, sortOrders, new ApiResponseCallback<ProductResponse>() {
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final ProductResponse response) {
                             if (getActivity() != null) {
@@ -525,7 +531,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
 
                         @Override
                         public void failure(@NotNull final APIError error) {
-                            if(getActivity() != null){
+                            if (getActivity() != null) {
                                 getActivity().runOnUiThread(() -> {
                                     layoutProgress.setVisibility(View.GONE);
                                     mProgressDialog.dismiss();
@@ -536,10 +542,37 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
                                 });
                             }
                         }
-                    }
-            );
+                    });
         }
     }
+
+//    private void getProductsFromSearch(){
+//        if (getContext() != null) {
+//            SearchProductsAPI.retrieveProductsFromSearch(getContext(), PER_PAGE, getNextPage(), PRODUCT_2H_FIELD,
+//                    PRODUCT_2H_VALUE, keyWord, sortName, sortType, new ApiResponseCallback<ProductResponse>() {
+//                        @Override
+//                        public void success(@org.jetbrains.annotations.Nullable ProductResponse response) {
+//                            if (getActivity() != null) {
+//                                getActivity().runOnUiThread(() -> updateProductList(response));
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void failure(@NotNull APIError error) {
+//                            if (getActivity() != null) {
+//                                getActivity().runOnUiThread(() -> {
+//                                    layoutProgress.setVisibility(View.GONE);
+//                                    mProgressDialog.dismiss();
+//                                    // show error dialog
+//                                    if (getContext() != null) {
+//                                        new DialogHelper(getContext()).showErrorDialog(error);
+//                                    }
+//                                });
+//                            }
+//                        }
+//                    });
+//        }
+//    }
 
     private void updateProductList(ProductResponse response) {
         productResponse = response;
@@ -584,9 +617,9 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
             if (mProgressDialog != null && !mProgressDialog.isShowing()) {
                 showProgressDialog();
             }
-//        if (mPowerBuyPopupWindow.isShowing()) {
-//            mPowerBuyPopupWindow.dismiss();
-//        }
+        if (mPowerBuyPopupWindow.isShowing()) {
+            mPowerBuyPopupWindow.dismiss();
+        }
             retrieveProductList();
             mPowerBuyPopupWindow.updateSingleBrandFilterItem(filterItem);
         } else  {
@@ -607,7 +640,7 @@ public class ProductListFragment extends Fragment implements ObservableScrollVie
     private void loadCategoryLv3(Category categoryLv2) {
         if (getContext() == null) return;
         HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(categoryLv2.getId(),
-                true, new ApiResponseCallback<List<Category>>() {
+                true, new ArrayList<>(),new ApiResponseCallback<List<Category>>() {
                     @Override
                     public void success(final List<Category> categories) {
                         if (getActivity() != null) {

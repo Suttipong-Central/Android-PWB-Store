@@ -3,8 +3,8 @@ package cenergy.central.com.pwb_store.fragment
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -61,7 +61,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
     private var month = dateTime.monthOfYear
     private var year = dateTime.year
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         productDetailListener = context as ProductDetailListener
         product = productDetailListener?.getProduct()
@@ -122,7 +122,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 province = store?.province ?: "", postalId = store?.postalCode ?: "",
                 period = period, customDetail = customDetail)
         context?.let {
-            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            HttpManagerHDL.getInstance(context!!).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                 override fun success(response: ShippingSlotResponse?) {
                     if (response != null) {
                         if (response.shippingSlot.isNotEmpty()) {
@@ -182,7 +182,7 @@ class ProductShippingOptionFragment : Fragment(), CalendarViewCustom.OnItemClick
                 province = store?.province ?: "", postalId = store?.postalCode ?: "",
                 period = period, customDetail = customDetail)
         context?.let {
-            HttpManagerHDL.getInstance().getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
+            HttpManagerHDL.getInstance(context!!).getShippingSlot(shippingSlotBody, object : ApiResponseCallback<ShippingSlotResponse> {
                 override fun success(response: ShippingSlotResponse?) {
                     if (response != null && response.shippingSlot.isNotEmpty()) {
                         for (i in response.shippingSlot.indices) {

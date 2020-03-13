@@ -2,18 +2,18 @@ package cenergy.central.com.pwb_store.manager
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import cenergy.central.com.pwb_store.BuildConfig
-import cenergy.central.com.pwb_store.Constants.Companion.CENTRAL_HOST_NAME
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_ACCESS_KEY
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_REGION
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_SECRET_KEY
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_SERVICE_NAME
-import cenergy.central.com.pwb_store.Constants.Companion.CLIENT_X_API_KEY
+import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.activity.LoginActivity
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.MemberService
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
@@ -26,18 +26,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-/**
- * Created by Anuphap Suwannamas on 27/8/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-class HttpMangerSiebel(context: Context) {
+
+class HttpMangerSiebel(var context: Context) {
     private var retrofit: Retrofit
+    private val pref by lazy { PreferenceManager(context) }
+    private val database by lazy { RealmController.getInstance() }
 
     init {
-        val session = auth()
+        val session = auth(pref.accessKey ?:"", pref.secretKey ?:"")
         val awsCredentialsProvider = PwbAWSCredentialsProvider(session)
-        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, CLIENT_SERVICE_NAME,
-                CLIENT_REGION, CLIENT_X_API_KEY)
+        val awsInterceptor = AwsInterceptor(awsCredentialsProvider, pref.serviceName ?:"", pref.region ?:"", pref.xApiKey ?:"")
         val interceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         val defaultHttpClient = OkHttpClient.Builder()
@@ -54,10 +52,15 @@ class HttpMangerSiebel(context: Context) {
                 .build()
 
         retrofit = Retrofit.Builder()
-                .baseUrl(CENTRAL_HOST_NAME)
+                .baseUrl(Constants.CENTRAL_HOST_NAME)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(defaultHttpClient)
                 .build()
+    }
+
+    private fun isSecretKeyNotNull() : Boolean{
+        return pref.accessKey != null && pref.secretKey != null && pref.region != null &&
+                pref.xApiKey != null && pref.serviceName != null
     }
 
     private class PwbAWSCredentialsProvider internal constructor(private val session: Session) : AWSCredentialsProvider {
@@ -72,48 +75,62 @@ class HttpMangerSiebel(context: Context) {
     }
 
     fun verifyMemberFromT1C(mobile: String, mobileCountryCode: String, callback: ApiResponseCallback<List<MemberResponse>>) {
-        val memberService = retrofit.create(MemberService::class.java)
-        memberService.geT1CtMemberFromMobile(mobile, mobileCountryCode).enqueue(object : Callback<List<MemberResponse>> {
-            override fun onResponse(call: Call<List<MemberResponse>>?, response: Response<List<MemberResponse>>?) {
-                if (response != null && response.isSuccessful) {
-                    val orderResponse = response.body()
-                    callback.success(orderResponse)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+        if (isSecretKeyNotNull()){
+            val memberService = retrofit.create(MemberService::class.java)
+            memberService.geT1CtMemberFromMobile(mobile, mobileCountryCode).enqueue(object : Callback<List<MemberResponse>> {
+                override fun onResponse(call: Call<List<MemberResponse>>?, response: Response<List<MemberResponse>>?) {
+                    if (response != null && response.isSuccessful) {
+                        val orderResponse = response.body()
+                        callback.success(orderResponse)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<List<MemberResponse>>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
+                override fun onFailure(call: Call<List<MemberResponse>>?, t: Throwable) {
+                    callback.failure(t.getResultError())
+                }
+            })
+        } else {
+            userLogout(context)
+        }
     }
 
     fun getT1CMember(customerId: String, callback: ApiResponseCallback<Member>) {
-        val memberService = retrofit.create(MemberService::class.java)
-        memberService.getT1CMember(customerId).enqueue(object : Callback<Member> {
-            override fun onResponse(call: Call<Member>?, response: Response<Member>?) {
-                if (response != null && response.isSuccessful) {
-                    val orderResponse = response.body()
-                    callback.success(orderResponse)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
+        if (isSecretKeyNotNull()){
+            val memberService = retrofit.create(MemberService::class.java)
+            memberService.getT1CMember(customerId).enqueue(object : Callback<Member> {
+                override fun onResponse(call: Call<Member>?, response: Response<Member>?) {
+                    if (response != null && response.isSuccessful) {
+                        val orderResponse = response.body()
+                        callback.success(orderResponse)
+                    } else {
+                        callback.failure(APIErrorUtils.parseError(response))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<Member>?, t: Throwable?) {
-                callback.failure(APIError(t))
-            }
-        })
+                override fun onFailure(call: Call<Member>?, t: Throwable) {
+                    callback.failure(t.getResultError())
+                }
+            })
+        } else {
+            userLogout(context)
+        }
     }
 
-
-    private fun auth(): Session {
+    private fun auth(accessKey: String, secretKey: String): Session {
         val auth = Session()
-        auth.accessKey = CLIENT_ACCESS_KEY
-        auth.secretKey = CLIENT_SECRET_KEY
-
+        auth.accessKey = accessKey
+        auth.secretKey = secretKey
         return auth
+    }
+
+    private fun userLogout(context: Context) {
+        database.userLogout()
+        pref.userLogout()
+        val intent = Intent(context, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
     }
 
     private inner class Session {

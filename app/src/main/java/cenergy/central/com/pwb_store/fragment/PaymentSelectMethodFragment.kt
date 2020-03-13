@@ -2,9 +2,9 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,15 +16,15 @@ import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class PaymentSelectMethodFragment : Fragment() {
+    private val analytics by lazy { context?.let { Analytics(it) } }
 
     private lateinit var paymentProtocol: PaymentProtocol
-    private lateinit var inputT1CardId: PowerBuyEditTextBorder
-    private lateinit var btnChangeT1: Button
-    private lateinit var tvThe1MemberName: PowerBuyTextView
     private lateinit var recycler: RecyclerView
     private lateinit var paymentTypeClickListener: PaymentTypeClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
@@ -43,7 +43,7 @@ class PaymentSelectMethodFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         paymentProtocol = context as PaymentProtocol
         paymentMethods = paymentProtocol.getPaymentMethods()
@@ -65,57 +65,26 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO later show stand with COD
-//        when (DeliveryType.fromString(deliveryCode)) {
-//            DeliveryType.STANDARD -> {
-//                selectMethodAdapter.paymentMethods = paymentMethods
-//            }
-//            else -> {
-//               hidePaymentCOD()
-//            }
-//        }
-        // set t1 card no.
-        val t1cardNumber = paymentProtocol.getT1CardNumber()
-        inputT1CardId.setText(t1cardNumber)
 
-        hidePaymentCOD()
-        handleClickChangeT1()
+        setupPaymentMethodOptions()
     }
 
-    private fun handleClickChangeT1() {
-        btnChangeT1.setOnClickListener {
-            ChangeTheOneDialogFragment.newInstance().show(fragmentManager, "dialog")
-        }
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SELECT_PAYMENT)
     }
 
-    private fun hidePaymentCOD() {
-        val filteredPaymentMethod = arrayListOf<PaymentMethod>()
-        // no display COD
-        paymentMethods.forEach {
-            if ( it.code != PaymentMethod.CASH_ON_DELIVERY) {
-                filteredPaymentMethod.add(it)
-            }
-        }
-        selectMethodAdapter.paymentMethods = filteredPaymentMethod
+    private fun setupPaymentMethodOptions() {
+        // add more filter?
+        selectMethodAdapter.paymentMethodItems = paymentMethods
     }
 
     private fun setupView(rootView: View) {
-        tvThe1MemberName = rootView.findViewById(R.id.tv_the1_member_name)
-        inputT1CardId = rootView.findViewById(R.id.input_the1_card_id)
-        btnChangeT1 = rootView.findViewById(R.id.btn_change_the1)
         recycler = rootView.findViewById(R.id.recycler_select_methods)
         selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
 
-        inputT1CardId.setEnableInput(false)
-    }
-
-    fun updateT1MemberInput(the1Member: MemberResponse) {
-        inputT1CardId.setText(the1Member.cards[0].cardNo)
-
-        tvThe1MemberName.visibility = View.VISIBLE
-        tvThe1MemberName.text = the1Member.getDisplayName()
     }
 }

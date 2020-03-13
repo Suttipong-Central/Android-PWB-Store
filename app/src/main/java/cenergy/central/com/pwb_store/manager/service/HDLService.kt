@@ -5,11 +5,16 @@ import cenergy.central.com.pwb_store.model.body.BookingShippingSlotBody
 import cenergy.central.com.pwb_store.model.body.BookingSlotBody
 import cenergy.central.com.pwb_store.model.body.ShippingSlotBody
 import cenergy.central.com.pwb_store.model.response.BookingNumberResponse
+import cenergy.central.com.pwb_store.model.response.HDLMemberResponse
 import cenergy.central.com.pwb_store.model.response.ShippingSlotResponse
 import retrofit2.Call
 import retrofit2.http.*
 
 interface HDLService {
+    @GET("/v1/customers/{number}")
+    fun getHDLMembers(@Path("number") number: String,
+                      @Header("cxfTrace") cxfTrace: Boolean): Call<HDLMemberResponse>
+
     @POST("/v1/logistics/shipment/list-shipping-slot")
     fun getShippingSlot(
             @Header("Content-Type") type: String,

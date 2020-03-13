@@ -7,12 +7,12 @@ import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.getResultError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class OrderApi {
-
 
     companion object {
         private const val RESPONSE_REDIRECT_CODE = 302
@@ -40,14 +40,14 @@ class OrderApi {
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                callback.onFailure(APIError(t))
+                callback.onFailure(t.getResultError())
             }
         })
     }
 
     interface CreateOderCallback {
         fun onSuccess(oderId: String?)
-        fun onSuccessAndRedirect(oderId: String?, url: String)
+        fun onSuccessAndRedirect(orderId: String?, url: String)
         fun onFailure(error: APIError)
     }
 }

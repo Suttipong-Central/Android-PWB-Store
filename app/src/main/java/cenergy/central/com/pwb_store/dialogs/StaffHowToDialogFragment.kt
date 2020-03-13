@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.dialogs
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.view.*
 import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
@@ -18,11 +18,11 @@ class StaffHowToDialogFragment : DialogFragment() {
     }
 
     private fun setupView(rootView: View) {
-        dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         val cancelBtn = rootView.findViewById<ImageView>(R.id.img_cancel)
         cancelBtn.setOnClickListener {
-            dialog.dismiss()
+            dialog?.dismiss()
         }
     }
 

@@ -1,9 +1,8 @@
 package cenergy.central.com.pwb_store.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -13,12 +12,9 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.CancelFilterViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.FilterByBrandViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterHeaderViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.ProductFilterItemViewHolder;
 import cenergy.central.com.pwb_store.model.FilterItem;
 import cenergy.central.com.pwb_store.model.IViewType;
 import cenergy.central.com.pwb_store.model.ViewType;
-import cenergy.central.com.pwb_store.model.body.Filter;
 
 public class FilterByBrandAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

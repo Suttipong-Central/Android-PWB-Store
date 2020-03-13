@@ -3,7 +3,7 @@ package cenergy.central.com.pwb_store.view
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.Animation

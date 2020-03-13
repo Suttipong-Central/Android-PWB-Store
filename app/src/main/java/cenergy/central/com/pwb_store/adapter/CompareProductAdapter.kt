@@ -1,9 +1,9 @@
 package cenergy.central.com.pwb_store.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareDetailViewHolder
@@ -23,39 +23,38 @@ class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerVi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            VIEW_TYPE_ID_PRODUCT_LIST -> ProductItemsViewHolder(
-                    LayoutInflater
-                            .from(parent.context)
-                            .inflate(R.layout.list_item_horizontal_product_compare, parent, false)
-            )
-            VIEW_TYPE_ID_COMPARE_HEADER -> CompareHeaderViewHolder(
-                    LayoutInflater
-                            .from(parent.context)
-                            .inflate(R.layout.list_item_compare_product_header, parent, false)
-            )
-            VIEW_TYPE_ID_COMPARE_DETAIL -> CompareDetailViewHolder(
-                    LayoutInflater
-                            .from(parent.context)
-                            .inflate(R.layout.list_item_grid_compare_detail, parent, false)
-            )
-            VIEW_TYPE_ID_SHOPPING_CART -> CompareShoppingCartViewHolder(
-                    LayoutInflater
-                            .from(parent.context)
-                            .inflate(R.layout.list_item_compare_schopping_cart, parent, false)
-            )
-            else -> throw Exception("Invalid viewType")
+            VIEW_TYPE_ID_PRODUCT_LIST ->{
+                ProductItemsViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_horizontal_product_compare, parent, false))
+            }
+            VIEW_TYPE_ID_COMPARE_HEADER -> {
+                CompareHeaderViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_compare_product_header, parent, false))
+            }
+            VIEW_TYPE_ID_COMPARE_DETAIL -> {
+                CompareDetailViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_grid_compare_detail, parent, false))
+            }
+            else  -> {
+                CompareShoppingCartViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_compare_schopping_cart, parent, false))
+            }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
         when (item.viewTypeId) {
-            VIEW_TYPE_ID_PRODUCT_LIST -> if (item is ProductItem && holder is ProductItemsViewHolder) {
+            VIEW_TYPE_ID_PRODUCT_LIST -> {
+                item as ProductItem
+                holder as ProductItemsViewHolder
                 holder.bind(item, listener)
             }
-
-            VIEW_TYPE_ID_COMPARE_DETAIL -> if (item is CompareItem && holder is CompareDetailViewHolder) {
+            VIEW_TYPE_ID_COMPARE_DETAIL -> {
+                item as CompareItem
+                holder as CompareDetailViewHolder
                 holder.bind(item)
+
             }
             VIEW_TYPE_ID_COMPARE_HEADER -> {
                 holder as CompareHeaderViewHolder

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>is_eordering_member_on</key>
+        <value>false</value>
+    </entry>
+
+    <entry>
+        <key>is_t1c_member_on</key>
+        <value>true</value>
+    </entry>
+
+    <entry>
+        <key>is_hdl_member_on</key>
+        <value>false</value>
+    </entry>
+
+    <entry>
+        <key>is_payment_option_on</key>
+        <value>true</value>
+    </entry>
+
+    <entry>
+        <key>supported_payment_methods</key>
+        <value>fullpaymentredirect,payatstore,p2c2p_ipp,e_ordering</value>
+    </entry>
+
+    <entry>
+        <key>supported_delivery_methods</key>
+        <value>express,standard,pickupatstore,hdl</value>
+    </entry>
+
+    <entry>
+        <key>display_special_category_ids</key>
+        <value/>
+    </entry>
+</defaultsMap>

@@ -11,7 +11,7 @@ data class ShippingSlot(
         @SerializedName("date_time_to")
         val dateTimeTo: String? = "",
         @SerializedName("extension_attributes")
-        val slotExtension: SlotExtension) : Parcelable {
+        val slotExtension: SlotExtension? = null) : Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readString(),

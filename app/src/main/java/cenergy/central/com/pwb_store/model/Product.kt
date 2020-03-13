@@ -1,8 +1,9 @@
 package cenergy.central.com.pwb_store.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
-import cenergy.central.com.pwb_store.model.response.ProductSearch
 import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -10,10 +11,11 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class Product(
-        var id: Int = 0,
+        var id: Long = 0,
         var sku: String = "",
         var name: String = "",
         var price: Double = 0.0,
+        @SerializedName("type_id")
         var typeId: String = "",
         @SerializedName("special_price")
         var specialPrice: Double = 0.0,
@@ -30,11 +32,37 @@ class Product(
         var attributeID: Int = 0,
         var status: Int = 1,
         var rating: Int? = 0,
+        var shippingMethods: String = "",
         var paymentMethod: String = "",
         var isHDL: Boolean = false,
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
-        private var productImageList: ProductDetailImage? = null) : IViewType {
+        private var productImageList: ProductDetailImage? = null,
+        var urlKey: String = "") : IViewType, Parcelable {
+
+    constructor(parcel: Parcel) : this(
+            parcel.readLong(),
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.readDouble(),
+            parcel.readString() ?: "",
+            parcel.readDouble(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.createTypedArrayList(ProductGallery) ?: arrayListOf(),
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.readByte() != 0.toByte(),
+            parcel.readParcelable(ProductExtension::class.java.classLoader),
+            parcel.readParcelable(ProductDetailImage::class.java.classLoader),
+            parcel.readString() ?: "")
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -84,39 +112,51 @@ class Product(
 //        return image
     }
 
-    fun isSpecialPrice(): Boolean {
-        return if (specialFromDate != null && specialToDate != null) {
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-            val specialFormDateTime = formatter.parse(specialFromDate)
-            val specialToDateTime = formatter.parse(specialToDate)
-            val current = Date()
-            if (specialPrice < price) {
-                val formatToday = SimpleDateFormat("dd", Locale.ENGLISH)
-                val formatMonth = SimpleDateFormat("MM", Locale.ENGLISH)
-                val formatYear = SimpleDateFormat("yyy", Locale.ENGLISH)
-                if (formatToday.format(specialToDateTime) == formatToday.format(current)
-                        && formatMonth.format(specialToDateTime) == formatMonth.format(current)
-                        && formatYear.format(specialToDateTime) == formatYear.format(current)) {
-                    true
-                } else {
-                    (current.time >= specialFormDateTime.time) && (current.time <= specialToDateTime.time)
-                }
-            } else {
-                false
-            }
+    fun getMinSaleQty(): Int{
+        return if (extension?.stokeItem?.minQTY != null && extension!!.stokeItem!!.minQTY!! > 0){
+            extension!!.stokeItem!!.minQTY!!
         } else {
-            false
+            1 // default qty is 1 when min sale qty is null or min sale qty < 1
         }
     }
 
-    fun setProductImageList(productImageList: ProductDetailImage) {
-        this.productImageList = productImageList
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeLong(id)
+        parcel.writeString(sku)
+        parcel.writeString(name)
+        parcel.writeDouble(price)
+        parcel.writeString(typeId)
+        parcel.writeDouble(specialPrice)
+        parcel.writeString(specialFromDate)
+        parcel.writeString(specialToDate)
+        parcel.writeString(brand)
+        parcel.writeString(image)
+        parcel.writeString(deliveryMethod)
+        parcel.writeTypedList(gallery)
+        parcel.writeInt(viewTypeID)
+        parcel.writeInt(attributeID)
+        parcel.writeInt(status)
+        parcel.writeString(shippingMethods)
+        parcel.writeString(paymentMethod)
+        parcel.writeByte(if (isHDL) 1 else 0)
+        parcel.writeParcelable(extension, flags)
+        parcel.writeParcelable(productImageList, flags)
+        parcel.writeString(urlKey)
     }
 
-    companion object {
-        fun asProduct(product: ProductSearch): Product{
-            return Product(id = product.id!!, sku = product.sku!!, price = product.price!!,
-                    name = product.name!!, image = product.thumbnail?: "", brand = product.brand!!)
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Product> {
+        const val PRODUCT_TWO_HOUR = "storepickup_ispu"
+
+        override fun createFromParcel(parcel: Parcel): Product {
+            return Product(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Product?> {
+            return arrayOfNulls(size)
         }
     }
 }

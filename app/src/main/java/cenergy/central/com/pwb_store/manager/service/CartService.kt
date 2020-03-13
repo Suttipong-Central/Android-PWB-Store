@@ -3,10 +3,12 @@ package cenergy.central.com.pwb_store.manager.service
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
-import cenergy.central.com.pwb_store.model.response.BranchResponse
+import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.OrderResponse
 import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.http.*
 
 interface CartService {
@@ -19,9 +21,16 @@ interface CartService {
                    @Path("cartId") cartId: String,
                    @Body cartItemBody: CartItemBody): Call<CartItem>
 
-    @GET("/rest/{lang}/V1/guest-carts/{quoteId}/items")
+    @GET("/rest/{lang}/V1/guest-carts/{cartId}")
     fun viewCart(@Path("lang") language: String,
-                 @Path("quoteId") quoteID: String): Call<List<CartItem>>
+                 @Path("cartId") quoteID: String): Call<CartResponse>
+
+    @PUT("/rest/V1/guest-carts/{cartId}/coupons/{code}")
+    fun addCoupon(@Path("cartId") cartId: String,
+                  @Path("code") code: String): Call<Boolean>
+
+    @DELETE("/rest/V1/guest-carts/{cartId}/coupons")
+    fun deleteCoupon(@Path("cartId") cartId: String): Call<Boolean>
 
     @DELETE("/rest/V1/guest-carts/{cartId}/items/{itemId}")
     fun deleteItem(@Path("cartId") cartId: String,
@@ -33,7 +42,7 @@ interface CartService {
                    @Path("itemId") itemId: Long,
                    @Body updateItemBody: UpdateItemBody): Call<CartItem>
 
-//    @POST("/rest/{lang}/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
+    //    @POST("/rest/{lang}/V1/headless/guest-carts/{cartId}/estimate-shipping-methods")
     @POST("/rest/{lang}/V1/guest-carts/{cartId}/estimate-shipping-methods")
     fun getOrderDeliveryOptions(@Path("lang") language: String,
                                 @Path("cartId") cartId: String,
@@ -57,13 +66,7 @@ interface CartService {
                     @Body paymentInformation: PaymentInfoBody): Call<String>
 
     @GET("/rest/{lang}/V1/orders/{orderId}")
-    fun getOrder(
-            @Header("Authorization") token: String,
-            @Path("lang") language: String,
-            @Path("orderId") orderId: String): Call<OrderResponse>
-
-    @GET("/rest/{lang}/all/V1/headless/storepickup")
-    fun getBranches(@Path("lang") language: String,
-                    @Query("searchCriteria[sortOrders][0][field]") orderBy: String,
-                    @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
+    fun getOrder(@Header("Authorization") token: String,
+                @Path("lang") language: String,
+                @Path("orderId") orderId: String): Call<OrderResponse>
 }

@@ -2,10 +2,10 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,14 +16,17 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Category
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 import kotlinx.android.synthetic.main.activity_sub_header_product.view.*
 
 class SubHeaderProductFragment : Fragment() {
 
+    private val analytics by lazy { context?.let { Analytics(it) } }
     private var category: Category? = null
     private lateinit var adapter: CategoryAdapter
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         adapter = CategoryAdapter(context)
     }
@@ -39,6 +42,16 @@ class SubHeaderProductFragment : Fragment() {
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        category?.id?.let { loadCategories(it) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.CATEGORY_LV2)
+    }
+
     private fun setupView(rootView: View) {
         val subHeaderRecycler = rootView.sub_header_recycler
         val gridLayoutManager = GridLayoutManager(rootView.context, 3, LinearLayoutManager.VERTICAL, false)
@@ -48,11 +61,6 @@ class SubHeaderProductFragment : Fragment() {
         adapter.setCategoryHeader(category?.departmentName, arrayListOf()) // default
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        category?.id?.let { loadCategories(it) }
-    }
-
     fun foreRefresh(category: Category) {
         this.category = category
         loadCategories(category.id)
@@ -60,8 +68,8 @@ class SubHeaderProductFragment : Fragment() {
 
     private fun loadCategories(parentId: String) {
         activity?.let {
-            HttpManagerMagento.getInstance(it).retrieveCategory(parentId, true,
-                    object : ApiResponseCallback<List<Category>> {
+            HttpManagerMagento.getInstance(it).retrieveCategory(categoryId = parentId,
+                    includeInMenu =  true, callback = object : ApiResponseCallback<List<Category>> {
                         override fun success(response: List<Category>?) {
                             it.runOnUiThread {
                                 adapter.setCategoryHeader(category?.departmentName, response)

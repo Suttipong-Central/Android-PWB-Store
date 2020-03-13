@@ -1,17 +1,14 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus;
-import cenergy.central.com.pwb_store.model.ProductFilterItem;
 import cenergy.central.com.pwb_store.model.SortingItem;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
@@ -22,18 +19,15 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 public class SortingItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private static final String TAG = "SortingItemViewHolder";
 
-
-    @BindView(R.id.txt_item_filter)
-    PowerBuyTextView mTxtItem;
+    private PowerBuyTextView mTxtItem;
 
     public SortingItemViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mTxtItem = itemView.findViewById(R.id.txt_item_filter);
     }
 
     public void setViewHolder(SortingItem sortingItem) {
         itemView.setTag(sortingItem);
-
         mTxtItem.setText(sortingItem.getFilterName());
         mTxtItem.setTextAppearance(Contextor.getInstance().getContext(),sortingItem.isSelected() ? R.style.textSubCheck : R.style.textSub);
         itemView.setOnClickListener(this);

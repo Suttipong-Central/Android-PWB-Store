@@ -55,8 +55,9 @@
     <string name="add_to_cart">ใส่รถเข็น</string>
     <string name="tab_promotion">โปรโมชั่นและของแถม</string>
     <string name="tab_delivery">ตัวเลือกการจัดส่ง</string>
-    <string name="size">ไซต์:</string>
+    <string name="size">ไซต์</string>
     <string name="shade">สี:</string>
+    <string name="add_one_hour_item">รับที่ร้านใน 1 ชม.</string>
 
     <!-- Compare -->
     <string name="compare_header">เปรียบเทียบสินค้า</string>
@@ -180,6 +181,7 @@
     <string name="label_delivery_info">วิธีการจัดส่ง</string>
     <string name="label_the_one_number">The 1 No.</string>
     <string name="delivery_price">ค่าส่ง</string>
+    <string name="tax_id_success">เลขประจำตัวผู้เสียภาษี</string>
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
@@ -209,7 +211,7 @@
     <string name="not_found_data">ไม่พบข้อมูล</string>
     <string name="not_have_data">ไม่มีข้อมูล</string>
     <string name="name_user_order">ชื่อลูกค้า: </string>
-    <string name="receiver_name">ชื่อผู้รับ: </string>
+    <string name="receiver_name">ชื่อผู้รับ</string>
     <string name="order_date_history">วันที่สั่งซื้อ: </string>
     <string name="product">สินค้า</string>
     <string name="sort">เรียง</string>
@@ -224,6 +226,18 @@
     <string name="shopping_delete"><u>ลบ</u></string>
     <string name="t1_points">เมื่อซื้อ รับคะแนนเดอะวัน %d คะแนน</string>
     <string name="check_out">สั่งซื้อ</string>
+    <string name="format_shopping_cart_ispu">รับที่สาขาตั้งเเต่ %s ที่</string>
+    <string name="btn_complete_order">สั่งซื้อสินค้า</string>
+    <string name="empty_value">โปรดระบุจำนวนที่ต้องการซื้อ</string>
+    <string name="exceeds_maximum">จำนวนที่ต้องการซื้อเกินจากจำนวนที่สามารถสั่งซื้อได้</string>
+    <string name="discount">ส่วนลด</string>
+    <string name="add_coupon">ใช้คูปอง</string>
+    <string name="promotion_code">โค้ดส่วนลด</string>
+    <string name="cancel_coupon">ยกเลิกคูปอง</string>
+    <string name="enter_promo_code_hint">ใส่โค้ด</string>
+    <string name="enter_promo_code">กรุณากรอกรหัสคูปอง</string>
+    <string name="invalid_promo_code">รหัสคูปอง %s ไม่ถูกต้อง</string>
+    <string name="used_promo_code">คุณใช้รหัสคูปอง %s</string>
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
@@ -237,7 +251,10 @@
     <string name="error_form_passport_invalid">พาสปอร์ตไม่ถูกต้อง</string>
     <string name="error_form_name_en">Invalid name</string>
     <string name="error_verify_otp_time_out">ขออภัยการเชื่อมต่อผิดพลาด</string>
+
+    <!-- Store -->
     <string name="delivery">การจัดส่ง</string>
+    <string name="delivery_1hr_pickup">ร้านที่สามารถรับของได้ใน 1 ชม.</string>
     <string name="select_store_title">เลือกสาขาที่ต้องการรับสินค้า</string>
     <string name="store_address">ที่อยู่สาขา</string>
     <string name="telephone_number">หมายเลขโทรศัพท์</string>
@@ -264,6 +281,9 @@
     <string name="staff_descriptions_dialog">1. พาลูกค้าไปที่แคชเชียร์\n2. แสดงหน้าจอนี้ต่อแคชเชียร์ - ผู้ทำการรับเงิน\n3. เมื่อชำระเงินสำเร็จ ให้แคชเชียร์/เจ้าหน้าที่ ไปยังรายการสั่งซื้อในระบบหลังบ้าน\n4. ปรับ status ในระบบเป็น Payment Success</string>
     <string name="product_not_have_delivery">สินค้านี้ไม่มีการจัดส่งแบบติดตั้งที่บ้าน</string>
     <string name="cannot_get_shipping_slot">ไม่สามารถเรียกข้อมูลได้</string>
+    <string name="format_store_ispu_delivery">สั่งตอนนี้ รับได้ที่สาขา\nตั้งเเต่ %s</string>
+    <string name="error_store_pickup_empty">ไม่มีสาขาที่มีของครบทุกชิ้นที่คุณเลือก</string>
+    <string name="error_store_1h_pickup">ไม่มีร้านค้าที่มีสินค้าชิ้นนี้</string>
 
     <!-- Network state -->
     <string name="network_connect_error">ไม่มีอินเทอร์เน็ต</string>
@@ -300,10 +320,12 @@
     <!-- Payment-->
     <string name="select_payment_types">เลือกวิธีการจ่ายเงิน</string>
     <string name="not_found_payment_methods">ไม่พบวิธีการจ่ายเงิน</string>
-    <string name="fullpayment">Credit Card (Full Payment)</string>
-    <string name="installment">Pay by Installment</string>
-    <string name="pay_at_store">Pay at Store</string>
+    <string name="fullpayment">บัตรเครดิต (ชำระเงินเต็มจำนวน)</string>
+    <string name="installment">เลือกการผ่อนชำระสินค้า</string>
+    <string name="pay_at_store">จ่ายที่ร้านเมื่อรับของ</string>
     <string name="cash_on_delivery">บริการเก็บค่าสินค้าปลายทาง</string>
+    <string name="pay_here">จ่ายที่นี่</string>
+    <string name="pay_here_description">จ่ายในร้านเลยตอนนี้</string>
     <string name="require_tax">คุณต้องการใบกำกับภาษีเต็มรูปแบบหรือไม่</string>
     <string name="company">บริษัท</string>
     <string name="tax_id">เลขประจำตัวผู้เสียภาษี/เลขที่บัตรประจำตัวประชาชน</string>
@@ -315,9 +337,25 @@
     <string name="t1_member">หมายเลขสมาชิกเดอะวัน</string>
     <string name="title_earn_t1c_option">รับคะแนน T1</string>
     <string name="t1_change">เปลี่ยน</string>
+    <string name="t1_add">เพิ่ม</string>
     <string name="information">ข้อมูล</string>
     <string name="close">ปิด</string>
     <string name="payment_description">แสกนโค้ดเพื่อชำระเงินสำหรับคำสั่งซื้อนี้</string>
     <string name="please_add_compare">ไม่มีสินค้าในการเปรียบเทียบสินค้า กรุณาเพิ่มสินค้าเพื่อเปรียบเทียบสินค้า</string>
     <string name="the_1_error">หมายเลข T1 ต้องมีความยาว 10 หลัก และเป็นตัวเลขเท่านั้น</string>
+
+    <!-- Stock Indicator -->
+    <string name="label_stock_availability">สต๊อกสินค้า</string>
+    <string name="label_stock_online">ออนไลน์</string>
+    <string name="label_stock_store_offline">สาขานี้</string>
+    <string name="label_stock_stores_offline"><u>สาขาอื่น</u></string>
+    <string name="share_payment_link"><u>แชร์ลิ้งค์จ่ายเงิน</u></string>
+    <string name="error_tax_invalid">กรุณาระบุตัวเลขขั้นต่ำ 13 ตัวอักษร</string>
+
+    <!-- Share -->
+    <string name="title_share_to">แชร์</string>
+    <string name="share_line">ไลน์</string>
+    <string name="copied_to_clipboard">copied to clipboard!</string>
+    <string name="share_copy">คัดลอก</string>
+    <string name="cannot_display_history">ไม่สามารถเปิดประวัติรายการนี้ได้</string>
 </resources>

@@ -2,17 +2,17 @@ package cenergy.central.com.pwb_store.extensions
 
 import android.content.Context
 import android.os.Parcel
-import cenergy.central.com.pwb_store.Constants.Companion.SPECIAL_CATEGORIES
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.Category
+import cenergy.central.com.pwb_store.model.SubAddress
 import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
+fun List<CacheCartItem>.getPaymentType(context: Context): ArrayList<PaymentMethod> {
     val paymentType = arrayListOf<String>()
     forEach { product ->
         if (product.paymentMethod.isNotEmpty() && product.paymentMethod != "") {
@@ -37,7 +37,7 @@ fun List<CacheCartItem>.getPaymentType(context: Context): List<PaymentMethod> {
     return paymentMethodFilter
 }
 
-fun Int.dpToPx(context: Context): Int{
+fun Int.dpToPx(context: Context): Int {
     val density = context.resources.displayMetrics.density
     return (this.toFloat() * density).roundToInt()
 }
@@ -50,17 +50,12 @@ fun List<PaymentMethod>.getMethodTitle(): List<String> {
     return methods
 }
 
-fun Category.isSpecial(): Boolean {
-    val specialIDs = SPECIAL_CATEGORIES
-    return specialIDs.contains(this.id)
-}
-
-fun Parcel.writeLongList(input:List<Long>) {
+fun Parcel.writeLongList(input: List<Long>) {
     writeInt(input.size) // Save number of elements.
     input.forEach(this::writeLong) // Save each element.
 }
 
-fun Parcel.createLongList() : List<Long> {
+fun Parcel.createLongList(): List<Long> {
     val size = readLong()
     val output = ArrayList<Long>()
     for (i in 0 until size) {
@@ -72,4 +67,54 @@ fun Parcel.createLongList() : List<Long> {
 fun Double.toPriceDisplay(): String {
     val price = NumberFormat.getInstance(Locale.getDefault()).format(this)
     return "฿ $price"
+}
+
+fun Double.toStringDiscount(): Double {
+    return this.toString().replace("-", "").toDouble()
+}
+
+fun String?.toStringDiscount(): Double {
+    return this?.replace("-", "")?.toDouble() ?: 0.0
+}
+
+fun List<List<Long>>.findIntersect(): List<Long> {
+    val sum = arrayListOf<Long>()
+    this.forEach {
+        sum.addAll(it)
+    }
+    return sum.groupBy { it }.filter { it.value.size == this.size }.flatMap { it.value }
+}
+
+fun AddressInformation.modifyToCdsType(): AddressInformation {
+    val oldSubAddress = this.subAddress
+    var addressLine = ""
+
+    if (subAddress != null) {
+        if (!subAddress!!.houseNumber.isNullOrEmpty()) {
+            addressLine += subAddress!!.houseNumber + " "
+        }
+        if (!subAddress!!.soi.isNullOrEmpty()) {
+            addressLine += subAddress!!.soi + ", "
+        }
+        if (!subAddress!!.addressLine.isNullOrEmpty()) {
+            addressLine += subAddress!!.addressLine
+        }
+    }
+
+    val newSubAddress = SubAddress(mobile = oldSubAddress?.mobile,
+            houseNumber = "",
+            building = oldSubAddress?.building,
+            soi = "",
+            t1cNo = oldSubAddress?.t1cNo,
+            district = oldSubAddress?.district,
+            subDistrict = oldSubAddress?.subDistrict,
+            postcode = oldSubAddress?.postcode,
+            districtId = oldSubAddress?.districtId,
+            subDistrictId = oldSubAddress?.subDistrictId,
+            postcodeId = oldSubAddress?.postcodeId,
+            addressLine = addressLine
+    )
+
+    this.subAddress = newSubAddress
+    return this
 }

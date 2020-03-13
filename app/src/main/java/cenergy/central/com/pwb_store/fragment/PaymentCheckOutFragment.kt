@@ -2,21 +2,24 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.utils.ValidationHelper
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 
 class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
+    private val analytics by lazy { context?.let { Analytics(it) } }
     private var checkoutListener: CheckoutListener? = null
 
     private lateinit var contactInput : PowerBuyEditText
@@ -31,7 +34,7 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         checkoutListener = context as CheckoutListener
     }
@@ -40,6 +43,11 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
         val rootView = inflater.inflate(R.layout.fragment_payment_check_out, container, false)
         setupView(rootView)
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.START_CHECKOUT)
     }
 
     override fun afterTextChanged(s: Editable?) {

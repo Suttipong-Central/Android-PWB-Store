@@ -3,7 +3,7 @@ package cenergy.central.com.pwb_store.activity
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import cenergy.central.com.pwb_store.manager.network.NetworkReceiver
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage

@@ -11,6 +11,7 @@ class Constants {
         const val CLIENT_MAGENTO = "Bearer 8nifiryyf2j1pvvmi9tiuj2x4u7m0l9q"
         const val PWB_HOST_NAME = "staging-mdc.robinson.co.th"
         // endregion
+        const val WEB_HOST_NAME = "https://staging.central.co.th"
 
         // region central
         // UAT
@@ -26,6 +27,5 @@ class Constants {
         val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
         // endregion
 
-        val SPECIAL_CATEGORIES = arrayListOf("")
     }
 }

@@ -1,10 +1,10 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.content.Context
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.adapter.ProductItemAdapter
 import cenergy.central.com.pwb_store.adapter.CompareProductAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener

@@ -26,9 +26,4 @@ interface UserService {
     fun retrieveStoreLocation(@Path("lang") language: String,
                               @Query("criteria[filter_groups][0][filters][0][value]") sellerCode: String,
                               @Query("criteria[filter_groups][0][filters][0][field]") field: String): Call<StoreLocationResponse>
-
-    @GET("/rest/{lang}/all/V1/headless/storepickup")
-    fun getBranches(@Path("lang") language: String,
-                    @Query("searchCriteria[sortOrders][0][field]") orderBy: String,
-                    @Query("searchCriteria[sortOrders][0][direction]") direction: String): Call<BranchResponse>
 }

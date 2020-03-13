@@ -10,9 +10,9 @@ import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +30,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
@@ -58,10 +56,9 @@ public class WebViewFragment extends Fragment {
     private static final String ARG_MODE = "ARG_MODE";
     private static final String ARG_TITLE = "ARG_TITLE";
     //View Members
-    @BindView(R.id.progress_bar)
-    ProgressBar mProgressBar;
+    private ProgressBar mProgressBar;
     //Callback Members
-    final WebChromeClient mWebChromeClient = new WebChromeClient() {
+    private final WebChromeClient mWebChromeClient = new WebChromeClient() {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
             if (newProgress < 100 && mProgressBar.getVisibility() == View.GONE) {
@@ -75,14 +72,13 @@ public class WebViewFragment extends Fragment {
             }
         }
     };
-    @BindView(R.id.web_view)
-    WebView mWebView;
+    private WebView mWebView;
     //Data Members
     private String mWebUrl;
     private String mTitle;
     private int mMode;
     private ProgressDialog mProgressDialog;
-    final WebViewClient mWebViewClient = new WebViewClient() {
+    private final WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             if (BuildConfig.DEBUG) Log.d(TAG, "onPageStarted: url = " + url);
@@ -248,9 +244,8 @@ public class WebViewFragment extends Fragment {
 
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
-        // Init 'View' instance(s) with rootView.findViewById here
-        ButterKnife.bind(this, rootView);
-
+        mProgressBar = rootView.findViewById(R.id.progress_bar);
+        mWebView = rootView.findViewById(R.id.web_view);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.DKGRAY));
         } else {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view_grid"
@@ -15,8 +14,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:padding="5dp">
 
         <ImageView
@@ -24,16 +23,16 @@
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="10dp"
+            android:contentDescription="@string/product_detail"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
             android:paddingTop="10dp"
-            android:src="@drawable/ic_placeholder"
-            android:contentDescription="@string/product_detail" />
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/ic_launcher" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/img_product"
             android:layout_marginTop="20dp"
             android:gravity="center"
@@ -42,36 +41,34 @@
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_product_brand"
+                style="@style/textNameProduct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:gravity="start"
                 android:ellipsize="end"
+                android:gravity="start"
                 android:maxLines="2"
-                android:layout_marginLeft="5dp"
-                android:textColor="@color/nameProductColor"
-                style="@style/textNameProduct"
                 android:padding="5dp"
                 android:text="@string/brand"
+                android:textColor="@color/nameProductColor"
                 app:typeFaceAsset="RobotoLight.ttf"
                 tools:text="@string/brand" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_product_name"
+                style="@style/descriptionProduct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:gravity="start"
                 android:ellipsize="end"
+                android:gravity="start"
                 android:maxLines="2"
-                android:layout_marginLeft="5dp"
-                android:textColor="@color/nameProductColor"
-                style="@style/descriptionProduct"
                 android:padding="5dp"
+                android:textColor="@color/nameProductColor"
                 app:typeFaceAsset="RobotoLight.ttf"
                 tools:text="APPLE" />
 
@@ -80,20 +77,19 @@
                 android:id="@+id/txt_product_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:gravity="start"
                 android:ellipsize="end"
+                android:gravity="start"
                 android:maxLines="1"
-                android:layout_marginLeft="5dp"
-                android:textSize="16sp"
-                android:textColor="@color/nameProductColor"
-                android:textStyle="normal"
                 android:padding="5dp"
-                app:typeFaceAsset="RobotoLight.ttf"
+                android:textColor="@color/nameProductColor"
+                android:textSize="16sp"
+                android:textStyle="normal"
                 android:visibility="gone"
-                tools:text="iPhone SE MLXN2TH/A"/>
+                app:typeFaceAsset="RobotoLight.ttf"
+                tools:text="iPhone SE MLXN2TH/A" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -105,28 +101,24 @@
                     android:id="@+id/txt_product_old_price"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:layout_marginRight="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_weight="0.5"
                     android:gravity="start"
                     android:maxLines="1"
                     android:padding="5dp"
-                    android:textSize="14sp"
                     android:textColor="@color/nameProductColor"
+                    android:textSize="14sp"
                     app:typeFaceAsset="RobotoLight.ttf"
-                    tools:text="16,800"/>
+                    tools:text="16,800" />
 
                 <cenergy.central.com.pwb_store.view.PowerBuyTextView
                     android:id="@+id/txt_product_new_price"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginLeft="2dp"
                     android:layout_marginStart="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:maxLines="1"
                     android:padding="5dp"
@@ -134,11 +126,27 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     app:typeFaceAsset="RobotoLight.ttf"
-                    tools:text="12,600"/>
+                    tools:text="12,600" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/badge_2h"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    tools:src="@drawable/ic_2h_badge_en"
+                    android:contentDescription="@string/app_name" />
 
             </LinearLayout>
 
         </LinearLayout>
     </RelativeLayout>
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

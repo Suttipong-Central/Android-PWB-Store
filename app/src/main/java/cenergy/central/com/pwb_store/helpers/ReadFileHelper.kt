@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.helpers
 
 import android.content.Context
-import android.support.annotation.RawRes
+import androidx.annotation.RawRes
 import cenergy.central.com.pwb_store.Constants
 import com.google.gson.GsonBuilder
 import java.io.BufferedReader

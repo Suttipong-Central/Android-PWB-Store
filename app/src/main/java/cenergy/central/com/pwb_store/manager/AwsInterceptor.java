@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.manager;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.auth.AWS4Signer;

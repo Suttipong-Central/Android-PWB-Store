@@ -23,7 +23,17 @@ class DeliveryOption(
         var priceExcludeTax: String = "",
         @SerializedName("price_incl_tax")
         var priceIncludeTax: String = ""
-)
+) {
+    companion object {
+       fun getStorePickupIspu() : DeliveryOption {
+           return DeliveryOption(carrierCode = "storepickup",
+                   methodCode = "ispu",
+                   carrierTitle = "Store Pickup",
+                   methodTitle = "1 Hours Pickup",
+                   extension = DeliveryExtension())
+       }
+    }
+}
 
 data class DeliveryExtension(@SerializedName("pickup_locations")
                              var pickupLocations: List<PickupLocation> = arrayListOf(),
@@ -45,9 +55,9 @@ data class PickupLocation(var id: String = "",
                           var postcode: String = "",
                           var telephone: String? = "",
                           @SerializedName("lat")
-                          var latitude: String = "",
+                          var latitude: String? = "",
                           @SerializedName("long")
-                          var longitude: String = "",
+                          var longitude: String? = "",
                           @SerializedName("pickup_fee")
                           var pickupFee: String = "",
                           @SerializedName("pos_handling_fee")
@@ -56,10 +66,20 @@ data class PickupLocation(var id: String = "",
                           var extension: PickupExtension
 ) {
     fun asBranch(): Branch {
-        return Branch(storeId = id, street = address, city = extension.pickupAddressInfo.region,
-                phone = telephone
-                        ?: "", postcode = postcode, storeName = name, centralStoreCode = code,
-                latitude = latitude, longitude = longitude)
+        return Branch(storeId = id,
+                street = address,
+                city = extension.pickupAddressInfo.region,
+                phone = telephone ?: "",
+                postcode = postcode,
+                storeName = name,
+                centralStoreCode = code,
+                latitude = latitude ?: "",
+                longitude = longitude ?: "",
+                regionCode = province,
+                regionId = regionId.toInt(),
+                region = extension.pickupAddressInfo.region,
+                countryId = "TH",
+                sellerCode = code)
     }
 }
 

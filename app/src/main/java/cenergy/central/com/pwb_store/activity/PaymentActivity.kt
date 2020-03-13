@@ -1,33 +1,37 @@
 package cenergy.central.com.pwb_store.activity
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
+import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerHDL
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
+import cenergy.central.com.pwb_store.manager.api.BranchApi
 import cenergy.central.com.pwb_store.manager.api.HomeDeliveryApi
 import cenergy.central.com.pwb_store.manager.api.OrderApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
@@ -37,14 +41,14 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
+import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.showCommonDialog
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
@@ -63,29 +67,62 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // data
     private val database = RealmController.getInstance()
     private var cartId: String? = null
-    private var cartItemList: List<CartItem> = listOf()
+    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
-    private var pwbMembersList: List<PwbMember> = listOf()
+    private var eOrderingMembers: List<EOrderingMember> = listOf()
+    private var membersHDL: List<HDLCustomerInfos> = listOf()
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
     private var memberContact: String? = null
-    private var branches: ArrayList<Branch> = arrayListOf()
+    private var branches: ArrayList<BranchResponse> = arrayListOf()
     private var branch: Branch? = null
     private var userInformation: UserInformation? = null
     private var deliveryType: DeliveryType? = null
     private var enableShippingSlot: ArrayList<ShippingSlot> = arrayListOf()
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
-    private var paymentMethods = listOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("payatstore", "Pay at store")
+    private var paymentMethods = arrayListOf<PaymentMethod>()
+    private val paymentMethod = PaymentMethod("e_ordering", "Pay Here")
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
+    private var discountPrice = 0.0
+    private var promotionDiscount = 0.0
+    private var totalPrice = 0.0
+
+    // data product 2h
+    private var product2h: Product? = null
+    private var isEditStorePickup: Boolean = false
+    private var checkoutType: CheckoutType = CheckoutType.NORMAL
+
+    // Firebase
+    private val analytics by lazy { Analytics(this) }
+    private lateinit var fbRemoteConfig: FirebaseRemoteConfig
+    private var cacheExpiration: Long = 3600 // 1 hour in seconds.
 
     companion object {
         private const val TAG = "PaymentActivity"
-        fun intent(context: Context) {
+        private const val EXTRA_PRODUCT_2H = "extra_product_2h"
+        private const val EXTRA_CHECK_OUT_ISPU = "extra_check_out_ispu"
+        private const val EXTRA_EDIT_STORE_PICKUP = "extra_edit_store_pickup"
+
+        fun startCheckout(context: Context, isISPU: Boolean = false) {
             val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, isISPU)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+
+        fun startSelectStorePickup(context: Context, product: Product) {
+            val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_PRODUCT_2H, product)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
+
+        fun startEditStorePickup(context: Context) {
+            val intent = Intent(context, PaymentActivity::class.java)
+            intent.putExtra(EXTRA_CHECK_OUT_ISPU, true)
+            intent.putExtra(EXTRA_EDIT_STORE_PICKUP, true)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
     }
@@ -93,20 +130,43 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
+        // setup remote config
+        setupRemoteConfig()
+
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
         languageButton.visibility = View.INVISIBLE
         handleChangeLanguage() // update language
+
         initView()
 
         showProgressDialog()
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
         specialSKUList = getSpecialSKUList()
-        cacheCartItems = database.cacheCartItems
-        paymentMethods = cacheCartItems.getPaymentType(this)
-        startCheckOut() // default page
-        getCartItems()
+
+        // is start select store with product 2h?
+        if (intent.hasExtra(EXTRA_PRODUCT_2H)) {
+            this.product2h = intent.getParcelableExtra(EXTRA_PRODUCT_2H)
+            this.checkoutType = CheckoutType.ISPU
+            checkoutWithProduct2hr(this.product2h!!)
+        } else {
+            val isISPU = intent.getBooleanExtra(EXTRA_CHECK_OUT_ISPU, false)
+            isEditStorePickup = intent.getBooleanExtra(EXTRA_EDIT_STORE_PICKUP, false)
+            this.checkoutType = if (isISPU) CheckoutType.ISPU else CheckoutType.NORMAL
+            if (!isEditStorePickup) {
+                fetchEorderingConfig()
+            } else {
+                onEditStorePickup()
+            }
+        }
+    }
+
+    private fun onEditStorePickup() {
+        mProgressDialog?.dismiss()
+        val fragment = DeliveryStorePickUpFragment.newInstance(is2hrProduct = true,
+                editStorePickup = true)
+        startFragment(fragment)
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
@@ -129,13 +189,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (contactNo == null) {
             if (currentState == NetworkInfo.State.CONNECTED) {
                 membersList = listOf() // clear membersList
+                analytics.trackCustomerSource(CustomerSource.NEW_USER)
                 startBilling()
             } else {
-                showAlertDialog("", getString(R.string.not_connected_network))
+                showCommonDialog(getString(R.string.not_connected_network))
             }
         } else {
             memberContact = contactNo
-            getCustomerPWB(contactNo)
+            startRetrieveMemberContact(contactNo)
         }
     }
     // endregion
@@ -149,6 +210,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         theOneCardNo = member.cards[0].cardNo
         getT1CMember(member.customerId)
     }
+
+    override fun onClickedHDLMember(position: Int) {
+        startBilling(membersHDL[position])
+    }
     // endregion
 
     // region {@link PaymentBillingListener}
@@ -157,20 +222,25 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.shippingAddress = shippingAddress
         this.billingAddress = billingAddress
         this.theOneCardNo = t1cNumber
-        cartId?.let { getDeliveryOptions(it) } // request delivery options
+        cartId?.let { getDeliveryOptions(it) } // request delivery options]
     }
+
+    override fun setBillingAddressWithIspu(billingAddress: AddressInformation, t1cNumber: String) {
+        this.shippingAddress = billingAddress // sent only address box 1
+        this.theOneCardNo = t1cNumber
+        createOrderWithIspu() }
     // endregion
 
     // region {@link PaymentT1Listener}
     override fun onChangingT1Member(mobile: String) {
         Log.d(TAG, mobile)
         showProgressDialog()
-        getMembersT1C(mobile)
+        getMembersT1CChanged(mobile)
     }
 
     override fun onSelectedT1Member(the1Member: MemberResponse) {
-        if (currentFragment is PaymentSelectMethodFragment) {
-            (currentFragment as PaymentSelectMethodFragment).updateT1MemberInput(the1Member)
+        if (currentFragment is PaymentBillingFragment) {
+            (currentFragment as PaymentBillingFragment).updateT1MemberInput(the1Member)
             //update t1 card no.
             theOneCardNo = the1Member.cards[0].cardNo
         }
@@ -181,12 +251,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onSelectedOptionListener(deliveryOption: DeliveryOption) {
         this.deliveryOption = deliveryOption // set delivery option
         deliveryType = DeliveryType.fromString(deliveryOption.methodCode)
+        analytics.trackSelectDelivery(deliveryOption.methodCode)
         when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
-                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
-                        null, null, null)
-                handleCreateShippingInformation(deliveryOption, subscribeCheckOut)
+                val addressInfoExtBody = AddressInfoExtensionBody(checkout = shippingAddress!!.email)
+                handleCreateShippingInformation(deliveryOption, addressInfoExtBody)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -199,21 +269,74 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun isUserChatAndShop(): Boolean {
-        return if (userInformation != null) {
-            if (userInformation!!.user != null) {
-                userInformation!!.user!!.getChatAndShopUser()
-            } else {
-                false
-            }
+    private fun standardCheckout() {
+        cacheCartItems = database.cacheCartItems
+        paymentMethods = cacheCartItems.getPaymentType(this)
+        startCheckOut() // default page
+        getItemTotal()
+    }
+
+    private fun checkoutWithProduct2hr(product: Product) {
+        showProgressDialog()
+        if (database.provinces != null && database.provinces.isNotEmpty()) {
+            BranchApi().getBranchesISPU(this, product.sku,
+                    object : ApiResponseCallback<List<BranchResponse>> {
+                        override fun success(response: List<BranchResponse>?) {
+                            runOnUiThread {
+                                if (response != null) {
+                                    branches.clear()
+                                    branches.addAll(response)
+                                    val fragment = DeliveryStorePickUpFragment.newInstance(true)
+                                    startFragment(fragment)
+                                }
+
+                                mProgressDialog?.dismiss()
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            runOnUiThread {
+                                showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                        DialogInterface.OnClickListener { dialog, which ->
+                                            dialog?.dismiss()
+                                            finish()
+                                        })
+                            }
+                        }
+                    })
         } else {
-            false
+            loadProvinceData()
         }
+    }
+
+    /*
+    * If no have provinces data must force download province data
+    * because in Branch detail page have to display about address
+    * */
+    private fun loadProvinceData() {
+        showProgressDialog()
+
+        HttpManagerMagento.getInstance(this).getProvinces(true,
+                object : ApiResponseCallback<List<Province>> {
+                    override fun success(response: List<Province>?) {
+                        // JUST FOR OPEN STORE PICK PAGE WITH PRODUCT 2H
+                        product2h?.let { checkoutWithProduct2hr(it) }
+                    }
+
+                    override fun failure(error: APIError) {
+                        showCommonDialog(null, getString(R.string.some_thing_wrong),
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    dialog?.dismiss()
+                                    finish()
+                                })
+                        mProgressDialog?.dismiss()
+                    }
+                })
     }
 
     // region {@link PaymentTypesClickListener}
     override fun onPaymentTypeClickListener(paymentMethod: PaymentMethod) {
-        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
+        showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
     }
     // endregion
 
@@ -223,9 +346,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         showProgressDialog()
         this.shippingSlot = shippingSlot // set shipping slot
-        val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email,
-                shippingDate, shippingSlot.slotExtension.daySlotId.toString(),
-                shippingSlot.getTimeDescription())
+        val subscribeCheckOut = AddressInfoExtensionBody(
+                checkout = shippingAddress!!.email,
+                shippingDate = shippingDate,
+                shippingSlotInDay = shippingSlot.slotExtension?.daySlotId.toString(),
+                shippingSlotDescription = shippingSlot.getTimeDescription())
 
         handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
     }
@@ -251,8 +376,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         clearCachedCart() // clear cache item
     }
 
-    private fun startStorePickupFragment(totalBranch: Int) {
-        val fragment = DeliveryStorePickUpFragment.newInstance(totalBranch)
+    private fun startStorePickupFragment() {
+        val fragment = DeliveryStorePickUpFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -283,6 +408,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startSelectMethod() {
         val fragment = PaymentSelectMethodFragment.newInstance(deliveryOption.methodCode)
+        startFragment(fragment)
+    }
+
+    private fun startBilling(member: HDLCustomerInfos?) {
+        val fragment = if (member != null) PaymentBillingFragment.newInstance(member) else
+            PaymentBillingFragment.newInstance()
         startFragment(fragment)
     }
 
@@ -326,25 +457,61 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun getCartItems() {
+    private fun getItemTotal() {
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).viewCart(cartId, object : ApiResponseCallback<List<CartItem>> {
-                override fun success(response: List<CartItem>?) {
-                    mProgressDialog?.dismiss()
-                    if (response != null) {
-                        cartItemList = response
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
+                override fun success(response: CartTotalResponse?) {
+                    runOnUiThread {
+                        if (response != null) {
+                            handleGetCartItemsSuccess(response)
+                        } else {
+                            showCommonDialog(getString(R.string.cannot_get_cart_item))
+                        }
+                        mProgressDialog?.dismiss()
                     }
                 }
 
                 override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        showCommonAPIErrorDialog(error)
+                    }
                 }
             })
         }
     }
 
-    fun showAlertDialogCheckSkip(title: String, message: String, checkSkip: Boolean) {
+    private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
+        this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
+        this.totalPrice = cartTotal.totalPrice
+        val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
+        if (discount != null) {
+            this.discountPrice = discount.value.toStringDiscount()
+        }
+        val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
+        if (coupon != null) {
+            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+            this.promotionDiscount = couponDiscount?.couponAmount.toStringDiscount()
+            this.discountPrice -= promotionDiscount
+            this.totalPrice -= promotionDiscount
+        }
+        if (discountPrice > 0) {
+            this.totalPrice -= discountPrice
+        }
+
+        // check retrieving eodering customer information
+        val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
+        val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+        val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
+
+        if (!isEorderingMemberOn && !isT1CMemberOn && !isHDLMemberOn) { // all have no enable
+            startBilling()
+        } else {
+            startCheckOut() // default page
+        }
+    }
+
+    fun showAlertDialogCheckSkip(message: String, checkSkip: Boolean) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
         if (checkSkip) {
@@ -353,40 +520,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         } else {
             builder.setPositiveButton(android.R.string.ok) { _, _ -> startCheckOut() }
         }
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
         builder.show()
     }
 
-    private fun showAlertDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
-    }
-
-    private fun showFinishActivityDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
-                    dialog.dismiss()
-                    finish()
-                }
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
-    }
-
-    private fun showAlertCheckPayment(title: String, message: String, paymentMethod: PaymentMethod) {
+    private fun showAlertCheckPayment(message: String, paymentMethod: PaymentMethod) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
+                    // tracking payment method
+                    analytics.trackSelectPayment(paymentMethod.code)
                     updateOrder(paymentMethod)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
@@ -394,66 +536,62 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     mProgressDialog?.dismiss()
                 }
                 .setCancelable(false)
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
         builder.show()
     }
 
-    private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, subscribeCheckOut: SubscribeCheckOut) {
+    private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody) {
         if (cartId != null && shippingAddress != null) {
             when (val type = DeliveryType.fromString(deliveryOption.methodCode)) {
-                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, subscribeCheckOut)
-                else -> createShippingInfor(type, subscribeCheckOut)
+                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
+                else -> createShippingInfor(type, addressInfoExtensionBody)
             }
         }
     }
 
-    private fun createShippingInfor(type: DeliveryType?, subscribeCheckOut: SubscribeCheckOut) {
+    private fun createShippingInfor(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody) {
         type ?: return // type null?
         HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
-                billingAddress ?: shippingAddress!!, subscribeCheckOut,
+                billingAddress ?: shippingAddress!!, addressInfoExtensionBody,
                 deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
             override fun success(response: ShippingInformationResponse?) {
-                mProgressDialog?.dismiss()
                 if (response != null) {
                     handleShippingInforSuccess(type, response.paymentMethods)
                 } else {
-                    showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                    showCommonDialog(resources.getString(R.string.some_thing_wrong))
+                    mProgressDialog?.dismiss()
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
-                DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                showCommonAPIErrorDialog(error)
             }
         })
     }
 
-    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, subscribeCheckOut: SubscribeCheckOut) {
+    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody) {
         if (branch == null || type == null) {
             return
         }
         val storeAddress = AddressInformation.createBranchAddress(branch!!)
-        HttpManagerMagento(this, true).createShippingInformation(cartId!!, storeAddress,
-                billingAddress
-                        ?: shippingAddress!!, subscribeCheckOut, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
-                object : ApiResponseCallback<ShippingInformationResponse> {
-                    override fun success(response: ShippingInformationResponse?) {
-                        mProgressDialog?.dismiss()
-                        if (response != null) {
-                            handleShippingInforSuccess(type, response.paymentMethods)
-                        } else {
-                            showAlertDialog("", resources.getString(R.string.some_thing_wrong))
-                        }
-                    }
+        HttpManagerMagento(this, true)
+                .createShippingInformation(cartId!!, storeAddress, billingAddress
+                        ?: shippingAddress!!, addressInfoExtensionBody, deliveryOption, // if shipping at store, BillingAddress is ShippingAddress
+                        object : ApiResponseCallback<ShippingInformationResponse> {
+                            override fun success(response: ShippingInformationResponse?) {
+                                if (response != null) {
+                                    handleShippingInforSuccess(type, response.paymentMethods)
+                                } else {
+                                    showCommonDialog(resources.getString(R.string.some_thing_wrong))
+                                    mProgressDialog?.dismiss()
+                                }
+                            }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        DialogHelper(this@PaymentActivity).showErrorDialog(error)
-                    }
-                })
+                            override fun failure(error: APIError) {
+                                mProgressDialog?.dismiss()
+                                showCommonAPIErrorDialog(error)
+                            }
+                        })
     }
 
     private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
@@ -462,103 +600,146 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             return
         }
 
-        // TODO: remove function verify user chatandshop
-        if (isUserChatAndShop()) {
-            selectPaymentTypes(paymentMethods)
-        } else {
-            showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-        }
+        displayEorderingPayment(paymentMethods)
     }
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
-        //TODO-HDL:  Change to new api
         showProgressDialog()
         shippingSlot?.let {
             HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
                 override fun success(response: ShippingSlot?) {
-                    // TODO: remove function verify user chatandshop
-                    mProgressDialog?.dismiss()
-                    if (isUserChatAndShop()) {
-                        selectPaymentTypes(paymentMethods)
-                    } else {
-                        showAlertCheckPayment("", resources.getString(R.string.confirm_oder), paymentMethod)
-                    }
+                    displayEorderingPayment(paymentMethods)
                 }
 
                 override fun failure(error: APIError) {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             })
         }
     }
 
+    private fun displayEorderingPayment(paymentMethods: ArrayList<PaymentMethod>) {
+        if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
+            selectPaymentTypes(paymentMethods)
+        } else {
+            showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
+        }
+
+        mProgressDialog?.dismiss()
+    }
 
     private fun selectPaymentTypes(paymentMethodsFromAPI: ArrayList<PaymentMethod>) {
-        if (this.paymentMethods.isEmpty()) {
-            if (paymentMethodsFromAPI.isEmpty()) {
-                showFinishActivityDialog("", getString(R.string.not_found_payment_methods))
-            } else {
-                this.paymentMethods = paymentMethodsFromAPI
-                startSelectMethod()
-            }
+        if (paymentMethodsFromAPI.isEmpty()) {
+            showCommonDialog(getString(R.string.not_found_payment_methods))
         } else {
+            this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
+            val isEorderingPaymentOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_PAYMENT_ON)
+            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
+                this.paymentMethods.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
+            }
             startSelectMethod()
         }
     }
 
-    private fun getCustomerPWB(mobile: String) {
+    private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>): ArrayList<PaymentMethod> {
+        val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
+        val result = methods.filter {
+            supportedPaymentMethods.contains(it.code, true)
+        }
+        return ArrayList(result)
+    }
+
+    private fun startRetrieveMemberContact(memberContact: String) {
+        val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
+        val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+        val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
+
+        when {
+            isEorderingMemberOn -> getEorderingMember(memberContact)
+            isHDLMemberOn -> getHDLMember(memberContact)
+            isT1CMemberOn -> getMembersT1C(memberContact)
+        }
+    }
+
+    private fun getEorderingMember(mobile: String) {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getPWBCustomer(mobile, object : ApiResponseCallback<List<PwbMember>> {
-            override fun success(response: List<PwbMember>?) {
-                runOnUiThread {
-                    if (response != null && response.isNotEmpty()) { // it can be null
-                        this@PaymentActivity.pwbMembersList = response
-                        mProgressDialog?.dismiss()
-                        startMembersFragment()
-                    } else {
-                        getMembersT1C(mobile)
+        HttpManagerMagento.getInstance(this).getPWBCustomer(mobile,
+                object : ApiResponseCallback<List<EOrderingMember>> {
+                    override fun success(response: List<EOrderingMember>?) {
+                        runOnUiThread {
+                            if (response != null && response.isNotEmpty()) { // it can be null
+                                this@PaymentActivity.eOrderingMembers = response
+                                analytics.trackCustomerSource(CustomerSource.BU)
+                                mProgressDialog?.dismiss()
+                                startMembersFragment()
+                            } else {
+                                getHDLMember(mobile)
+                            }
+                        }
                     }
+
+                    override fun failure(error: APIError) {
+                        runOnUiThread {
+                            getHDLMember(mobile)
+                            Log.d("Payment", error.errorCode ?: "")
+                        }
+                    }
+                })
+    }
+
+    private fun getHDLMember(number: String) {
+        val isHDLMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_HDL_MEMBER_ON)
+        if (!isHDLMemberOn) { // hdl on?
+            getMembersT1C(number)
+            return
+        }
+
+        showProgressDialog()
+        HttpManagerHDL.getInstance(this).getHDLCustomer(number, object : ApiResponseCallback<HDLMemberResponse> {
+            override fun success(response: HDLMemberResponse?) {
+                if (response?.customerInfos != null) {
+                    this@PaymentActivity.membersHDL = response.customerInfos ?: listOf()
+                    analytics.trackCustomerSource(CustomerSource.HDL)
+                    mProgressDialog?.dismiss()
+                    startMembersFragment()
+                } else {
+                    getMembersT1C(number)
+                    Log.d("Payment", "not found HDL customer")
                 }
             }
 
             override fun failure(error: APIError) {
-                runOnUiThread {
-                    getMembersT1C(mobile)
-                }
+                getMembersT1C(number)
                 Log.d("Payment", error.errorCode ?: "")
             }
-
         })
     }
 
     private fun getMembersT1C(mobile: String) {
+        val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
+        if (!isT1CMemberOn) { // t1c on?
+            showAlertDialogCheckSkip(resources.getString(R.string.not_have_user), true)
+            mProgressDialog?.dismiss()
+            return
+        }
+
+        showProgressDialog()
         HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ",
                 object : ApiResponseCallback<List<MemberResponse>> {
                     override fun success(response: List<MemberResponse>?) {
                         mProgressDialog?.dismiss()
-
                         // is PaymentCheckOutFragment?
                         if (currentFragment is PaymentCheckOutFragment) {
                             if (response != null && response.isNotEmpty()) {
                                 this@PaymentActivity.membersList = response
+                                analytics.trackCustomerSource(CustomerSource.T1)
                                 startMembersFragment()
                             } else {
-                                showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
+                                showAlertDialogCheckSkip(resources.getString(R.string.not_have_user), true)
                             }
                         }
 
-                        // is PaymentSelectMethodFragment
-                        if (currentFragment is PaymentSelectMethodFragment) {
-                            if (response != null && response.isNotEmpty()) {
-                                this@PaymentActivity.membersList = response
-                                Log.d(TAG, "${response.size}")
-                                T1MemberDialogFragment.newInstance().show(supportFragmentManager,
-                                        T1MemberDialogFragment.TAG_FRAGMENT)
-                            } else {
-                                this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
-                            }
-                        }
                     }
 
                     override fun failure(error: APIError) {
@@ -566,17 +747,37 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             mProgressDialog?.dismiss()
 
                             if (error.errorCode == null) {
-                                showAlertDialog("", getString(R.string.not_connected_network))
+                                showCommonDialog(resources.getString(R.string.some_thing_wrong))
                             } else {
-                                // is PaymentCheckOutFragment?
-                                if (currentFragment is PaymentCheckOutFragment) {
-                                    showAlertDialogCheckSkip("", resources.getString(R.string.not_have_user), true)
-                                }
+                                showAlertDialogCheckSkip(resources.getString(R.string.not_have_user), true)
+                            }
+                        }
+                    }
+                })
+    }
 
-                                // is PaymentSelectMethodFragment
-                                if (currentFragment is PaymentSelectMethodFragment) {
-                                    this@PaymentActivity.showCommonDialog(getString(R.string.not_found_data))
-                                }
+    private fun getMembersT1CChanged(mobile: String) {
+        HttpMangerSiebel.getInstance(this).verifyMemberFromT1C(mobile, " ",
+                object : ApiResponseCallback<List<MemberResponse>> {
+                    override fun success(response: List<MemberResponse>?) {
+                        mProgressDialog?.dismiss()
+                        if (response != null && response.isNotEmpty()) {
+                            this@PaymentActivity.membersList = response
+                            Log.d(TAG, "${response.size}")
+                            T1MemberDialogFragment.newInstance().show(supportFragmentManager,
+                                    T1MemberDialogFragment.TAG_FRAGMENT)
+                        } else {
+                            showCommonDialog(getString(R.string.not_found_data))
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
+                        if (!isFinishing) {
+                            mProgressDialog?.dismiss()
+                            if (error.errorCode == null) {
+                                showCommonDialog(getString(R.string.not_connected_network))
+                            } else {
+                                showCommonDialog(getString(R.string.not_found_data))
                             }
                         }
                     }
@@ -592,16 +793,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     response.cardNo = theOneCardNo
                     startBilling(response)
                 } else {
-                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                    showAlertDialogCheckSkip(resources.getString(R.string.some_thing_wrong), false)
                 }
             }
 
             override fun failure(error: APIError) {
                 mProgressDialog?.dismiss()
                 if (error.errorCode == null) {
-                    showAlertDialog("", getString(R.string.not_connected_network))
+                    showCommonDialog(getString(R.string.not_connected_network))
                 } else {
-                    showAlertDialogCheckSkip("", resources.getString(R.string.some_thing_wrong), false)
+                    showAlertDialogCheckSkip(resources.getString(R.string.some_thing_wrong), false)
                 }
             }
         })
@@ -612,31 +813,40 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             HttpManagerMagento.getInstance(this).getOrderDeliveryOptions(cartId, it,
                     object : ApiResponseCallback<List<DeliveryOption>> {
                         override fun success(response: List<DeliveryOption>?) {
-                            mProgressDialog?.dismiss()
                             if (response != null) {
                                 this@PaymentActivity.shippingSlot = null // clear shipping slot
-                                deliveryOptionsList = response
+                                deliveryOptionsList = filterDeliveryOptions(response)
                                 startDeliveryOptions()
                             } else {
-                                showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                                showCommonDialog(getString(R.string.some_thing_wrong))
                             }
+                            mProgressDialog?.dismiss()
                         }
 
                         override fun failure(error: APIError) {
                             mProgressDialog?.dismiss()
-                            DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                            showCommonAPIErrorDialog(error)
                         }
                     })
+        }
+    }
+
+    private fun filterDeliveryOptions(response: List<DeliveryOption>): List<DeliveryOption> {
+        val supportedDeliveryOptions = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_DELIVERY_METHODS)
+        return response.filter {
+            supportedDeliveryOptions.contains(it.methodCode, true)
         }
     }
 
     private fun getStoresDelivery(deliveryOption: DeliveryOption) {
         this.branches = arrayListOf() // clear branch list
         when (BuildConfig.FLAVOR) {
-            "cds","rbs" -> {
+            "pwb" -> {
+                loadBranches()
+            }
+            else -> {
                 handlePickupLocationList(deliveryOption.extension.pickupLocations)
             }
-            else -> loadBranches()
         }
     }
 
@@ -644,8 +854,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
      * FOR CDS using pickup locations (we cast it to branch model)
      */
     private fun handlePickupLocationList(pickupLocations: List<PickupLocation>) {
-        pickupLocations.mapTo(branches) { it.asBranch() } // add pickup location to branch
-        startStorePickupFragment(pickupLocations.size)
+        pickupLocations.mapTo(branches) { BranchResponse(branch = it.asBranch()) } // add pickup location to branch
+        startStorePickupFragment()
 
         // TODO: handle sort with staff's storeID
 
@@ -653,25 +863,25 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun loadBranches() {
-        HttpManagerMagento.getInstance(this).getBranches(object : ApiResponseCallback<List<Branch>> {
-            override fun success(response: List<Branch>?) {
+        BranchApi().getBranchesSTS(this, object : ApiResponseCallback<List<BranchResponse>> {
+            override fun success(response: List<BranchResponse>?) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
                     if (response != null && userInformation != null) {
-                        val branch = response.firstOrNull { it.storeId == userInformation!!.store?.storeId.toString() }
+                        val branch = response.firstOrNull { it.branch.storeId == userInformation!!.store?.storeId.toString() }
                         if (branch != null) {
                             branches.add(branch)
-                            response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
-                                if (it.storeId != userInformation!!.store?.storeId.toString()) branches.add(it)
+                            response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
+                                if (it.branch.storeId != userInformation!!.store?.storeId.toString()) branches.add(it)
                             }
                         } else {
-                            response.sortedWith(compareBy { it.storeId.toInt() }).forEach {
+                            response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
                                 branches.add(it)
                             }
                         }
-                        startStorePickupFragment(response.size)
+                        startStorePickupFragment()
                     } else {
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        showCommonDialog(getString(R.string.some_thing_wrong))
                     }
                 }
             }
@@ -679,7 +889,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun failure(error: APIError) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             }
         })
@@ -699,6 +909,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         OrderApi().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email,
                 addressInfo!!, theOneCardNo, object : OrderApi.CreateOderCallback {
             override fun onSuccess(oderId: String?) {
+                analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {
                     if (oderId != null) {
                         hideBackButton()
@@ -710,16 +921,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         }
                     } else {
                         mProgressDialog?.dismiss()
-                        showAlertDialog("", resources.getString(R.string.some_thing_wrong))
+                        showCommonDialog(getString(R.string.some_thing_wrong))
                     }
                 }
             }
 
-            override fun onSuccessAndRedirect(oderId: String?, url: String) {
+            override fun onSuccessAndRedirect(orderId: String?, url: String) {
+                analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {
-                    oderId?.let {
+                    if (orderId != null) {
                         hideBackButton()
-                        getOrder(it, url)
+                        getOrder(orderId, url)
+                    } else {
+                        mProgressDialog?.dismiss()
+                        showCommonDialog(getString(R.string.some_thing_wrong))
                     }
                 }
             }
@@ -727,7 +942,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun onFailure(error: APIError) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
-                    DialogHelper(this@PaymentActivity).showErrorDialog(error)
+                    showCommonAPIErrorDialog(error)
                 }
             }
         })
@@ -739,13 +954,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentProtocol}
-    override fun getItems(): List<CartItem> = this.cartItemList
+    override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
 
-    override fun getPWBMembers(): List<PwbMember> = this.pwbMembersList
+    override fun getDiscount(): Double = this.discountPrice
 
-    override fun getPWBMemberByIndex(index: Int): PwbMember? {
-        return if (pwbMembersList.isNotEmpty()) {
-            this.pwbMembersList[index]
+    override fun getPromotionDiscount(): Double = this.promotionDiscount
+
+    override fun getTotalPrice(): Double = this.totalPrice
+
+    override fun getHDLMembers(): List<HDLCustomerInfos> = this.membersHDL
+
+    override fun getPWBMembers(): List<EOrderingMember> = this.eOrderingMembers
+
+    override fun getPWBMemberByIndex(index: Int): EOrderingMember? {
+        return if (eOrderingMembers.isNotEmpty()) {
+            this.eOrderingMembers[index]
         } else {
             null
         }
@@ -763,17 +986,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getEnableDateShipping(): ArrayList<ShippingSlot> = this.enableShippingSlot
 
-    override fun getBranches(): ArrayList<Branch> = this.branches
+    override fun getBranches(): ArrayList<BranchResponse> = this.branches
 
     override fun getSelectedBranch(): Branch? = this.branch
 
     override fun getPaymentMethods(): List<PaymentMethod> = this.paymentMethods
 
     override fun getT1CardNumber(): String = this.theOneCardNo
+
+    override fun getCheckType(): CheckoutType = this.checkoutType
     // endregion
 
     // region {@link StorePickUpListener}
-    override fun onUpdateStoreDetail(branch: Branch) {
+    override fun onUpdateStoreDetail(branch: BranchResponse) {
         if (currentFragment is DeliveryStorePickUpFragment) {
             (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(branch)
         }
@@ -784,15 +1009,118 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         userInformation?.let { userInformation ->
             if (userInformation.user != null && userInformation.store != null) {
                 showProgressDialog()
-                val storePickup = StorePickup(branch.storeId.toInt())
-                val subscribeCheckOut = SubscribeCheckOut(shippingAddress!!.email, null,
-                        null, null, storePickup)
-                // store shipping this case can be anything
-                handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
+                // TODO: Refactor checking app flavor
+                if (BuildConfig.FLAVOR == "pwb") {
+                    val storePickup = StorePickup(branch.storeId)
+                    val subscribeCheckOut = AddressInfoExtensionBody(
+                            checkout = shippingAddress!!.email,
+                            storePickup = storePickup)
+                    handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
+                } else { // cds, rbs?
+                    val pickerInfo = PickerInfo(
+                            firstName = shippingAddress!!.firstname,
+                            lastName = shippingAddress!!.lastname,
+                            email = shippingAddress!!.email,
+                            telephone = shippingAddress!!.telephone)
+                    val subscribeCheckOut = AddressInfoExtensionBody(
+                            checkout = shippingAddress!!.email,
+                            pickupLocationId = branch.storeId,
+                            pickerInfo = pickerInfo)
+                    handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
+                }
             }
         }
     }
+
+    override fun addProduct2hToCart(branchResponse: BranchResponse) {
+        showProgressDialog()
+        product2h?.let {
+            analytics.trackAddToCart(it.sku, "1h_pickup")
+
+            CartUtils(this).addProduct2hToCart(it, branchResponse, branches,
+                    object : AddProductToCartCallback {
+                        override fun onSuccessfully() {
+                            mProgressDialog?.dismiss()
+                            ShoppingCartActivity.startActivity(this@PaymentActivity)
+                            finish()
+                        }
+
+                        override fun forceClearCart() {
+                            //TODO: show dialog for clear cart
+                            mProgressDialog?.dismiss()
+                        }
+
+                        override fun onFailure(messageError: String) {
+                            showCommonDialog(messageError)
+                            mProgressDialog?.dismiss()
+                        }
+
+                        override fun onFailure(dialog: Dialog) {
+                            dialog.show()
+                            mProgressDialog?.dismiss()
+                        }
+                    })
+        }
+    }
+
+    // State Prduct 2h edit store pickup
+    override fun onProduct2hEditStorePickup(branchResponse: BranchResponse) {
+        showProgressDialog()
+        CartUtils(this).editStore2hPickup(branchResponse, object : EditStorePickupCallback {
+            override fun onSuccessfully() {
+                mProgressDialog?.dismiss()
+                ShoppingCartActivity.startActivity(this@PaymentActivity)
+                finish()
+            }
+
+            override fun onFailure(messageError: String) {
+                mProgressDialog?.dismiss()
+                showCommonDialog(messageError)
+            }
+        })
+    }
     // endregion
+
+    private fun setupRemoteConfig() {
+        fbRemoteConfig = FirebaseRemoteConfig.getInstance()
+
+        if (!BuildConfig.IS_PRODUCTION) { // is Production?
+            cacheExpiration = 0
+        }
+
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(cacheExpiration)
+                .build()
+        fbRemoteConfig.setDefaults(R.xml.remote_config_defaults)
+        fbRemoteConfig.setConfigSettingsAsync(configSettings)
+    }
+
+    private fun fetchEorderingConfig() {
+        showProgressDialog()
+        fbRemoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.i(TAG, "remote config -> fetch Successful")
+            } else {
+                Log.i(TAG, "remote config -> fetch Fail")
+            }
+
+            standardCheckout()
+        }
+    }
+
+    private fun createOrderWithIspu() {
+        val cacheCartItems = database.cacheCartItems
+        val item = cacheCartItems.find { it.branch != null }
+        if (item != null) {
+            this.branch = item.branch
+            this.deliveryOption = DeliveryOption.getStorePickupIspu() // create DeliveryOption Store Pickup ISPU
+
+            val storePickup = StorePickup(this.branch!!.storeId)
+            val subscribeCheckOut = AddressInfoExtensionBody(checkout = shippingAddress!!.email,
+                    storePickup = storePickup)
+            createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
+        }
+    }
 
     private fun getSpecialSKUList(): List<Long>? {
         return this.specialSKUList
@@ -802,7 +1130,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun backPressed() {
         if (currentFragment is DeliveryStorePickUpFragment) {
-            startDeliveryOptions()
+            // is state of checkout with product 2h?
+            if (product2h != null || isEditStorePickup) {
+                finish()
+            } else {
+                startDeliveryOptions()
+            }
             return
         }
 
@@ -818,22 +1151,30 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         if (currentFragment is PaymentBillingFragment) {
             resetData()
-            if (this.membersList.isNotEmpty() || this.pwbMembersList.isNotEmpty()) {
+            if (this.membersList.isNotEmpty() || this.eOrderingMembers.isNotEmpty()) {
                 startMembersFragment()
             } else {
+                if (this.memberContact.isNullOrEmpty()) {
+                    finish()
+                    return
+                }
                 startCheckOut()
             }
             return
         }
 
         if (currentFragment is PaymentSelectMethodFragment) {
-            startDeliveryOptions()
+            if(checkoutType == CheckoutType.ISPU){
+                startBilling()
+            } else {
+                startDeliveryOptions()
+            }
             return
         }
 
         if (currentFragment is PaymentMembersFragment) {
             this.membersList = listOf()
-            this.pwbMembersList = listOf()
+            this.eOrderingMembers = listOf()
             startCheckOut()
             return
         }
@@ -858,9 +1199,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (currentFocus != null) {
-            inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
-            inputManager.hideSoftInputFromInputMethod(currentFocus.windowToken, 0)
+        currentFocus?.let {
+            inputManager.hideSoftInputFromWindow(it.windowToken, 0)
+            inputManager.hideSoftInputFromInputMethod(it.windowToken, 0)
         }
     }
 
@@ -869,4 +1210,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
+}
+
+enum class CheckoutType {
+    NORMAL, ISPU
 }

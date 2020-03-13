@@ -1,10 +1,9 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.extensions.isSpecialPrice
 import cenergy.central.com.pwb_store.extensions.toPriceDisplay
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-import java.text.NumberFormat
-import java.util.*
 
 open class CompareProduct(@PrimaryKey var sku: String = "",
                           var name: String? = "",

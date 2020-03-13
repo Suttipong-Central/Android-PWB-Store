@@ -2,9 +2,9 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +12,16 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.MembersAdapter
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
-import cenergy.central.com.pwb_store.model.PwbMember
+import cenergy.central.com.pwb_store.model.EOrderingMember
+import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 
 class PaymentMembersFragment : Fragment() {
 
-    var listener: PaymentProtocol? = null
-    var membersList: List<MemberResponse> = listOf()
-    var pwbMembersList: List<PwbMember> = listOf()
+    private var listener: PaymentProtocol? = null
+    private var membersHDL: List<HDLCustomerInfos> = listOf()
+    private var membersList: List<MemberResponse> = listOf()
+    private var eOrderingMembersList: List<EOrderingMember> = listOf()
     private lateinit var recycler: RecyclerView
 
     companion object {
@@ -31,11 +33,12 @@ class PaymentMembersFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as PaymentProtocol
         listener?.let {
-            pwbMembersList = it.getPWBMembers()
+            membersHDL = it.getHDLMembers()
+            eOrderingMembersList = it.getPWBMembers()
             membersList = it.getMembers()
         }
     }
@@ -52,10 +55,10 @@ class PaymentMembersFragment : Fragment() {
         membersAdapter.setOnMemberClickListener(context as MemberClickListener)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.adapter = membersAdapter
-        if (pwbMembersList.isNotEmpty()) {
-            membersAdapter.memberList = pwbMembersList
-        } else {
-            membersAdapter.memberList = membersList
+        when {
+            membersHDL.isNotEmpty() -> membersAdapter.memberList = membersHDL
+            eOrderingMembersList.isNotEmpty() -> membersAdapter.memberList = eOrderingMembersList
+            else -> membersAdapter.memberList = membersList
         }
     }
 }

@@ -1,6 +1,6 @@
 package cenergy.central.com.pwb_store.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import cenergy.central.com.pwb_store.view.PowerBuyListDialog;
 

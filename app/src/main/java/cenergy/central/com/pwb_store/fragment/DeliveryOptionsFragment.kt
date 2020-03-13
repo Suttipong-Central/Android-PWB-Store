@@ -2,9 +2,9 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +14,11 @@ import cenergy.central.com.pwb_store.adapter.DeliveryOptionsAdapter
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.DeliveryType
+import cenergy.central.com.pwb_store.utils.Analytics
+import cenergy.central.com.pwb_store.utils.Screen
 
 class DeliveryOptionsFragment : Fragment() {
+    private val analytics by lazy { context?.let { Analytics(it) } }
 
     private lateinit var recyclerView: RecyclerView
     private var deliveryOptions: List<DeliveryOption> = arrayListOf()
@@ -44,22 +47,16 @@ class DeliveryOptionsFragment : Fragment() {
         return rootView
     }
 
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SELECT_DELIVERY)
+    }
+
     private fun setupView(rootView: View) {
         recyclerView = rootView.findViewById(R.id.delivery_options_recycler)
         val deliveryOptionsAdapter = DeliveryOptionsAdapter(deliveryOptionsListener)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = deliveryOptionsAdapter
-        deliveryOptionsAdapter.deliveryOptionList = getDeliveryOptionList()
-
-    }
-
-    private fun getDeliveryOptionList(): List<DeliveryOption> {
-        val deliveryMethods = arrayListOf<DeliveryOption>()
-        deliveryOptions.forEach {
-            if(DeliveryType.fromString(it.methodCode) != null){
-                deliveryMethods.add(it)
-            }
-        }
-        return deliveryMethods
+        deliveryOptionsAdapter.deliveryOptionList = deliveryOptions
     }
 }

@@ -1,8 +1,9 @@
 package cenergy.central.com.pwb_store.activity.interfaces
 
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.response.*
 import java.util.*
 
 /**
@@ -11,17 +12,22 @@ import java.util.*
  */
 
 interface PaymentProtocol {
-    fun getItems(): List<CartItem>
-    fun getPWBMembers(): List<PwbMember>
+    fun getItems(): List<ShoppingCartItem>
+    fun getTotalPrice(): Double
+    fun getDiscount(): Double
+    fun getPromotionDiscount(): Double
+    fun getHDLMembers(): List<HDLCustomerInfos>
+    fun getPWBMembers(): List<EOrderingMember>
     fun getMembers(): List<MemberResponse>
     fun getDeliveryOptions(): List<DeliveryOption>
     fun getShippingAddress(): AddressInformation?
     fun getBillingAddress(): AddressInformation?
     fun getSelectedDeliveryType(): DeliveryType?
     fun getEnableDateShipping(): ArrayList<ShippingSlot>
-    fun getBranches(): ArrayList<Branch>
+    fun getBranches(): ArrayList<BranchResponse>
     fun getSelectedBranch(): Branch?
-    fun getPWBMemberByIndex(index: Int): PwbMember?
+    fun getPWBMemberByIndex(index: Int): EOrderingMember?
     fun getPaymentMethods(): List<PaymentMethod>
     fun getT1CardNumber(): String
+    fun getCheckType(): CheckoutType
 }

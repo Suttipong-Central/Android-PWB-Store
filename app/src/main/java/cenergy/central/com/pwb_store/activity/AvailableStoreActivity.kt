@@ -2,10 +2,9 @@ package cenergy.central.com.pwb_store.activity
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.AvailableFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -14,12 +13,15 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
+import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 
 class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
+    private val analytics: Analytics? by lazy { Analytics(this) }
     private lateinit var mToolbar: Toolbar
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
@@ -51,6 +53,11 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.INVENTORY_CHECKS)
+    }
+
     private fun retrieveStoreStocks() {
         showProgressDialog()
         HttpManagerMagento.getInstance(this).getAvailableStore(sku!!, object : ApiResponseCallback<List<StoreAvailable>> {
@@ -64,8 +71,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
                                 .commitAllowingStateLoss()
                     } else {
                         val error = APIErrorUtils.parseError(response)
-                        Log.e(TAG, "onResponse: " + error.errorMessage)
-                        showAlertDialog(error.errorMessage, false)
+                        showAlertDialog(error.errorMessage?: getString(R.string.some_thing_wrong), false)
                     }
                 }
             }
@@ -73,7 +79,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
             override fun failure(error: APIError) {
                 runOnUiThread {
                     dismissProgressDialog()
-                    showAlertDialog(error.errorMessage, false)
+                    showAlertDialog(error.errorMessage?: getString(R.string.some_thing_wrong), false)
                 }
             }
         })

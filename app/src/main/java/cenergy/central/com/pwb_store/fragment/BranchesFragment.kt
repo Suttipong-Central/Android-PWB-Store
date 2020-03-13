@@ -2,29 +2,28 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.adapter.StoresDeliveryAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.model.Branch
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class BranchesFragment : Fragment(), StoreClickListener {
 
     private val storesAdapter = StoresDeliveryAdapter(this)
-    private var branches: ArrayList<Branch> = arrayListOf()
-    private lateinit var storesRecycler: RecyclerView
+    private var items: ArrayList<BranchResponse> = arrayListOf()
     private var listener: StorePickUpListener? = null
+    private lateinit var storesRecycler: RecyclerView
 
 
     companion object {
-        private const val PER_PAGE = 13
-
         fun newInstance(): BranchesFragment {
             val fragment = BranchesFragment()
             val args = Bundle()
@@ -33,7 +32,7 @@ class BranchesFragment : Fragment(), StoreClickListener {
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as StorePickUpListener
     }
@@ -48,24 +47,17 @@ class BranchesFragment : Fragment(), StoreClickListener {
         storesRecycler = rootView.findViewById(R.id.recycler_view_list_stores)
         storesRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         storesRecycler.adapter = storesAdapter
-        storesAdapter.branches = branches
+        storesAdapter.items = items
     }
 
-    fun updateBranches(branches: ArrayList<Branch>, totalBranch: Int) {
-        this.branches = branches
-        storesAdapter.branches = branches
+    fun updateBranches(items: ArrayList<BranchResponse>, checkoutType: CheckoutType) {
+        this.items = items
+        storesAdapter.updateItems(checkoutType, items)
     }
 
     // region {@link StoreClickListener.onItemClicked}
-    override fun onItemClicked(branch: Branch) {
-        listener?.onUpdateStoreDetail(branch)
+    override fun onItemClicked(branchResponse: BranchResponse) {
+        listener?.onUpdateStoreDetail(branchResponse)
     }
     // endregion
-
-    private fun totalPageCal(total: Int): Int {
-        val num: Int
-        val x = total.toFloat() / PER_PAGE
-        num = Math.ceil(x.toDouble()).toInt()
-        return num
-    }
 }

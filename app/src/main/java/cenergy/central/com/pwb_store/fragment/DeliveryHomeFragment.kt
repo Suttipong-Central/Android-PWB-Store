@@ -3,10 +3,10 @@ package cenergy.central.com.pwb_store.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -63,7 +63,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as PaymentProtocol
         deliveryHomeListener = context as DeliveryHomeListener
@@ -97,18 +97,22 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
     }
 
     private fun pickDate() {
-        val calendar = Calendar.getInstance()
-        calendar.time = tempDate
-        val dpd = DatePickerDialog.newInstance(
-                this@DeliveryHomeFragment,
-                calendar.get(Calendar.YEAR), // Initial year selection
-                calendar.get(Calendar.MONTH), // Initial month selection
-                calendar.get(Calendar.DAY_OF_MONTH) // Inital day selection
-        )
-        context?.let { dpd.accentColor = ContextCompat.getColor(it, R.color.powerBuyPurple) }
-        dpd.isThemeDark = false
-        dpd.selectableDays = enableDateList.toArray(arrayOf())
-        dpd.show(activity?.fragmentManager, "Datepickerdialog")
+        if (shippingSlots.isNotEmpty()){
+            val calendar = Calendar.getInstance()
+            calendar.time = tempDate
+            val dpd = DatePickerDialog.newInstance(
+                    this@DeliveryHomeFragment,
+                    calendar.get(Calendar.YEAR), // Initial year selection
+                    calendar.get(Calendar.MONTH), // Initial month selection
+                    calendar.get(Calendar.DAY_OF_MONTH) // Inital day selection
+            )
+            context?.let { dpd.accentColor = ContextCompat.getColor(it, R.color.powerBuyPurple) }
+            dpd.isThemeDark = false
+            dpd.selectableDays = enableDateList.toArray(arrayOf())
+            dpd.show(activity?.fragmentManager, "Datepickerdialog")
+        } else {
+            context?.let { showAlertDialog(it, "", getString(R.string.not_have_day_to_delivery)) }
+        }
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
@@ -158,7 +162,7 @@ class DeliveryHomeFragment : Fragment(), TimeSlotClickListener, View.OnClickList
 
             if (selectedSlots.isNotEmpty()) {
                 timeSlotDialog = timeSlotDialogFragment.newInstance(selectedSlots)
-                timeSlotDialog.show(fragmentManager, "dialog")
+                timeSlotDialog.show(childFragmentManager, "dialog")
             }
         }
     }

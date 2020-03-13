@@ -3,4 +3,5 @@
     <string name="app_name" translatable="false">E-Ordering</string>
     <string name="watermark_business" translatable="false">Robinson</string>
     <string name="watermark_environment" translatable="false">Release</string>
+    <string name="hostname_deep_link" translatable="false">www.robinson.co.th</string>
 </resources>

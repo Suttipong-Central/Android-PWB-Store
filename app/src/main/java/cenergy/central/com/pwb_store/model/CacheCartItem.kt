@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import cenergy.central.com.pwb_store.model.response.BranchResponse
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -16,8 +17,9 @@ open class CacheCartItem(
         var cartId: String? = "",
         var imageUrl: String = "",
         var maxQTY: Int? = 0,
-        var qtyInStock: Int? = 0, // qty of product
-        var paymentMethod: String = "") : RealmObject(), Parcelable {
+        var qtyInStock: Int? = null,
+        var paymentMethod: String = "",
+        var branch: Branch? = null) : RealmObject(), Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readValue(Long::class.java.classLoader) as? Long,
@@ -27,10 +29,10 @@ open class CacheCartItem(
             parcel.readValue(Double::class.java.classLoader) as? Double,
             parcel.readString(),
             parcel.readString(),
-            parcel.readString(),
+            parcel.readString() ?: "",
             parcel.readValue(Int::class.java.classLoader) as? Int,
             parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readString())
+            parcel.readString() ?: "")
 
     fun updateItem(cartItem: CartItem) {
         this.itemId = cartItem.id
@@ -70,12 +72,12 @@ open class CacheCartItem(
                     itemId = cartItem.id,
                     sku = cartItem.sku,
                     qty = cartItem.qty,
-                    name = cartItem.name,
+                    name = product.name,
                     price = cartItem.price,
                     type = cartItem.type,
                     cartId = cartItem.cartId,
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
-                    qtyInStock = product.extension?.stokeItem?.qty ?: 0,
+                    qtyInStock = product.extension?.stokeItem?.qty,
                     imageUrl = product.getImageUrl(),
                     paymentMethod = product.paymentMethod) // cache payment_method
         }
@@ -91,8 +93,24 @@ open class CacheCartItem(
                     type = cartItem.type,
                     cartId = cartItem.cartId,
                     maxQTY = compareProduct.maxQty ?: 1,
-                    qtyInStock = compareProduct.qtyInStock ?: 1,
+                    qtyInStock = compareProduct.qtyInStock,
                     imageUrl = compareProduct.imageUrl)
+        }
+
+        @JvmStatic
+        fun asCartItem(cartItem: CartItem, product: Product, branchResponse: BranchResponse): CacheCartItem {
+            return CacheCartItem(
+                    itemId = cartItem.id,
+                    sku = cartItem.sku,
+                    qty = cartItem.qty,
+                    name = cartItem.name,
+                    price = cartItem.price,
+                    type = cartItem.type,
+                    cartId = cartItem.cartId,
+                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
+                    qtyInStock = branchResponse.sourceItem?.quantity?: 0,
+                    imageUrl = product.getImageUrl(),
+                    branch = branchResponse.branch)
         }
 
         override fun createFromParcel(parcel: Parcel): CacheCartItem {

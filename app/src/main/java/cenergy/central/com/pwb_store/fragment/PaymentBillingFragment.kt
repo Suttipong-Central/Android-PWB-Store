@@ -3,12 +3,12 @@ package cenergy.central.com.pwb_store.fragment
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import android.text.Editable
 import android.text.InputType
-import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,12 +16,17 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.RadioGroup
+import android.widget.TextView
+import androidx.constraintlayout.widget.Group
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -29,17 +34,18 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.CartTotalResponse
+import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
+import cenergy.central.com.pwb_store.model.response.MemberResponse
+import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.ValidationHelper
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
-import kotlin.math.roundToInt
-
 
 class PaymentBillingFragment : Fragment() {
 
@@ -49,7 +55,8 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
     private lateinit var contactNumberEdt: PowerBuyEditTextBorder
     private lateinit var emailEdt: PowerBuyEditTextBorder
-    private lateinit var theOneEdt: PowerBuyEditTextBorder
+    private lateinit var t1cardInput: PowerBuyEditTextBorder
+    private lateinit var t1MemberNameTextView: PowerBuyTextView
     private lateinit var homeNoEdt: PowerBuyEditTextBorder
     private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var homeSoiEdt: PowerBuyEditTextBorder
@@ -58,17 +65,19 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
     private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
     private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
-    //    private lateinit var billingEmailEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeNoEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var billingHomeSoiEdt: PowerBuyEditTextBorder
     private lateinit var billingHomeRoadEdt: PowerBuyEditTextBorder
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
-    private lateinit var totalPrice: PowerBuyTextView
+    private lateinit var discountPriceTextView: PowerBuyTextView
+    private lateinit var promotionPriceTextView: PowerBuyTextView
+    private lateinit var totalPriceTextView: PowerBuyTextView
     private lateinit var deliveryBtn: PowerBuyIconButton
     private lateinit var radioGroup: RadioGroup
     private lateinit var radioTaxGroup: RadioGroup
+    private lateinit var changeT1Button: PowerBuyIconButton
 
     private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
     private lateinit var districtInput: PowerBuyAutoCompleteTextStroke
@@ -80,25 +89,27 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingSubDistrictInput: PowerBuyAutoCompleteTextStroke
     private lateinit var billingPostcodeInput: PowerBuyAutoCompleteTextStroke
 
-    private lateinit var billingLayout: LinearLayout
-    private lateinit var taxInvoiceLayout: LinearLayout
+    private lateinit var billingLayout: Group
+    private lateinit var layoutDiscountPrice: Group
+    private lateinit var layoutPromotionPrice: Group
 
     private var mProgressDialog: ProgressDialog? = null
+    private val analytics by lazy { context?.let { Analytics(it) } }
 
     // data
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
-    private var cartItemList: List<CartItem> = listOf()
+    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
-    private var t1cNumber: String = ""
     private var paymentBillingListener: PaymentBillingListener? = null
     private var cartId: String? = null
+    private var memberHDL: HDLCustomerInfos? = null
     private var member: Member? = null
     private var pwbMemberIndex: Int? = null
-    private var pwbMember: PwbMember? = null
+    private var eOrderingMember: EOrderingMember? = null
     private var firstName: String = ""
     private var lastName: String = ""
     private var email: String = ""
@@ -122,6 +133,11 @@ class PaymentBillingFragment : Fragment() {
     private var vatId: String = ""
     private var isSameBilling = true
     private var isRequireTaxInvoice = false
+    private var checkoutType: CheckoutType = CheckoutType.NORMAL
+    private var t1cNumber = ""
+    private var discount = 0.0
+    private var promotionDiscount = 0.0
+    private var totalPrice = 0.0
 
     // shipping data address
     private var provinceList = listOf<Province>()
@@ -156,14 +172,23 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingPostcodeAdapter: AddressAdapter
 
     companion object {
-        private const val ARG_MEMBER = "arg_member"
-        private const val ARG_MEMBER_INDEX = "arg_member_index"
+        private const val ARG_MEMBER = "ARG_MEMBER"
+        private const val ARG_MEMBER_INDEX = "ARG_MEMBER_INDEX"
+        private const val ARG_HDL_MEMBER = "ARG_HDL_MEMBER"
         private const val IS_SAME_BILLING = 1
         private const val IS_NOT_SAME_BILLING = 0
 
         fun newInstance(): PaymentBillingFragment {
             val fragment = PaymentBillingFragment()
             val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(memberHDL: HDLCustomerInfos): PaymentBillingFragment {
+            val fragment = PaymentBillingFragment()
+            val args = Bundle()
+            args.putParcelable(ARG_HDL_MEMBER, memberHDL)
             fragment.arguments = args
             return fragment
         }
@@ -191,19 +216,23 @@ class PaymentBillingFragment : Fragment() {
         defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
-        cartItemList = paymentProtocol.getItems()
+        shoppingCartItem = paymentProtocol.getItems()
+        discount = paymentProtocol.getDiscount()
+        promotionDiscount = paymentProtocol.getPromotionDiscount()
+        totalPrice = paymentProtocol.getTotalPrice()
         shippingAddress = paymentProtocol.getShippingAddress()
         billingAddress = paymentProtocol.getBillingAddress()
+        checkoutType = paymentProtocol.getCheckType()
         t1cNumber = paymentProtocol.getT1CardNumber()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val preferenceManager = context?.let { PreferenceManager(it) }
-        cartId = preferenceManager?.cartId
+        cartId = preferenceManager.cartId
+        memberHDL = arguments?.getParcelable(ARG_HDL_MEMBER)
         member = arguments?.getParcelable(ARG_MEMBER)
         pwbMemberIndex = arguments?.getInt(ARG_MEMBER_INDEX)
-        pwbMemberIndex?.let { pwbMember = paymentProtocol.getPWBMemberByIndex(it) }
+        pwbMemberIndex?.let { eOrderingMember = paymentProtocol.getPWBMemberByIndex(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -219,22 +248,41 @@ class PaymentBillingFragment : Fragment() {
         setupCartItems()
     }
 
+    override fun onResume() {
+        super.onResume()
+        analytics?.trackScreen(Screen.SHIPING_AND_BILLING_ADDRESSES)
+    }
+
     private fun setupCartItems() {
         val shoppingCartAdapter = ShoppingCartAdapter(null, true)
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.cartItemList = this.cartItemList
+        shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-        var total = 0.0
-        cartItemList.forEach {
-            if (database.getCacheCartItem(it.id) != null) {
-                total += it.qty!! * it.price!!
-            }
+        if (discount > 0){
+            discountPriceTextView.text = getDisplayDiscount(unit, discount.toString())
+            layoutDiscountPrice.visibility = View.VISIBLE
+            discountPriceTextView.visibility = View.VISIBLE
+        } else {
+            layoutDiscountPrice.visibility = View.GONE
+            discountPriceTextView.visibility = View.GONE
         }
-        val vat = total * 0.07
-        totalPrice.text = getDisplayPrice(unit, (total + vat).roundToInt().toString())
+        if (promotionDiscount > 0){
+            promotionPriceTextView.text = getDisplayDiscount(unit, promotionDiscount.toString())
+            layoutPromotionPrice.visibility = View.VISIBLE
+            promotionPriceTextView.visibility = View.VISIBLE
+        } else {
+            layoutPromotionPrice.visibility = View.GONE
+            promotionPriceTextView.visibility = View.GONE
+        }
+        if (totalPrice > 0){
+            totalPriceTextView.text = getDisplayPrice(unit, totalPrice.toString())
+            totalPriceTextView.visibility = View.VISIBLE
+        } else {
+            totalPriceTextView.visibility = View.GONE
+        }
         deliveryBtn.setOnClickListener {
             checkConfirm()
         }
@@ -247,6 +295,7 @@ class PaymentBillingFragment : Fragment() {
                 handleCacheMember()
                 dismissProgressDialog()
             }
+            hasHDLMember() -> handleHDLMember()
             hasPwbMember() -> handlePwbMember()
             hasMember() -> handleT1CMember()
             else -> dismissProgressDialog()
@@ -259,12 +308,16 @@ class PaymentBillingFragment : Fragment() {
             lastNameEdt.setText(shippingAddress!!.lastname)
             contactNumberEdt.setText(shippingAddress!!.telephone)
             emailEdt.setText(shippingAddress!!.email)
-            theOneEdt.setText(t1cNumber)
-            homeNoEdt.setText(shippingAddress!!.subAddress?.houseNumber ?: "")
-            homeBuildingEdit.setText(shippingAddress!!.subAddress?.building ?: "")
-            homeSoiEdt.setText(shippingAddress!!.subAddress?.soi ?: "")
-            homeRoadEdt.setText(shippingAddress!!.subAddress?.addressLine ?: "")
-            homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile ?: "")
+            homeNoEdt.setText(shippingAddress!!.subAddress?.houseNumber)
+            homeBuildingEdit.setText(shippingAddress!!.subAddress?.building)
+            homeSoiEdt.setText(shippingAddress!!.subAddress?.soi)
+            homeRoadEdt.setText(shippingAddress!!.subAddress?.addressLine)
+            homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile)
+
+            // has t1
+            if (t1cNumber.isNotBlank()) {
+                t1cardInput.setText(t1cNumber)
+            }
 
             // has input about vat?
             val vatId = shippingAddress!!.vatId
@@ -341,10 +394,10 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt.setText(billingAddress.firstname)
         billingLastNameEdt.setText(billingAddress.lastname)
         billingContactNumberEdt.setText(billingAddress.telephone)
-        billingHomeNoEdt.setText(billingAddress.subAddress?.houseNumber ?: "")
-        billingHomeBuildingEdit.setText(billingAddress.subAddress?.building ?: "")
-        billingHomeSoiEdt.setText(billingAddress.subAddress?.soi ?: "")
-        billingHomeRoadEdt.setText(billingAddress.subAddress?.addressLine ?: "")
+        billingHomeNoEdt.setText(billingAddress.subAddress?.houseNumber)
+        billingHomeBuildingEdit.setText(billingAddress.subAddress?.building)
+        billingHomeSoiEdt.setText(billingAddress.subAddress?.soi)
+        billingHomeRoadEdt.setText(billingAddress.subAddress?.addressLine)
 
         // has input about vat?
         val vatId = billingAddress.vatId
@@ -407,21 +460,65 @@ class PaymentBillingFragment : Fragment() {
         }
     }
 
-    private fun handlePwbMember() {
-        if (pwbMember == null) {
+    private fun handleHDLMember() {
+        if (memberHDL == null) {
             return
         }
 
-        val member = pwbMember!!
-        firstNameEdt.setText(member.firstname ?: "")
-        lastNameEdt.setText(member.lastname ?: "")
-        contactNumberEdt.setText(member.telephone ?: "")
-        emailEdt.setText(member.email ?: "")
-        homeNoEdt.setText(member.subAddress?.houseNo ?: "")
-        homeBuildingEdit.setText(member.subAddress?.building ?: "")
-        homeSoiEdt.setText(member.subAddress?.soi ?: "")
-        homeRoadEdt.setText(member.subAddress?.street ?: "")
-        homePhoneEdt.setText(member.telephone ?: "")
+        val member = memberHDL!!
+        firstNameEdt.setText(member.firstname)
+        lastNameEdt.setText(member.lastname)
+        contactNumberEdt.setText(member.mobile)
+        homeNoEdt.setText(member.houseNo)
+        homeBuildingEdit.setText(member.buildingName)
+        homeSoiEdt.setText(member.soi)
+        homeRoadEdt.setText(member.road)
+        homePhoneEdt.setText(member.telephone)
+
+        // validate province with local db
+        val province = database.getProvinceByName(member.province)
+        if (province != null) {
+            this.province = province
+            provinceInput.setText(province.name)
+            districtInput.setText("")
+            subDistrictInput.setText("")
+            postcodeInput.setText("")
+            districtInput.setEnableInput(true)
+            subDistrictInput.setEnableInput(false)
+            postcodeInput.setEnableInput(false)
+
+            // load district and verify customer address
+            val district = member.district
+            val subDistrict = member.subdistrict
+            val postcodeStr = member.postcode
+            if (district.isNotBlank()) {
+                if (subDistrict.isNotBlank()) {
+                    memberLoadDistrict(province.provinceId, district, subDistrict,
+                            postcodeStr, false)
+                } else {
+                    memberLoadDistrict(province.provinceId, district,
+                            "", "", false)
+                }
+            }
+        }
+        dismissProgressDialog()
+    }
+
+    private fun handlePwbMember() {
+        if (eOrderingMember == null) {
+            return
+        }
+
+        val member = eOrderingMember!!
+        firstNameEdt.setText(member.firstname)
+        lastNameEdt.setText(member.lastname)
+        contactNumberEdt.setText(member.telephone)
+        emailEdt.setText(member.email)
+        homeNoEdt.setText(member.subAddress?.houseNo)
+        homeBuildingEdit.setText(member.subAddress?.building)
+        homeSoiEdt.setText(member.subAddress?.soi)
+        homeRoadEdt.setText(member.subAddress?.street)
+        homePhoneEdt.setText(member.telephone)
 
         // validate province with local db
         val provinceId = member.regionId
@@ -466,17 +563,17 @@ class PaymentBillingFragment : Fragment() {
         firstNameEdt.setText(t1cMember.getFirstName())
         lastNameEdt.setText(t1cMember.getLastName())
         contactNumberEdt.setText(t1cMember.mobilePhone)
-        emailEdt.setText(t1cMember.email ?: "")
-        theOneEdt.setText(t1cMember.cardNo)
+        emailEdt.setText(t1cMember.email)
+        t1cardInput.setText(t1cMember.cardNo)
         homePhoneEdt.setText(t1cMember.homePhone)
 
         // has address?
         if (t1cMember.addresses != null && t1cMember.addresses!!.isNotEmpty()) {
             val memberAddress = t1cMember.addresses!![0]
-            homeNoEdt.setText(memberAddress.homeNo ?: "")
-            homeBuildingEdit.setText(memberAddress.building ?: "")
-            homeSoiEdt.setText(memberAddress.soi ?: "")
-            homeRoadEdt.setText(memberAddress.road ?: "")
+            homeNoEdt.setText(memberAddress.homeNo)
+            homeBuildingEdit.setText(memberAddress.building)
+            homeSoiEdt.setText(memberAddress.soi)
+            homeRoadEdt.setText(memberAddress.road)
 
             // validate province with local db
             val province = database.getProvinceByName(memberAddress.province)
@@ -499,7 +596,8 @@ class PaymentBillingFragment : Fragment() {
                         memberLoadDistrict(province.provinceId, districtName, subDistrictName,
                                 postcodeStr, false)
                     } else {
-                        memberLoadDistrict(province.provinceId, districtName)
+                        memberLoadDistrict(province.provinceId, districtName,
+                                "", "", false)
                     }
                 }
             }
@@ -507,7 +605,6 @@ class PaymentBillingFragment : Fragment() {
         } else {
             dismissProgressDialog()
         }
-
     }
 
     private fun setupView(rootView: View) {
@@ -516,7 +613,7 @@ class PaymentBillingFragment : Fragment() {
         lastNameEdt = rootView.findViewById(R.id.last_name_payment)
         contactNumberEdt = rootView.findViewById(R.id.contact_number_payment)
         emailEdt = rootView.findViewById(R.id.email_payment)
-        theOneEdt = rootView.findViewById(R.id.t1_member_no_payment)
+        t1cardInput = rootView.findViewById(R.id.input_the1_card_id)
         homeNoEdt = rootView.findViewById(R.id.house_no_payment)
         homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         homeSoiEdt = rootView.findViewById(R.id.soi_payment)
@@ -529,16 +626,14 @@ class PaymentBillingFragment : Fragment() {
         postcodeInput = rootView.findViewById(R.id.input_postcode)
 
         // Tax invoice layout
-        taxInvoiceLayout = rootView.findViewById(R.id.tax_invoice_layout)
         companyEdt = rootView.findViewById(R.id.input_company)
         taxIdEdt = rootView.findViewById(R.id.input_tax_id)
 
         // Billing address
-        billingLayout = rootView.findViewById(R.id.billing_address_layout_payment)
+        billingLayout = rootView.findViewById(R.id.group_billing_address)
         billingFirstNameEdt = rootView.findViewById(R.id.first_name_billing)
         billingLastNameEdt = rootView.findViewById(R.id.last_name_billing)
         billingContactNumberEdt = rootView.findViewById(R.id.contact_number_billing)
-//        billingEmailEdt = rootView.findViewById(R.id.email_billing)
         billingHomeNoEdt = rootView.findViewById(R.id.billing_house_no_payment)
         billingHomeBuildingEdit = rootView.findViewById(R.id.billing_place_or_building_payment)
         billingHomeSoiEdt = rootView.findViewById(R.id.billing_soi_payment)
@@ -549,8 +644,12 @@ class PaymentBillingFragment : Fragment() {
         billingSubDistrictInput = rootView.findViewById(R.id.billing_input_sub_district)
         billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
 
-        recycler = rootView.findViewById(R.id.recycler_product_list_payment)
-        totalPrice = rootView.findViewById(R.id.txt_total_price_payment_description)
+        recycler = rootView.findViewById(R.id.recycler_cart_items)
+        layoutDiscountPrice = rootView.findViewById(R.id.group_discount)
+        layoutPromotionPrice = rootView.findViewById(R.id.group_promotion)
+        discountPriceTextView = rootView.findViewById(R.id.txt_discount)
+        promotionPriceTextView = rootView.findViewById(R.id.txt_promotion)
+        totalPriceTextView = rootView.findViewById(R.id.txt_total)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
 
         // Set Input type
@@ -561,17 +660,48 @@ class PaymentBillingFragment : Fragment() {
         homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         homePhoneEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-//        billingEmailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
-        theOneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        theOneEdt.setTextLength(10)
 
-        //set T1 icon
-        theOneEdt.setDrawableStart(R.drawable.ic_the1)
+        //set T1
+        changeT1Button = rootView.findViewById(R.id.btnChangeThe1)
+        t1MemberNameTextView = rootView.findViewById(R.id.tvT1MemberName)
+        t1cardInput.setDrawableStart(R.drawable.ic_the1)
+        t1cardInput.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        t1cardInput.setTextLength(10)
+        t1cardInput.setOnTextChanging(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                changeT1Button.setText(getString(
+                        if (s.length >= 10) R.string.t1_change else R.string.t1_add))
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (t1MemberNameTextView.visibility == View.VISIBLE) {
+                    t1MemberNameTextView.text = ""
+                    t1MemberNameTextView.visibility = View.GONE
+                }
+            }
+        })
+
+        changeT1Button.setOnClickListener {
+            ChangeTheOneDialogFragment.newInstance().show(childFragmentManager, "change_t1_dialog")
+        }
 
         radioGroup = rootView.findViewById(R.id.radio_group)
         radioTaxGroup = rootView.findViewById(R.id.radio_tax_group)
+
+        // is checkout type ispu
+        val billingOptionLayout = rootView.findViewById<Group>(R.id.group_radio_same_billing)
+        if (this.checkoutType == CheckoutType.ISPU) {
+            val shippingLabel = rootView.findViewById<TextView>(R.id.shipping_label_text_view)
+            billingOptionLayout.visibility = View.GONE
+            billingLayout.visibility = View.GONE
+            shippingLabel.text = getString(R.string.billing_address)
+            deliveryBtn.setText(getString(R.string.btn_complete_order))
+        }
 
         checkRequireTaxInvoice()
         radioTaxGroup.setOnCheckedChangeListener { radioTaxGroup, _ ->
@@ -612,10 +742,16 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkRequireTaxInvoice() {
         if (!isRequireTaxInvoice) {
-            taxInvoiceLayout.visibility = View.GONE
+            companyEdt.visibility = View.GONE
+            taxIdEdt.visibility = View.GONE
         } else {
-            taxInvoiceLayout.visibility = View.VISIBLE
+            companyEdt.visibility = View.VISIBLE
+            taxIdEdt.visibility = View.VISIBLE
         }
+    }
+
+    private fun hasHDLMember(): Boolean {
+        return memberHDL != null
     }
 
     private fun hasMember(): Boolean {
@@ -623,7 +759,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun hasPwbMember(): Boolean {
-        return pwbMember != null
+        return eOrderingMember != null
     }
 
     private fun setupInputAddress() {
@@ -671,33 +807,45 @@ class PaymentBillingFragment : Fragment() {
 
     private fun checkConfirm() {
         showProgressDialog()
-        val t1cNumber = theOneEdt.getText()
+        val t1cNumber = t1cardInput.getText()
+        if (checkoutType == CheckoutType.NORMAL) {
+            checkoutNormal(t1cNumber)
+        } else {
+            if (!hasEmptyInput()) {
+                // setup shipping address
+                val shippingAddress = createShipping(IS_SAME_BILLING)
+                mProgressDialog?.dismiss()
+                paymentBillingListener?.setBillingAddressWithIspu(shippingAddress, t1cNumber)
+            } else {
+                mProgressDialog?.dismiss()
+                activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
+            }
+        }
+    }
+
+    private fun checkoutNormal(t1cNumber: String) {
         if (isSameBilling) {
             if (!hasEmptyInput()) {
                 // setup value
                 val shippingAddress = createShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.saveAddressInformation(
-                        shippingAddress = shippingAddress,
-                        billingAddress = null,
-                        t1cNumber = t1cNumber)
+                paymentBillingListener?.saveAddressInformation(shippingAddress, null, t1cNumber = t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.fill_in_important_information))
+                activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
+
             }
         } else {
             if (!hasEmptyInput() && !hasBillingEmptyInput()) {
                 // setup value shipping
-                val billingAddress = createBilling(IS_NOT_SAME_BILLING)
+                val billingAddress = createBilling()
                 val shippingAddress = createShipping(IS_NOT_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.saveAddressInformation(
-                        shippingAddress = shippingAddress,
-                        billingAddress = billingAddress,
-                        t1cNumber = t1cNumber)
+                paymentBillingListener?.saveAddressInformation(shippingAddress, billingAddress, t1cNumber)
             } else {
                 mProgressDialog?.dismiss()
-                showAlertDialog("", resources.getString(R.string.fill_in_important_information))
+                activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
+
             }
         }
     }
@@ -737,10 +885,9 @@ class PaymentBillingFragment : Fragment() {
                 vatId = if (sameBilling == IS_SAME_BILLING) vatId else "")
     }
 
-    private fun createBilling(sameBilling: Int): AddressInformation {
+    private fun createBilling(): AddressInformation {
         firstName = billingFirstNameEdt.getText()
         lastName = billingLastNameEdt.getText()
-//        email = billingEmailEdt.getText()
         contactNo = billingContactNumberEdt.getText()
         homeNo = billingHomeNoEdt.getText()
         homeBuilding = billingHomeBuildingEdit.getText()
@@ -786,12 +933,14 @@ class PaymentBillingFragment : Fragment() {
         districtInput.setError(validator.validText(districtInput.getText()))
         subDistrictInput.setError(validator.validText(subDistrictInput.getText()))
         postcodeInput.setError(validator.validText(postcodeInput.getText()))
-        theOneEdt.setError(validator.validTheOne(theOneEdt.getText()))
+        t1cardInput.setError(validator.validTheOne(t1cardInput.getText()))
+
+        taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
 
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || theOneEdt.getError() != null)
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {
@@ -799,7 +948,6 @@ class PaymentBillingFragment : Fragment() {
         // setup error
         billingFirstNameEdt.setError(validator.validText(billingFirstNameEdt.getText()))
         billingLastNameEdt.setError(validator.validText(billingLastNameEdt.getText()))
-//        billingEmailEdt.setError(validator.validEmail(billingEmailEdt.getText()))
         if (billingContactNumberEdt.getText().isNotEmpty()) {
             billingContactNumberEdt.setError(validator.validThaiPhoneNumber(billingContactNumberEdt.getText()))
         } else {
@@ -819,8 +967,6 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun hasRequireTaxInvoice(): Boolean {
-        val validator = ValidationHelper.getInstance(context!!)
-        taxIdEdt.setError(validator.validText(taxIdEdt.getText()))
         return if (isRequireTaxInvoice) {
             taxIdEdt.getError() != null
         } else {
@@ -833,15 +979,9 @@ class PaymentBillingFragment : Fragment() {
                 Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
-    private fun showAlertDialog(title: String, message: String) {
-        val builder = AlertDialog.Builder(activity!!, R.style.AlertDialogTheme)
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.ok_alert)) { dialog, _ -> dialog.dismiss() }
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title)
-        }
-        builder.show()
+    private fun getDisplayDiscount(unit: String, price: String): String {
+        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
     private fun showProgressDialog() {
@@ -1095,7 +1235,7 @@ class PaymentBillingFragment : Fragment() {
 
     // region member find address
     private fun memberLoadDistrict(provinceId: String, districtStr: String,
-                                   subDistrictStr: String = "", postcodeStr: String = "", isPwbMember: Boolean = true) {
+                                   subDistrictStr: String = "", postcodeStr: String = "", getById: Boolean = true) {
         context?.let {
             showProgressDialog()
             HttpManagerMagento.getInstance(it).getDistricts(provinceId, object : ApiResponseCallback<List<District>> {
@@ -1104,12 +1244,12 @@ class PaymentBillingFragment : Fragment() {
                         this@PaymentBillingFragment.districtList = districtList
                         this@PaymentBillingFragment.districtAdapter.setItems(districtList)
 
-                        val district = if (isPwbMember) {
+                        val district = if (getById) {
                             districtList.find { district -> district.districtId == districtStr } //by districtId
                         } else {
                             districtList.find { district -> district.name == districtStr } //by district.name
                         }
-                        memberSetDistrict(provinceId, district, subDistrictStr, postcodeStr, isPwbMember) // set district
+                        memberSetDistrict(provinceId, district, subDistrictStr, postcodeStr, getById) // set district
                     }
                 }
 
@@ -1122,7 +1262,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun memberSetDistrict(provinceId: String, district: District?, subDistrictStr: String,
-                                  postcodeStr: String, isPwbMember: Boolean) {
+                                  postcodeStr: String, getById: Boolean) {
         // found district?
         if (district != null) {
             this@PaymentBillingFragment.district = district
@@ -1133,7 +1273,7 @@ class PaymentBillingFragment : Fragment() {
             postcodeInput.setEnableInput(false)
 
             if (subDistrictStr.isNotBlank()) {
-                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, postcodeStr, isPwbMember)
+                memberLoadSubDistrict(provinceId, district.districtId, subDistrictStr, postcodeStr, getById)
             } else {
                 dismissProgressDialog()
             }
@@ -1143,7 +1283,7 @@ class PaymentBillingFragment : Fragment() {
     }
 
     private fun memberLoadSubDistrict(provinceId: String, districtId: String,
-                                      subDistrictStr: String = "", postcodeStr: String, isPwbMember: Boolean) {
+                                      subDistrictStr: String = "", postcodeStr: String, getById: Boolean) {
         context?.let {
             showProgressDialog()
             HttpManagerMagento.getInstance(it).getSubDistricts(provinceId, districtId, object : ApiResponseCallback<List<SubDistrict>> {
@@ -1152,7 +1292,7 @@ class PaymentBillingFragment : Fragment() {
                         this@PaymentBillingFragment.subDistrictList = subDistrictList
                         this@PaymentBillingFragment.subDistrictAdapter.setItems(subDistrictList.toDistinctId())
 
-                        val subDistrict = if (isPwbMember) {
+                        val subDistrict = if (getById) {
                             subDistrictList.find { subDistrict -> subDistrict.subDistrictId == subDistrictStr } // by districtId
                         } else {
                             subDistrictList.find { subDistrict -> subDistrict.name == subDistrictStr } // by district.name
@@ -1192,5 +1332,12 @@ class PaymentBillingFragment : Fragment() {
         }
 
         dismissProgressDialog()
+    }
+
+    fun updateT1MemberInput(the1Member: MemberResponse) {
+        t1cardInput.setText(the1Member.cards[0].cardNo)
+
+        t1MemberNameTextView.visibility = View.VISIBLE
+        t1MemberNameTextView.text = the1Member.getDisplayName()
     }
 }

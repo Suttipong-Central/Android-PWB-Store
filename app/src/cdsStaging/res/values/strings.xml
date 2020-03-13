@@ -3,4 +3,5 @@
     <string name="app_name" translatable="false">E-Ordering - Staging</string>
     <string name="watermark_business" translatable="false">Central Department Store</string>
     <string name="watermark_environment" translatable="false">Staging(headless)</string>
+    <string name="hostname_deep_link" translatable="false">staging.central.co.th</string>
 </resources>

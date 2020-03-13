@@ -18,7 +18,7 @@ class Slot(
 ): Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
-            parcel.readString())
+            parcel.readString() ?: "")
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)

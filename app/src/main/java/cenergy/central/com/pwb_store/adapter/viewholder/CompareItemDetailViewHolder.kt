@@ -1,9 +1,9 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
-import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.Gravity
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.adapter.CompareDetailAdapter
 import kotlinx.android.synthetic.main.list_item_text_compare_detail.view.*
 

@@ -2,8 +2,8 @@ package cenergy.central.com.pwb_store.dialogs
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +23,7 @@ class T1MemberDialogFragment : DialogFragment(), MemberClickListener {
 
     var membersList: List<MemberResponse> = listOf()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as PaymentT1Listener
         paymentProtocol = context as PaymentProtocol
@@ -51,14 +51,16 @@ class T1MemberDialogFragment : DialogFragment(), MemberClickListener {
         membersAdapter.memberList = membersList
     }
 
-    // region {@link MemberClickListener}
+    override fun onClickedHDLMember(position: Int) {
+        // do nothing
+    }
     override fun onClickedPwbMember(pwbMemberIndex: Int) {
         // nothing
     }
 
     override fun onClickedT1CMember(member: MemberResponse) {
         listener?.onSelectedT1Member(member)
-        dialog.dismiss()
+        dialog?.dismiss()
     }
     // endregion
 

@@ -3,12 +3,12 @@ package cenergy.central.com.pwb_store.fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cenergy.central.com.pwb_store.CategoryUtils;
@@ -23,10 +25,13 @@ import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback;
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CategoryDao;
+import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
+import cenergy.central.com.pwb_store.utils.Screen;
 
 public class CategoryFragment extends Fragment {
 
@@ -36,6 +41,7 @@ public class CategoryFragment extends Fragment {
 
     private CategoryAdapter mAdapter;
     private CategoryDao mCategoryDao;
+    private Analytics analytics;
 
     public CategoryFragment() {
         super();
@@ -60,6 +66,14 @@ public class CategoryFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (analytics != null) {
+            analytics.trackScreen(Screen.CATEGORY_LV1);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         initInstances(rootView, savedInstanceState);
@@ -67,6 +81,10 @@ public class CategoryFragment extends Fragment {
     }
 
     private void init() {
+        if (getContext() != null) {
+            analytics = new Analytics(getContext());
+        }
+
         if (getArguments() != null) {
             mCategoryDao = getArguments().getParcelable(ARG_CATEGORY);
         }
@@ -93,24 +111,37 @@ public class CategoryFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
     }
 
+    public void updateView(CategoryDao categoryDao) {
+        if (isAdded()) {
+            this.mCategoryDao = categoryDao;
+            mAdapter.setCategory(categoryDao.getCategoryList());
+        }
+    }
+
     public void foreRefresh() {
-        // do anything
         loadCategories();
     }
 
     private void loadCategories() {
-        if(getContext() != null){
-            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(CategoryUtils.SUPER_PARENT_ID,false,
+        if (getContext() != null) {
+            PreferenceManager pref = new PreferenceManager(getContext());
+            String displaySpecialIds = pref.getSpecialCategoryIds();
+            ArrayList<String> specialIds = new ArrayList<>();
+
+            if (!displaySpecialIds.trim().equals("")) {
+                String[] ids = displaySpecialIds.split(",");
+                specialIds.addAll(Arrays.asList(ids));
+            }
+
+            HttpManagerMagento.Companion.getInstance(getContext()).retrieveCategory(
+                    CategoryUtils.SUPER_PARENT_ID, false, specialIds,
                     new ApiResponseCallback<List<Category>>() {
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable final List<Category> categories) {
                             if (getActivity() != null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (isAdded()) {
-                                            mAdapter.setCategory(categories);
-                                        }
+                                getActivity().runOnUiThread(() -> {
+                                    if (isAdded() && categories != null) {
+                                        mAdapter.setCategory(categories);
                                     }
                                 });
                             }

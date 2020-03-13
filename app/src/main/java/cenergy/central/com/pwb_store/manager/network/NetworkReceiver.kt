@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import cenergy.central.com.pwb_store.activity.BaseActivity
-import cenergy.central.com.pwb_store.activity.LoginActivity
 import cenergy.central.com.pwb_store.utils.networkState
 
 class NetworkReceiver(private val listener: NetworkStateLister? = null) : BroadcastReceiver() {

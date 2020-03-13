@@ -1,7 +1,7 @@
 package cenergy.central.com.pwb_store.model.body
 
 import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.SubscribeCheckOut
+import cenergy.central.com.pwb_store.model.AddressInfoExtensionBody
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -15,10 +15,10 @@ data class ShippingBody(@SerializedName("addressInformation")
 data class AddressInformationBody(@SerializedName("shipping_address")
                                   var shippingAddress: AddressInformation,
                                   @SerializedName("billing_address")
-                                  var billingAddress: AddressInformation,
+                                  var billingAddress: AddressInformation? = null,
                                   @SerializedName("shipping_method_code")
                                   var methodCode: String,
                                   @SerializedName("shipping_carrier_code")
                                   var carrierCode: String,
                                   @SerializedName("extension_attributes")
-                                  var subscribeCheckOut: SubscribeCheckOut)
+                                  var addressInfoExtensionBody: AddressInfoExtensionBody)

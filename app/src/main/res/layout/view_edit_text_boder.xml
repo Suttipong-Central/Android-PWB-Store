@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <LinearLayout
@@ -29,27 +28,21 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_layout"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edit_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        android:background="@drawable/border_grey"
-        android:theme="@style/Form.EditTextLayoutTheme">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:background="@android:color/transparent"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textCursorDrawable="@drawable/custom_cursor"
-            android:textSize="18sp"
-            android:windowSoftInputMode="adjustResize" />
-    </android.support.design.widget.TextInputLayout>
+        android:background="@android:color/transparent"
+        android:inputType="text"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp"
+        android:textCursorDrawable="@drawable/custom_cursor"
+        android:textSize="18sp"
+        android:windowSoftInputMode="adjustResize" />
 
 </LinearLayout>
