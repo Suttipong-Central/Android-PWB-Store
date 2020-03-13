@@ -20,7 +20,14 @@ class FilterGroups(
 ){
     companion object{
         fun createFilterGroups(field: String, value: String, conditionType: String): FilterGroups{
-            val filter = Filter.createFilter(field, value, conditionType)
+            val filter = Filter.createFilter(field = field,value =  value,conditionType =  conditionType)
+            val filterList = arrayListOf<Filter>()
+            filterList.add(filter)
+            return FilterGroups(filterList)
+        }
+
+        fun createFilterGroups(field: String, conditionType: String): FilterGroups{
+            val filter = Filter.createFilter(field = field,conditionType =  conditionType)
             val filterList = arrayListOf<Filter>()
             filterList.add(filter)
             return FilterGroups(filterList)
@@ -30,12 +37,16 @@ class FilterGroups(
 
 class Filter(
         var field: String = "",
-        var value: String = "",
+        var value: String? = "",
         var conditionType: String? = null
 ) {
     companion object {
         fun createFilter(field: String, value: String, conditionType: String? = null): Filter {
             return Filter(field = field, value = value, conditionType = conditionType)
+        }
+
+        fun createFilter(field: String, conditionType: String? = null): Filter {
+            return Filter(field = field, conditionType = conditionType)
         }
     }
 }
