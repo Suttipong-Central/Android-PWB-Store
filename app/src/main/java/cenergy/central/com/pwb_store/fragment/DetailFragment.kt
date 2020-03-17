@@ -110,6 +110,15 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 layoutBottomButton.visibility = View.VISIBLE
                 loadStockData(product)
             }
+            "pwbOmniTV" -> {
+                stockIndicatorView.setOnClickOtherStores(View.OnClickListener {
+                    productDetailListener.onDisplayAvailableStore(product)
+                })
+                loadStockData(product)
+                layoutBottomButton.visibility = View.GONE
+                tvTitleNormalPrice.visibility = View.GONE
+                tvNormalPrice.visibility = View.GONE
+            }
             else -> {
                 layoutBottomButton.visibility = View.GONE
                 stockIndicatorView.visibility = View.GONE

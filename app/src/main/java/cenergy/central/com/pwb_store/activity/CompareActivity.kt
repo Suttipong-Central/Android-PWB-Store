@@ -43,7 +43,6 @@ import org.greenrobot.eventbus.Subscribe
 class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCartView.OnClickListener, CompareProtocol {
 
     private lateinit var mToolbar: Toolbar
-    private lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
     private val database = RealmController.getInstance()
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
@@ -129,13 +128,11 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
 
     private fun initView() {
         mToolbar = findViewById(R.id.toolbar)
-        mBuyShoppingCartView = findViewById(R.id.shopping_cart_compare)
         setSupportActionBar(mToolbar)
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
         mToolbar.setNavigationOnClickListener { finish() }
-        mBuyShoppingCartView.setListener(this)
     }
 
     override fun onResume() {
@@ -321,7 +318,6 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
                 count += item.qty!!
             }
         }
-        mBuyShoppingCartView.setBadgeCart(count)
     }
 
 //    private fun clearCart() {

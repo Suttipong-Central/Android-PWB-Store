@@ -17,6 +17,7 @@ class PowerBuyIconButton : LinearLayout {
     private lateinit var textView: PowerBuyTextView
     var isDisable: Boolean = false
     private var isHideIcon: Boolean = false
+    private var isHideButton: Boolean = false
     private var isDefaultButton: Boolean = false
     private var textInput = ""
     private var colorIcon = R.color.white
@@ -85,6 +86,12 @@ class PowerBuyIconButton : LinearLayout {
             icon.visibility = View.VISIBLE
         }
 
+        if (isHideButton){
+            pwbButton.visibility = View.GONE
+        } else {
+            pwbButton.visibility = View.VISIBLE
+        }
+
         icon.setImage(iconDefaultImage)
         textView.text = textInput
     }
@@ -121,6 +128,12 @@ class PowerBuyIconButton : LinearLayout {
 
     fun setButtonHideIcon(hide: Boolean){
         this.isHideIcon = hide
+        notifyAttributeChanged()
+    }
+
+
+    fun setHideButton(hide: Boolean){
+        this.isHideButton = hide
         notifyAttributeChanged()
     }
 

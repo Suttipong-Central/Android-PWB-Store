@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
+import cenergy.central.com.pwb_store.BuildConfig
 
 import com.bumptech.glide.Glide
 
@@ -37,11 +38,17 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         oldPrice.text = product.getDisplayOldPrice(unit)
         newPrice.text = product.getDisplaySpecialPrice(unit)
 
-        if (product.isSpecialPrice()) {
-            showSpecialPrice()
+        if (BuildConfig.FLAVOR != "pwbOmniTV"){
+            if (product.isSpecialPrice()) {
+                showSpecialPrice()
+            } else {
+                hideSpecialPrice()
+            }
         } else {
-            hideSpecialPrice()
+            oldPrice.visibility = View.GONE
+            newPrice.visibility = View.GONE
         }
+
         val brand = product.brand
         productBrand.text = if (brand != "") brand else "Brand"
         productName.text = product.name

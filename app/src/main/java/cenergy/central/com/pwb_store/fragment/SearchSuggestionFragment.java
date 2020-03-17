@@ -20,6 +20,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.BarcodeScanActivity;
 import cenergy.central.com.pwb_store.activity.BaseActivity;
@@ -77,7 +78,11 @@ public class SearchSuggestionFragment extends Fragment {
         mBarCode = rootView.findViewById(R.id.image_view_barcode);
         hideSoftKeyboard(mTextSearch);
         mTextSearch.setOnEditorActionListener(new SearchOnEditorActionListener());
-        mBarCode.setOnClickListener(view -> onBarcodeClick(mBarCode));
+        if (BuildConfig.FLAVOR != "pwbOmniTV"){
+            mBarCode.setOnClickListener(view -> onBarcodeClick(mBarCode));
+        } else {
+            mBarCode.setVisibility(View.GONE);
+        }
     }
 
     @Override

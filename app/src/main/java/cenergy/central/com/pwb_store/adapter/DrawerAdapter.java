@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
+import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerChangeViewHolder;
@@ -220,7 +221,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void setDrawItem(DrawerDao drawerDao) {
-        mListViewType.add(VIEW_TYPE_USER);
+        if (BuildConfig.FLAVOR != "pwbOmniTV"){
+            mListViewType.add(VIEW_TYPE_USER);
+        }
         mListViewType.add(VIEW_TYPE_HEADER);
 
         for (DrawerItem drawerItem : drawerDao.getDrawerItems()) {
@@ -229,9 +232,12 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
         mListViewType.add(VIEW_TYPE_COMPARE);
-        mListViewType.add(VIEW_TYPE_CART);
-        mListViewType.add(VIEW_TYPE_HISTORY);
-        mListViewType.add(VIEW_TYPE_LOGOUT);
+        if (BuildConfig.FLAVOR != "pwbOmniTV"){
+            mListViewType.add(VIEW_TYPE_CART);
+            mListViewType.add(VIEW_TYPE_HISTORY);
+            mListViewType.add(VIEW_TYPE_LOGOUT);
+        }
+
 
         notifyDataSetChanged();
     }
