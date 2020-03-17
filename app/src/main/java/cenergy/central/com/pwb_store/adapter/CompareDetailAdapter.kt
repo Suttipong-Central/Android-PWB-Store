@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareHeaderDetailViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.CompareItemDetailViewHolder
@@ -88,13 +89,16 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val skuOrder = arrayListOf<String>()
             compareItems.products.mapTo(skuOrder, { it.sku })
 
-            // add header price
-            items.add(CompareTitleItem(context.getString(R.string.price), VIEW_TYPE_ID_COMPARE_HEADER))
-            // add products price
-            compareItems.products.forEach {
-                items.add(CompareItem(it.getProductPrice(), false, VIEW_TYPE_ID_COMPARE_PRICE_ITEM))
+            if (BuildConfig.FLAVOR != "pwbOmniTV"){
+                // add header price
+                items.add(CompareTitleItem(context.getString(R.string.price), VIEW_TYPE_ID_COMPARE_HEADER))
+                // add products price
+                compareItems.products.forEach {
+                    items.add(CompareItem(it.getProductPrice(), false, VIEW_TYPE_ID_COMPARE_PRICE_ITEM))
+                }
             }
-            // add header price
+
+            // add header rating
             items.add(CompareTitleItem(context.getString(R.string.rating), VIEW_TYPE_ID_COMPARE_HEADER))
             // add products rating
             compareItems.products.forEach {
