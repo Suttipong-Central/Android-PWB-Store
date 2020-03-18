@@ -20,12 +20,25 @@ import kotlin.Comparator
 
 class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val items = ArrayList<IViewType>()
+    private lateinit var compareItem: CompareProductAdapter.CompareItem
     val spanSize: GridLayoutManager.SpanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return when (getItemViewType(position)) {
-                VIEW_TYPE_ID_COMPARE_HEADER -> 4
+                VIEW_TYPE_ID_COMPARE_HEADER -> {
+                    if (compareItem.products.isEmpty()){
+                        4
+                    } else {
+                        compareItem.products.size
+                    }
+                }
                 VIEW_TYPE_ID_COMPARE_ITEM -> 1
-                VIEW_TYPE_ID_CANNOT_SHOW_SPEC -> 4
+                VIEW_TYPE_ID_CANNOT_SHOW_SPEC -> {
+                    if (compareItem.products.isEmpty()){
+                        4
+                    } else {
+                        compareItem.products.size
+                    }
+                }
                 else -> 1
             }
         }
@@ -81,6 +94,7 @@ class CompareDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun setCompareDetail(context: Context, compareItems: CompareProductAdapter.CompareItem) {
+        this.compareItem = compareItems
         if (compareItems.compareProducts.isEmpty()) {
             items.add(VIEW_TYPE_CANNOT_SHOW_SPEC)
         } else {

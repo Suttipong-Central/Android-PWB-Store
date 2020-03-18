@@ -54,7 +54,6 @@ class CompareProductAdapter(mContext: Context) : RecyclerView.Adapter<RecyclerVi
                 item as CompareItem
                 holder as CompareDetailViewHolder
                 holder.bind(item)
-
             }
             VIEW_TYPE_ID_COMPARE_HEADER -> {
                 holder as CompareHeaderViewHolder
