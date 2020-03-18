@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -70,9 +71,10 @@ import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.utils.RemoteConfigUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
+import cenergy.central.com.pwb_store.view.PowerBuyCompareView;
 
 public class MainActivity extends BaseActivity implements MenuDrawerClickListener,
-        CategoryAdapter.CategoryAdapterListener {
+        CategoryAdapter.CategoryAdapterListener, PowerBuyCompareView.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
@@ -106,6 +108,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private ProductFilterSubHeader productFilterSubHeader;
     private Category categoryLv2;
     private Fragment currentFragment;
+
+    private PowerBuyCompareView mBuyCompareView;
 
     // Firebase
     private Analytics analytics;
@@ -194,6 +198,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+        mBuyCompareView = toolbar.findViewById(R.id.button_compare);
+        mBuyCompareView.setListener(this);
+
         mAdapter = new DrawerAdapter(this);
         mLayoutManager = new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false);
         recyclerViewMenu.setLayoutManager(mLayoutManager);
@@ -256,6 +263,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         super.onResume();
         EventBus.getDefault().register(this);
 
+        updateCompareBadge();
         if (currentFragment == null) {
             retrieveCategories(); // start
         } else if (currentFragment instanceof CategoryFragment) {
@@ -604,5 +612,15 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         } else {
             startCategoryLvTwoFragment(categoryLv1);
         }
+    }
+
+    private void updateCompareBadge() {
+        int count = database.getCompareProducts().size();
+        mBuyCompareView.updateCartCount(count);
+    }
+
+    @Override
+    public void onCompareClickListener(@NotNull View view) {
+        CompareActivity.Companion.startCompareActivity(this, view);
     }
 }
