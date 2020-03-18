@@ -16,7 +16,11 @@ class ProductItemsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     fun bind(item: CompareProductAdapter.ProductItem, listener: CompareItemListener) {
         val productAdapter = ProductItemAdapter(item.products, listener)
-        val mLayoutManager = GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false)
+        val mLayoutManager = if (item.products.isEmpty()){
+            GridLayoutManager(context, 4, LinearLayoutManager.VERTICAL, false)
+        } else {
+            GridLayoutManager(context, item.products.size, LinearLayoutManager.VERTICAL, false)
+        }
         productRecyclerView.layoutManager = mLayoutManager
         productRecyclerView.adapter = productAdapter
         productRecyclerView.setHasFixedSize(true)
