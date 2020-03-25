@@ -2,12 +2,12 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -137,44 +137,50 @@ class ProductOverviewFragment : Fragment() {
     }
 
     private fun checkExplainSpec(){
-        if (specVisible){
-            specListLayout.visibility =  View.GONE
-            context?.let { specArrowIcon.setImageDrawable(
-                    ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
-            specVisible = false
-        } else {
-            specListLayout.visibility =  View.VISIBLE
-            context?.let { specArrowIcon.setImageDrawable(
-                    ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
-            specVisible = true
+        if (!product!!.extension!!.specifications.isNullOrEmpty()) {
+            if (specVisible){
+                specListLayout.visibility =  View.GONE
+                context?.let { specArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
+                specVisible = false
+            } else {
+                specListLayout.visibility =  View.VISIBLE
+                context?.let { specArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
+                specVisible = true
+            }
         }
     }
 
     private fun checkExplainInfo(){
-        if (infoVisible) {
-            infoWebLayout.visibility = View.GONE
-            context?.let { infoArrowIcon.setImageDrawable(
-                    ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
-            infoVisible = false
-        } else {
-            infoWebLayout.visibility = View.VISIBLE
-            context?.let { infoArrowIcon.setImageDrawable(
-                    ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
-            infoVisible = true
+        if (product?.extension?.description != null && product?.extension?.description!!.trim().isNotBlank()) {
+            if (infoVisible) {
+                infoWebLayout.visibility = View.GONE
+                context?.let { infoArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
+                infoVisible = false
+            } else {
+                infoWebLayout.visibility = View.VISIBLE
+                context?.let { infoArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
+                infoVisible = true
+            }
         }
     }
 
     private fun checkExplainOverview(){
-        if (overviewVisible) {
-            overviewWebLayout.visibility = View.GONE
-            context?.let { overviewArrowIcon.setImageDrawable(
-                    ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
-            overviewVisible = false
-        } else {
-            overviewWebLayout.visibility = View.VISIBLE
-            context?.let { overviewArrowIcon.setImageDrawable(
-                    ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
-            overviewVisible = true
+        if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.trim().isNotBlank()) {
+            if (overviewVisible) {
+                overviewWebLayout.visibility = View.GONE
+                context?.let { overviewArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
+                overviewVisible = false
+            } else {
+                overviewWebLayout.visibility = View.VISIBLE
+                context?.let { overviewArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
+                overviewVisible = true
+            }
         }
     }
 }
