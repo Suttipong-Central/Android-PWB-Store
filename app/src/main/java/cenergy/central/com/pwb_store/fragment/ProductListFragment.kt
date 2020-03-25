@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +23,6 @@ import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListen
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.getInstance
-import cenergy.central.com.pwb_store.manager.api.OfflinePriceAPI
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.retrieveProducts
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
@@ -35,8 +33,6 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
-import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
-import cenergy.central.com.pwb_store.model.response.OfflinePriceProductsResponse
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
@@ -46,14 +42,15 @@ import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.util.*
 
 class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener {
     // Analytic
     private var analytics: Analytics? = null
+
     private var productCount: PowerBuyTextView? = null
-    private var mProductLayout: LinearLayout? = null
     private var mProductListAdapter: ProductListAdapter? = null
-    private var categoriesLv3: ArrayList<Category>? = null
+    private var mProductLayout: LinearLayout? = null
     private var mSortingList: SortingList? = null
     private var title: String? = null
     private var mPowerBuyPopupWindow: PowerBuyPopupWindow? = null
@@ -62,13 +59,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var isSearch = false
     private var categoryId: String? = null
     private var brandName: String? = null
-    private var categoryLv2: Category? = null
-    // Page
-    private var isSorting = false
-    private var totalItem = 0
-    private var sortName: String = ""
-    private var sortType: String = ""
-    private var keyWord: String? = null
     private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
     private var database = RealmController.getInstance()
 
@@ -76,10 +66,20 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var offlineProducts = arrayListOf<Product>()
     private var brands: ArrayList<FilterItem> = ArrayList()
     private var offlineBrands: ArrayList<FilterItem> = ArrayList()
+    private var categoryLv2: Category? = null
+    private var categoriesLv3: ArrayList<Category>? = null
     private var isClearBrands = true
 
+    //Sort
+    private var sortName: String? = ""
+    private var sortType: String? = ""
+
+    // Page
     private val PER_PAGE = 100
+    private var isSorting = false
     private var currentPage = 0
+    private var totalItem = 0
+    private var keyWord: String? = null
 
     @Subscribe
     fun onEvent(productFilterItemBus: ProductFilterItemBus) {
@@ -191,11 +191,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             categoryId = arguments!!.getString(ARG_DEPARTMENT_ID)
             categoryLv2 = arguments!!.getParcelable(ARG_CATEGORY)
             keyWord = arguments!!.getString(ARG_KEY_WORD)
+
             if (!isSearch) { // setup product filter list
                 loadCategoryLv3(categoryLv2)
             }
         }
-
         val sortingItems: MutableList<SortingItem> = ArrayList()
         sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
         sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
@@ -218,13 +218,14 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 mPowerBuyPopupWindow!!.setRecyclerViewFilter(categoriesLv3)
                 mPowerBuyPopupWindow!!.showAsDropDown(v)
             }
-            R.id.layout_sort ->  // Create productResponse for check because we mock up sort items
+            R.id.layout_sort -> { // Create productResponse for check because we mock up sort items
                 if (mSortingList == null || offlineProducts.isEmpty()) {
                     mPowerBuyPopupWindow!!.dismiss()
                 } else {
                     mPowerBuyPopupWindow!!.setRecyclerViewSorting(mSortingList)
                     mPowerBuyPopupWindow!!.showAsDropDown(v)
                 }
+            }
             R.id.layout_brand -> if (offlineBrands.isEmpty()) {
                 mPowerBuyPopupWindow!!.dismiss()
             } else {
@@ -301,6 +302,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         outState.putString(ARG_DEPARTMENT_ID, categoryId)
         outState.putBoolean(ARG_IS_DONE, isDoneFilter)
         outState.putString(ARG_TITLE, title)
+        outState.putString(ARG_DEPARTMENT_ID, categoryId)
+        outState.putString(ARG_SORT_NAME, sortName)
+        outState.putString(ARG_SORT_TYPE, sortType)
+        outState.putBoolean(ARG_IS_DONE, isDoneFilter)
+        outState.putString(ARG_TITLE, title)
+        outState.putInt(ARG_PAGE, currentPage)
         outState.putString(ARG_KEY_WORD, keyWord)
         outState.putBoolean(ARG_SEARCH, isSearch)
         outState.putBoolean(ARG_IS_SORTING, isSorting)
@@ -315,6 +322,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
         isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE)
         title = savedInstanceState.getString(ARG_TITLE)
+        categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
+        sortName = savedInstanceState.getString(ARG_SORT_NAME)
+        sortType = savedInstanceState.getString(ARG_SORT_TYPE)
+        isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE)
+        title = savedInstanceState.getString(ARG_TITLE)
+        currentPage = savedInstanceState.getInt(ARG_PAGE)
         keyWord = savedInstanceState.getString(ARG_KEY_WORD)
         isSearch = savedInstanceState.getBoolean(ARG_SEARCH)
         isSorting = savedInstanceState.getBoolean(ARG_IS_SORTING)
@@ -356,8 +369,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             }
 
             val sortOrders = ArrayList<SortOrder>()
-            if (sortName.isNotEmpty() && sortType.isNotEmpty()) {
-                val sortOrder = createSortOrder(sortName, sortType)
+            if (!sortName.isNullOrEmpty() && !sortType.isNullOrEmpty()) {
+                val sortOrder = createSortOrder(sortName!!, sortType!!)
                 sortOrders.add(sortOrder)
             }
 
@@ -408,49 +421,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     private val nextPage: Int
         get() = currentPage + 1
-
-//    private fun retrieveOfflinePrice() {
-//        if (context != null) {
-//            userInformation = database.userInformation
-//            val retailerId = userInformation?.store?.storeId?.toString()
-//            if (products.isNotEmpty() && totalItem != 0){
-//                products.chunked(PER_PAGE).forEach {
-//                    val productIds = TextUtils.join(",", it.map { product -> product.id })
-//                    OfflinePriceAPI.retrieveOfflinePriceProducts(context!!, productIds, retailerId!!,
-//                            object : ApiResponseCallback<OfflinePriceProductsResponse> {
-//                                override fun success(response: OfflinePriceProductsResponse?) {
-//                                    if (activity != null) {
-//                                        activity!!.runOnUiThread {
-//                                            if (response != null) {
-//                                                filterProductsOfflinePrice(response.items)
-//                                            } else {
-//                                                mProgressDialog!!.dismiss()
-//                                                setTextHeader(0, title)
-//                                                mProductListAdapter!!.setError()
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                                override fun failure(error: APIError) {
-//                                    if (activity != null && context != null) {
-//                                        activity!!.runOnUiThread {
-//                                            mProgressDialog!!.dismiss()
-//                                            setTextHeader(0, title)
-//                                            mProductListAdapter!!.setError()
-//                                            DialogHelper(context!!).showErrorDialog(error)
-//                                        }
-//                                    }
-//                                }
-//                            })
-//                }
-//            } else {
-//                mProgressDialog!!.dismiss()
-//                setTextHeader(0, title)
-//                mProductListAdapter!!.setError()
-//            }
-//        }
-//    }
 
     private fun filterProductsOfflinePrice(){
         val retailerId = database.userInformation?.store?.storeId?.toString()
@@ -541,6 +511,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_STORE_ID = "ARG_STORE_ID"
         private const val ARG_PRODUCT_FILTER = "ARG_PRODUCT_FILTER"
         private const val ARG_IS_DONE = "ARG_IS_DONE"
+        private const val ARG_SORT_NAME = "ARG_SORT_NAME"
+        private const val ARG_SORT_TYPE = "ARG_SORT_TYPE"
+        private const val ARG_PAGE = "ARG_PAGE"
         private const val ARG_CATEGORY = "ARG_CATEGORY"
         private const val ARG_KEY_WORD = "ARG_KEY_WORD"
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"

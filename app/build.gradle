@@ -60,7 +60,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable false // Set false when singed new apk
+            debuggable true // Set false when singed new apk
             jniDebuggable false
             renderscriptDebuggable false
             renderscriptOptimLevel 3
@@ -101,7 +101,7 @@ android {
         pwb {
             applicationId "cenergy.central.com.eordering.pwb"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 104
+            versionCode 106
             versionName "1.1.8"
         }
 

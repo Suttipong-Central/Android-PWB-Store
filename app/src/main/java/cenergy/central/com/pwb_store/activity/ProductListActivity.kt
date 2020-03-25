@@ -3,7 +3,7 @@ package cenergy.central.com.pwb_store.activity
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.fragment.ProductListFragment.Companion.newInstance
+import cenergy.central.com.pwb_store.fragment.ProductListFragment
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
@@ -50,7 +50,7 @@ class ProductListActivity : BaseActivity() {
     private fun startProductListFragment(keyWord: String?, isSearch: Boolean) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction
-                .replace(R.id.container, newInstance(keyWord, isSearch, "0", "", null, keyWord))
+                .replace(R.id.container, ProductListFragment.newInstance(keyWord, isSearch, "0", "", null, keyWord))
                 .commitAllowingStateLoss()
     }
 
