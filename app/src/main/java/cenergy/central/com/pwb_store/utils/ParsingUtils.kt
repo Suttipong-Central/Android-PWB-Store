@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.utils
 
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.CategoryProduct
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import io.realm.RealmList
 import org.json.JSONObject
@@ -34,6 +35,38 @@ class ParsingUtils{
                 product.name = productObj.getString("name")
                 product.price = productObj.getDouble("price")
                 product.status = productObj.getInt("status")
+
+                if (productObj.has("category")){
+                    val categoryProductList = RealmList<CategoryProduct>()
+                    val categoryProductArray = productObj.getJSONArray("category")
+                    for (j in 0 until categoryProductArray.length()){
+                        val categoryProduct = CategoryProduct()
+                        val categoryProductObj = categoryProductArray.getJSONObject(j)
+                        if (categoryProductObj.has("category_id")){
+                            categoryProduct.categoryId = categoryProductObj.getLong("category_id")
+                        }
+                        if (categoryProductObj.has("name")){
+                            categoryProduct.name = categoryProductObj.getString("name")
+                        }
+                        if (categoryProductObj.has("level")){
+                            categoryProduct.level = categoryProductObj.getInt("level")
+                        }
+                        if (categoryProductObj.has("parent_id")){
+                            categoryProduct.parentId = categoryProductObj.getLong("parent_id")
+                        }
+                        if (categoryProductObj.has("url_key")){
+                            categoryProduct.urlKey = categoryProductObj.getString("url_key")
+                        }
+                        if (categoryProductObj.has("url_path")){
+                            categoryProduct.urlPath = categoryProductObj.getString("url_path")
+                        }
+                        if (categoryProductObj.has("is_parent")){
+                            categoryProduct.isParent = categoryProductObj.getBoolean("is_parent")
+                        }
+                        categoryProductList.add(categoryProduct)
+                    }
+                    product.category = categoryProductList
+                }
 
                 if (productObj.has("brand")) {
                     product.brand = productObj.getString("brand")

@@ -352,8 +352,17 @@ class MigrationDatabase : RealmMigration {
                 addField("file", String::class.java).setRequired("file", true)
             }
 
+            val categoryProduct = realm.schema.create("CategoryProduct").apply {
+                addField("categoryId", Long::class.java)
+                addField("name", String::class.java)
+                addField("level", Int::class.java)
+                addField("parentId", Long::class.java)
+                addField("urlKey", String::class.java)
+                addField("urlPath", String::class.java)
+                addField("isParent", Boolean::class.java)
+            }
+
             realm.schema.create("Product").apply {
-                addField("rating", Int::class.java).setNullable("rating", true)
                 addField("id", Long::class.java)
                 addField("sku", String::class.java).setRequired("sku", true)
                 addField("name", String::class.java).setRequired("name", true)
@@ -362,6 +371,7 @@ class MigrationDatabase : RealmMigration {
                 addField("specialPrice", Double::class.java)
                 addField("specialFromDate", String::class.java)
                 addField("specialToDate", String::class.java)
+                addField("rating", Int::class.java).setNullable("rating", true)
                 addField("brand", String::class.java).setRequired("brand", true)
                 addField("image", String::class.java).setRequired("image", true)
                 addField("deliveryMethod", String::class.java).setRequired("deliveryMethod", true)
@@ -375,6 +385,7 @@ class MigrationDatabase : RealmMigration {
                 addRealmObjectField("productImageList", productDetailImage)
                 addRealmObjectField("extension", productExtension)
                 addRealmListField("gallery", productGallery)
+                addRealmListField("category", categoryProduct)
             }
         }
     }

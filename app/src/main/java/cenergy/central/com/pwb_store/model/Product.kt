@@ -3,9 +3,12 @@ package cenergy.central.com.pwb_store.model
 import android.os.Parcelable
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.model.response.CategoryProduct
+import cenergy.central.com.pwb_store.model.response.CategoryProductRealmListParceler
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmModel
+import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.WriteWith
@@ -15,6 +18,7 @@ import java.util.*
 @Parcelize
 @RealmClass
 open class Product(
+        @PrimaryKey
         var id: Long = 0,
         var sku: String = "",
         var name: String = "",
@@ -42,7 +46,8 @@ open class Product(
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
-        var urlKey: String = "") : IViewType, Parcelable, RealmModel {
+        var urlKey: String = "",
+        var category: @WriteWith<CategoryProductRealmListParceler> RealmList<CategoryProduct> = RealmList()) : IViewType, Parcelable, RealmModel {
 
     override fun getViewTypeId(): Int {
         return viewTypeID
