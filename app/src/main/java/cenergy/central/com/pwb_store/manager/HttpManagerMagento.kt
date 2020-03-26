@@ -19,6 +19,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.GsonBuilder
+import io.realm.RealmList
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -345,10 +346,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     val product = Product()
                     val productExtension = ProductExtension()
                     val stockItem = StockItem()
-                    val images = arrayListOf<ProductGallery>()
-                    val productOptions = arrayListOf<ProductOption>()
-                    val productIdChildren = arrayListOf<String>()
-                    val specifications = arrayListOf<Specification>()
+                    val images = RealmList<ProductGallery>()
+                    val productOptions = RealmList<ProductOption>()
+                    val productIdChildren = RealmList<String>()
+                    val specifications = RealmList<Specification>()
 
                     try {
                         val productObject = JSONObject(data?.string())
@@ -413,7 +414,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                 val label = productConfigArray.getJSONObject(i).getString("label")
                                 val position = productConfigArray.getJSONObject(i).getInt("position")
                                 val productId = productConfigArray.getJSONObject(i).getLong("product_id")
-                                val productValues = arrayListOf<ProductValue>()
+
+                                val productValues = RealmList<ProductValue>()
                                 if (productConfigArray.getJSONObject(i).has("values")) {
                                     val valuesArray = productConfigArray.getJSONObject(i).getJSONArray("values")
                                     for (j in 0 until valuesArray.length()) {
@@ -431,7 +433,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                         if (valueExtensionObject.has("frontend_type")) {
                                             type = valueExtensionObject.getString("frontend_type")
                                         }
-                                        val productIDs = arrayListOf<Long>()
+                                        val productIDs = RealmList<Long>()
                                         if (valueExtensionObject.has("products")) {
                                             val productArray = valueExtensionObject.getJSONArray("products")
                                             for (k in 0 until productArray.length()) {

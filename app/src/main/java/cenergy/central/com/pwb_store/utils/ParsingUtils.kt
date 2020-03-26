@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.utils
 
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import io.realm.RealmList
 import org.json.JSONObject
 
 class ParsingUtils{
@@ -22,10 +23,10 @@ class ParsingUtils{
                 val productExtension = ProductExtension()
                 val stockItem = StockItem()
                 val productFilter = ProductFilter()
-                val productIdChildren = arrayListOf<String>()
-                val images = arrayListOf<ProductGallery>()
-                val productOptions = arrayListOf<ProductOption>()
-                val specifications = arrayListOf<Specification>()
+                val productIdChildren = RealmList<String>()
+                val images = RealmList<ProductGallery>()
+                val productOptions = RealmList<ProductOption>()
+                val specifications = RealmList<Specification>()
                 val filterItem = arrayListOf<FilterItem>()
 
                 product.id = productObj.getLong("id")
@@ -138,7 +139,7 @@ class ParsingUtils{
                         val position = productConfigArray.getJSONObject(j).getInt("position")
                         val productId = productConfigArray.getJSONObject(j).getLong("product_id")
 
-                        val productValues = arrayListOf<ProductValue>()
+                        val productValues = RealmList<ProductValue>()
                         if (productConfigArray.getJSONObject(j).has("values")) {
                             val valuesArray = productConfigArray.getJSONObject(j).getJSONArray("values")
                             for (k in 0 until valuesArray.length()) {
@@ -156,7 +157,7 @@ class ParsingUtils{
                                 if (valueExtensionObject.has("frontend_type")){
                                     type = valueExtensionObject.getString("frontend_type")
                                 }
-                                val productIDs = arrayListOf<Long>()
+                                val productIDs = RealmList<Long>()
                                 if (valueExtensionObject.has("products")) {
                                     val productIdArray = valueExtensionObject.getJSONArray("products")
                                     for (l in 0 until productIdArray.length()) {

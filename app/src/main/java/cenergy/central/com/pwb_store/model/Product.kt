@@ -1,16 +1,20 @@
 package cenergy.central.com.pwb_store.model
 
-import android.os.Parcel
 import android.os.Parcelable
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmList
+import io.realm.RealmModel
+import io.realm.annotations.RealmClass
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.WriteWith
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class Product(
+@Parcelize
+@RealmClass
+open class Product(
         var id: Long = 0,
         var sku: String = "",
         var name: String = "",
@@ -27,7 +31,7 @@ class Product(
         var image: String = "",
         var deliveryMethod: String = "",
         @SerializedName("media_gallery_entries")
-        var gallery: List<ProductGallery> = arrayListOf(),
+        var gallery: @WriteWith<ProductGalleryRealmListParceler> RealmList<ProductGallery> = RealmList(),
         var viewTypeID: Int = 0,
         var attributeID: Int = 0,
         var status: Int = 1,
@@ -38,31 +42,7 @@ class Product(
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
-        var urlKey: String = "") : IViewType, Parcelable {
-
-    constructor(parcel: Parcel) : this(
-            parcel.readLong(),
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.readDouble(),
-            parcel.readString() ?: "",
-            parcel.readDouble(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.createTypedArrayList(ProductGallery) ?: arrayListOf(),
-            parcel.readInt(),
-            parcel.readInt(),
-            parcel.readInt(),
-            parcel.readInt(),
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            parcel.readByte() != 0.toByte(),
-            parcel.readParcelable(ProductExtension::class.java.classLoader),
-            parcel.readParcelable(ProductDetailImage::class.java.classLoader),
-            parcel.readString() ?: "")
+        var urlKey: String = "") : IViewType, Parcelable, RealmModel {
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -86,11 +66,11 @@ class Product(
 
     fun getProductImageList(): ProductDetailImage {
         if (productImageList == null) {
-            val productDetailImageItems = ArrayList<ProductDetailImageItem>()
+            val productDetailImageItems = RealmList<ProductDetailImageItem>()
             val hostname = "${Constants.BASE_URL_MAGENTO}/media/catalog/product"
             for (image in gallery) {
                 if (!image.file.contains(hostname, true)) {
-                    productDetailImageItems.add(ProductDetailImageItem(image.id, "$hostname${image.file}"))
+                    productDetailImageItems.add(ProductDetailImageItem(productImageId = image.id, imgUrl = "$hostname${image.file}"))
                 } else {
                     image.file
                 }
@@ -119,44 +99,7 @@ class Product(
             1 // default qty is 1 when min sale qty is null or min sale qty < 1
         }
     }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(sku)
-        parcel.writeString(name)
-        parcel.writeDouble(price)
-        parcel.writeString(typeId)
-        parcel.writeDouble(specialPrice)
-        parcel.writeString(specialFromDate)
-        parcel.writeString(specialToDate)
-        parcel.writeString(brand)
-        parcel.writeString(image)
-        parcel.writeString(deliveryMethod)
-        parcel.writeTypedList(gallery)
-        parcel.writeInt(viewTypeID)
-        parcel.writeInt(attributeID)
-        parcel.writeInt(status)
-        parcel.writeString(shippingMethods)
-        parcel.writeString(paymentMethod)
-        parcel.writeByte(if (isHDL) 1 else 0)
-        parcel.writeParcelable(extension, flags)
-        parcel.writeParcelable(productImageList, flags)
-        parcel.writeString(urlKey)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Product> {
+    companion object {
         const val PRODUCT_TWO_HOUR = "storepickup_ispu"
-
-        override fun createFromParcel(parcel: Parcel): Product {
-            return Product(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Product?> {
-            return arrayOfNulls(size)
-        }
     }
 }

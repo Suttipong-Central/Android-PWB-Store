@@ -24,7 +24,6 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
-import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
@@ -46,6 +45,7 @@ import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyCompareView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import io.realm.RealmList
 
 class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
@@ -357,7 +357,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun checkProductConfig(product: Product) {
         if (product.typeId == "configurable") {
-            val productLinks = product.extension?.productConfigLinks ?: listOf()
+            val productLinks = product.extension?.productConfigLinks ?: RealmList()
             val result = TextUtils.join(",", productLinks)
             val filterGroupsList = java.util.ArrayList<FilterGroups>()
             filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))

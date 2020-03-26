@@ -26,6 +26,7 @@ import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.bumptech.glide.Glide
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.fragment_detail.*
 
 @SuppressLint("SetTextI18n")
@@ -95,7 +96,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     // region {@link ProductImageListener.onProductImageClickListener}
     override fun onProductImageClickListener(productImage: ProductDetailImageItem) {
-        ivProductImage.setImageUrl(productImage.imgUrl)
+        productImage.imgUrl?.let { ivProductImage.setImageUrl(it) }
     }
     // endregion
 
@@ -128,7 +129,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         val productImageList = product.getProductImageList()
         if (productImageList.productDetailImageItems.size > 0) {
             Glide.with(Contextor.getInstance().context)
-                    .load(productImageList.productDetailImageItems[0].imgUrl)
+                    .load(productImageList.productDetailImageItems[0]!!.imgUrl)
                     .placeholder(R.drawable.ic_placeholder)
                     .crossFade()
                     .fitCenter()
@@ -254,7 +255,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun handleUpdateSizeAdapter() {
-        val shadeOptions = shadeSelectedOption!!.valueExtension?.products ?: listOf()
+        val shadeOptions = shadeSelectedOption!!.valueExtension?.products ?: RealmList()
         val newSizeValues = sizeValues.filter { it.valueExtension?.products?.firstOrNull { key->shadeOptions.contains(key) } != null }
         sizeAdepter.setItems(newSizeValues)
         sizeSelectedOption = newSizeValues[0]
@@ -293,7 +294,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             val productImageList = childProduct!!.getProductImageList()
             if (productImageList.productDetailImageItems.size > 0) {
                 Glide.with(Contextor.getInstance().context)
-                        .load(productImageList.productDetailImageItems[0].imgUrl)
+                        .load(productImageList.productDetailImageItems[0]!!.imgUrl)
                         .placeholder(R.drawable.ic_placeholder)
                         .crossFade()
                         .fitCenter()

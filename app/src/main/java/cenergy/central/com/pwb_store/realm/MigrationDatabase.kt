@@ -237,12 +237,6 @@ class MigrationDatabase : RealmMigration {
 
         // app version 1.1.1
         if (oldVersion < 9) {
-            // Update Product for get rating
-            realm.schema.get("Product")?.apply {
-                // add rating
-                addField("rating", Int::class.java)
-            }
-
             realm.schema.get("CompareProduct")?.apply {
                 // add rating
                 addField("rating", Int::class.java)
@@ -281,6 +275,106 @@ class MigrationDatabase : RealmMigration {
                 realm.schema.get("OderExtension")?.apply{
                     addRealmObjectField("coupon", coupon)
                 }
+            }
+        }
+
+        if (oldVersion < 11) {
+            val productDetailImageItem = realm.schema.create("ProductDetailImageItem").apply {
+                addField("productImageId", String::class.java)
+                addField("imgUrl", String::class.java)
+                addField("viewTypeID", Int::class.java)
+                addField("slug", String::class.java)
+                addField("isSelected", Boolean::class.java)
+            }
+
+            val productDetailImage = realm.schema.create("ProductDetailImage").apply {
+                addField("total", Int::class.java)
+                addField("viewTypeID", Int::class.java)
+                addRealmListField("productDetailImageItems", productDetailImageItem)
+                addRealmObjectField("selectedProductDetailImageItem", productDetailImageItem)
+            }
+
+            val stockItem = realm.schema.create("StockItem").apply {
+                addField("itemId", Long::class.java).setNullable("itemId", true)
+                addField("productId", Long::class.java).setNullable("productId", true)
+                addField("stockId", Long::class.java).setNullable("stockId", true)
+                addField("qty", Int::class.java).setNullable("qty", true)
+                addField("isInStock", Boolean::class.java)
+                addField("maxQTY", Int::class.java).setNullable("maxQTY", true)
+                addField("minQTY", Int::class.java).setNullable("minQTY", true)
+                addField("is2HProduct", Boolean::class.java)
+                addField("isSalable", Boolean::class.java)
+            }
+
+            val productValueExtension = realm.schema.create("ProductValueExtension").apply {
+                addField("label", String::class.java)
+                addField("value", String::class.java)
+                addField("type", String::class.java)
+                addRealmListField("products", Long::class.java).setNullable("products", true)
+            }
+
+            val productValue = realm.schema.create("ProductValue").apply {
+                addField("index", Int::class.java)
+                addRealmObjectField("valueExtension", productValueExtension)
+            }
+
+            val productOption = realm.schema.create("ProductOption").apply {
+                addField("id", Int::class.java)
+                addField("productId", Long::class.java)
+                addField("attrId", String::class.java).setRequired("attrId", true)
+                addField("label", String::class.java).setRequired("label", true)
+                addField("position", Int::class.java)
+                addRealmListField("values", productValue)
+            }
+
+            val specification = realm.schema.create("Specification").apply {
+                addField("code", String::class.java).setRequired("code", true)
+                addField("label", String::class.java).setRequired("label", true)
+                addField("value", String::class.java)
+            }
+
+            val productExtension = realm.schema.create("ProductExtension").apply {
+                addField("description", String::class.java)
+                addField("shortDescription", String::class.java)
+                addField("barcode", String::class.java)
+                addRealmObjectField("stokeItem", stockItem)
+                addRealmListField("productConfigOptions", productOption)
+                addRealmListField("productConfigLinks", String::class.java)
+                addRealmListField("specifications", specification)
+            }
+
+            val productGallery = realm.schema.create("ProductGallery").apply {
+                addField("id", String::class.java).setRequired("id", true)
+                addField("type", String::class.java)
+                addField("label", String::class.java)
+                addField("position", Int::class.java)
+                addField("disabled", Boolean::class.java)
+                addField("file", String::class.java).setRequired("file", true)
+            }
+
+            realm.schema.create("Product").apply {
+                addField("rating", Int::class.java).setNullable("rating", true)
+                addField("id", Long::class.java)
+                addField("sku", String::class.java).setRequired("sku", true)
+                addField("name", String::class.java).setRequired("name", true)
+                addField("price", Double::class.java)
+                addField("typeId", String::class.java).setRequired("typeId", true)
+                addField("specialPrice", Double::class.java)
+                addField("specialFromDate", String::class.java)
+                addField("specialToDate", String::class.java)
+                addField("brand", String::class.java).setRequired("brand", true)
+                addField("image", String::class.java).setRequired("image", true)
+                addField("deliveryMethod", String::class.java).setRequired("deliveryMethod", true)
+                addField("viewTypeID", Int::class.java)
+                addField("attributeID", Int::class.java)
+                addField("status", Int::class.java)
+                addField("shippingMethods", String::class.java).setRequired("shippingMethods", true)
+                addField("paymentMethod", String::class.java).setRequired("paymentMethod", true)
+                addField("isHDL", Boolean::class.java)
+                addField("urlKey", String::class.java).setRequired("urlKey", true)
+                addRealmObjectField("productImageList", productDetailImage)
+                addRealmObjectField("extension", productExtension)
+                addRealmListField("gallery", productGallery)
             }
         }
     }
