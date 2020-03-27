@@ -26,7 +26,6 @@ import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerHDL
@@ -291,7 +290,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                     val fragment = DeliveryStorePickUpFragment.newInstance(true)
                                     startFragment(fragment)
                                 }
-
                                 mProgressDialog?.dismiss()
                             }
                         }
@@ -869,17 +867,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun success(response: List<BranchResponse>?) {
                 runOnUiThread {
                     mProgressDialog?.dismiss()
-                    if (response != null && userInformation != null) {
-                        val branch = response.firstOrNull { it.branch.storeId == userInformation!!.store?.storeId.toString() }
-                        if (branch != null) {
-                            branches.add(branch)
-                            response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
-                                if (it.branch.storeId != userInformation!!.store?.storeId.toString()) branches.add(it)
-                            }
-                        } else {
-                            response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
-                                branches.add(it)
-                            }
+                    if (response != null) {
+                        // Now Display all store and sort by storeId
+                        response.sortedWith(compareBy { it.branch.storeId.toInt() }).forEach {
+                            branches.add(it)
                         }
                         startStorePickupFragment()
                     } else {
@@ -1105,7 +1096,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             } else {
                 Log.i(TAG, "remote config -> fetch Fail")
             }
-
             standardCheckout()
         }
     }
