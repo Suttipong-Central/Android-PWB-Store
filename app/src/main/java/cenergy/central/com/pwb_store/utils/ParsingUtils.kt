@@ -13,8 +13,8 @@ class ParsingUtils{
         fun parseToProductResponse(response: okhttp3.Response): ProductResponse {
             val data = response.body()
             val productResponse = ProductResponse()
-            val products = arrayListOf<Product>()
-            val filters = arrayListOf<ProductFilter>()
+            val products = RealmList<Product>()
+            val filters = RealmList<ProductFilter>()
             val productResponseObject = JSONObject(data?.string())
             productResponse.totalCount = productResponseObject.getInt("total_count")
             val productArray = productResponseObject.getJSONArray("products")
@@ -28,7 +28,7 @@ class ParsingUtils{
                 val images = RealmList<ProductGallery>()
                 val productOptions = RealmList<ProductOption>()
                 val specifications = RealmList<Specification>()
-                val filterItem = arrayListOf<FilterItem>()
+                val filterItem = RealmList<FilterItem>()
 
                 product.id = productObj.getLong("id")
                 product.sku = productObj.getString("sku")

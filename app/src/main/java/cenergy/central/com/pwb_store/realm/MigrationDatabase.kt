@@ -362,7 +362,7 @@ class MigrationDatabase : RealmMigration {
                 addField("isParent", Boolean::class.java)
             }
 
-            realm.schema.create("Product").apply {
+            val product = realm.schema.create("Product").apply {
                 addField("id", Long::class.java)
                 addField("sku", String::class.java).setRequired("sku", true)
                 addField("name", String::class.java).setRequired("name", true)
@@ -375,7 +375,6 @@ class MigrationDatabase : RealmMigration {
                 addField("brand", String::class.java).setRequired("brand", true)
                 addField("image", String::class.java).setRequired("image", true)
                 addField("deliveryMethod", String::class.java).setRequired("deliveryMethod", true)
-                addField("viewTypeID", Int::class.java)
                 addField("attributeID", Int::class.java)
                 addField("status", Int::class.java)
                 addField("shippingMethods", String::class.java).setRequired("shippingMethods", true)
@@ -386,6 +385,26 @@ class MigrationDatabase : RealmMigration {
                 addRealmObjectField("extension", productExtension)
                 addRealmListField("gallery", productGallery)
                 addRealmListField("category", categoryProduct)
+            }
+
+            val filterItem = realm.schema.create("FilterItem").apply {
+                addField("label", String::class.java)
+                addField("value", String::class.java)
+                addField("count", Int::class.java)
+            }
+
+            val productFilter = realm.schema.create("ProductFilter").apply {
+                addField("name", String::class.java)
+                addField("code", String::class.java)
+                addRealmListField("items", filterItem)
+                addField("name", String::class.java)
+                addField("position", Int::class.java)
+            }
+
+            realm.schema.create("ProductResponse").apply {
+                addRealmListField("products", product)
+                addField("totalCount", Int::class.java)
+                addRealmListField("filters", productFilter)
             }
         }
     }

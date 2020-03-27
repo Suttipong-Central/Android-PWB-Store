@@ -422,7 +422,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         productResponse = response
         if (response != null) {
             if (response.filters.isNotEmpty()) {
-                brands = response.filters[0].items
+                brands = response.filters[0]!!.items
                 for (filterItem in brands) {
                     if (brandName != null && brandName == filterItem.value) {
                         filterItem.isSelected = true

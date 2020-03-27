@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.ViewType;
 import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import cenergy.central.com.pwb_store.utils.Analytics;
+import io.realm.RealmList;
 
 /**
  * Created by napabhat on 7/6/2017 AD.
@@ -171,7 +173,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         // Add deal paginated
         int startPosition = mListViewType.size();
-        ArrayList<Product> products = productResponse.getProducts();
+        RealmList<Product> products = productResponse.getProducts();
         for (Product product : products) {
             if(skuList.indexOf(product.getSku()) == -1){
                 skuList.add(product.getSku());

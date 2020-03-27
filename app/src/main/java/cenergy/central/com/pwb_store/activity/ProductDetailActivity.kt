@@ -67,7 +67,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productId: String? = null
     private var productJdaSku: String? = null
     private var product: Product? = null
-    private var childProductList: ArrayList<Product> = arrayListOf()
+    private var childProductList: RealmList<Product> = RealmList()
 
     companion object {
         private val TAG = ProductDetailActivity::class.java.simpleName
@@ -226,7 +226,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         }
     }
 
-    override fun getChildProduct(): ArrayList<Product> = childProductList
+    override fun getChildProduct(): ArrayList<Product> {
+        val childProducts = ArrayList<Product>()
+        childProductList.forEach {
+            childProducts.add(it)
+        }
+        return  childProducts
+    }
 
     override fun addProductToCart(product: Product?) {
         product?.let { startAddToCart(it) }

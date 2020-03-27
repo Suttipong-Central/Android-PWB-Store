@@ -8,6 +8,7 @@ import cenergy.central.com.pwb_store.model.response.CategoryProductRealmListParc
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmModel
+import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import kotlinx.android.parcel.Parcelize
@@ -36,6 +37,7 @@ open class Product(
         var deliveryMethod: String = "",
         @SerializedName("media_gallery_entries")
         var gallery: @WriteWith<ProductGalleryRealmListParceler> RealmList<ProductGallery> = RealmList(),
+        @Ignore
         var viewTypeID: Int = 0,
         var attributeID: Int = 0,
         var status: Int = 1,
