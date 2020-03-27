@@ -23,7 +23,7 @@ import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListen
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.getInstance
-import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.retrieveProducts
+import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus
@@ -34,6 +34,7 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFil
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.Screen
@@ -77,6 +78,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
+    private val database = RealmController.getInstance()
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -393,7 +395,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 val sortOrder = createSortOrder(sortName!!, sortType!!)
                 sortOrders.add(sortOrder)
             }
-            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
+            ProductListAPI.retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {

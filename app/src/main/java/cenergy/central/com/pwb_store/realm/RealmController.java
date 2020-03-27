@@ -1,8 +1,11 @@
 package cenergy.central.com.pwb_store.realm;
 
 
-import androidx.annotation.NonNull;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +27,7 @@ import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -105,29 +109,43 @@ public class RealmController {
     }
     // endregion
 
-    // region compare product
-    public void saveCompareProduct(final Product product, final DatabaseListener listener) {
-        Realm realm = getRealm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                CompareProduct compareProduct = CompareProduct.asCompareProduct(product);
-                realm.copyToRealmOrUpdate(compareProduct);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-
-            @Override
-            public void onSuccess() {
+    // region product
+    public void saveProducts(final RealmList<Product> products, final DatabaseListener listener){
+        new Handler(Looper.getMainLooper()).post(() -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(realm1 -> {
+                Log.d("SaveProduct", "Size -> " + products.size());
+                realm1.copyToRealmOrUpdate(products);
+            }, () -> {
                 if (listener != null) {
                     listener.onSuccessfully();
                 }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(@NonNull Throwable error) {
+            }, error -> {
                 if (listener != null) {
                     listener.onFailure(error);
                 }
+            });            });
+    }
+
+    public List<Product> getProductByCategoryId(Long categoryId){
+        RealmResults<Product> realmProducts = realm.where(Product.class).equalTo("category.categoryId", categoryId).findAll();
+        return realmProducts == null ? null : realm.copyFromRealm(realmProducts);
+    }
+    // end region product
+
+    // region compare product
+    public void saveCompareProduct(final Product product, final DatabaseListener listener) {
+        Realm realm = getRealm();
+        realm.executeTransactionAsync(realm1 -> {
+            CompareProduct compareProduct = CompareProduct.asCompareProduct(product);
+            realm1.copyToRealmOrUpdate(compareProduct);
+        }, () -> {
+            if (listener != null) {
+                listener.onSuccessfully();
+            }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
             }
         });
     }

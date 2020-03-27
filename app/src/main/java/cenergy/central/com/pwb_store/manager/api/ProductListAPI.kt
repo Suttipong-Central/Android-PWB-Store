@@ -5,26 +5,31 @@ import android.util.Log
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.ProductListBody
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.realm.DatabaseListener
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.ParsingUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.Gson
+import io.realm.RealmList
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 class ProductListAPI {
     companion object{
         @JvmStatic
         fun retrieveProducts(context: Context, pageSize: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
                              sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
+            val database = RealmController.getInstance()
             val apiManager = HttpManagerMagento.getInstance(context)
             val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
             val httpUrl = HttpUrl.Builder()
@@ -45,7 +50,18 @@ class ProductListAPI {
                 override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
                     if (response != null) {
                         try {
-                            callback.success(ParsingUtils.parseToProductResponse(response))
+                            val productResponse = ParsingUtils.parseToProductResponse(response)
+                            val products = RealmList<Product>()
+                            products.addAll(productResponse.products)
+                            database.saveProducts(products, object : DatabaseListener {
+                                override fun onSuccessfully() {
+                                    callback.success(productResponse)
+                                }
+
+                                override fun onFailure(error: Throwable) {
+                                    callback.failure(error.getResultError())
+                                }
+                            })
                         } catch (e: Exception) {
                             callback.failure(e.getResultError())
                             Log.e("JSON Parser", "Error parsing data $e")
