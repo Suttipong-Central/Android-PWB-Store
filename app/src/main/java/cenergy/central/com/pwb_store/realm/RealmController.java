@@ -26,8 +26,8 @@ import cenergy.central.com.pwb_store.model.StorePickupList;
 import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
+import cenergy.central.com.pwb_store.model.response.ProductResponse;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -110,12 +110,20 @@ public class RealmController {
     // endregion
 
     // region product
-    public void saveProducts(final RealmList<Product> products, final DatabaseListener listener){
+    public void storeProductResponse(final ProductResponse productResponse, final DatabaseListener listener) {
         new Handler(Looper.getMainLooper()).post(() -> {
             Realm realm = getRealm();
             realm.executeTransactionAsync(realm1 -> {
-                Log.d("SaveProduct", "Size -> " + products.size());
-                realm1.copyToRealmOrUpdate(products);
+                // Get product response in local db
+                ProductResponse productResponseLocal = realm1.where(ProductResponse.class)
+                        .equalTo("categoryId", productResponse.getCategoryId()).findFirst();
+                if (productResponseLocal != null) {
+                    List<Product> products = productResponseLocal.getProducts();
+                    products.addAll(productResponse.getProducts()); // add new products
+                    realm1.insertOrUpdate(productResponseLocal);
+                } else {
+                    realm1.insertOrUpdate(productResponse);
+                }
             }, () -> {
                 if (listener != null) {
                     listener.onSuccessfully();
@@ -124,12 +132,14 @@ public class RealmController {
                 if (listener != null) {
                     listener.onFailure(error);
                 }
-            });            });
+            });
+        });
     }
 
-    public List<Product> getProductByCategoryId(Long categoryId){
-        RealmResults<Product> realmProducts = realm.where(Product.class).equalTo("category.categoryId", categoryId).findAll();
-        return realmProducts == null ? null : realm.copyFromRealm(realmProducts);
+    public ProductResponse getProductResponseByCategoryId(String categoryId) {
+        ProductResponse realmProductResponse = realm.where(ProductResponse.class)
+                .equalTo("categoryId", categoryId).findFirst();
+        return realmProductResponse == null ? null : realm.copyFromRealm(realmProductResponse);
     }
     // end region product
 

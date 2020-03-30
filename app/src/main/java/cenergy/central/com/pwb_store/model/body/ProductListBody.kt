@@ -18,16 +18,16 @@ class ProductListBody(
 class FilterGroups(
         var filters: ArrayList<Filter> = arrayListOf()
 ){
-    companion object{
-        fun createFilterGroups(field: String, value: String, conditionType: String): FilterGroups{
-            val filter = Filter.createFilter(field = field,value =  value,conditionType =  conditionType)
+    companion object {
+        fun createFilterGroups(field: String, value: String, conditionType: String): FilterGroups {
+            val filter = Filter.createFilter(field = field, value = value, conditionType = conditionType)
             val filterList = arrayListOf<Filter>()
             filterList.add(filter)
             return FilterGroups(filterList)
         }
 
-        fun createFilterGroups(field: String, conditionType: String): FilterGroups{
-            val filter = Filter.createFilter(field = field,conditionType =  conditionType)
+        fun createFilterGroups(field: String, conditionType: String): FilterGroups {
+            val filter = Filter.createFilter(field = field, conditionType = conditionType)
             val filterList = arrayListOf<Filter>()
             filterList.add(filter)
             return FilterGroups(filterList)

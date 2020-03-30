@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
@@ -24,13 +23,12 @@ import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.getInstance
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
+import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.PER_PAGE
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.FilterGroups
-import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
@@ -78,7 +76,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
-    private val database = RealmController.getInstance()
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -96,7 +93,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             if (!isLoadingMore
                     && totalItemCount <= firstVisibleItem + visibleItemCount + visibleThreshold && isStillHavePages) {
                 layoutProgress!!.visibility = View.VISIBLE
-                retrieveProductList()
+                retrieveProductList(true)
                 isLoadingMore = true
             }
         }
@@ -283,9 +280,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
     }
 
-    //return currentPage + PER_PAGE;
     private val nextPage: Int
-        get() = currentPage + 1
+        get() = if (productResponse != null) {
+            (productResponse!!.products.size / PER_PAGE) + 1
+        } else {
+            currentPage + 1
+        }
 
     private val isStillHavePages: Boolean
         get() = currentPage < totalPage
@@ -364,59 +364,46 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun totalPageCal(total: Int): Int {
         val num: Int
         val x = total.toFloat() / PER_PAGE
-        Log.d(TAG, "Calculator : $x")
         num = ceil(x.toDouble()).toInt()
         return num
     }
 
-    private fun retrieveProductList() {
+    private fun retrieveProductList(force: Boolean = false) {
         if (context != null) {
-            val filterGroupsList = ArrayList<FilterGroups>()
-            if (isSearch) {
-                filterGroupsList.add(createFilterGroups("search_term", keyWord!!, "eq"))
-            } else {
-                filterGroupsList.add(createFilterGroups("category_id", categoryId!!, "eq"))
-            }
-            if (BuildConfig.FLAVOR !== "cds") {
-                filterGroupsList.add(createFilterGroups(PRODUCT_2H_FIELD, PRODUCT_2H_VALUE, "eq"))
-            }
-            filterGroupsList.add(createFilterGroups("status", "1", "eq"))
-            filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
-            filterGroupsList.add(createFilterGroups("price", "0", "gt"))
-
-            // TODO We have to do not display market place product
-            filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
-
-            if (brandName != null && brandName!!.isNotEmpty()) {
-                filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
-            }
+            val forceRefresh = if (isSearch) true else force
+            val searchTerm = if (isSearch) keyWord else categoryId
             val sortOrders = ArrayList<SortOrder>()
             if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
                 val sortOrder = createSortOrder(sortName!!, sortType!!)
                 sortOrders.add(sortOrder)
             }
-            ProductListAPI.retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
-                override fun success(response: ProductResponse?) {
-                    if (activity != null) {
-                        activity!!.runOnUiThread {
-                            updateProductList(response)
-                        }
-                    }
-                }
 
-                override fun failure(error: APIError) {
-                    if (activity != null) {
-                        activity!!.runOnUiThread {
-                            layoutProgress!!.visibility = View.GONE
-                            mProgressDialog!!.dismiss()
-                            // show error dialog
-                            if (context != null) {
-                                DialogHelper(context!!).showErrorDialog(error)
+            searchTerm?.let {
+                ProductListAPI().retrieveProducts(context!!, isSearch, it, brandName,
+                        PER_PAGE, nextPage, sortOrders, forceRefresh,
+                        object : ApiResponseCallback<ProductResponse> {
+                            override fun success(response: ProductResponse?) {
+                                if (activity != null) {
+                                    activity!!.runOnUiThread {
+                                        updateProductList(response)
+                                    }
+                                }
                             }
-                        }
-                    }
-                }
-            })
+
+                            override fun failure(error: APIError) {
+                                if (activity != null) {
+                                    activity!!.runOnUiThread {
+                                        layoutProgress!!.visibility = View.GONE
+                                        mProgressDialog!!.dismiss()
+                                        // show error dialog
+                                        if (context != null) {
+                                            DialogHelper(context!!).showErrorDialog(error)
+                                        }
+                                    }
+                                }
+                            }
+                        })
+            }
         }
     }
 
@@ -524,8 +511,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
-        //Pagination
-        private const val PER_PAGE = 20
 
         fun newInstance(title: String?, search: Boolean, departmentId: String?,
                         storeId: String?, category: Category?, keyWord: String?): ProductListFragment {

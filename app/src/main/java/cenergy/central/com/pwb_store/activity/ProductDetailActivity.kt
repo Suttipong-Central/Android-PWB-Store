@@ -368,25 +368,25 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             val filterGroupsList = java.util.ArrayList<FilterGroups>()
             filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
             val sortOrders = java.util.ArrayList<SortOrder>()
-
-            ProductListAPI.retrieveProducts(this, productLinks.size, 1,
-                    filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
-                override fun success(response: ProductResponse?) {
-                    runOnUiThread {
-                        if (response != null) {
-                            childProductList = response.products
-                            checkHDLOption(product)
-                        }
-                    }
-                }
-
-                override fun failure(error: APIError) {
-                    runOnUiThread {
-                        Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
-                        checkHDLOption(product)
-                    }
-                }
-            })
+            // TODO: Fix about product config in PWB
+//            ProductListAPI().retrieveProducts(this, productLinks.size, 1,
+//                    filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
+//                override fun success(response: ProductResponse?) {
+//                    runOnUiThread {
+//                        if (response != null) {
+//                            childProductList = response.products
+//                            checkHDLOption(product)
+//                        }
+//                    }
+//                }
+//
+//                override fun failure(error: APIError) {
+//                    runOnUiThread {
+//                        Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
+//                        checkHDLOption(product)
+//                    }
+//                }
+//            })
         }
     }
 

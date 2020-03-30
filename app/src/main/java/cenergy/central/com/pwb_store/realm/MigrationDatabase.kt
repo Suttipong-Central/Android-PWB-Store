@@ -402,6 +402,7 @@ class MigrationDatabase : RealmMigration {
             }
 
             realm.schema.create("ProductResponse").apply {
+                addField("categoryId", String::class.java).addPrimaryKey("categoryId")
                 addRealmListField("products", product)
                 addField("totalCount", Int::class.java)
                 addRealmListField("filters", productFilter)

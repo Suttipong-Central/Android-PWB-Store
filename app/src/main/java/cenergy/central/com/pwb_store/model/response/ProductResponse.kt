@@ -6,10 +6,13 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmModel
 import io.realm.annotations.Ignore
+import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 
 @RealmClass
 open class ProductResponse(
+        @PrimaryKey
+        var categoryId: String = "",
         var products: RealmList<Product> = RealmList(),
         @Ignore
         var currentPage: Int = 0,
