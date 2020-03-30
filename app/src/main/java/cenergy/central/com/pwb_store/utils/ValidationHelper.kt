@@ -120,7 +120,7 @@ class ValidationHelper(private val context: Context) {
             return context.getString(R.string.error_form_empty_data)
         } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
             return context.getString(R.string.error_form_phone_number_invalid)
-        } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
+        } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09" || prefixNumber == "02")) {
             return context.getString(R.string.error_form_phone_number_invalid)
         }
         return null
@@ -151,7 +151,8 @@ class ValidationHelper(private val context: Context) {
 
     companion object {
         private const val MIN_PASSWORD_LENGTH = 9
-        private const val MIN_PHONE_NUMBER = 10
+        private const val MIN_PHONE_NUMBER = 9
+//        private const val MIN_PHONE_NUMBER = 10
         private const val PREFIX_PHONE_NUMBER = 2
         private const val MIN_TAX_ID = 13
         private const val MIN_PASSPORT_LENGTH = 5

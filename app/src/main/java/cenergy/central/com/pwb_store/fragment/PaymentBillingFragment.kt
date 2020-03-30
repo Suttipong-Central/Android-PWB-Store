@@ -3,9 +3,6 @@ package cenergy.central.com.pwb_store.fragment
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -14,10 +11,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.Group
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -26,7 +25,6 @@ import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
-import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -34,7 +32,6 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.response.CartTotalResponse
 import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
@@ -937,10 +934,14 @@ class PaymentBillingFragment : Fragment() {
 
         taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
 
+        if (homePhoneEdt.getText().isNotEmpty()){
+            homePhoneEdt.setError(validator.validThaiPhoneNumber(homePhoneEdt.getText()))
+        }
+
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null)
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null || homePhoneEdt.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {

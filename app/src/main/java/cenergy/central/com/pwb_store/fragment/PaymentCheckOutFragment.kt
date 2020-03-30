@@ -75,7 +75,7 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
     }
 
     private fun checkCanSave() {
-        if (contactInput.text.toString().length == 10){
+        if (contactInput.text.toString().length in 9..10){
             okBtn.setButtonDisable(false)
             okBtn.setOnClickListener { checkOnClick() }
         } else {

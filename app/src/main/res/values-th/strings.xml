@@ -148,7 +148,7 @@
     <string name="place_or_building">สถานที่/อาคาร</string>
     <string name="soi">ซอย</string>
     <string name="street">ถนน</string>
-    <string name="tel_or_mobile">เบอร์โทรศัพท์</string>
+    <string name="contact_number_reserve">เบอร์ติดต่อ (สำรอง)</string>
     <string name="province">จังหวัด</string>
     <string name="district">อำเภอ</string>
     <string name="sub_district">ตำบล</string>
@@ -241,6 +241,7 @@
     <string name="error_form_password_too_short">รหัสผ่านต้องมากกว่า %d ตัวอักษร</string>
     <string name="error_form_confirmation_password_not_matched">ยืนยันรหัสผ่านไม่ถูกต้อง</string>
     <string name="error_form_phone_number_invalid">เบอร์โทรศัพท์ไม่ถูกต้อง</string>
+    <string name="error_form_contact_number_invalid">กรอกเบอร์โทรให้ถูกต้อง เช่น 08xxxxxxxx, 02xxxxxxx</string>
     <string name="error_form_has_special">ข้อมูลจะต้องไม่มีสัญลักษณ์พิเศษ</string>
     <string name="error_form_name">ชื่อหรือนามสกุลจะต้องไม่มีสัญลักษณ์พิเศษ และตัวเลข</string>
     <string name="error_form_password_not_correctly">อย่างน้อย 9 ตัว ประกอบด้วยตัวพิมพ์ใหญ่ พิมพ์เล็ก และตัวเลข</string>
