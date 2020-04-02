@@ -48,6 +48,8 @@ public class Category extends RealmObject implements IViewType, Parcelable {
     private String updatedAt;
     @Expose
     private String path;
+    @Ignore
+    private boolean isSelected = false;
 
     public Category () {
 
@@ -67,6 +69,7 @@ public class Category extends RealmObject implements IViewType, Parcelable {
         createdAt = in.readString();
         updatedAt = in.readString();
         path = in.readString();
+        isSelected = in.readInt() == 1;
     }
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {
@@ -101,6 +104,7 @@ public class Category extends RealmObject implements IViewType, Parcelable {
         dest.writeString(createdAt);
         dest.writeString(updatedAt);
         dest.writeString(path);
+        dest.writeInt(isSelected ? 1 : 0);
     }
 
     @Override
@@ -212,4 +216,8 @@ public class Category extends RealmObject implements IViewType, Parcelable {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public void setIsSelected(boolean selected){ this.isSelected = selected;}
+
+    public Boolean isSelected() {return isSelected;}
 }

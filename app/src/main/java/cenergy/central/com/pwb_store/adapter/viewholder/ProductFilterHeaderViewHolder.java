@@ -12,12 +12,7 @@ import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.view.PowerBuyTextView;
 
-/**
- * Created by napabhat on 7/13/2017 AD.
- */
-
 public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder {
-    private static final String TAG = "ProductFilterHeaderView";
 
     private PowerBuyTextView mTxtHeader;
     private ImageView mImgFilterHeader;
@@ -29,12 +24,10 @@ public class ProductFilterHeaderViewHolder extends RecyclerView.ViewHolder {
         mImgFilterHeader = itemView.findViewById(R.id.img_filter_header);
     }
 
-    public void bindItem(Category category, Category selectedFilter) {
+    public void bindItem(Category category) {
         mTxtHeader.setText(category.getDepartmentName());
         mImgFilterHeader.setVisibility(View.GONE);
-        if (selectedFilter != null) {
-            mTxtHeader.setTextAppearance(itemView.getContext(), category.getId().equals(selectedFilter.getId()) ? R.style.textSubCheck : R.style.textSub);
-        }
+        mTxtHeader.setTextAppearance(itemView.getContext(), category.isSelected() ? R.style.textSubCheck : R.style.textSub);
         itemView.setOnClickListener(v -> EventBus.getDefault().post(new ProductFilterItemBus(category, getAdapterPosition())));
     }
 }

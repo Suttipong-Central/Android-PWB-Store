@@ -17,20 +17,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter
-import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.getInstance
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
-import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.PER_PAGE
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.SortOrder
-import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
@@ -38,18 +34,17 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import io.realm.RealmList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
-import kotlin.math.ceil
 
 class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener {
     // Analytic
     private var analytics: Analytics? = null
     private var productCount: PowerBuyTextView? = null
-    private var layoutProgress: LinearLayout? = null
     private var mProductLayout: LinearLayout? = null
-    //Data Member
+    private var mRecyclerView: RecyclerView? = null
     private var mProductListAdapter: ProductListAdapter? = null
     private var mLayoutManger: GridLayoutManager? = null
     private var categoriesLv3: ArrayList<Category>? = null
@@ -67,37 +62,13 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var sortType: String? = ""
     private var categoryLv2: Category? = null
     // Page
-    private var isLoadingMore = false
     private var isSorting = false
-    private var mPreviousTotal = 0
-    private var currentPage = 0
-    private var totalPage = 0
-    private var totalItem = 0
-    private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
+    // Realm
+    private var database = RealmController.getInstance()
 
-    private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
-
-    private val SCROLL: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-            val totalItemCount = mLayoutManger!!.itemCount
-            val visibleItemCount = mLayoutManger!!.childCount
-            val firstVisibleItem = mLayoutManger!!.findFirstVisibleItemPosition()
-            if (isLoadingMore && totalItemCount > mPreviousTotal) {
-                isLoadingMore = false
-                mPreviousTotal = totalItemCount
-            }
-            val visibleThreshold = 10
-            if (!isLoadingMore
-                    && totalItemCount <= firstVisibleItem + visibleItemCount + visibleThreshold && isStillHavePages) {
-                layoutProgress!!.visibility = View.VISIBLE
-                retrieveProductList(true)
-                isLoadingMore = true
-            }
-        }
-    }
+    private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
 
     @Subscribe
     fun onEvent(productFilterItemBus: ProductFilterItemBus) {
@@ -105,7 +76,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         isDoneFilter = true
         isSorting = true
         brandName = "" // clear filter brand name
-        currentPage = 1 // clear current page
         val categoryLv3 = productFilterItemBus.productFilterItem
         val clickPosition = productFilterItemBus.position
         if (categoryLv3 != null && clickPosition != 0) {
@@ -115,8 +85,31 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             title = categoryLv2!!.departmentName
             categoryId = categoryLv2!!.id
         }
-        resetPage()
-        retrieveProductList()
+        val productResponseCache = database.getProductResponseByCategoryId(categoryId)
+        if (productResponseCache != null){
+            this.productResponse = productResponseCache
+            // update text header
+            setTextHeader(productResponseCache.products.size, title)
+
+            // update product PLP
+            if(productResponseCache.products.isNotEmpty()){
+                mProductListAdapter!!.setProduct(productResponseCache.products)
+            } else {
+                mProductListAdapter!!.setError()
+            }
+            // update brands when use cache productResponse
+            brands = if (productResponseCache.filters.isNotEmpty()){
+                productResponseCache.filters[0]!!.items
+            } else {
+                arrayListOf()
+            }
+            mRecyclerView!!.scrollToPosition(0)
+            dismissProgressDialog()
+        } else {
+            retrieveProductList(true) // load new productResponse
+        }
+        mPowerBuyPopupWindow!!.updateSingleProductFilterItem(categoryLv3)
+
         if (mPowerBuyPopupWindow!!.isShowing) {
             mPowerBuyPopupWindow!!.dismiss()
         }
@@ -133,14 +126,25 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         val sortingItem = sortingItemBus.sortingItem
         isDoneFilter = true
         isSorting = true
-        resetPage()
         sortName = sortingItem.slug
         sortType = sortingItem.value
-        retrieveProductList()
+        if (sortName == "brand"){
+            when(sortType){
+                "ASC" -> {
+                    mProductListAdapter!!.setProduct(database.getProductResponseByCategoryId(categoryId).products.sortedBy { it.brand })
+                }
+                else -> {
+                    mProductListAdapter!!.setProduct(database.getProductResponseByCategoryId(categoryId).products.sortedByDescending { it.brand })
+                }
+            }
+        }
+        setTextHeader(database.getProductResponseByCategoryId(categoryId).products.size, title)
+        mRecyclerView!!.scrollToPosition(0)
         mPowerBuyPopupWindow!!.updateSingleSortingItem(sortingItem)
         if (mPowerBuyPopupWindow!!.isShowing) {
             mPowerBuyPopupWindow!!.dismiss()
         }
+        dismissProgressDialog()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,7 +156,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_product_list, container, false)
         initInstances(rootView, savedInstanceState)
-        resetPage()
         return rootView
     }
 
@@ -177,16 +180,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 loadCategoryLv3(categoryLv2)
             }
         }
-        resetPage()
-        //        mProductFilterList = new ProductFilterList(productFilterHeaders);
-// sorting
+        // sorting
         val sortingItems: MutableList<SortingItem> = ArrayList()
-        sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
-        sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
-        sortingItems.add(SortingItem(3, getString(R.string.a_to_z), "brand", "ASC", "3", false))
-        sortingItems.add(SortingItem(4, getString(R.string.z_to_a), "brand", "DESC", "4", false))
-        //        sortingItems.add(new SortingItem(5, "Discount : Low to High", "ASC", "ASC", "5", false));
-//        sortingItems.add(new SortingItem(6, "Discount : High to Low", "DESC", "DESC", "6", false));
+        sortingItems.add(SortingItem(1, getString(R.string.a_to_z), "brand", "ASC", "1", false))
+        sortingItems.add(SortingItem(2, getString(R.string.z_to_a), "brand", "DESC", "2", false))
         val sortingHeaders: MutableList<SortingHeader> = ArrayList()
         sortingHeaders.add(SortingHeader("0", "Sorting", "sorting", "single", sortingItems))
         mSortingList = SortingList(sortingHeaders)
@@ -223,14 +220,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun initInstances(rootView: View, savedInstanceState: Bundle?) { // Init 'View' instance(s) with rootView.findViewById here
 //        ButterKnife.bind(this, rootView);
         mProductListAdapter = ProductListAdapter(context)
-        mProductListAdapter!!.showLoading()
         // setup widget view
         val productTitle: PowerBuyTextView = rootView.findViewById(R.id.txt_title_product)
         val layoutFilter: ConstraintLayout = rootView.findViewById(R.id.layout_filter)
         productCount = rootView.findViewById(R.id.txt_product_count)
         //View Members
-        val mRecyclerView: RecyclerView = rootView.findViewById(R.id.recycler_view_list)
-        layoutProgress = rootView.findViewById(R.id.layout_progress)
+        mRecyclerView = rootView.findViewById(R.id.recycler_view_list)
         productTitle.text = title
         productCount?.text = title
         // setup onClick
@@ -253,56 +248,32 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         popUpShow()
         mLayoutManger = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
         mLayoutManger!!.spanSizeLookup = mProductListAdapter!!.spanSize
-        mRecyclerView.layoutManager = mLayoutManger
-        mRecyclerView.addItemDecoration(SpacesItemDecoration(0, LinearLayoutManager.VERTICAL))
-        mRecyclerView.adapter = mProductListAdapter
+        mRecyclerView!!.layoutManager = mLayoutManger
+        mRecyclerView!!.adapter = mProductListAdapter
         if (savedInstanceState == null) {
             showProgressDialog()
             retrieveProductList()
         }
-        var scrollPosition = 0
-        // If a layout manager has already been set, get current scroll position.
-        if (mRecyclerView.layoutManager != null) {
-            scrollPosition = (mRecyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
-        }
-        mRecyclerView.scrollToPosition(scrollPosition)
-        mRecyclerView.addOnScrollListener(SCROLL)
     }
-
-    private fun resetPage() { // mProductDao.getProductListList().clear();
-        currentPage = 0
-        totalPage = 1
-        isLoadingMore = true
-        mPreviousTotal = 0
-        if (!isSorting) {
-            sortName = ""
-            sortType = ""
-        }
-    }
-
-    private val nextPage: Int
-        get() = if (productResponse != null) {
-            (productResponse!!.products.size / PER_PAGE) + 1
-        } else {
-            currentPage + 1
-        }
-
-    private val isStillHavePages: Boolean
-        get() = currentPage < totalPage
 
     private fun showProgressDialog() {
-        if (mProgressDialog == null) {
+        if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
+            mProgressDialog!!.show()
+        } else {
             mProgressDialog = DialogUtils.createProgressDialog(context)
             mProgressDialog?.show()
-        } else {
-            mProgressDialog!!.show()
+        }
+    }
+
+    private fun dismissProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog!!.isShowing) {
+            mProgressDialog!!.dismiss()
         }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         EventBus.getDefault().register(this)
-        mContext = context
     }
 
     override fun onDetach() {
@@ -318,13 +289,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         // Save Instance State here
         outState.putParcelable(ARG_CATEGORY, categoryLv2)
         outState.putParcelableArrayList(ARG_PRODUCT_FILTER, categoriesLv3)
-        //        outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
         outState.putString(ARG_DEPARTMENT_ID, categoryId)
         outState.putString(ARG_SORT_NAME, sortName)
         outState.putString(ARG_SORT_TYPE, sortType)
         outState.putBoolean(ARG_IS_DONE, isDoneFilter)
         outState.putString(ARG_TITLE, title)
-        outState.putInt(ARG_PAGE, currentPage)
         outState.putString(ARG_KEY_WORD, keyWord)
         outState.putBoolean(ARG_SEARCH, isSearch)
         outState.putBoolean(ARG_IS_SORTING, isSorting)
@@ -336,13 +305,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun onRestoreInstanceState(savedInstanceState: Bundle) { // Restore Instance State here
         categoryLv2 = savedInstanceState.getParcelable(ARG_CATEGORY)
         categoriesLv3 = savedInstanceState.getParcelableArrayList(ARG_PRODUCT_FILTER)
-        //        mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
         categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
         sortName = savedInstanceState.getString(ARG_SORT_NAME)
         sortType = savedInstanceState.getString(ARG_SORT_TYPE)
         isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE)
         title = savedInstanceState.getString(ARG_TITLE)
-        currentPage = savedInstanceState.getInt(ARG_PAGE)
         keyWord = savedInstanceState.getString(ARG_KEY_WORD)
         isSearch = savedInstanceState.getBoolean(ARG_SEARCH)
         isSorting = savedInstanceState.getBoolean(ARG_IS_SORTING)
@@ -352,35 +319,24 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         if (context != null) {
             val layoutInflater = (context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
             mPowerBuyPopupWindow = PowerBuyPopupWindow(activity, layoutInflater)
-            mPowerBuyPopupWindow!!.setOnDismissListener(ON_POPUP_DISMISS_LISTENER)
+            mPowerBuyPopupWindow!!.setOnDismissListener(onPopupDismissListener)
         }
     }
 
     @SuppressLint("SetTextI18n")
     private fun setTextHeader(total: Int, name: String?) {
-        productCount!!.text = name + " " + mContext!!.getString(R.string.filter_count, total.toString())
-    }
-
-    private fun totalPageCal(total: Int): Int {
-        val num: Int
-        val x = total.toFloat() / PER_PAGE
-        num = ceil(x.toDouble()).toInt()
-        return num
+        context?.let {
+            productCount!!.text = name + " " + it.getString(R.string.filter_count, total.toString())
+        }
     }
 
     private fun retrieveProductList(force: Boolean = false) {
         if (context != null) {
             val forceRefresh = if (isSearch) true else force
             val searchTerm = if (isSearch) keyWord else categoryId
-            val sortOrders = ArrayList<SortOrder>()
-            if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
-                val sortOrder = createSortOrder(sortName!!, sortType!!)
-                sortOrders.add(sortOrder)
-            }
 
             searchTerm?.let {
-                ProductListAPI().retrieveProducts(context!!, isSearch, it, brandName,
-                        PER_PAGE, nextPage, sortOrders, forceRefresh,
+                ProductListAPI().retrieveProducts(context!!, isSearch, it, forceRefresh,
                         object : ApiResponseCallback<ProductResponse> {
                             override fun success(response: ProductResponse?) {
                                 if (activity != null) {
@@ -393,7 +349,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                             override fun failure(error: APIError) {
                                 if (activity != null) {
                                     activity!!.runOnUiThread {
-                                        layoutProgress!!.visibility = View.GONE
                                         mProgressDialog!!.dismiss()
                                         // show error dialog
                                         if (context != null) {
@@ -417,56 +372,57 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                         filterItem.isSelected = true
                     }
                 }
+            } else {
+                // clear brand when call cat lv3 brand is empty
+                brands = arrayListOf()
             }
             if (response.products.isNotEmpty()) {
-                totalItem = response.totalCount
-                totalPage = totalPageCal(totalItem)
-                currentPage = nextPage
-                response.currentPage = currentPage
-                mProductListAdapter!!.setProduct(response)
+                mProductListAdapter!!.setProduct(response.products)
+                setTextHeader(response.totalCount, title)
             } else {
                 mProductListAdapter!!.setError()
+                setTextHeader(0, title)
             }
-            setTextHeader(totalItem, title)
         } else {
             if (mProductListAdapter!!.itemCount == 0) {
                 mProductListAdapter!!.setError()
             }
-            setTextHeader(totalItem, title)
+            setTextHeader(0, title)
         }
-        layoutProgress!!.visibility = View.GONE
         mProgressDialog!!.dismiss()
     }
 
     // region {@link OnBrandFilterClickListener}
     override fun onClickedItem(filterItem: FilterItem?) {
         isDoneFilter = true
-        resetPage()
         if (filterItem != null) {
             brandName = filterItem.value // brand name
-            if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
-                showProgressDialog()
-            }
-            if (mPowerBuyPopupWindow!!.isShowing) {
-                mPowerBuyPopupWindow!!.dismiss()
-            }
-            retrieveProductList()
+            showProgressDialog()
+            val productFilterByBrand = RealmList<Product>()
+            productFilterByBrand.addAll(database.getProductResponseByCategoryId(categoryId).products.filter { it.brand == brandName })
+            setTextHeader(productFilterByBrand.size, title)
+            mProductListAdapter!!.setProduct(productFilterByBrand)
+            mRecyclerView!!.scrollToPosition(0)
             mPowerBuyPopupWindow!!.updateSingleBrandFilterItem(filterItem)
         } else {
             clearBrandFilter()
         }
+        if (mPowerBuyPopupWindow!!.isShowing) {
+            mPowerBuyPopupWindow!!.dismiss()
+        }
+        dismissProgressDialog()
     }
 
     private fun clearBrandFilter() {
         brandName = "" // clear brand
-        if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
-            showProgressDialog()
-        }
-        retrieveProductList()
+        showProgressDialog()
+        setTextHeader(database.getProductResponseByCategoryId(categoryId).products.size, title)
+        mProductListAdapter!!.setProduct(database.getProductResponseByCategoryId(categoryId).products)
+        mRecyclerView!!.scrollToPosition(0)
         mPowerBuyPopupWindow!!.updateSingleBrandFilterItem(null)
     }
-
     // endregion
+
     private fun loadCategoryLv3(categoryLv2: Category?) {
         if (context == null) return
         getInstance(context!!).retrieveCategory(categoryLv2!!.id,
@@ -505,12 +461,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_SORT_NAME = "ARG_SORT_NAME"
         private const val ARG_SORT_TYPE = "ARG_SORT_TYPE"
         private const val ARG_IS_DONE = "ARG_IS_DONE"
-        private const val ARG_PAGE = "ARG_PAGE"
         private const val ARG_CATEGORY = "ARG_CATEGORY"
         private const val ARG_KEY_WORD = "ARG_KEY_WORD"
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
-        private const val PRODUCT_2H_FIELD = "expr-p"
-        private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
 
         fun newInstance(title: String?, search: Boolean, departmentId: String?,
                         storeId: String?, category: Category?, keyWord: String?): ProductListFragment {

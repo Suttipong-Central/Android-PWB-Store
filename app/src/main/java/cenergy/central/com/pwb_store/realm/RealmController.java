@@ -114,16 +114,7 @@ public class RealmController {
         new Handler(Looper.getMainLooper()).post(() -> {
             Realm realm = getRealm();
             realm.executeTransactionAsync(realm1 -> {
-                // Get product response in local db
-                ProductResponse productResponseLocal = realm1.where(ProductResponse.class)
-                        .equalTo("categoryId", productResponse.getCategoryId()).findFirst();
-                if (productResponseLocal != null) {
-                    List<Product> products = productResponseLocal.getProducts();
-                    products.addAll(productResponse.getProducts()); // add new products
-                    realm1.insertOrUpdate(productResponseLocal);
-                } else {
-                    realm1.insertOrUpdate(productResponse);
-                }
+                realm1.insertOrUpdate(productResponse);
             }, () -> {
                 if (listener != null) {
                     listener.onSuccessfully();
@@ -472,12 +463,7 @@ public class RealmController {
         cachedEndpoint.setLastUpdated(new Date());
 
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(cachedEndpoint);
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(cachedEndpoint));
     }
 
     public void clearCachedEndpoint(final String endpoint) {

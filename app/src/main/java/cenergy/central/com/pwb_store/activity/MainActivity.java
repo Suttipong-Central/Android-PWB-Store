@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.activity;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.Bundle;

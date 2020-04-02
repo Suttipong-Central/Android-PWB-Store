@@ -6,9 +6,9 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.ProductListBody
-import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -26,7 +26,7 @@ import java.util.*
 class ProductListAPI {
     companion object {
         //Pagination
-        const val PER_PAGE = 20
+        const val PER_PAGE = 99999
         // Filter condition type
         const val FILTER_EQUAL = "eq"
         const val FILTER_GREATER_THAN = "gt"
@@ -36,10 +36,7 @@ class ProductListAPI {
     }
 
     fun retrieveProducts(context: Context, isSearch: Boolean, searchTerm: String,
-                         brandName: String? = null,
-                         pageSize: Int, currentPage: Int,
-                         sortOrders: ArrayList<SortOrder>, force: Boolean = false,
-                         callback: ApiResponseCallback<ProductResponse>) {
+                         force: Boolean = false, callback: ApiResponseCallback<ProductResponse>) {
 
         // setup filter
         val filterGroups = ArrayList<FilterGroups>()
@@ -56,24 +53,16 @@ class ProductListAPI {
         // TODO: un-hide market place seller
         filterGroups.add(FilterGroups.createFilterGroups("marketplace_seller", "null"))
 
-        if (brandName != null && brandName.isNotEmpty()) {
-            filterGroups.add(FilterGroups.createFilterGroups("brand", brandName, FILTER_EQUAL))
-        }
-
         // Setup for call http
         val database = RealmController.getInstance()
         val apiManager = HttpManagerMagento.getInstance(context)
         // For cache endpoint
-        val endpointName = "rest/catalog-service/${apiManager.getLanguage()}/V1/products/search?" +
-                "$searchTermKey=$searchTerm/"
+        val endpointName = "rest/catalog-service/${apiManager.getLanguage()}/V1/products/search?" + "$searchTermKey=$searchTerm/"
 
         // If already cached then do nothing
         val productResponse = database.getProductResponseByCategoryId(searchTerm)
         if (productResponse != null && searchTermKey == "category_id") {
-            val localCurrentPage = productResponse.products.size / PER_PAGE
-            val skip = currentPage > localCurrentPage
-
-            if (!skip || (!force && database.hasFreshlyCachedEndpoint(endpointName, 1))) {
+            if ((!force && database.hasFreshlyCachedEndpoint(endpointName, 1))) {
                 Log.i("ProductListAPI", "retrieveProducts: using cached")
                 //TODO: Fix about call api with sort
                 callback.success(productResponse)
@@ -81,7 +70,7 @@ class ProductListAPI {
             }
         }
 
-        val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
+        val body = ProductListBody.createBody(PER_PAGE, 1, filterGroups, arrayListOf())
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
@@ -108,6 +97,20 @@ class ProductListAPI {
                             database.storeProductResponse(newProductResponse, object : DatabaseListener {
                                 override fun onSuccessfully() {
                                     callback.success(database.getProductResponseByCategoryId(searchTerm))
+
+                                    // cache endpoint
+                                    Log.i("ProductListAPI", "PLP: cache endpoint $endpointName")
+                                    database.updateCachedEndpoint(endpointName)
+                                    when (apiManager.getLanguage()) {
+                                        "th" -> {
+                                            database.clearCachedEndpoint("rest/catalog-service/${AppLanguage.EN}/V1/products/search?" + "$searchTermKey=$searchTerm/")
+                                            Log.i("ProductListAPI", "PLP: clear endpoint ${AppLanguage.EN}")
+                                        }
+                                        "en" -> {
+                                            database.clearCachedEndpoint("rest/catalog-service/${AppLanguage.TH}/V1/products/search?" + "$searchTermKey=$searchTerm/")
+                                            Log.i("ProductListAPI", "PLP: clear endpoint ${AppLanguage.TH}")
+                                        }
+                                    }
                                 }
 
                                 override fun onFailure(error: Throwable) {

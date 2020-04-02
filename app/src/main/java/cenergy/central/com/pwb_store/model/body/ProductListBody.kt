@@ -4,13 +4,16 @@ class ProductListBody(
         var size: Int = 0,
         var currentPage: Int = 0,
         var filterGroups: ArrayList<FilterGroups> = arrayListOf(),
-        var sortOrders: ArrayList<SortOrder> = arrayListOf()
-) {
+        var sortOrders: ArrayList<SortOrder> = arrayListOf()) {
     companion object {
         fun createBody(size: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
                        sortOrders: ArrayList<SortOrder>): ProductListBody {
             return ProductListBody(size = size, currentPage = currentPage,
                     filterGroups = filterGroups, sortOrders = sortOrders)
+        }
+
+        fun createBody(filterGroups: ArrayList<FilterGroups>): ProductListBody {
+            return ProductListBody(filterGroups = filterGroups)
         }
     }
 }

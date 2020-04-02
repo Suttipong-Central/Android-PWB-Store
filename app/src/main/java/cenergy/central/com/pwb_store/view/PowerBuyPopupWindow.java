@@ -3,9 +3,6 @@ package cenergy.central.com.pwb_store.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +63,7 @@ public class PowerBuyPopupWindow extends PopupWindow implements View.OnClickList
 
     public void setRecyclerViewFilter(ArrayList<Category> categoriesLv3) {
         this.mProductFilterList = categoriesLv3;
-        mProductFilterAdapter = new ProductFilterAdapter(mContext);
+        mProductFilterAdapter = new ProductFilterAdapter();
         mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         mProductFilterAdapter.setProductFilter(categoriesLv3);
         mRecyclerViewFilter.setLayoutManager(mLayoutManager);
