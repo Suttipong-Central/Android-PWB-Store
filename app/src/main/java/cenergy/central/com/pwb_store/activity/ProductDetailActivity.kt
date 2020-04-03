@@ -26,7 +26,6 @@ import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
 import cenergy.central.com.pwb_store.fragment.WebViewFragment
-import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
@@ -491,7 +490,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             }
 
             override fun onFailure(dialog: Dialog) {
-                if (!isFinishing) {
+                if (!isFinishing && !isDestroyed) {
                     dialog.show()
                 }
                 dismissProgressDialog()
@@ -535,7 +534,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun dismissProgressDialog() {
-        if (!isFinishing && progressDialog != null && progressDialog!!.isShowing) {
+        if (!isFinishing && !isDestroyed && progressDialog != null && progressDialog!!.isShowing) {
             progressDialog!!.dismiss()
         }
     }
