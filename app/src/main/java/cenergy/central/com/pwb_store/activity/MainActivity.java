@@ -1,12 +1,10 @@
 package cenergy.central.com.pwb_store.activity;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -52,18 +50,13 @@ import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.manager.bus.event.DrawItemBus;
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterHeaderBus;
-import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterSubHeaderBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus;
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
-import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
-import cenergy.central.com.pwb_store.model.ProductFilterHeader;
-import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
 import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
@@ -74,12 +67,6 @@ import cenergy.central.com.pwb_store.view.NetworkStateView;
 public class MainActivity extends BaseActivity implements MenuDrawerClickListener,
         CategoryAdapter.CategoryAdapterListener {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String ARG_CATEGORY = "ARG_CATEGORY";
-    private static final String ARG_DRAWER_LIST = "ARG_DRAWER_LIST";
-    private static final String ARG_STORE_ID = "ARG_STORE_ID";
-    // new arg
-    private static final String ARG_FILTER_CATEGORY_1 = "arg_filter_category_1";
-    private static final String ARG_FILTER_CATEGORY_2 = "arg_filter_category_2";
 
     private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
@@ -93,7 +80,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private GridLayoutManager mLayoutManager;
     private ArrayList<DrawerItem> mDrawerItemList = new ArrayList<>();
     private DrawerDao mDrawerDao;
-    private CategoryDao mCategoryDao;
     private ProgressDialog mProgressDialog;
     private LanguageButton languageButton;
     private NetworkStateView networkStateView;
@@ -101,9 +87,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
 
-    private ProductFilterHeader productFilterHeader;
     private Category categoryLv1;
-    private ProductFilterSubHeader productFilterSubHeader;
     private Category categoryLv2;
     private Fragment currentFragment;
 
@@ -131,16 +115,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     @Subscribe
     public void onEvent(CategoryTwoBus categoryTwoBus) {
         onBackPressed();
-    }
-
-    // Event from onClick category item
-    @Subscribe
-    public void onEvent(ProductFilterHeaderBus productFilterHeaderBus) {
-    }
-
-    // Event from onClick product filter sub header item
-    @Subscribe
-    public void onEvent(ProductFilterSubHeaderBus productFilterSubHeaderBus) {
     }
 
     @Subscribe
@@ -239,20 +213,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 mProgressDialog.show();
             }
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(ARG_FILTER_CATEGORY_1, productFilterHeader);
-        outState.putParcelable(ARG_FILTER_CATEGORY_2, productFilterSubHeader);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        productFilterHeader = savedInstanceState.getParcelable(ARG_FILTER_CATEGORY_1);
-        productFilterSubHeader = savedInstanceState.getParcelable(ARG_FILTER_CATEGORY_2);
     }
 
     @Override
@@ -397,7 +357,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private void handleCategories(List<Category> categories) {
         this.isLoadingCategory = false;
 
-        mCategoryDao = new CategoryDao(categories);
         createDrawerMenu(categories);
 
         if (categoryLv1 != null) {
@@ -410,7 +369,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
         // check current page
         if (currentFragment instanceof CategoryFragment) {
-            ((CategoryFragment) currentFragment).updateView(mCategoryDao);
+            ((CategoryFragment) currentFragment).updateView(categories);
             dismissProgressDialog();
         } else if (currentFragment instanceof SubHeaderProductFragment) {
             if (categoryLv1 != null) {
@@ -446,14 +405,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         }
     }
 
-    private void showAlertDialog(String title, String message) {
+    private void showAlertDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss());
-
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title);
-        }
         builder.show();
     }
 
@@ -474,7 +429,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 if (database.getCacheCartItems().size() > 0) {
                     ShoppingCartActivity.Companion.startActivity(this);
                 } else {
-                    showAlertDialog("", getResources().getString(R.string.not_have_products_in_cart));
+                    showAlertDialog(getResources().getString(R.string.not_have_products_in_cart));
                 }
             }
             break;
@@ -513,7 +468,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     private void startCategoryFragment() {
-        currentFragment = CategoryFragment.newInstance(mCategoryDao);
+        currentFragment = CategoryFragment.newInstance();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, currentFragment, TAG_FRAGMENT_CATEGORY_DEFAULT)
                 .commitAllowingStateLoss();
