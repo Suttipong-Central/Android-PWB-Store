@@ -10,7 +10,6 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.extensions.getDiff
-import cenergy.central.com.pwb_store.extensions.getUserStore
 import cenergy.central.com.pwb_store.model.Branch
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -84,17 +83,6 @@ class DeliveryStorePickUpFragment : Fragment() {
     private fun setupView() {
         titleTextView.text = getString(if (checkoutType == CheckoutType.NORMAL) R.string.delivery else R.string.delivery_1hr_pickup)
         errorTextView.text = getString(R.string.error_store_pickup_empty) // default error
-
-        if (checkoutType == CheckoutType.ISPU) {
-            val userStore = context?.getUserStore()
-            if (userStore != null && displayItems.isNotEmpty()) {
-                val removeBranch = displayItems.firstOrNull { it.branch.storeId == userStore.storeId.toString() }
-                if (removeBranch != null) {
-                    displayItems.remove(removeBranch)
-                    errorTextView.text = getString(R.string.error_store_1h_pickup)
-                }
-            }
-        }
 
         if (editStorePickup) {
             if (this.items.isEmpty() && this.displayItems.isEmpty()) {

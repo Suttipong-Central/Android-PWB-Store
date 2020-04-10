@@ -1,18 +1,18 @@
 package cenergy.central.com.pwb_store.fragment;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,19 +28,16 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
 import cenergy.central.com.pwb_store.model.APIError;
 import cenergy.central.com.pwb_store.model.Category;
-import cenergy.central.com.pwb_store.model.CategoryDao;
 import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.utils.Screen;
 
 public class CategoryFragment extends Fragment {
 
-    private static final String ARG_CATEGORY = "ARG_CATEGORY";
     private static final String TAG = "CategoryFragment";
     private ProgressDialog mProgressDialog;
 
     private CategoryAdapter mAdapter;
-    private CategoryDao mCategoryDao;
     private Analytics analytics;
 
     public CategoryFragment() {
@@ -48,10 +45,9 @@ public class CategoryFragment extends Fragment {
     }
 
     @SuppressWarnings("unused")
-    public static CategoryFragment newInstance(CategoryDao categoryDao) {
+    public static CategoryFragment newInstance() {
         CategoryFragment fragment = new CategoryFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_CATEGORY, categoryDao);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,9 +56,6 @@ public class CategoryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
-
-        if (savedInstanceState != null)
-            onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -84,10 +77,6 @@ public class CategoryFragment extends Fragment {
         if (getContext() != null) {
             analytics = new Analytics(getContext());
         }
-
-        if (getArguments() != null) {
-            mCategoryDao = getArguments().getParcelable(ARG_CATEGORY);
-        }
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -96,34 +85,21 @@ public class CategoryFragment extends Fragment {
         mAdapter = new CategoryAdapter(getContext());
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3, LinearLayoutManager.VERTICAL, false);
         layoutManager.setSpanSizeLookup(mAdapter.getSpanSize());
-
-        if (mCategoryDao == null) {
-            foreRefresh(); // force retrieve category
-        } else {
-            try {
-                mAdapter.setCategory(mCategoryDao.getCategoryList());
-            } catch (Exception e) {
-                foreRefresh();
-            }
-        }
+        loadCategories();
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
     }
 
-    public void updateView(CategoryDao categoryDao) {
+    public void updateView(List<Category> categories) {
         if (isAdded()) {
-            this.mCategoryDao = categoryDao;
-            mAdapter.setCategory(categoryDao.getCategoryList());
+            mAdapter.setCategory(categories);
         }
-    }
-
-    public void foreRefresh() {
-        loadCategories();
     }
 
     private void loadCategories() {
         if (getContext() != null) {
+            showProgressDialog();
             PreferenceManager pref = new PreferenceManager(getContext());
             String displaySpecialIds = pref.getSpecialCategoryIds();
             ArrayList<String> specialIds = new ArrayList<>();
@@ -141,6 +117,7 @@ public class CategoryFragment extends Fragment {
                             if (getActivity() != null) {
                                 getActivity().runOnUiThread(() -> {
                                     if (isAdded() && categories != null) {
+                                        dismissProgressDialog();
                                         mAdapter.setCategory(categories);
                                     }
                                 });
@@ -149,38 +126,24 @@ public class CategoryFragment extends Fragment {
 
                         @Override
                         public void failure(@NotNull APIError error) {
-                            Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
-                            dismissProgressDialog();
+                            if (getActivity() != null){
+                                getActivity().runOnUiThread(() -> {
+                                    Log.e(TAG, "onFailure: " + error.getErrorUserMessage());
+                                    showAlertDialog(error.getErrorUserMessage() == null?
+                                            getString(R.string.some_thing_wrong) : error.getErrorUserMessage());
+                                    dismissProgressDialog();
+                                });
+                            }
                         }
                     });
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Save Instance State here
-        outState.putParcelable(ARG_CATEGORY, mCategoryDao);
-    }
-
-    /*
-     * Restore Instance State Here
-     */
-    @SuppressWarnings("UnusedParameters")
-    private void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Restore Instance State here
-        mCategoryDao = savedInstanceState.getParcelable(ARG_CATEGORY);
     }
 
     private void showAlertDialog(String message) {
         if (getContext() != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogTheme)
                     .setMessage(message)
-                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss());
             builder.show();
         }
     }

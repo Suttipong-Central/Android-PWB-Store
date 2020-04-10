@@ -520,7 +520,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             }
 
             override fun onFailure(dialog: Dialog) {
-                if (!isFinishing) {
+                if (!isFinishing && !isDestroyed) {
                     dialog.show()
                 }
                 dismissProgressDialog()
@@ -564,7 +564,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun dismissProgressDialog() {
-        if (!isFinishing && progressDialog != null && progressDialog!!.isShowing) {
+        if (!isFinishing && !isDestroyed && progressDialog != null && progressDialog!!.isShowing) {
             progressDialog!!.dismiss()
         }
     }

@@ -1,15 +1,16 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -77,11 +78,20 @@ class SubHeaderProductFragment : Fragment() {
                         }
 
                         override fun failure(error: APIError) {
+                            showAlertDialog(error.errorUserMessage?: getString(R.string.some_thing_wrong))
                             Log.e(TAG, "onFailure: " + error.errorUserMessage)
                         }
                     })
         }
+    }
 
+    private fun showAlertDialog(message: String) {
+        if (context != null) {
+            val builder = AlertDialog.Builder(context!!, R.style.AlertDialogTheme)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.ok)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+            builder.show()
+        }
     }
 
     companion object {
