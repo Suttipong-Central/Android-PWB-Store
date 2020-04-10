@@ -19,10 +19,8 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.extensions.checkItemsBy
-import cenergy.central.com.pwb_store.extensions.getPaymentType
-import cenergy.central.com.pwb_store.extensions.toStringDiscount
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
+import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -53,7 +51,7 @@ import com.google.gson.reflect.TypeToken
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypeClickListener,
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentItemClickListener,
         PaymentT1Listener {
 
     var mToolbar: Toolbar? = null
@@ -335,8 +333,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentTypesClickListener}
-    override fun onPaymentTypeClickListener(paymentMethod: PaymentMethod) {
-        showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
+    override fun onClickedItem(paymentMethod: PaymentMethod) {
+        if (paymentMethod.isBankAndCounterServiceType()) {
+            // open bank/counter service options
+        } else {
+            showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
+        }
     }
     // endregion
 
@@ -406,7 +408,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         startFragment(fragment)
     }
 
-    private fun startSelectMethod() {
+    private fun startSelectPaymentMethod() {
         val fragment = PaymentSelectMethodFragment.newInstance(deliveryOption.methodCode)
         startFragment(fragment)
     }
@@ -638,7 +640,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
                 this.paymentMethods.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
             }
-            startSelectMethod()
+            startSelectPaymentMethod()
         }
     }
 

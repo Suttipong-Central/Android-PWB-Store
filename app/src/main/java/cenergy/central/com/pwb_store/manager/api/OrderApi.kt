@@ -4,8 +4,8 @@ import android.content.Context
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.AddressInformation
+import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import retrofit2.Call

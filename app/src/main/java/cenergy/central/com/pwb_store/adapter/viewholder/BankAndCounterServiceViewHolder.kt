@@ -8,11 +8,10 @@ import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.model.PaymentMethod
 
-class PayHereViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
-
-    val title: TextView = itemView.findViewById(R.id.tv_title)
-    val description: TextView = itemView.findViewById(R.id.tv_description)
-    val button: Button = itemView.findViewById(R.id.choose_payment_method)
+class BankAndCounterServiceViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
+    private val title: TextView = itemView.findViewById(R.id.tv_title)
+    private val description: TextView = itemView.findViewById(R.id.tv_description)
+    private val button: Button = itemView.findViewById(R.id.choose_payment_method)
 
     override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
         title.text = itemView.context.getString(R.string.pay_here)

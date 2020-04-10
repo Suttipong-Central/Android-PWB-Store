@@ -1,8 +1,7 @@
 package cenergy.central.com.pwb_store.model.body
 
-import cenergy.central.com.pwb_store.extensions.isPayWithCreditCard
 import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.model.PaymentMethod
 import com.google.gson.annotations.SerializedName
 
 data class PaymentInformationBody(

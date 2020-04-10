@@ -5,16 +5,16 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
+import cenergy.central.com.pwb_store.model.PaymentMethod
 
 class PaymentEmptyViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
     val title: TextView = itemView.findViewById(R.id.tv_title)
     val button: Button = itemView.findViewById(R.id.choose_payment_method)
 
-    fun bindView(paymentMethod: PaymentMethod, listener: PaymentTypeClickListener) {
+    fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
         title.text = paymentMethod.title
-        itemView.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
-        button.setOnClickListener { listener.onPaymentTypeClickListener(paymentMethod) }
+        itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
+        button.setOnClickListener { listener.onClickedItem(paymentMethod) }
     }
 }

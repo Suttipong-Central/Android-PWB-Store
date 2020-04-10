@@ -8,25 +8,20 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
-import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
+import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.Screen
-import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class PaymentSelectMethodFragment : Fragment() {
     private val analytics by lazy { context?.let { Analytics(it) } }
 
     private lateinit var paymentProtocol: PaymentProtocol
     private lateinit var recycler: RecyclerView
-    private lateinit var paymentTypeClickListener: PaymentTypeClickListener
+    private lateinit var paymentItemClickListener: PaymentItemClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
 
     private var paymentMethods: List<PaymentMethod> = listOf()
@@ -47,7 +42,7 @@ class PaymentSelectMethodFragment : Fragment() {
         super.onAttach(context)
         paymentProtocol = context as PaymentProtocol
         paymentMethods = paymentProtocol.getPaymentMethods()
-        paymentTypeClickListener = context as PaymentTypeClickListener
+        paymentItemClickListener = context as PaymentItemClickListener
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +76,7 @@ class PaymentSelectMethodFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         recycler = rootView.findViewById(R.id.recycler_select_methods)
-        selectMethodAdapter = PaymentMethodAdapter(paymentTypeClickListener)
+        selectMethodAdapter = PaymentMethodAdapter(paymentItemClickListener)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
