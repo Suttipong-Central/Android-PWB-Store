@@ -151,7 +151,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
                     //TODO: Mock up data will delete soon
                     val user = User(userResponse.userId, "", userResponse.staffId, 223L,
-                            "chuan@central.tech", username, "", 0, "")
+                            "chuan@central.tech", username, "", 0, "", userResponse.levelId)
 
                     if (userBranch != null && userBranch.items.size > 0) {
                         val sellerCode = userBranch.items[0].code
@@ -752,13 +752,14 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun updateItem(cartId: String, itemId: Long, qty: Int, branch: Branch? = null, isOfflinePrice: Boolean,
+    fun updateItem(cartId: String, itemId: Long, qty: Int, branch: Branch? = null, isChatAndShop: Boolean,
                    callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        val retailerId = if (isOfflinePrice){
-            database?.userInformation?.store?.storeId?.toInt()
+        // is chat and shop user?
+        val retailerId = if (isChatAndShop){
+            null // is chat and shop must be null
         } else {
-            null
+            database?.userInformation?.store?.storeId?.toInt()
         }
         val updateItemBody = if (branch != null) {
             UpdateItemBody.create(cartId, itemId, qty, branch, retailerId)

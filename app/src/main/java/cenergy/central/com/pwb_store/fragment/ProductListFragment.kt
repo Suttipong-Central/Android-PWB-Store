@@ -62,7 +62,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
     private var database = RealmController.getInstance()
 
-    private var products = arrayListOf<Product>()
     private var offlineProducts = arrayListOf<Product>()
     private var brands: ArrayList<FilterItem> = ArrayList()
     private var offlineBrands: ArrayList<FilterItem> = ArrayList()
@@ -75,7 +74,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var sortType: String? = ""
 
     // Page
-    private val PER_PAGE = 100
+    private val PER_PAGE = 99999
     private var isSorting = false
     private var currentPage = 0
     private var totalItem = 0
@@ -87,7 +86,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         isDoneFilter = true
         isSorting = true
         currentPage = 0
-        products.clear()
         offlineProducts.clear()
         brandName = "" // clear filter brand name
         val categoryLv3 = productFilterItemBus.productFilterItem
@@ -119,7 +117,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         isDoneFilter = true
         isSorting = true
         currentPage = 0
-        products.clear()
         offlineProducts.clear()
         sortName = sortingItem.slug
         sortType = sortingItem.value
@@ -134,7 +131,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     override fun onClickedItem(filterItem: FilterItem?) {
         isDoneFilter = true
         currentPage = 0
-        products.clear()
         offlineProducts.clear()
         if (filterItem != null) {
             isClearBrands = false
@@ -226,11 +222,14 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                     mPowerBuyPopupWindow!!.showAsDropDown(v)
                 }
             }
-            R.id.layout_brand -> if (offlineBrands.isEmpty()) {
-                mPowerBuyPopupWindow!!.dismiss()
-            } else {
-                mPowerBuyPopupWindow!!.setRecyclerViewFilterByBrand(offlineBrands, this)
-                mPowerBuyPopupWindow!!.showAsDropDown(v)
+            R.id.layout_brand -> {
+                val filterBrands = if (isChatAndShop()) brands else offlineBrands
+                if (filterBrands.isEmpty()) {
+                    mPowerBuyPopupWindow!!.dismiss()
+                } else {
+                    mPowerBuyPopupWindow!!.setRecyclerViewFilterByBrand(filterBrands, this)
+                    mPowerBuyPopupWindow!!.showAsDropDown(v)
+                }
             }
         }
     }
@@ -300,9 +299,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         outState.putParcelable(ARG_CATEGORY, categoryLv2)
         outState.putParcelableArrayList(ARG_PRODUCT_FILTER, categoriesLv3)
         outState.putString(ARG_DEPARTMENT_ID, categoryId)
-        outState.putBoolean(ARG_IS_DONE, isDoneFilter)
-        outState.putString(ARG_TITLE, title)
-        outState.putString(ARG_DEPARTMENT_ID, categoryId)
         outState.putString(ARG_SORT_NAME, sortName)
         outState.putString(ARG_SORT_TYPE, sortType)
         outState.putBoolean(ARG_IS_DONE, isDoneFilter)
@@ -319,9 +315,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun onRestoreInstanceState(savedInstanceState: Bundle) {
         categoryLv2 = savedInstanceState.getParcelable(ARG_CATEGORY)
         categoriesLv3 = savedInstanceState.getParcelableArrayList(ARG_PRODUCT_FILTER)
-        categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
-        isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE)
-        title = savedInstanceState.getString(ARG_TITLE)
         categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
         sortName = savedInstanceState.getString(ARG_SORT_NAME)
         sortType = savedInstanceState.getString(ARG_SORT_TYPE)
@@ -380,19 +373,20 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                         activity!!.runOnUiThread {
                             if (response != null){
                                 totalItem = response.totalCount
-                                if (response.products.isNotEmpty()){
-                                    products.addAll(response.products)
-                                }
                                 if (response.filters.isNotEmpty()){
                                     brands.addAll(response.filters[0].items)
                                 }
-                                if (products.size < totalItem){
-                                    currentPage = nextPage
-                                    retrieveProductList()
+                                if (response.products.isNotEmpty()){
+                                    if (isChatAndShop()){
+                                        updateProductList(response.products)
+                                    } else {
+                                        offlineProducts.addAll(response.products.filter { it.isOfflinePrice })
+                                        filterProductsOfflinePrice()
+                                    }
                                 } else {
-                                    // TODO We have to display just product offline price per store
-                                    offlineProducts.addAll(products.filter { it.isOfflinePrice })
-                                    filterProductsOfflinePrice()
+                                    mProgressDialog!!.dismiss()
+                                    setTextHeader(totalItem, title)
+                                    mProductListAdapter!!.setError()
                                 }
                             } else {
                                 mProgressDialog!!.dismiss()
@@ -417,6 +411,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 }
             })
         }
+    }
+
+    private fun isChatAndShop(): Boolean{
+        return database.userInformation.user?.userLevel == 3L
     }
 
     private val nextPage: Int
@@ -484,9 +482,14 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             override fun success(response: List<Category>?) {
                 if (activity != null && response != null) {
                     activity!!.runOnUiThread {
-                        categoriesLv3 = ArrayList() // clear category lv3 list
-                        categoriesLv3!!.addAll(response)
-                        mProductLayout!!.visibility = View.VISIBLE // show product layout
+                        if (response.isNotEmpty()){
+                            categoriesLv3 = ArrayList() // clear category lv3 list
+                            categoriesLv3!!.addAll(response)
+                            mProductLayout!!.visibility = View.VISIBLE // show product layout
+                        } else {
+                            categoriesLv3 = null
+                            mProductLayout!!.visibility = View.GONE
+                        }
                     }
                 }
             }

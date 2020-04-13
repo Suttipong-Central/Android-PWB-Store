@@ -7,17 +7,27 @@ import com.google.gson.annotations.SerializedName
 data class CartItemBody(var cartItem: CartBody? = null) {
     companion object {
         fun create(cartId: String, product: Product, retailerId: Int? = null): CartItemBody {
-            val cartExtensionAttr = CartExtensionAttr.create(retailerId)
-            val cartBody = CartBody(cartId = cartId,sku =  product.sku,qty =  product.getMinSaleQty(),extensionAttr =  cartExtensionAttr)
-
+            val cartBody = if (retailerId != null){
+                // offline price
+                val cartExtensionAttr = CartExtensionAttr.create(retailerId)
+                CartBody(cartId = cartId, sku =  product.sku, qty =  product.getMinSaleQty(), extensionAttr =  cartExtensionAttr)
+            } else {
+                // is chat and shop
+                CartBody(cartId = cartId, sku = product.sku, qty = product.getMinSaleQty())
+            }
             return CartItemBody(cartBody) // default add qty 1
         }
 
         fun create(cartId: String, product: Product, branchResponse: BranchResponse, retailerId: Int? = null): CartItemBody {
             val shippingAssignment = ShippingAssignment(shippingMethod = "storepickup_ispu")
             val pickupStore = PickupStore(branchResponse.branch.storeId)
-            val cartExtensionAttr = CartExtensionAttr.create(shippingAssignment = shippingAssignment,
-                    pickupStore = pickupStore, retailerId = retailerId)
+            val cartExtensionAttr = if (retailerId != null){
+                CartExtensionAttr.create(shippingAssignment = shippingAssignment,
+                        pickupStore = pickupStore, retailerId = retailerId)
+            } else {
+                CartExtensionAttr.create(shippingAssignment = shippingAssignment, pickupStore = pickupStore)
+            }
+
             val body = CartBody(cartId = cartId,
                     sku = product.sku,
                     qty = product.getMinSaleQty(),

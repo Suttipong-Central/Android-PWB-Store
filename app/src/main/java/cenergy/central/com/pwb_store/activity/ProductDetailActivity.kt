@@ -68,7 +68,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var childProductList: ArrayList<Product> = arrayListOf()
 
     companion object {
-        private val TAG = ProductDetailActivity::class.java.simpleName
+        const val PRODUCT_CONFIGURABLE = "configurable" // barcode
 
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
@@ -331,12 +331,24 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun handleGetProductSuccess(product: Product?) {
         if (product != null) {
-            retrieveOfflinePrice(product)
+            if (isChatAndShop()){
+                if (product.typeId == PRODUCT_CONFIGURABLE) {
+                    checkProductConfig(product)
+                } else {
+                    checkHDLOption(product)
+                }
+            } else {
+                retrieveOfflinePrice(product)
+            }
         } else {
             dismissProgressDialog()
             tvNotFound.visibility = View.VISIBLE
             containerGroupView.visibility = View.INVISIBLE
         }
+    }
+
+    private fun isChatAndShop(): Boolean{
+        return database.userInformation.user?.userLevel == 3L
     }
 
     private fun retrieveOfflinePrice(product: Product){
@@ -352,7 +364,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                         product.specialToDate = response.specialToDate
                         this@ProductDetailActivity.product = product
                     }
-                    if (product.typeId == "configurable") {
+                    if (product.typeId == PRODUCT_CONFIGURABLE) {
                         checkProductConfig(product)
                     } else {
                         checkHDLOption(product)
@@ -362,7 +374,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
             override fun failure(error: APIError) {
                 runOnUiThread {
-                    if (product.typeId == "configurable") {
+                    if (product.typeId == PRODUCT_CONFIGURABLE) {
                         checkProductConfig(product)
                     } else {
                         checkHDLOption(product)
@@ -373,32 +385,30 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
 
     private fun checkProductConfig(product: Product) {
-        if (product.typeId == "configurable") {
-            val productLinks = product.extension?.productConfigLinks ?: listOf()
-            val result = TextUtils.join(",", productLinks)
-            val filterGroupsList = java.util.ArrayList<FilterGroups>()
-            filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
-            val sortOrders = ArrayList<SortOrder>()
+        val productLinks = product.extension?.productConfigLinks ?: listOf()
+        val result = TextUtils.join(",", productLinks)
+        val filterGroupsList = java.util.ArrayList<FilterGroups>()
+        filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
+        val sortOrders = ArrayList<SortOrder>()
 
-            ProductListAPI.retrieveProducts(this, productLinks.size, 1,
-                    filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
-                override fun success(response: ProductResponse?) {
-                    runOnUiThread {
-                        if (response != null) {
-                            childProductList = response.products
-                            checkHDLOption(product)
-                        }
-                    }
-                }
-
-                override fun failure(error: APIError) {
-                    runOnUiThread {
-                        Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
+        ProductListAPI.retrieveProducts(this, productLinks.size, 1,
+                filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
+            override fun success(response: ProductResponse?) {
+                runOnUiThread {
+                    if (response != null) {
+                        childProductList = response.products
                         checkHDLOption(product)
                     }
                 }
-            })
-        }
+            }
+
+            override fun failure(error: APIError) {
+                runOnUiThread {
+                    Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
+                    checkHDLOption(product)
+                }
+            }
+        })
     }
 
     private fun checkHDLOption(product: Product) {

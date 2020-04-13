@@ -116,12 +116,13 @@ class CartUtils(private val context: Context) {
     }
 
     private fun requestAddToCart(cartId: String, product: Product) {
-        // is empty cart?
-        val retailerId = if (product.isOfflinePrice){
-            db?.userInformation?.store?.storeId?.toInt()
+        // is chat and shop user
+        val retailerId = if (db.userInformation.user?.userLevel == 3L){
+            null // is chat and shop user retailerId must be null
         } else {
-            null
+            db?.userInformation?.store?.storeId?.toInt()
         }
+        // is empty cart?
         if (cacheCartItems == null || cacheCartItems.isEmpty()) {
             val cartItemBody = if (branchResponse != null) {
                 CartItemBody.create(cartId, product, branchResponse!!, retailerId)  // ispu

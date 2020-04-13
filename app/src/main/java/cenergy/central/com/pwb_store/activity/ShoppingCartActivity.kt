@@ -232,8 +232,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
         deleteItem(itemId, sku)
     }
 
-    override fun onUpdateItem(itemId: Long, qty: Int, isOfflinePrice: Boolean) {
-        updateItem(itemId, qty, isOfflinePrice)
+    override fun onUpdateItem(itemId: Long, qty: Int, isChatAndShop: Boolean) {
+        updateItem(itemId, qty, isChatAndShop)
     }
     //end region
 
@@ -477,11 +477,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
         }
     }
 
-    private fun updateItem(itemId: Long, qty: Int, isOfflinePrice: Boolean) {
+    private fun updateItem(itemId: Long, qty: Int, isChatAndShop: Boolean) {
         hasChangingData = true
         showProgressDialog()
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch, isOfflinePrice,
+            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch, isChatAndShop,
                     object : ApiResponseCallback<CartItem> {
                         override fun success(response: CartItem?) {
                             saveCartItemInLocal(response)

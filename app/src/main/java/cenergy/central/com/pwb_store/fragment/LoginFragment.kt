@@ -11,18 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.interfaces.UserLoginListener
-import cenergy.central.com.pwb_store.BuildConfig
-import org.greenrobot.eventbus.EventBus
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.bus.event.LoginSuccessBus
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.SecretKey
-import cenergy.central.com.pwb_store.model.UserInformation
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.showCommonAPIErrorDialog
@@ -30,7 +27,7 @@ import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.google.firebase.firestore.FirebaseFirestore
-import cenergy.central.com.pwb_store.model.*
+import org.greenrobot.eventbus.EventBus
 
 class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
 
@@ -174,7 +171,7 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
     private fun mockUpUser() {
         val database = RealmController.getInstance()
         val user = User(12345678L, "", "12345678", 223L,
-                "chuan@central.tech", username, "", 0, "")
+                "chuan@central.tech", username, "", 0, "", 1)
         val store = Store()
 
         database.saveUserToken(UserToken(Constants.CLIENT_MAGENTO))

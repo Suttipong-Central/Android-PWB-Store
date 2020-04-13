@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
@@ -10,13 +9,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.FreeItemAdapter
 import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
 import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
@@ -79,8 +77,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             qtyAdepter.setCallback(object : QtyAdapter.QtyClickListener {
                 override fun onQtyClickListener(qty: Int) {
                     productQty.clearAllFocus()
-                    if (item.itemId != null && item.isOfflinePrice != null){
-                        listener?.onUpdateItem(item.itemId!!, qty, item.isOfflinePrice!!)
+                    if (item.itemId != null){
+                        listener?.onUpdateItem(item.itemId!!, qty, isChatAndShop())
                     }
                 }
             })
@@ -89,8 +87,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                         productQty.clearAllFocus()
                         if (productQty.getText() != "" && productQty.getText().toInt() > 0) {
-                            if (item.itemId != null && item.isOfflinePrice != null){
-                                listener?.onUpdateItem(item.itemId!!, productQty.getText().toInt(), item.isOfflinePrice!!)
+                            if (item.itemId != null){
+                                listener?.onUpdateItem(item.itemId!!, productQty.getText().toInt(), isChatAndShop())
                             }
                         } else {
                             productQty.setText(item.qty.toString())
@@ -128,6 +126,11 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 freeBieImageRecycler.visibility = View.GONE
             }
         }
+    }
+
+    private fun isChatAndShop(): Boolean{
+        val database = RealmController.getInstance()
+        return database.userInformation.user?.userLevel == 3L
     }
 
     private fun getToTalPrice(qty: Int, price: Double): Double {

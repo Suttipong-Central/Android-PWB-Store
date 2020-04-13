@@ -1,7 +1,6 @@
 package cenergy.central.com.pwb_store.realm
 
 import io.realm.DynamicRealm
-import io.realm.FieldAttribute
 import io.realm.RealmMigration
 
 class MigrationDatabase : RealmMigration {
@@ -304,6 +303,12 @@ class MigrationDatabase : RealmMigration {
 
             realm.schema.get("CompareProduct")?.apply {
                 addField("isOfflinePrice", Boolean::class.java)
+            }
+        }
+
+        if (oldVersion < 13) {
+            realm.schema.get("User")?.apply {
+                addField("userLevel", Long::class.java)
             }
         }
     }
