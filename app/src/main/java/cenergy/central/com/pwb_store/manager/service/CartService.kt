@@ -3,10 +3,7 @@ package cenergy.central.com.pwb_store.manager.service
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
-import cenergy.central.com.pwb_store.model.response.CartResponse
-import cenergy.central.com.pwb_store.model.response.OrderResponse
-import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
-import cenergy.central.com.pwb_store.model.response.CartTotalResponse
+import cenergy.central.com.pwb_store.model.response.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.http.*
@@ -53,11 +50,9 @@ interface CartService {
                                   @Path("cartId") cartId: String,
                                   @Body shippingBody: ShippingBody): Call<ShippingInformationResponse>
 
-    //    @PUT("/rest/V1/guest-carts/{cartId}/order")
-    @POST("/rest/{lang}/V1/headless/guest-carts/{cartId}/payment-information")
-    fun updateOrder(@Path("lang") language: String,
-                    @Path("cartId") cartId: String,
-                    @Body paymentInformation: PaymentInformationBody): Call<String>
+    @GET("/rest/{lang}/V1/guest-carts/{cartId}/payment-information")
+    fun retrievePaymentInformation(@Path("lang") language: String,
+                    @Path("cartId") cartId: String): Call<PaymentInformationResponse>
 
     // @PUT("/rest/V1/guest-carts/{cartId}/order")
     @POST("/rest/{lang}/V1/guest-carts/{cartId}/payment-information")

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_padding_xsmall">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/agentImageView"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/ic_payment_agent_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_power_buy" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/agentTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_padding_xsmall"
+        app:layout_constraintEnd_toEndOf="@+id/agentImageView"
+        app:layout_constraintStart_toStartOf="@+id/agentImageView"
+        app:layout_constraintTop_toBottomOf="@+id/agentImageView"
+        tools:text="@string/payment_bank_transfer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,8 +14,8 @@ class BankAndCounterServiceViewHolder(itemView: View) : PaymentMethodAdapter.Pay
     private val button: Button = itemView.findViewById(R.id.choose_payment_method)
 
     override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
-        title.text = itemView.context.getString(R.string.pay_here)
-        description.text = itemView.context.getString(R.string.pay_here_description)
+        title.text = paymentMethod.title
+        description.text = ""
         itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
         button.setOnClickListener { listener.onClickedItem(paymentMethod) }
     }

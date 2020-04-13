@@ -353,4 +353,12 @@
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">Copy</string>
     <string name="cannot_display_history">Can’t open this history</string>
+
+    <!--  Payment Transfer  -->
+    <string name="payment_channel">Channel</string>
+    <string name="payment_payer_name">Payer name</string>
+    <string name="payment_mobile_number">Mobile Number</string>
+    <string name="payment_counter_transfer">Over the Counter</string>
+    <string name="payment_bank_transfer">Bank Channels</string>
+    <string name="pay_now">Pay now</string>
 </resources>

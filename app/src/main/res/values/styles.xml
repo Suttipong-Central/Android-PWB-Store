@@ -125,6 +125,11 @@
         <item name="android:spinnersShown">false</item>
     </style>
 
+    <!--  TabLayout  -->
+    <style name="TabLayoutTextStyle" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- Button -->
     <style name="Button" parent="Base.Widget.AppCompat.Button">
         <item name="android:padding">16dp</item>

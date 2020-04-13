@@ -18,9 +18,12 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
-import cenergy.central.com.pwb_store.extensions.*
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
+import cenergy.central.com.pwb_store.extensions.checkItemsBy
+import cenergy.central.com.pwb_store.extensions.getPaymentType
+import cenergy.central.com.pwb_store.extensions.isBankAndCounterServiceType
+import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
@@ -32,6 +35,7 @@ import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.api.BranchApi
 import cenergy.central.com.pwb_store.manager.api.HomeDeliveryApi
 import cenergy.central.com.pwb_store.manager.api.OrderApi
+import cenergy.central.com.pwb_store.manager.api.PaymentApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
@@ -87,6 +91,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var discountPrice = 0.0
     private var promotionDiscount = 0.0
     private var totalPrice = 0.0
+    private var paymentAgents = listOf<PaymentAgent>()
 
     // data product 2h
     private var product2h: Product? = null
@@ -265,6 +270,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 this.enableShippingSlot = deliveryOption.extension.shippingSlots
                 startDeliveryHomeFragment()
             }
+            else -> {
+                /* do noting*/
+            }
         }
     }
 
@@ -295,7 +303,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         override fun failure(error: APIError) {
                             runOnUiThread {
                                 showCommonDialog(null, getString(R.string.some_thing_wrong),
-                                        DialogInterface.OnClickListener { dialog, which ->
+                                        DialogInterface.OnClickListener { dialog, _ ->
                                             dialog?.dismiss()
                                             finish()
                                         })
@@ -336,6 +344,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun onClickedItem(paymentMethod: PaymentMethod) {
         if (paymentMethod.isBankAndCounterServiceType()) {
             // open bank/counter service options
+            retrievePaymentInformation()
         } else {
             showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
         }
@@ -457,6 +466,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 mProgressDialog?.show()
             }
         }
+    }
+
+    private fun dismissProgressDialog() {
+        mProgressDialog?.dismiss()
     }
 
     private fun getItemTotal() {
@@ -637,7 +650,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         } else {
             this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
             val isEorderingPaymentOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_PAYMENT_ON)
-            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
+            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null) {
                 this.paymentMethods.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
             }
             startSelectPaymentMethod()
@@ -646,6 +659,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>): ArrayList<PaymentMethod> {
         val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
+        Log.d(TAG, supportedPaymentMethods)
         val result = methods.filter {
             supportedPaymentMethods.contains(it.code, true)
         }
@@ -990,6 +1004,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getT1CardNumber(): String = this.theOneCardNo
 
     override fun getCheckType(): CheckoutType = this.checkoutType
+
+    override fun getPaymentAgents(): List<PaymentAgent> = this.paymentAgents
     // endregion
 
     // region {@link StorePickUpListener}
@@ -1122,7 +1138,32 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         object : TypeToken<List<Long>>() {}.type, null)
     }
 
+    // Get Bank Channels and Counter
+    private fun retrievePaymentInformation() {
+        cartId ?: return
+        showProgressDialog()
+        PaymentApi().retrievePaymentInformation(this, cartId!!,
+                object: ApiResponseCallback<List<PaymentAgent>> {
+                    override fun success(response: List<PaymentAgent>?) {
+                        if (response != null) {
+                            this@PaymentActivity.paymentAgents = response
+                        }
+                        startFragment(PaymentTransfersFragment())
+                        dismissProgressDialog()
+                    }
+
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                    }
+                })
+    }
+
     private fun backPressed() {
+        if (currentFragment is PaymentTransfersFragment) {
+            startSelectPaymentMethod()
+            return
+        }
+
         if (currentFragment is DeliveryStorePickUpFragment) {
             // is state of checkout with product 2h?
             if (product2h != null || isEditStorePickup) {
@@ -1158,7 +1199,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentSelectMethodFragment) {
-            if(checkoutType == CheckoutType.ISPU){
+            if (checkoutType == CheckoutType.ISPU) {
                 startBilling()
             } else {
                 startDeliveryOptions()
