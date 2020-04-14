@@ -29,6 +29,14 @@ data class PaymentAgent(
         // example -> /media/central_p2c2p123/BBL.png
         return "${Constants.BASE_URL_MAGENTO}/media/central_p2c2p123/$image"
     }
+
+    fun isBankAgent() : Boolean {
+        return PaymentAgentType.fromString(type) == PaymentAgentType.BANK
+    }
+
+    fun getChannels() : List<String> {
+        return channel.split(",")
+    }
 }
 
 enum class PaymentAgentType(val value: String) {

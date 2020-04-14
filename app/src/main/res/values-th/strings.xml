@@ -354,4 +354,12 @@
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">คัดลอก</string>
     <string name="cannot_display_history">ไม่สามารถเปิดประวัติรายการนี้ได้</string>
+
+    <!--  Payment Transfer  -->
+    <string name="payment_channel">ช่องทาง</string>
+    <string name="payment_payer_name">ชื่อผู้ชำระเงิน</string>
+    <string name="payment_mobile_number">เบอร์โทรศัพท์</string>
+    <string name="payment_counter_transfer">จ่ายผ่าน Counter ต่างๆ</string>
+    <string name="payment_bank_transfer">ช่องทางชำระเงินของธนาคาร</string>
+    <string name="pay_now">ชำระเงิน</string>
 </resources>

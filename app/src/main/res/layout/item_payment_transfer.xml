@@ -2,26 +2,34 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/groupLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_padding_xsmall">
+    android:layout_marginTop="@dimen/margin_padding_xsmall"
+    android:padding="@dimen/margin_padding_xsmall">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/agentImageView"
         android:layout_width="0dp"
         android:layout_height="@dimen/ic_payment_agent_size"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/agentTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:adjustViewBounds="true"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:src="@drawable/ic_power_buy" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/agentTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="@dimen/margin_padding_xsmall"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:minLines="2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/agentImageView"
         app:layout_constraintStart_toStartOf="@+id/agentImageView"
         app:layout_constraintTop_toBottomOf="@+id/agentImageView"
