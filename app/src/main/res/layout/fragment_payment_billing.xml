@@ -102,6 +102,7 @@
             android:id="@+id/input_the1_card_id"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_padding_normal"
             android:layout_marginEnd="@dimen/margin_padding_small"
             app:header="@string/t1_member"
             app:layout_constraintEnd_toEndOf="@id/guildHalf"
@@ -369,7 +370,7 @@
             android:id="@+id/group_billing_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="first_name_billing,last_name_billing,contact_number_billing,billing_house_no_payment,billing_place_or_building_payment,billing_soi_payment,billing_street_payment,billing_input_province,billing_input_district,billing_input_sub_district,billing_input_postcode"/>
+            app:constraint_referenced_ids="billing_label_text_view,first_name_billing,last_name_billing,contact_number_billing,billing_house_no_payment,billing_place_or_building_payment,billing_soi_payment,billing_street_payment,billing_input_province,billing_input_district,billing_input_sub_district,billing_input_postcode"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/billing_label_text_view"
