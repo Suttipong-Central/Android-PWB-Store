@@ -19,13 +19,10 @@ class OrderApi {
         private const val HEADER_LOCATION = "Location"
     }
 
-    fun updateOrder(context: Context, cartId: String, staffId: String, sellerCode: String, paymentMethod: PaymentMethod,
-                    email: String, billingAddress: AddressInformation, theOneCardNo: String, callback: CreateOderCallback) {
+    fun updateOrder(context: Context, cartId: String, paymentMethodBody: PaymentInfoBody,
+                    callback: CreateOderCallback) {
         val apiManager = HttpManagerMagento.getInstance(context)
 
-        val paymentMethodBody = PaymentInfoBody.createPaymentInfoBody(cartId = cartId,
-                staffId = staffId, retailerId = sellerCode, customerEmail = email, billingAddress = billingAddress,
-                paymentMethod = paymentMethod, theOneCardNo = theOneCardNo)
         apiManager.cartService.updateOrder(apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {

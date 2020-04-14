@@ -237,6 +237,7 @@
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>
+    <string name="error_form_input_required">Required</string>
     <string name="error_form_email_pattern_not_match">Please enter valid email</string>
     <string name="error_form_password_too_short">Password must be at least %d characters</string>
     <string name="error_form_confirmation_password_not_matched">Passwords do not match.</string>

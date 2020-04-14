@@ -21,8 +21,8 @@ class PaymentTransferAdapter(val clickListener: (PaymentAgent) -> Unit) : ListAd
             this.submitList(ArrayList(value))
         }
 
-    fun getItemSelected(): AgentItem {
-        return source.first { it.isSelect }
+    fun getItemSelected(): AgentItem? {
+        return source.firstOrNull() { it.isSelect }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentTransferViewHolder {
