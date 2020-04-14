@@ -934,14 +934,10 @@ class PaymentBillingFragment : Fragment() {
 
         taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
 
-        if (homePhoneEdt.getText().isNotEmpty()){
-            homePhoneEdt.setError(validator.validThaiPhoneNumber(homePhoneEdt.getText()))
-        }
-
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
                 || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
                 || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null || homePhoneEdt.getError() != null)
+                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {

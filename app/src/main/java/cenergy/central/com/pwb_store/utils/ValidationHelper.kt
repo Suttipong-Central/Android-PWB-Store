@@ -120,7 +120,7 @@ class ValidationHelper(private val context: Context) {
             return context.getString(R.string.error_form_empty_data)
         } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
             return context.getString(R.string.error_form_phone_number_invalid)
-        } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09" || prefixNumber == "02")) {
+        } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
             return context.getString(R.string.error_form_phone_number_invalid)
         }
         return null
