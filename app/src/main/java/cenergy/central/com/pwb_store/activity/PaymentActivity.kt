@@ -50,6 +50,7 @@ import cenergy.central.com.pwb_store.view.NetworkStateView
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
+import io.realm.RealmList
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -366,8 +367,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun startSuccessfullyFragment(orderId: String, urlRedirect: String) {
+        val cacheItem = ArrayList<CacheCartItem>()
+        cacheItem.addAll(database.cacheCartItems)
         languageButton.visibility = View.VISIBLE
-        startFragment(PaymentSuccessFragment.newInstance(orderId, urlRedirect))
+        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheItem, urlRedirect))
+        clearCachedCart()
     }
 
     private fun startStorePickupFragment() {
@@ -978,10 +982,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getT1CardNumber(): String = this.theOneCardNo
 
     override fun getCheckType(): CheckoutType = this.checkoutType
-
-    override fun clearAllCache() {
-        clearCachedCart()
-    }
     // endregion
 
     // region {@link StorePickUpListener}

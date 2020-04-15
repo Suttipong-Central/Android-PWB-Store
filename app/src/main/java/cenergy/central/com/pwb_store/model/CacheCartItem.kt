@@ -1,12 +1,18 @@
 package cenergy.central.com.pwb_store.model
 
+import android.os.Parcelable
 import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.model.response.BranchResponse
-import cenergy.central.com.pwb_store.model.response.OfflinePriceItem
+import cenergy.central.com.pwb_store.realm.RealmListParceler
 import io.realm.RealmList
-import io.realm.RealmObject
+import io.realm.RealmModel
 import io.realm.annotations.PrimaryKey
+import io.realm.annotations.RealmClass
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.WriteWith
 
+@Parcelize
+@RealmClass
 open class CacheCartItem(
         @PrimaryKey
         var itemId: Long? = 0,
@@ -23,7 +29,7 @@ open class CacheCartItem(
         var branch: Branch? = null,
         var soldBy: String? = null,
         var isOfflinePrice: Boolean = false,
-        var freeItems: RealmList<CacheFreeItem>? = RealmList()) : RealmObject()
+        var freeItems: @WriteWith<CacheFreeItemRealmListParceler> RealmList<CacheFreeItem>? = RealmList()) : RealmModel, Parcelable
 {
     fun updateItem(cartItem: CartItem) {
         this.itemId = cartItem.id
@@ -94,9 +100,16 @@ open class CacheCartItem(
     }
 }
 
+@Parcelize
+@RealmClass
 open class CacheFreeItem(
         var sku: String = "",
         var imageUrl: String = "",
         var forItemId: Long = 0,
         var qty: Int = 0
-) : RealmObject()
+) : RealmModel, Parcelable
+
+object CacheFreeItemRealmListParceler: RealmListParceler<CacheFreeItem> {
+    override val clazz: Class<CacheFreeItem>
+        get() = CacheFreeItem::class.java
+}
