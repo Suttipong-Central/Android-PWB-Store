@@ -13,6 +13,7 @@ open class SubAddress(
         @SerializedName("t1c_no")
         var t1cNo: String? = "",
         var district: String? = "",
+        @SerializedName("subdistrict")
         var subDistrict: String? = "",
         var postcode: String? = "",
         @SerializedName("district_id")
