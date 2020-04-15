@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.realm
 
-import cenergy.central.com.pwb_store.model.OrderCoupon
 import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
@@ -274,6 +273,18 @@ class MigrationDatabase : RealmMigration {
                 realm.schema.get("OderExtension")?.apply{
                     addRealmObjectField("coupon", coupon)
                 }
+            }
+        }
+
+        if (oldVersion < 11) {
+            // Remove Order Response Table
+            realm.schema.remove("OrderResponse")
+
+            // Order add field payment method
+            realm.schema.get("Order")?.apply {
+                // add paymentMethod
+                addField("paymentMethod", String::class.java)
+                        .setNullable("paymentMethod", false)
             }
         }
     }

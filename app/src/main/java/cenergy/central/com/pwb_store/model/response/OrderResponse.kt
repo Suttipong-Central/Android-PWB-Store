@@ -13,7 +13,7 @@ import io.realm.annotations.PrimaryKey
  * Email: Anupharpae@gmail.com
  */
 
-open class OrderResponse(
+data class OrderResponse(
         @SerializedName("increment_id")
         var orderId: String? = "",
         @SerializedName("base_currency_code")
@@ -48,4 +48,7 @@ open class OrderResponse(
         var billingAddress: AddressInformation? = null,
         @SerializedName("extension_attributes")
         var orderExtension: OderExtension? = null,
-        var shippingType: String? = "") : RealmObject()
+        var shippingType: String? = "",
+        @SerializedName("payment")
+        var payment: OrderPaymentResponse
+)

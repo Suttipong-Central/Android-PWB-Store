@@ -13,6 +13,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -199,6 +200,10 @@ class PowerBuyAutoCompleteTextStroke : LinearLayout {
     }
 
     fun setAdapter(adapter: ProductOptionAdepter?) {
+        this.inputText.setAdapter(adapter)
+    }
+
+    fun setAdapter(adapter: ArrayAdapter<String>) {
         this.inputText.setAdapter(adapter)
     }
 

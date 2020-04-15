@@ -18,13 +18,15 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
 import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
+import cenergy.central.com.pwb_store.extensions.isBankAndCounterServiceType
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
+import cenergy.central.com.pwb_store.fragment.interfaces.PaymentTransferListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -34,6 +36,7 @@ import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
 import cenergy.central.com.pwb_store.manager.api.BranchApi
 import cenergy.central.com.pwb_store.manager.api.HomeDeliveryApi
 import cenergy.central.com.pwb_store.manager.api.OrderApi
+import cenergy.central.com.pwb_store.manager.api.PaymentApi
 import cenergy.central.com.pwb_store.manager.listeners.CheckoutListener
 import cenergy.central.com.pwb_store.manager.listeners.DeliveryOptionsListener
 import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
@@ -42,6 +45,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
@@ -53,8 +57,8 @@ import com.google.gson.reflect.TypeToken
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentTypeClickListener,
-        PaymentT1Listener {
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentItemClickListener,
+        PaymentT1Listener, PaymentTransferListener {
 
     var mToolbar: Toolbar? = null
 
@@ -83,12 +87,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = arrayListOf<PaymentMethod>()
-    private val paymentMethod = PaymentMethod("e_ordering", "Pay Here")
+    private var paymentMethod = PaymentMethod("e_ordering", "Pay Here")
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
     private var discountPrice = 0.0
     private var promotionDiscount = 0.0
     private var totalPrice = 0.0
+    private var paymentAgents = listOf<PaymentAgent>()
 
     // data product 2h
     private var product2h: Product? = null
@@ -267,8 +272,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 this.enableShippingSlot = deliveryOption.extension.shippingSlots
                 startDeliveryHomeFragment()
             }
+            else -> {
+                /* do noting*/
+            }
         }
     }
+    // endregion
+
+    // region {@link PaymentTransfersFragment.PaymentTransferListener}
+    override fun startPayNow(payerName: String, payerEmail: String, agentCode: String,
+                             agentChannelCode: String, mobileNumber: String) {
+
+        showAlertConfirmPayment(paymentMethod, payerName, payerEmail, agentCode, agentChannelCode, mobileNumber)
+    }
+    // endregion
 
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
@@ -297,7 +314,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         override fun failure(error: APIError) {
                             runOnUiThread {
                                 showCommonDialog(null, getString(R.string.some_thing_wrong),
-                                        DialogInterface.OnClickListener { dialog, which ->
+                                        DialogInterface.OnClickListener { dialog, _ ->
                                             dialog?.dismiss()
                                             finish()
                                         })
@@ -335,8 +352,14 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentTypesClickListener}
-    override fun onPaymentTypeClickListener(paymentMethod: PaymentMethod) {
-        showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
+    override fun onClickedItem(paymentMethod: PaymentMethod) {
+        this.paymentMethod = paymentMethod
+        if (paymentMethod.isBankAndCounterServiceType()) {
+            // open bank/counter service options
+            retrievePaymentInformation()
+        } else {
+            showAlertConfirmPayment(paymentMethod)
+        }
     }
     // endregion
 
@@ -406,7 +429,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         startFragment(fragment)
     }
 
-    private fun startSelectMethod() {
+    private fun startSelectPaymentMethod() {
         val fragment = PaymentSelectMethodFragment.newInstance(deliveryOption.methodCode)
         startFragment(fragment)
     }
@@ -455,6 +478,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 mProgressDialog?.show()
             }
         }
+    }
+
+    private fun dismissProgressDialog() {
+        mProgressDialog?.dismiss()
     }
 
     private fun getItemTotal() {
@@ -523,13 +550,18 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertCheckPayment(message: String, paymentMethod: PaymentMethod) {
+    private fun showAlertConfirmPayment(paymentMethod: PaymentMethod, payerName: String = "",
+                                        payerEmail: String = "", agentCode: String = "",
+                                        agentChannelCode: String = "", mobileNumber: String = "") {
+
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-                .setMessage(message)
+                .setMessage(getString(R.string.confirm_oder))
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
                     // tracking payment method
                     analytics.trackSelectPayment(paymentMethod.code)
-                    updateOrder(paymentMethod)
+                    val bodyRequest = createPaymentBodyRequest(paymentMethod, payerName, payerEmail,
+                            agentCode, agentChannelCode, mobileNumber)
+                    updateOrder(bodyRequest)
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
@@ -623,7 +655,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
             selectPaymentTypes(paymentMethods)
         } else {
-            showAlertCheckPayment(resources.getString(R.string.confirm_oder), paymentMethod)
+            showAlertConfirmPayment(paymentMethod)
         }
 
         mProgressDialog?.dismiss()
@@ -635,15 +667,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         } else {
             this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
             val isEorderingPaymentOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_PAYMENT_ON)
-            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null){
+            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null) {
                 this.paymentMethods.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
             }
-            startSelectMethod()
+            startSelectPaymentMethod()
         }
     }
 
     private fun filterPaymentMethods(methods: ArrayList<PaymentMethod>): ArrayList<PaymentMethod> {
         val supportedPaymentMethods = fbRemoteConfig.getString(RemoteConfigUtils.CONFIG_KEY_SUPPORTED_PAYMENT_METHODS)
+        Log.d(TAG, supportedPaymentMethods)
         val result = methods.filter {
             supportedPaymentMethods.contains(it.code, true)
         }
@@ -888,19 +921,58 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    private fun updateOrder(paymentMethod: PaymentMethod) {
-        if (cartId == null) {
-            return
-        }
-        showProgressDialog()
 
+    /**
+     * @param payerName
+     * @param agentCode
+     * @param agentChannelCode
+     * @param mobileNumber
+     * Must set if payment type p2c2p_123(bank transfer and counter service)
+     * */
+    private fun createPaymentBodyRequest(paymentMethod: PaymentMethod,
+                                         payerName: String = "",
+                                         payerEmail: String = "",
+                                         agentCode: String = "",
+                                         agentChannelCode: String = "",
+                                         mobileNumber: String = ""): PaymentInfoBody {
         val email = shippingAddress?.email ?: ""
         val staffId = userInformation?.user?.staffId ?: ""
         val retailerId = userInformation?.store?.retailerId ?: ""
         val addressInfo = if (billingAddress == null) shippingAddress else billingAddress
 
-        OrderApi().updateOrder(this, cartId!!, staffId, retailerId, paymentMethod, email,
-                addressInfo!!, theOneCardNo, object : OrderApi.CreateOderCallback {
+        return when (paymentMethod.code) {
+            PaymentMethod.BANK_AND_COUNTER_SERVICE -> {
+                PaymentInfoBody.createPaymentInfoBody(cartId = cartId!!,
+                        staffId = staffId, retailerId = retailerId, email = email,
+                        payerName = payerName, customerEmail = payerEmail, agentCode = agentCode,
+                        agentChannelCode = agentChannelCode, mobileNumber = mobileNumber,
+                        billingAddress = addressInfo!!, paymentMethod = paymentMethod,
+                        theOneCardNo = theOneCardNo)
+            }
+            PaymentMethod.FULL_PAYMENT, PaymentMethod.INSTALLMENT -> {
+                PaymentInfoBody.createPaymentInfoBody(cartId = cartId!!,
+                        staffId = staffId, retailerId = retailerId, email = email,
+                        customerEmail = email, billingAddress = addressInfo!!,
+                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo)
+            }
+            else -> {
+                // Standard
+                PaymentInfoBody.createPaymentInfoBody(cartId = cartId!!,
+                        staffId = staffId, retailerId = retailerId, email = email,
+                        billingAddress = addressInfo!!,
+                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo)
+            }
+        }
+    }
+
+    private fun updateOrder(bodyRequest: PaymentInfoBody) {
+        if (cartId == null) {
+            return
+        }
+        showProgressDialog()
+        val retailerId = userInformation?.store?.retailerId ?: ""
+
+        OrderApi().updateOrder(this, cartId!!, bodyRequest, object : OrderApi.CreateOderCallback {
             override fun onSuccess(oderId: String?) {
                 analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {
@@ -988,6 +1060,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getT1CardNumber(): String = this.theOneCardNo
 
     override fun getCheckType(): CheckoutType = this.checkoutType
+
+    override fun getPaymentAgents(): List<PaymentAgent> = this.paymentAgents
     // endregion
 
     // region {@link StorePickUpListener}
@@ -1120,7 +1194,32 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         object : TypeToken<List<Long>>() {}.type, null)
     }
 
+    // Get Bank Channels and Counter
+    private fun retrievePaymentInformation() {
+        cartId ?: return
+        showProgressDialog()
+        PaymentApi().retrievePaymentInformation(this, cartId!!,
+                object : ApiResponseCallback<List<PaymentAgent>> {
+                    override fun success(response: List<PaymentAgent>?) {
+                        if (response != null) {
+                            this@PaymentActivity.paymentAgents = response
+                        }
+                        startFragment(PaymentTransfersFragment())
+                        dismissProgressDialog()
+                    }
+
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                    }
+                })
+    }
+
     private fun backPressed() {
+        if (currentFragment is PaymentTransfersFragment) {
+            startSelectPaymentMethod()
+            return
+        }
+
         if (currentFragment is DeliveryStorePickUpFragment) {
             // is state of checkout with product 2h?
             if (product2h != null || isEditStorePickup) {
@@ -1156,7 +1255,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentSelectMethodFragment) {
-            if(checkoutType == CheckoutType.ISPU){
+            if (checkoutType == CheckoutType.ISPU) {
                 startBilling()
             } else {
                 startDeliveryOptions()

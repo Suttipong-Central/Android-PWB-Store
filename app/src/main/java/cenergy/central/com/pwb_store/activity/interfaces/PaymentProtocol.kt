@@ -30,4 +30,5 @@ interface PaymentProtocol {
     fun getPaymentMethods(): List<PaymentMethod>
     fun getT1CardNumber(): String
     fun getCheckType(): CheckoutType
+    fun getPaymentAgents(): List<PaymentAgent>
 }

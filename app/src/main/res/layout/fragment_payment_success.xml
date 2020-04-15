@@ -2,9 +2,9 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fillViewport="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -113,6 +113,7 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- region share payment link -->
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/tvPaymentDescription"
             style="@style/TextAppearance.AppCompat.Small"
@@ -122,7 +123,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/payment_description"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/ivPaymentBarcode"
@@ -133,17 +134,60 @@
             android:background="@color/lightGray"
             android:contentDescription="@string/payment_header"
             android:padding="8dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/shareButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="8dp"
             android:text="@string/share_payment_link"
             android:textColor="@color/textLinkColor"
+            android:visibility="gone" />
+        <!-- endregion -->
+
+        <!-- region click to open bill -->
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvPayBillDescription"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:layout_marginTop="@dimen/margin_padding_normal"
+            android:text="@string/order_click_bill_description"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/orderPayBillButton"
+            android:layout_width="@dimen/img_qr_code_payment"
+            android:layout_height="@dimen/img_qr_code_payment"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/margin_padding_normal"
+            android:background="@drawable/button_default"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/orderBillButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_receipt_white_72dp" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                style="@style/textSubHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_padding_small"
+                android:text="@string/pay_bill"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+        <!-- endregion -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -784,8 +828,8 @@
                     android:id="@+id/amountLine"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:background="@color/lightGray" />
+                    android:background="@color/lightGray"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline80"
@@ -798,8 +842,8 @@
                     android:id="@+id/total_order_success"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/total"
                     android:layout_marginTop="16dp"
+                    android:text="@string/total"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline80"
                     app:layout_constraintTop_toBottomOf="@+id/amountLine" />
@@ -904,21 +948,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:constraint_referenced_ids="discount_order_success,txt_discount_order_success"/>
+                    app:constraint_referenced_ids="discount_order_success,txt_discount_order_success" />
 
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/layoutCouponDiscount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:constraint_referenced_ids="promotion_order_success,txt_promotion_order_success"/>
+                    app:constraint_referenced_ids="promotion_order_success,txt_promotion_order_success" />
 
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/layoutDeliveryDiscount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:constraint_referenced_ids="delivery_price_order_success,txt_delivery_price_order_success"/>
+                    app:constraint_referenced_ids="delivery_price_order_success,txt_delivery_price_order_success" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

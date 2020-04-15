@@ -237,6 +237,7 @@
 
     <!-- Error -->
     <string name="error_form_empty_data">Required</string>
+    <string name="error_form_input_required">Required</string>
     <string name="error_form_email_pattern_not_match">Please enter valid email</string>
     <string name="error_form_password_too_short">Password must be at least %d characters</string>
     <string name="error_form_confirmation_password_not_matched">Passwords do not match.</string>
@@ -353,4 +354,14 @@
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">Copy</string>
     <string name="cannot_display_history">Can’t open this history</string>
+
+    <!--  Payment Transfer  -->
+    <string name="payment_channel">Channel</string>
+    <string name="payment_payer_name">Payer name</string>
+    <string name="payment_mobile_number">Mobile Number</string>
+    <string name="payment_counter_transfer">Over the Counter</string>
+    <string name="payment_bank_transfer">Bank Channels</string>
+    <string name="pay_now">Pay now</string>
+    <string name="order_click_bill_description">Click to send a barcode to the customer</string>
+    <string name="pay_bill">Pay bill</string>
 </resources>

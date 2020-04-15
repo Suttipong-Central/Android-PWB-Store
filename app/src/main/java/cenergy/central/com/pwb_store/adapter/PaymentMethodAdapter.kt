@@ -1,27 +1,32 @@
 package cenergy.central.com.pwb_store.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.*
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentTypeClickListener
-import cenergy.central.com.pwb_store.model.response.PaymentMethod
+import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
+import cenergy.central.com.pwb_store.model.PaymentMethod
 
 interface PaymentMethodItem
 
-class EmptyList : PaymentMethodItem
+class PaymentMethodAdapter(private var listener: PaymentItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    abstract class PaymentMethodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        abstract fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener)
+    }
 
-class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class EmptyList : PaymentMethodItem
+    inner class PaymentListEmpty(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     companion object {
         const val E_ORDERING = 1
         const val PAY_AT_STORE = 2
         const val FULL_PAYMENT = 3
         const val INSTALLMENT = 4
-        const val OTHER = 5
-        const val EMPTY_VIEW = 6
+        const val BANK_AND_COUNTER_SERVICE = 5
+        const val OTHER = 6
+        const val EMPTY_VIEW = 7
     }
 
     var paymentMethodItems = listOf<PaymentMethodItem>()
@@ -36,61 +41,42 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             E_ORDERING -> {
-                PayHereViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_pay_at_store, parent, false))
+                PayHereViewHolder(layoutInflater.inflate(R.layout.list_item_pay_common,
+                        parent, false))
             }
             PAY_AT_STORE -> {
-                PayAtStoreViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_pay_at_store, parent, false))
+                PayAtStoreViewHolder(layoutInflater.inflate(R.layout.list_item_pay_common,
+                        parent, false))
             }
             FULL_PAYMENT -> {
-                FullPaymentViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_pay_with_credite_card, parent, false))
+                FullPaymentViewHolder(layoutInflater.inflate(R.layout.list_item_pay_by_credite_card,
+                        parent, false))
             }
             INSTALLMENT -> {
-                InstallmentViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_pay_with_credite_card, parent, false))
+                InstallmentViewHolder(layoutInflater.inflate(R.layout.list_item_pay_by_credite_card,
+                        parent, false))
+            }
+            BANK_AND_COUNTER_SERVICE -> {
+                BankAndCounterServiceViewHolder(layoutInflater.inflate(R.layout.list_item_pay_common,
+                        parent, false))
             }
             OTHER -> {
-                PaymentEmptyViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.list_item_other, parent, false))
+                PaymentEmptyViewHolder(layoutInflater.inflate(R.layout.list_item_pay_by_other,
+                        parent, false))
             }
             else -> {
-                PaymentListEmpty(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.item_empty, parent, false))
+                PaymentListEmpty(layoutInflater.inflate(R.layout.item_empty, parent, false))
             }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = paymentMethodItems[position]
-        if (item is PaymentMethod) {
-            when (holder) {
-                is PayHereViewHolder -> {
-                    holder.bindView(item, listener)
-                }
-                is FullPaymentViewHolder -> {
-                    holder.bindView(item, listener)
-                }
-                is InstallmentViewHolder -> {
-                    holder.bindView(item, listener)
-                }
-                is PayAtStoreViewHolder -> {
-                    holder.bindView(item, listener)
-                }
-                is CashOnDeliveryViewHolder -> {
-                    holder.bindView(item, listener)
-                }
-                is PaymentEmptyViewHolder -> {
-                    holder.bindView(item, listener)
-                }
-            }
-        }
-
-        if (item is EmptyList)  {
-
+        if (item is PaymentMethod && holder is PaymentMethodViewHolder) {
+            holder.bindView(item, listener)
         }
     }
 
@@ -100,8 +86,8 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
 
     override fun getItemViewType(position: Int): Int {
         val item = paymentMethodItems[position]
-        return if(item is PaymentMethod) {
-             when (item.code) {
+        return if (item is PaymentMethod) {
+            when (item.code) {
                 PaymentMethod.PAY_AT_STORE -> {
                     PAY_AT_STORE
                 }
@@ -114,6 +100,9 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
                 PaymentMethod.E_ORDERING -> {
                     E_ORDERING
                 }
+                PaymentMethod.BANK_AND_COUNTER_SERVICE -> {
+                    BANK_AND_COUNTER_SERVICE
+                }
                 else -> {
                     OTHER
                 }
@@ -122,6 +111,4 @@ class PaymentMethodAdapter(private var listener: PaymentTypeClickListener) : Rec
             EMPTY_VIEW
         }
     }
-
-    inner class PaymentListEmpty(itemView: View) : RecyclerView.ViewHolder(itemView)
 }

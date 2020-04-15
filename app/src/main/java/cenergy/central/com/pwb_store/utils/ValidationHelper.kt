@@ -12,9 +12,9 @@ import java.util.regex.Pattern
  */
 class ValidationHelper(private val context: Context) {
 
-    fun validText(text: String): String? {
+    fun validText(text: String, errorMessage: String? = null): String? {
         return if (isEmptyData(text)) {
-            context.getString(R.string.error_form_empty_data)
+            if (errorMessage.isNullOrBlank()) context.getString(R.string.error_form_empty_data) else errorMessage
         } else null
     }
 
@@ -113,12 +113,27 @@ class ValidationHelper(private val context: Context) {
             return context.getString(R.string.error_form_empty_data)
         }
         var prefixNumber = ""
-        if (phoneNumber.length > PREFIX_PHONE_NUMBER){
+        if (phoneNumber.length > PREFIX_PHONE_NUMBER) {
             prefixNumber = phoneNumber.substring(0, 2)
         }
         if (isEmptyData(phoneNumber)) {
             return context.getString(R.string.error_form_empty_data)
         } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
+            return context.getString(R.string.error_form_phone_number_invalid)
+        } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
+            return context.getString(R.string.error_form_phone_number_invalid)
+        }
+        return null
+    }
+
+    fun validThaiMobileNumber(mobileNumber: String): String? {
+        if (mobileNumber.isBlank()) {
+            return context.getString(R.string.error_form_empty_data)
+        }
+        val prefixNumber = mobileNumber.substring(0, 2)
+        if (isEmptyData(mobileNumber)) {
+            return context.getString(R.string.error_form_empty_data)
+        } else if (mobileNumber.length < MIN_MOBILE_PHONE_NUMBER) {
             return context.getString(R.string.error_form_phone_number_invalid)
         } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
             return context.getString(R.string.error_form_phone_number_invalid)
@@ -139,9 +154,9 @@ class ValidationHelper(private val context: Context) {
         return null
     }
 
-    fun validTheOne(theOne: String) : String?{
-        return if (!isEmptyData(theOne)){
-            if (theOne.length == THE_ONE_NUMBER_LENGTH){
+    fun validTheOne(theOne: String): String? {
+        return if (!isEmptyData(theOne)) {
+            if (theOne.length == THE_ONE_NUMBER_LENGTH) {
                 null
             } else {
                 context.getString(R.string.the_1_error)
@@ -152,7 +167,7 @@ class ValidationHelper(private val context: Context) {
     companion object {
         private const val MIN_PASSWORD_LENGTH = 9
         private const val MIN_PHONE_NUMBER = 9
-//        private const val MIN_PHONE_NUMBER = 10
+        private const val MIN_MOBILE_PHONE_NUMBER = 10
         private const val PREFIX_PHONE_NUMBER = 2
         private const val MIN_TAX_ID = 13
         private const val MIN_PASSPORT_LENGTH = 5

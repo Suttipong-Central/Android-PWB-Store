@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/paymentTransferTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabBackground="@drawable/selector_tab"
+        app:tabGravity="fill"
+        app:tabIndicatorHeight="1dp"
+        app:tabMaxWidth="0dp"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="@color/colorPrimary"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@color/graySelect">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/paymentCounterTab"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/payment_counter_transfer" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/paymentBankTab"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/payment_bank_transfer" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentTransferTabLayout">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline70"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.7" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/agentRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/margin_padding_small"
+                android:paddingTop="@dimen/margin_padding_normal"
+                android:paddingEnd="@dimen/margin_padding_small"
+                android:paddingBottom="@dimen/margin_padding_small"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/errorAgentTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_padding_normal"
+                android:text="@string/error_form_input_required"
+                android:textColor="@color/dangerColor"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/agentRecycler" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
+                android:id="@+id/paymentChannelOptions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_padding_normal"
+                android:layout_marginTop="@dimen/margin_padding_small"
+                android:layout_marginEnd="@dimen/margin_padding_normal"
+                app:act_header="@string/payment_channel"
+                app:act_required="true"
+                app:layout_constraintEnd_toEndOf="@+id/guideline70"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/errorAgentTextView" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                android:id="@+id/paymentPayerInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_padding_normal"
+                android:layout_marginTop="@dimen/margin_padding_normal"
+                android:layout_marginEnd="@dimen/margin_padding_normal"
+                app:header="@string/payment_payer_name"
+                app:layout_constraintEnd_toEndOf="@+id/guideline70"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/paymentChannelOptions"
+                app:required="true" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                android:id="@+id/paymentEmailInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_padding_normal"
+                android:layout_marginTop="@dimen/margin_padding_normal"
+                android:layout_marginEnd="@dimen/margin_padding_normal"
+                app:header="@string/email"
+                app:layout_constraintEnd_toEndOf="@+id/guideline70"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/paymentPayerInput"
+                app:required="true" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
+                android:id="@+id/paymentMobileInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_padding_normal"
+                android:layout_marginTop="@dimen/margin_padding_normal"
+                android:layout_marginEnd="@dimen/margin_padding_normal"
+                app:header="@string/payment_mobile_number"
+                app:layout_constraintEnd_toEndOf="@+id/guideline70"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/paymentEmailInput"
+                app:required="true" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/payNowButton"
+                style="@style/Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_padding_normal"
+                android:text="@string/pay_now"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/paymentMobileInput"
+                app:layout_constraintVertical_bias="1" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

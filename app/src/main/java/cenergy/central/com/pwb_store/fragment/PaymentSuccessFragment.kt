@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -258,13 +259,13 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         val billingAddress = order.billingAddress
         val shippingAddress = order.shippingAddress
 
-        if (billingAddress == null || shippingAddress == null){
+        if (billingAddress == null || shippingAddress == null) {
             context?.let { showAlertFinishDialog(it.getString(R.string.cannot_display_history)) }
             return
         }
 
         updateLabel()
-        setupBarcodeView(order)
+        setupPaymentView(order)
 
         orderProductListAdapter.listItems = order.items
         //Setup order number
@@ -281,21 +282,27 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         // setup billing
         tvBillingName.text = billingAddress.getDisplayName()
         tvBillingAddress.text = getAddress(billingAddress)
-        tvBillingTelephone.text = if (billingAddress.telephone.isBlank()) { "-" } else billingAddress.telephone
-        tvBillingCompany.text = if (billingAddress.company.isBlank()) { "-" } else billingAddress.company
-        tvBillingTaxID.text = if (billingAddress.vatId.isBlank()) { "-" } else billingAddress.vatId
+        tvBillingTelephone.text = if (billingAddress.telephone.isBlank()) {
+            "-"
+        } else billingAddress.telephone
+        tvBillingCompany.text = if (billingAddress.company.isBlank()) {
+            "-"
+        } else billingAddress.company
+        tvBillingTaxID.text = if (billingAddress.vatId.isBlank()) {
+            "-"
+        } else billingAddress.vatId
 
         // setup shipping address or pickup at store
         when (DeliveryType.fromString(order.shippingType)) {
             DeliveryType.STORE_PICK_UP,
             DeliveryType.STORE_PICK_UP_ISPU -> setupShippingStorePickupView(order.branchShipping, order.billingAddress)
-            else ->  setupShipping(order, shippingAddress)
+            else -> setupShipping(order, shippingAddress)
         }
 
         // setup total or summary
         var discount = order.discountPrice.toStringDiscount()
-        val couponDiscount = order.coupon?.discountAmount?: 0.0
-        if (couponDiscount > 0){
+        val couponDiscount = order.coupon?.discountAmount ?: 0.0
+        if (couponDiscount > 0) {
             discount -= couponDiscount
             couponLayout.visibility = View.VISIBLE
             promotionPrice.text = getDisplayDiscount(unit, couponDiscount.toString())
@@ -314,26 +321,58 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         mProgressDialog?.dismiss()
     }
 
-    private fun setupBarcodeView(order: Order) {
+    private fun setupPaymentView(order: Order) {
         if (order.paymentRedirect.isNotBlank()) {
-            tvPaymentDescription.visibility = View.VISIBLE
-            ivPaymentBarcode.visibility = View.VISIBLE
-            shareButton.visibility = View.VISIBLE
-            layoutHowToDoNext.visibility = View.GONE
-            val bitmapBarcode = BarcodeUtils.createQRCode(order.paymentRedirect)
-            ivPaymentBarcode.setImageBitmap(bitmapBarcode)
-            ivPaymentBarcode.setOnClickListener {
-                BarcodeDialogFragment.newInstance(order.paymentRedirect).show(childFragmentManager, "dialog")
-            }
-            shareButton.setOnClickListener {
-                val shareBottomSheetFragment = ShareBottomSheetDialogFragment.newInstance(order.paymentRedirect)
-                shareBottomSheetFragment.show(childFragmentManager, ShareBottomSheetDialogFragment.TAG)
+            val urlRedirect = order.paymentRedirect
+            if (order.paymentMethod == PaymentMethod.BANK_AND_COUNTER_SERVICE) {
+                setupPayBillView(urlRedirect)
+            } else {
+                setupSharingPaymentView(urlRedirect)
             }
         } else {
-            layoutHowToDoNext.visibility = View.VISIBLE
-            tvPaymentDescription.visibility = View.GONE
-            ivPaymentBarcode.visibility = View.GONE
-            shareButton.visibility = View.GONE
+            setOrderPayAtStoreView()
+        }
+    }
+
+    private fun setOrderPayAtStoreView() {
+        tvPaymentDescription.visibility = View.GONE
+        ivPaymentBarcode.visibility = View.GONE
+        shareButton.visibility = View.GONE
+        layoutHowToDoNext.visibility = View.VISIBLE
+        orderPayBillButton.visibility = View.GONE
+        tvPayBillDescription.visibility = View.GONE
+    }
+
+    private fun setupPayBillView(paymentRedirect: String) {
+        tvPaymentDescription.visibility = View.GONE
+        ivPaymentBarcode.visibility = View.GONE
+        shareButton.visibility = View.GONE
+        layoutHowToDoNext.visibility = View.GONE
+        orderPayBillButton.visibility = View.VISIBLE
+        tvPayBillDescription.visibility = View.VISIBLE
+
+        orderPayBillButton.setOnClickListener {
+            // open redirect rl
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(paymentRedirect)))
+        }
+    }
+
+    private fun setupSharingPaymentView(paymentRedirect: String) {
+        tvPaymentDescription.visibility = View.VISIBLE
+        ivPaymentBarcode.visibility = View.VISIBLE
+        shareButton.visibility = View.VISIBLE
+        layoutHowToDoNext.visibility = View.GONE
+        orderPayBillButton.visibility = View.GONE
+        tvPayBillDescription.visibility = View.GONE
+
+        val bitmapBarcode = BarcodeUtils.createQRCode(paymentRedirect)
+        ivPaymentBarcode.setImageBitmap(bitmapBarcode)
+        ivPaymentBarcode.setOnClickListener {
+            BarcodeDialogFragment.newInstance(paymentRedirect).show(childFragmentManager, "dialog")
+        }
+        shareButton.setOnClickListener {
+            val shareBottomSheetFragment = ShareBottomSheetDialogFragment.newInstance(paymentRedirect)
+            shareBottomSheetFragment.show(childFragmentManager, ShareBottomSheetDialogFragment.TAG)
         }
     }
 
@@ -373,14 +412,20 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         customerNameLayout.visibility = View.VISIBLE
         tvShippingHeader.text = getString(R.string.store_collection_detail)
 
-        name.text = billingAddress?.getDisplayName()?: "-"
-        contactNo.text = billingAddress?.telephone?: "-"
+        name.text = billingAddress?.getDisplayName() ?: "-"
+        contactNo.text = billingAddress?.telephone ?: "-"
 
         if (branchShipping != null) {
-            branch.text = if (branchShipping.storeName.isBlank()) { "-" } else branchShipping.storeName
+            branch.text = if (branchShipping.storeName.isBlank()) {
+                "-"
+            } else branchShipping.storeName
             address.text = branchShipping.getBranchAddress()
-            tel.text = if (branchShipping.phone.isBlank()) { "-" } else branchShipping.phone
-            openToday.text = if (branchShipping.description.isBlank()) { "-" } else branchShipping.description
+            tel.text = if (branchShipping.phone.isBlank()) {
+                "-"
+            } else branchShipping.phone
+            openToday.text = if (branchShipping.description.isBlank()) {
+                "-"
+            } else branchShipping.description
         }
     }
 
@@ -492,14 +537,15 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
             val order = Order.asOrder(orderResponse = response, branchShipping = branchAddress,
                     paymentRedirect = urlRedirect, theOneNumber = theOneNumber)
 
-            database.saveOrder(order, object : DatabaseListener{
+            database.saveOrder(order, object : DatabaseListener {
                 override fun onSuccessfully() {
                     updateViewOrder(order)
                 }
 
                 override fun onFailure(error: Throwable) {
                     mProgressDialog?.dismiss()
-                    showAlertFinishDialog(error.message?: resources.getString(R.string.some_thing_wrong))
+                    showAlertFinishDialog(error.message
+                            ?: resources.getString(R.string.some_thing_wrong))
                 }
             })
         } else {
@@ -510,7 +556,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     override fun failure(error: APIError) {
         mProgressDialog?.dismiss()
-        showAlertFinishDialog(error.errorMessage?: resources.getString(R.string.some_thing_wrong))
+        showAlertFinishDialog(error.errorMessage ?: resources.getString(R.string.some_thing_wrong))
     }
     //endregion
 

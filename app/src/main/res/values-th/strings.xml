@@ -237,6 +237,7 @@
 
     <!-- Error -->
     <string name="error_form_empty_data">กรุณากรอกข้อมูลสำคัญของคุณ</string>
+    <string name="error_form_input_required">กรุณากรอกข้อมูลที่จำเป็น</string>
     <string name="error_form_email_pattern_not_match">อีเมลต้องอยู่ในรูปแบบ example@mail.com</string>
     <string name="error_form_password_too_short">รหัสผ่านต้องมากกว่า %d ตัวอักษร</string>
     <string name="error_form_confirmation_password_not_matched">ยืนยันรหัสผ่านไม่ถูกต้อง</string>
@@ -354,4 +355,15 @@
     <string name="copied_to_clipboard">copied to clipboard!</string>
     <string name="share_copy">คัดลอก</string>
     <string name="cannot_display_history">ไม่สามารถเปิดประวัติรายการนี้ได้</string>
+
+    <!--  Payment Transfer  -->
+    <string name="payment_channel">ช่องทาง</string>
+    <string name="payment_payer_name">ชื่อผู้ชำระเงิน</string>
+    <string name="payment_mobile_number">เบอร์โทรศัพท์</string>
+    <string name="payment_counter_transfer">จ่ายผ่าน Counter ต่างๆ</string>
+    <string name="payment_bank_transfer">ช่องทางชำระเงินของธนาคาร</string>
+    <string name="pay_now">ชำระเงิน</string>
+    <string name="order_click_bill_description">กดเพื่อส่งบาร์โค้ดให้แก่ลูกค้า</string>
+    <string name="pay_bill">จ่ายบิล</string>
+
 </resources>
