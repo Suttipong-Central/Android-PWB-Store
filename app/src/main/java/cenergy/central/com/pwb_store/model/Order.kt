@@ -25,7 +25,8 @@ open class Order(
         var discountPrice: Double = 0.0,
         var total: Double = 0.0,
         var t1cEarnCardNumber: String = "",
-        var coupon: OrderCoupon? = null
+        var coupon: OrderCoupon? = null,
+        var paymentMethod: String = ""
 ) : RealmObject() {
 
     fun getDisplayTimeCreated(context: Context): String {
@@ -52,7 +53,8 @@ open class Order(
                     discountPrice = orderResponse.discount,
                     total = orderResponse.total,
                     t1cEarnCardNumber = theOneNumber,
-                    coupon = orderResponse.orderExtension?.coupon)
+                    coupon = orderResponse.orderExtension?.coupon,
+                    paymentMethod = orderResponse.payment.method)
         }
 
         private fun asItems(items: RealmList<Item>?): RealmList<Item> {
