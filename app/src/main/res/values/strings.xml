@@ -362,4 +362,6 @@
     <string name="payment_counter_transfer">Over the Counter</string>
     <string name="payment_bank_transfer">Bank Channels</string>
     <string name="pay_now">Pay now</string>
+    <string name="order_click_bill_description">Click for pay bill</string>
+    <string name="pay_bill">Pay bill</string>
 </resources>

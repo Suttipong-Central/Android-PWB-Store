@@ -4,18 +4,6 @@ import cenergy.central.com.pwb_store.model.AddressInformation
 import cenergy.central.com.pwb_store.model.PaymentMethod
 import com.google.gson.annotations.SerializedName
 
-data class PaymentInformationBody(
-        var cartId: String = "",
-        var paymentMethod: MethodBody,
-        var email: String = "",
-        var staffId: String = "",
-        var storeId: String = "",
-        var theOneCardNo: String = "")
-
-data class MethodBody(var method: String,
-                      @SerializedName("extension_attributes")
-                      var extensionMethodBody: ExtensionMethodBody)
-
 /**
  * @param customerEmail
  * @param customerName
@@ -49,10 +37,13 @@ data class QuoteStaffBody(
         var retailerId: String = ""
 )
 
+data class MethodBody(var method: String,
+                      @SerializedName("extension_attributes")
+                      var extensionMethodBody: ExtensionMethodBody)
+
 data class PaymentInfoBody(
         var cartId: String = "",
         var email: String = "",
-        @SerializedName("payment_method")
         var paymentMethod: MethodBody,
         var billingAddress: AddressInformation?) {
 
