@@ -363,6 +363,7 @@
     <string name="payment_counter_transfer">จ่ายผ่าน Counter ต่างๆ</string>
     <string name="payment_bank_transfer">ช่องทางชำระเงินของธนาคาร</string>
     <string name="pay_now">ชำระเงิน</string>
-    <string name="order_click_bill_description">กดเพื่อจ่ายบิล</string>
+    <string name="order_click_bill_description">กดเพื่อส่งบาร์โค้ดให้แก่ลูกค้า</string>
+    <string name="pay_bill">จ่ายบิล</string>
 
 </resources>

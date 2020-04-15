@@ -340,6 +340,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         shareButton.visibility = View.GONE
         layoutHowToDoNext.visibility = View.VISIBLE
         orderPayBillButton.visibility = View.GONE
+        tvPayBillDescription.visibility = View.GONE
     }
 
     private fun setupPayBillView(paymentRedirect: String) {
@@ -348,6 +349,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         shareButton.visibility = View.GONE
         layoutHowToDoNext.visibility = View.GONE
         orderPayBillButton.visibility = View.VISIBLE
+        tvPayBillDescription.visibility = View.VISIBLE
 
         orderPayBillButton.setOnClickListener {
             // open redirect rl
@@ -361,6 +363,7 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         shareButton.visibility = View.VISIBLE
         layoutHowToDoNext.visibility = View.GONE
         orderPayBillButton.visibility = View.GONE
+        tvPayBillDescription.visibility = View.GONE
 
         val bitmapBarcode = BarcodeUtils.createQRCode(paymentRedirect)
         ivPaymentBarcode.setImageBitmap(bitmapBarcode)
