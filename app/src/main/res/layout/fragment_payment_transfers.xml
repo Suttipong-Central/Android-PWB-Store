@@ -13,21 +13,21 @@
         app:tabBackground="@drawable/selector_tab"
         app:tabGravity="fill"
         app:tabIndicatorHeight="1dp"
-        app:tabMaxWidth="0dp"
+        app:tabMaxWidth="1000dp"
         app:tabMode="fixed"
         app:tabSelectedTextColor="@color/colorPrimary"
         app:tabTextAppearance="@style/TabLayoutTextStyle"
         app:tabTextColor="@color/graySelect">
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/paymentCounterTab"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/payment_counter_transfer" />
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:id="@+id/paymentCounterTab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:text="@string/payment_counter_transfer" />-->
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/paymentBankTab"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/payment_bank_transfer" />
 
