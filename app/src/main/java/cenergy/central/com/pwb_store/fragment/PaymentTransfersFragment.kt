@@ -28,7 +28,7 @@ class PaymentTransfersFragment : Fragment() {
     private val bankChannelAdapter by lazy { PwbArrayAdapter(context!!, R.layout.layout_text_item, arrayListOf()) }
     private val paymentTransferAdapter by lazy {
         PaymentTransferAdapter {
-            errorAgentTextView.visibility = View.INVISIBLE // hide error
+            errorAgentTextView.visibility = View.GONE // hide error
             if (it.isBankAgent()) {
                 // update selected
                 this.bankAgentItems.forEach { item ->
@@ -93,7 +93,7 @@ class PaymentTransfersFragment : Fragment() {
         if (agentSelected == null) {
             errorAgentTextView.visibility = View.VISIBLE
         } else {
-            errorAgentTextView.visibility = View.INVISIBLE
+            errorAgentTextView.visibility = View.GONE
         }
 
         if (paymentPayerInput.getText().isNotEmpty()) {
@@ -109,7 +109,7 @@ class PaymentTransfersFragment : Fragment() {
         }
 
         if (paymentEmailInput.getText().isNotEmpty()) {
-            paymentEmailInput.setError(validator.validText(paymentEmailInput.getText()))
+            paymentEmailInput.setError(validator.validEmail(paymentEmailInput.getText()))
         } else {
             paymentEmailInput.setError(getString(R.string.error_form_input_required))
         }
