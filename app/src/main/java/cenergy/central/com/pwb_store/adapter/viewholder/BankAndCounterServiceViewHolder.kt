@@ -6,6 +6,7 @@ import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.PaymentMethod
 
 class BankAndCounterServiceViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
@@ -14,7 +15,7 @@ class BankAndCounterServiceViewHolder(itemView: View) : PaymentMethodAdapter.Pay
     private val button: Button = itemView.findViewById(R.id.choose_payment_method)
 
     override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
-        title.text = paymentMethod.title
+        title.text = itemView.context.getString(R.string.pay_by_bank_transfer)
         description.text = ""
         itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
         button.setOnClickListener { listener.onClickedItem(paymentMethod) }

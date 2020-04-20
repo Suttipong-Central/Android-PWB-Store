@@ -364,4 +364,5 @@
     <string name="pay_now">Pay now</string>
     <string name="order_click_bill_description">Click to send a barcode to the customer</string>
     <string name="pay_bill">Pay bill</string>
+    <string name="pay_by_bank_transfer">Bank Transfer</string>
 </resources>
