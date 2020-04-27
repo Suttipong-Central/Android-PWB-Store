@@ -118,9 +118,12 @@ class ValidationHelper(private val context: Context) {
         }
         if (isEmptyData(phoneNumber)) {
             return context.getString(R.string.error_form_empty_data)
-        } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
+        }  else if (phoneNumber.length < MIN_PHONE_NUMBER) {
             return context.getString(R.string.error_form_phone_number_invalid)
-        } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
+        } else if (!(prefixNumber == "02" || prefixNumber == "05" ||
+                        prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
+            return context.getString(R.string.error_form_phone_number_invalid)
+        } else if (!(prefixNumber == "02" || prefixNumber == "05") && phoneNumber.length < MIN_MOBILE_PHONE_NUMBER ) {
             return context.getString(R.string.error_form_phone_number_invalid)
         }
         return null
@@ -130,7 +133,10 @@ class ValidationHelper(private val context: Context) {
         if (mobileNumber.isBlank()) {
             return context.getString(R.string.error_form_empty_data)
         }
-        val prefixNumber = mobileNumber.substring(0, 2)
+        var prefixNumber = ""
+        if (mobileNumber.length > PREFIX_PHONE_NUMBER) {
+            prefixNumber = mobileNumber.substring(0, 2)
+        }
         if (isEmptyData(mobileNumber)) {
             return context.getString(R.string.error_form_empty_data)
         } else if (mobileNumber.length < MIN_MOBILE_PHONE_NUMBER) {
