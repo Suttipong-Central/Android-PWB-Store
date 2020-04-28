@@ -365,4 +365,10 @@
     <string name="order_click_bill_description">Click to send a barcode to the customer</string>
     <string name="pay_bill">Pay bill</string>
     <string name="pay_by_bank_transfer">Bank Transfer</string>
+    
+    <!--  PDPA  -->
+    <string name="accept">By clicking the button, you accept the</string>
+    <string name="terms_conditions">Terms and Conditions</string>
+    <string name="acknowledged">and acknowledged the</string>
+    <string name="privacy">Privacy Policy.</string>
 </resources>

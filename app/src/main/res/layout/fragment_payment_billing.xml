@@ -121,16 +121,17 @@
             app:layout_constraintStart_toStartOf="@id/input_the1_card_id"
             app:layout_constraintTop_toBottomOf="@+id/input_the1_card_id" />
 
-        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnChangeThe1"
+            style="@style/Button.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/t1_add"
+            android:layout_marginTop="@dimen/margin_padding_large"
             android:layout_marginStart="@dimen/margin_padding_normal"
-            android:layout_marginBottom="@dimen/margin_padding_small"
-            app:icon_invisible="true"
+            app:layout_constraintTop_toTopOf="@+id/input_the1_card_id"
             app:layout_constraintBottom_toBottomOf="@+id/input_the1_card_id"
-            app:layout_constraintStart_toEndOf="@+id/input_the1_card_id"
-            app:text="@string/t1_add" />
+            app:layout_constraintStart_toEndOf="@+id/input_the1_card_id" />
 
         <View
             android:id="@+id/line1"
@@ -618,17 +619,81 @@
             android:textSize="22sp"
             tools:text="4,404" />
 
-        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/consent_checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_padding_normal"
+            android:theme="@style/checkBoxPrimary"
+            app:layout_constraintTop_toBottomOf="@+id/label_total"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/consent_display_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/consent_checkBox"
+            app:layout_constraintStart_toEndOf="@+id/consent_checkBox"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/margin_padding_normal"/>
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/paymentButton"
+            style="@style/Button.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_padding_normal"
             android:layout_marginBottom="@dimen/margin_padding_normal"
-            app:icon_invisible="true"
-            app:text="@string/choose_delivery_option"
+            android:text="@string/choose_delivery_option"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_total"
+            app:layout_constraintTop_toBottomOf="@+id/consent_checkBox"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/acceptText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_padding_normal"
+            android:layout_marginBottom="@dimen/margin_padding_normal"
+            android:text="@string/accept"
+            app:layout_constraintTop_toBottomOf="@+id/paymentButton"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/termsAndConditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_xsmall"
+            android:text="@string/terms_conditions"
+            android:textColor="@color/textLinkColor"
+            app:layout_constraintTop_toTopOf="@+id/acceptText"
+            app:layout_constraintStart_toEndOf="@+id/acceptText"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/acknowledged"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_xsmall"
+            android:text="@string/acknowledged"
+            app:layout_constraintTop_toTopOf="@+id/termsAndConditions"
+            app:layout_constraintStart_toEndOf="@+id/termsAndConditions"/>
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/privacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_xsmall"
+            android:text="@string/privacy"
+            android:textColor="@color/textLinkColor"
+            app:layout_constraintTop_toTopOf="@+id/acknowledged"
+            app:layout_constraintStart_toEndOf="@+id/acknowledged"/>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupConsent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="consent_checkBox,consent_display_text,acceptText,termsAndConditions,acknowledged,privacy"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

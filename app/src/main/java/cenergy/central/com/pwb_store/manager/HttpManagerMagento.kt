@@ -792,7 +792,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     fun createShippingInformation(cartId: String, shippingAddress: AddressInformation,
                                   billingAddress: AddressInformation,
-                                  addressInfoExtensionBody: AddressInfoExtensionBody,
+                                  addressInfoExtensionBody: AddressInfoExtensionBody?,
                                   deliveryOption: DeliveryOption,
                                   callback: ApiResponseCallback<ShippingInformationResponse>) {
 

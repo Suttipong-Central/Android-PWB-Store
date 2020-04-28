@@ -60,6 +60,7 @@ class PreferenceManager(private var context: Context) {
         editor.putString(PREF_REGION, secretKey.region)
         editor.putString(PREF_X_API_KEY, secretKey.xApiKey)
         editor.putString(PREF_SERVICE_NAME, secretKey.serviceName)
+        editor.putString(PREF_X_API_KEY_CONSENT, secretKey.xApiKeyConsent)
         editor.apply()
     }
 
@@ -73,6 +74,8 @@ class PreferenceManager(private var context: Context) {
         get() = pref.getString(PREF_X_API_KEY, null)
     val serviceName: String?
         get() = pref.getString(PREF_SERVICE_NAME, null)
+    val xApiKeyConsent: String?
+        get() = pref.getString(PREF_X_API_KEY_CONSENT, null)
 
     private fun clearPreference() {
 //        pref.edit().clear().apply()
@@ -90,6 +93,7 @@ class PreferenceManager(private var context: Context) {
         pref.edit().remove(PREF_REGION).apply()
         pref.edit().remove(PREF_X_API_KEY).apply()
         pref.edit().remove(PREF_SERVICE_NAME).apply()
+        pref.edit().remove(PREF_X_API_KEY_CONSENT).apply()
     }
 
     companion object {
@@ -102,6 +106,7 @@ class PreferenceManager(private var context: Context) {
         const val PREF_REGION = "pref_region"
         const val PREF_X_API_KEY = "pref_x_api_key"
         const val PREF_SERVICE_NAME = "pref_service_name"
+        const val PREF_X_API_KEY_CONSENT = "pref_x_api_key_consent"
     }
 }
 

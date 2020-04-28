@@ -29,10 +29,7 @@ import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.PaymentTransferListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
 import cenergy.central.com.pwb_store.helpers.ReadFileHelper
-import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.HttpManagerHDL
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.manager.HttpMangerSiebel
+import cenergy.central.com.pwb_store.manager.*
 import cenergy.central.com.pwb_store.manager.api.BranchApi
 import cenergy.central.com.pwb_store.manager.api.HomeDeliveryApi
 import cenergy.central.com.pwb_store.manager.api.OrderApi
@@ -45,6 +42,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
+import cenergy.central.com.pwb_store.model.body.ConsentBody
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -94,6 +92,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var promotionDiscount = 0.0
     private var totalPrice = 0.0
     private var paymentAgents = listOf<PaymentAgent>()
+    private var consentInfo: ConsentInfoResponse? = null
 
     // data product 2h
     private var product2h: Product? = null
@@ -222,18 +221,28 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // endregion
 
     // region {@link PaymentBillingListener}
-    override fun saveAddressInformation(shippingAddress: AddressInformation, billingAddress: AddressInformation?, t1cNumber: String) {
+    override fun saveAddressInformation(shippingAddress: AddressInformation, billingAddress: AddressInformation?,
+                                        t1cNumber: String, privacyVersion: String?, isCheckConsent: Boolean) {
         showProgressDialog()
         this.shippingAddress = shippingAddress
         this.billingAddress = billingAddress
         this.theOneCardNo = t1cNumber
-        cartId?.let { getDeliveryOptions(it) } // request delivery options
+        if (privacyVersion != null){ // if privacy is null because API get consent info not working
+            setConsent(privacyVersion, isCheckConsent, false)
+        } else {
+            cartId?.let { getDeliveryOptions(it) } // request delivery options
+        }
     }
 
-    override fun setBillingAddressWithIspu(billingAddress: AddressInformation, t1cNumber: String) {
+    override fun setBillingAddressWithIspu(billingAddress: AddressInformation, t1cNumber: String,
+                                           privacyVersion: String?, isCheckConsent: Boolean) {
         this.shippingAddress = billingAddress // sent only address box 1
         this.theOneCardNo = t1cNumber
-        createOrderWithIspu()
+        if (privacyVersion != null){ // if privacy is null because API get consent info not working
+            setConsent(privacyVersion, isCheckConsent, true)
+        } else {
+            createOrderWithIspu()
+        }
     }
     // endregion
 
@@ -261,8 +270,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         when (deliveryType) {
             EXPRESS, STANDARD -> {
                 showProgressDialog()
-                val addressInfoExtBody = AddressInfoExtensionBody(checkout = shippingAddress!!.email)
-                handleCreateShippingInformation(deliveryOption, addressInfoExtBody)
+                handleCreateShippingInformation(deliveryOption, null)
             }
             STORE_PICK_UP -> {
                 showProgressDialog()
@@ -290,7 +298,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
         paymentMethods = cacheCartItems.getPaymentType(this)
-        startCheckOut() // default page
         getItemTotal()
     }
 
@@ -370,7 +377,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         showProgressDialog()
         this.shippingSlot = shippingSlot // set shipping slot
         val subscribeCheckOut = AddressInfoExtensionBody(
-                checkout = shippingAddress!!.email,
                 shippingDate = shippingDate,
                 shippingSlotInDay = shippingSlot.slotExtension?.daySlotId.toString(),
                 shippingSlotDescription = shippingSlot.getTimeDescription())
@@ -526,6 +532,26 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             this.totalPrice -= discountPrice
         }
 
+        retrieveConsentInfo()
+    }
+
+    private fun retrieveConsentInfo(){
+        HttpManagerConsent.getInstance(this).getConsentInfo(object : ApiResponseCallback<ConsentInfoResponse>{
+            override fun success(response: ConsentInfoResponse?) {
+                if (response != null){
+                    this@PaymentActivity.consentInfo = response
+                }
+                handleStartFragment()
+            }
+
+            override fun failure(error: APIError) {
+                Log.d("Consent Error", error.errorMessage?: "")
+                handleStartFragment()
+            }
+        })
+    }
+
+    private fun handleStartFragment(){
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
@@ -571,7 +597,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody) {
+    private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody?) {
         if (cartId != null && shippingAddress != null) {
             when (val type = DeliveryType.fromString(deliveryOption.methodCode)) {
                 STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
@@ -580,7 +606,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun createShippingInfor(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody) {
+    private fun createShippingInfor(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody?) {
         type ?: return // type null?
         HttpManagerMagento.getInstance(this).createShippingInformation(cartId!!, shippingAddress!!,
                 billingAddress ?: shippingAddress!!, addressInfoExtensionBody,
@@ -601,7 +627,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody) {
+    private fun createShippingInforWithClickAndCollect(type: DeliveryType?, addressInfoExtensionBody: AddressInfoExtensionBody?) {
         if (branch == null || type == null) {
             return
         }
@@ -841,6 +867,29 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
+    private fun setConsent(privacyVersion: String, isCheckConsent: Boolean, isISPU: Boolean = false) {
+        if (shippingAddress != null && cacheCartItems.isNotEmpty() && cacheCartItems[0].cartId != null){
+            val consentBody = ConsentBody.createBody(shippingAddress!!.email, cacheCartItems[0].cartId!! ,privacyVersion, isCheckConsent)
+            HttpManagerConsent.getInstance(this).setConsent(consentBody,
+                    object : ApiResponseCallback<ConsentResponse>{
+                        override fun success(response: ConsentResponse?) {
+                            if(isISPU){
+                                createOrderWithIspu()
+                            } else {
+                                cartId?.let { getDeliveryOptions(it) }
+                            }
+                        }
+
+                        override fun failure(error: APIError) {
+                            if(isISPU){
+                                createOrderWithIspu()
+                            } else {
+                                cartId?.let { getDeliveryOptions(it) }
+                            }                        }
+                    })
+        }
+    }
+
     private fun getDeliveryOptions(cartId: String) {
         shippingAddress?.let {
             HttpManagerMagento.getInstance(this).getOrderDeliveryOptions(cartId, it,
@@ -1062,6 +1111,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getCheckType(): CheckoutType = this.checkoutType
 
     override fun getPaymentAgents(): List<PaymentAgent> = this.paymentAgents
+
+    override fun getConsentInfo(): ConsentInfoResponse? = this.consentInfo
     // endregion
 
     // region {@link StorePickUpListener}
@@ -1080,7 +1131,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 if (BuildConfig.FLAVOR == "pwb") {
                     val storePickup = StorePickup(branch.storeId)
                     val subscribeCheckOut = AddressInfoExtensionBody(
-                            checkout = shippingAddress!!.email,
                             storePickup = storePickup)
                     handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
                 } else { // cds, rbs?
@@ -1090,7 +1140,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             email = shippingAddress!!.email,
                             telephone = shippingAddress!!.telephone)
                     val subscribeCheckOut = AddressInfoExtensionBody(
-                            checkout = shippingAddress!!.email,
                             pickupLocationId = branch.storeId,
                             pickerInfo = pickerInfo)
                     handleCreateShippingInformation(this.deliveryOption, subscribeCheckOut)
@@ -1182,8 +1231,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             this.deliveryOption = DeliveryOption.getStorePickupIspu() // create DeliveryOption Store Pickup ISPU
 
             val storePickup = StorePickup(this.branch!!.storeId)
-            val subscribeCheckOut = AddressInfoExtensionBody(checkout = shippingAddress!!.email,
-                    storePickup = storePickup)
+            val subscribeCheckOut = AddressInfoExtensionBody(storePickup = storePickup)
             createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
         }
     }

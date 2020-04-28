@@ -59,7 +59,7 @@ class HttpManagerHDL(var context: Context) {
 
     private fun isSecretKeyNotNull(): Boolean {
         return pref.accessKey != null && pref.secretKey != null && pref.region != null &&
-                pref.xApiKey != null && pref.serviceName != null
+                pref.xApiKey != null && pref.serviceName != null && pref.xApiKeyConsent != null
     }
 
     fun getHDLCustomer(number: String, callback: ApiResponseCallback<HDLMemberResponse>) {

@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.model
 
-import com.google.firebase.firestore.PropertyName
 import com.google.gson.annotations.SerializedName
 
 data class SecretKey(
@@ -9,5 +8,6 @@ data class SecretKey(
         val secretKey: String? = null,
         val xApiKey: String? = null,
         val serviceName: String? = null,
-        val region: String? = null
+        val region: String? = null,
+        val xApiKeyConsent: String? = null
 )

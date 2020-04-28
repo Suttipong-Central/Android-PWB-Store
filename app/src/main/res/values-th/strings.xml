@@ -367,4 +367,10 @@
     <string name="pay_bill">จ่ายบิล</string>
     <string name="pay_by_bank_transfer">ชำระค่าสินค้า โอนเงินผ่านสาขาธนาคาร</string>
 
+    <!--  PDPA  -->
+    <string name="accept">ฉันตกลงตาม</string>
+    <string name="terms_conditions">ข้อกำหนดและเงื่อนไข</string>
+    <string name="acknowledged">และรับทราบ</string>
+    <string name="privacy">นโยบายความเป็นส่วนตัว</string>
+
 </resources>

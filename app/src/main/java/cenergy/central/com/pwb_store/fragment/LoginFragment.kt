@@ -166,7 +166,7 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
 
     private fun checkSecretKey(secretKey: SecretKey?): Boolean{
         return secretKey?.accessKey != null && secretKey.secretKey != null && secretKey.region != null &&
-                secretKey.xApiKey != null && secretKey.serviceName != null
+                secretKey.xApiKey != null && secretKey.serviceName != null && secretKey.xApiKeyConsent != null
     }
 
     private fun checkUserLogin(userInformation: UserInformation): Boolean {

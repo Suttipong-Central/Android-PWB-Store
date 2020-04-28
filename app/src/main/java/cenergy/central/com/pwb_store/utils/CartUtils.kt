@@ -179,7 +179,7 @@ class CartUtils(private val context: Context) {
                                             branchResponse: BranchResponse) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
-        val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)
+        val subscribeCheckOut = AddressInfoExtensionBody(storePickup = storePickup)
 
         HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,
                 storeAddress, subscribeCheckOut, DeliveryOption.getStorePickupIspu(),
@@ -453,7 +453,7 @@ class CartUtils(private val context: Context) {
     fun editStore2hPickup(branchResponse: BranchResponse, callback: EditStorePickupCallback) {
         val storeAddress = AddressInformation.createBranchAddress(branchResponse.branch)
         val storePickup = StorePickup(branchResponse.branch.storeId)
-        val subscribeCheckOut = AddressInfoExtensionBody(checkout = "", storePickup = storePickup)
+        val subscribeCheckOut = AddressInfoExtensionBody(storePickup = storePickup)
         val cartId = prefManager.cartId
         if (cartId != null) {
             HttpManagerMagento.getInstance(context).setProduct2hShippingInformation(cartId,

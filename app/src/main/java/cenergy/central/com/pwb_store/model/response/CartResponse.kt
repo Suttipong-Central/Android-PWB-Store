@@ -4,6 +4,7 @@ import cenergy.central.com.pwb_store.model.CartItem
 import com.google.gson.annotations.SerializedName
 
 class CartResponse(
+        var id: Long = 0,
         var items: List<CartItem>,
         @SerializedName("extension_attributes")
         var extension: CartExtension

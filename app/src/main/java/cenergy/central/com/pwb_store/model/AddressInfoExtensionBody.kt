@@ -3,8 +3,6 @@ package cenergy.central.com.pwb_store.model
 import com.google.gson.annotations.SerializedName
 
 data class AddressInfoExtensionBody(
-        @SerializedName("subscribecheckout")
-        val checkout: String = "", // example@email.com
         val shippingDate: String? = null, // "2019-08-07"
         val shippingSlotInDay: String? = null, // "1"
         val shippingSlotDescription: String? = null, // "09:00-09:30"

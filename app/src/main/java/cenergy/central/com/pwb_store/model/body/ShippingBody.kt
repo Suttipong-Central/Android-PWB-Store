@@ -21,4 +21,4 @@ data class AddressInformationBody(@SerializedName("shipping_address")
                                   @SerializedName("shipping_carrier_code")
                                   var carrierCode: String,
                                   @SerializedName("extension_attributes")
-                                  var addressInfoExtensionBody: AddressInfoExtensionBody)
+                                  var addressInfoExtensionBody: AddressInfoExtensionBody? = null)

@@ -2,10 +2,15 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.Html
 import android.text.InputType
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,16 +18,20 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.RadioGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
+import cenergy.central.com.pwb_store.dialogs.PrivacyDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -32,6 +41,7 @@ import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.response.ConsentInfoResponse
 import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
@@ -39,7 +49,6 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import java.text.NumberFormat
 import java.util.*
@@ -71,10 +80,10 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var discountPriceTextView: PowerBuyTextView
     private lateinit var promotionPriceTextView: PowerBuyTextView
     private lateinit var totalPriceTextView: PowerBuyTextView
-    private lateinit var deliveryBtn: PowerBuyIconButton
+    private lateinit var deliveryBtn: AppCompatButton
     private lateinit var radioGroup: RadioGroup
     private lateinit var radioTaxGroup: RadioGroup
-    private lateinit var changeT1Button: PowerBuyIconButton
+    private lateinit var changeT1Button: AppCompatButton
 
     private lateinit var provinceInput: PowerBuyAutoCompleteTextStroke
     private lateinit var districtInput: PowerBuyAutoCompleteTextStroke
@@ -89,6 +98,12 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingLayout: Group
     private lateinit var layoutDiscountPrice: Group
     private lateinit var layoutPromotionPrice: Group
+    private lateinit var layoutsConsentGroup: Group
+
+    private lateinit var consentCheck: AppCompatCheckBox
+    private lateinit var consentDisplay: PowerBuyTextView
+    private lateinit var termsCondition: PowerBuyTextView
+    private lateinit var privacy: PowerBuyTextView
 
     private var mProgressDialog: ProgressDialog? = null
     private val analytics by lazy { context?.let { Analytics(it) } }
@@ -135,6 +150,8 @@ class PaymentBillingFragment : Fragment() {
     private var discount = 0.0
     private var promotionDiscount = 0.0
     private var totalPrice = 0.0
+    private var consentInfo: ConsentInfoResponse? = null
+    private var isCheckedConsent = false
 
     // shipping data address
     private var provinceList = listOf<Province>()
@@ -221,6 +238,7 @@ class PaymentBillingFragment : Fragment() {
         billingAddress = paymentProtocol.getBillingAddress()
         checkoutType = paymentProtocol.getCheckType()
         t1cNumber = paymentProtocol.getT1CardNumber()
+        consentInfo = paymentProtocol.getConsentInfo()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -647,7 +665,12 @@ class PaymentBillingFragment : Fragment() {
         discountPriceTextView = rootView.findViewById(R.id.txt_discount)
         promotionPriceTextView = rootView.findViewById(R.id.txt_promotion)
         totalPriceTextView = rootView.findViewById(R.id.txt_total)
+        consentCheck = rootView.findViewById(R.id.consent_checkBox)
+        consentDisplay = rootView.findViewById(R.id.consent_display_text)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
+        termsCondition = rootView.findViewById(R.id.termsAndConditions)
+        privacy = rootView.findViewById(R.id.privacy)
+        layoutsConsentGroup = rootView.findViewById(R.id.groupConsent)
 
         // Set Input type
         contactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
@@ -668,8 +691,8 @@ class PaymentBillingFragment : Fragment() {
         t1cardInput.setTextLength(10)
         t1cardInput.setOnTextChanging(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                changeT1Button.setText(getString(
-                        if (s.length >= 10) R.string.t1_change else R.string.t1_add))
+                changeT1Button.text = getString(
+                        if (s.length >= 10) R.string.t1_change else R.string.t1_add)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -697,7 +720,7 @@ class PaymentBillingFragment : Fragment() {
             billingOptionLayout.visibility = View.GONE
             billingLayout.visibility = View.GONE
             shippingLabel.text = getString(R.string.billing_address)
-            deliveryBtn.setText(getString(R.string.btn_complete_order))
+            deliveryBtn.text = getString(R.string.btn_complete_order)
         }
 
         checkRequireTaxInvoice()
@@ -727,6 +750,42 @@ class PaymentBillingFragment : Fragment() {
                 }
             }
         }
+
+        if (consentInfo != null){
+            layoutsConsentGroup.visibility = View.VISIBLE
+
+            val consentHTML = getConsentHTML()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                consentDisplay.text = Html.fromHtml(consentHTML, Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                consentDisplay.text = Html.fromHtml(consentHTML)
+            }
+
+            termsCondition.movementMethod = LinkMovementMethod.getInstance()
+            termsCondition.setOnClickListener {
+                val browserIntent = Intent(Intent.ACTION_VIEW)
+                browserIntent.data = Uri.parse(getTermsConditions())
+                startActivity(browserIntent)
+            }
+
+            privacy.setOnClickListener {
+                PrivacyDialogFragment.newInstance(getConsentPrivacy()).show(childFragmentManager, "dialog")
+            }
+        } else {
+            layoutsConsentGroup.visibility = View.GONE
+        }
+    }
+
+    private fun getConsentHTML(): String{
+        return if (preferenceManager.getDefaultLanguage() == "th") consentInfo!!.displayText.th else consentInfo!!.displayText.en
+    }
+
+    private fun getConsentPrivacy(): String{
+        return if (preferenceManager.getDefaultLanguage() == "th") consentInfo!!.privacy.th else consentInfo!!.privacy.en
+    }
+
+    private fun getTermsConditions(): String{
+        return "${Constants.WEB_HOST_NAME}/${preferenceManager.getDefaultLanguage()}/terms-conditions"
     }
 
     private fun checkSameBilling() {
@@ -805,6 +864,7 @@ class PaymentBillingFragment : Fragment() {
     private fun checkConfirm() {
         showProgressDialog()
         val t1cNumber = t1cardInput.getText()
+        isCheckedConsent = consentCheck.isChecked
         if (checkoutType == CheckoutType.NORMAL) {
             checkoutNormal(t1cNumber)
         } else {
@@ -812,7 +872,8 @@ class PaymentBillingFragment : Fragment() {
                 // setup shipping address
                 val shippingAddress = createShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.setBillingAddressWithIspu(shippingAddress, t1cNumber)
+                paymentBillingListener?.setBillingAddressWithIspu(shippingAddress, t1cNumber,
+                        privacyVersion = consentInfo?.privacyVersion, isCheckConsent = isCheckedConsent)
             } else {
                 mProgressDialog?.dismiss()
                 activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
@@ -826,11 +887,12 @@ class PaymentBillingFragment : Fragment() {
                 // setup value
                 val shippingAddress = createShipping(IS_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.saveAddressInformation(shippingAddress, null, t1cNumber = t1cNumber)
+                paymentBillingListener?.saveAddressInformation(
+                        shippingAddress = shippingAddress, billingAddress = null, t1cNumber = t1cNumber,
+                        privacyVersion = consentInfo?.privacyVersion, isCheckConsent = isCheckedConsent)
             } else {
                 mProgressDialog?.dismiss()
                 activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
-
             }
         } else {
             if (!hasEmptyInput() && !hasBillingEmptyInput()) {
@@ -838,11 +900,11 @@ class PaymentBillingFragment : Fragment() {
                 val billingAddress = createBilling()
                 val shippingAddress = createShipping(IS_NOT_SAME_BILLING)
                 mProgressDialog?.dismiss()
-                paymentBillingListener?.saveAddressInformation(shippingAddress, billingAddress, t1cNumber)
+                paymentBillingListener?.saveAddressInformation(shippingAddress, billingAddress, t1cNumber,
+                consentInfo?.privacyVersion, isCheckedConsent)
             } else {
                 mProgressDialog?.dismiss()
                 activity?.showCommonDialog(resources.getString(R.string.fill_in_important_information))
-
             }
         }
     }

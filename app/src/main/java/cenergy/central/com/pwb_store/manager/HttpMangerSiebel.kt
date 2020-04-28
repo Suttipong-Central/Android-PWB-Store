@@ -60,7 +60,7 @@ class HttpMangerSiebel(var context: Context) {
 
     private fun isSecretKeyNotNull() : Boolean{
         return pref.accessKey != null && pref.secretKey != null && pref.region != null &&
-                pref.xApiKey != null && pref.serviceName != null
+                pref.xApiKey != null && pref.serviceName != null && pref.xApiKeyConsent != null
     }
 
     private class PwbAWSCredentialsProvider internal constructor(private val session: Session) : AWSCredentialsProvider {

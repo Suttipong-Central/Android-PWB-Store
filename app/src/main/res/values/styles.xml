@@ -148,4 +148,8 @@
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
     </style>
 
+    <style name="checkBoxPrimary">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
 </resources>
