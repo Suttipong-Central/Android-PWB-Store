@@ -60,7 +60,7 @@ class PaymentCheckOutFragment : Fragment(), TextWatcher {
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         if (count == 10) {
-            val textError =  ValidationHelper.getInstance(context!!).validThaiPhoneNumber(contactInput.text.toString())
+            val textError =  ValidationHelper.getInstance(context!!).validThaiMobileNumber(contactInput.text.toString())
             contactInput.error = textError
         }
     }

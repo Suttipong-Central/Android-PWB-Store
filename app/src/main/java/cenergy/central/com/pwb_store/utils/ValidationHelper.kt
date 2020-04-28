@@ -65,7 +65,7 @@ class ValidationHelper(private val context: Context) {
 
     fun validEmail(email: String): String? {
         if (isEmptyData(email)) {
-            return context.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_input_required)
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return context.getString(R.string.error_form_email_pattern_not_match)
         }
@@ -110,35 +110,46 @@ class ValidationHelper(private val context: Context) {
 
     fun validThaiPhoneNumber(phoneNumber: String): String? {
         if (phoneNumber.isBlank()) {
-            return context.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_input_required)
         }
-        var prefixNumber = ""
+        var prefix2Digits = ""
         if (phoneNumber.length > PREFIX_PHONE_NUMBER) {
-            prefixNumber = phoneNumber.substring(0, 2)
+            prefix2Digits = phoneNumber.substring(0, 2)
+        }
+
+        var prefix3Digits = ""
+        if (phoneNumber.length > 3) {
+            prefix3Digits = phoneNumber.substring(0, 3)
         }
         if (isEmptyData(phoneNumber)) {
-            return context.getString(R.string.error_form_empty_data)
-        }  else if (phoneNumber.length < MIN_PHONE_NUMBER) {
-            return context.getString(R.string.error_form_phone_number_invalid)
-        } else if (!(prefixNumber == "02" || prefixNumber == "05" ||
-                        prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
-            return context.getString(R.string.error_form_phone_number_invalid)
-        } else if (!(prefixNumber == "02" || prefixNumber == "05") && phoneNumber.length < MIN_MOBILE_PHONE_NUMBER ) {
-            return context.getString(R.string.error_form_phone_number_invalid)
+            return context.getString(R.string.error_form_input_required)
+        } else if (phoneNumber.length < MIN_PHONE_NUMBER) {
+            return context.getString(R.string.error_form_contact_number_invalid)
+        } else if (phoneNumber.length < MIN_MOBILE_PHONE_NUMBER) { // length = 9?
+            return when {
+                prefix2Digits == "02" || thaiPhoneNumber.contains(prefix3Digits) -> {
+                    null
+                }
+                else -> {
+                    context.getString(R.string.error_form_contact_number_invalid)
+                }
+            }
+        } else if (!(prefix2Digits == "06" || prefix2Digits == "08" || prefix2Digits == "09")) {
+            return context.getString(R.string.error_form_contact_number_invalid)
         }
         return null
     }
 
     fun validThaiMobileNumber(mobileNumber: String): String? {
         if (mobileNumber.isBlank()) {
-            return context.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_input_required)
         }
         var prefixNumber = ""
         if (mobileNumber.length > PREFIX_PHONE_NUMBER) {
             prefixNumber = mobileNumber.substring(0, 2)
         }
         if (isEmptyData(mobileNumber)) {
-            return context.getString(R.string.error_form_empty_data)
+            return context.getString(R.string.error_form_input_required)
         } else if (mobileNumber.length < MIN_MOBILE_PHONE_NUMBER) {
             return context.getString(R.string.error_form_phone_number_invalid)
         } else if (!(prefixNumber == "06" || prefixNumber == "08" || prefixNumber == "09")) {
@@ -180,6 +191,9 @@ class ValidationHelper(private val context: Context) {
         private const val THE_ONE_NUMBER_LENGTH = 10
         private const val LANGUAGE_THAI = "th"
         private const val LANGUAGE_ENGLISH = "en"
+        private val thaiPhoneNumber = arrayListOf("032", "034", "035", "036",
+                "037", "038", "039", "042", "043", "044", "045", "053", "054", "055", "056", "073",
+                "074", "075", "076", "077")
 
         @SuppressLint("StaticFieldLeak")
         private var mInstance: ValidationHelper? = null
