@@ -249,7 +249,7 @@
             app:layout_constraintTop_toTopOf="@+id/input_sub_district" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
-            android:id="@+id/tell_payment"
+            android:id="@+id/input_contract_reserve"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_padding_small"
@@ -267,7 +267,7 @@
             android:layout_marginTop="@dimen/margin_padding_normal"
             android:text="@string/require_tax"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tell_payment" />
+            app:layout_constraintTop_toBottomOf="@+id/input_contract_reserve" />
 
         <RadioGroup
             android:id="@+id/radio_tax_group"

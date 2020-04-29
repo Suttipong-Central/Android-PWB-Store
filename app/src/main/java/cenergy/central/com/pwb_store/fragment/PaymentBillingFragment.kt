@@ -67,7 +67,7 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var homeBuildingEdit: PowerBuyEditTextBorder
     private lateinit var homeSoiEdt: PowerBuyEditTextBorder
     private lateinit var homeRoadEdt: PowerBuyEditTextBorder
-    private lateinit var homePhoneEdt: PowerBuyEditTextBorder
+    private lateinit var contractReserveEdt: PowerBuyEditTextBorder
     private lateinit var billingFirstNameEdt: PowerBuyEditTextBorder
     private lateinit var billingLastNameEdt: PowerBuyEditTextBorder
     private lateinit var billingContactNumberEdt: PowerBuyEditTextBorder
@@ -140,7 +140,7 @@ class PaymentBillingFragment : Fragment() {
     private var homeCountryId: String = ""
     private var homePostalCodeId: String = ""
     private var homePostalCode: String = ""
-    private var homePhone: String = ""
+    private var contractReserve: String = ""
     private var company: String = ""
     private var vatId: String = ""
     private var isSameBilling = true
@@ -327,7 +327,7 @@ class PaymentBillingFragment : Fragment() {
             homeBuildingEdit.setText(shippingAddress!!.subAddress?.building)
             homeSoiEdt.setText(shippingAddress!!.subAddress?.soi)
             homeRoadEdt.setText(shippingAddress!!.subAddress?.addressLine)
-            homePhoneEdt.setText(shippingAddress!!.subAddress?.mobile)
+            contractReserveEdt.setText(shippingAddress!!.subAddress?.mobile)
 
             // has t1
             if (t1cNumber.isNotBlank()) {
@@ -488,7 +488,7 @@ class PaymentBillingFragment : Fragment() {
         homeBuildingEdit.setText(member.buildingName)
         homeSoiEdt.setText(member.soi)
         homeRoadEdt.setText(member.road)
-        homePhoneEdt.setText(member.telephone)
+        contractReserveEdt.setText(member.telephone)
 
         // validate province with local db
         val province = database.getProvinceByName(member.province)
@@ -533,7 +533,7 @@ class PaymentBillingFragment : Fragment() {
         homeBuildingEdit.setText(member.subAddress?.building)
         homeSoiEdt.setText(member.subAddress?.soi)
         homeRoadEdt.setText(member.subAddress?.street)
-        homePhoneEdt.setText(member.telephone)
+        contractReserveEdt.setText(member.telephone)
 
         // validate province with local db
         val provinceId = member.regionId
@@ -580,7 +580,7 @@ class PaymentBillingFragment : Fragment() {
         contactNumberEdt.setText(t1cMember.mobilePhone)
         emailEdt.setText(t1cMember.email)
         t1cardInput.setText(t1cMember.cardNo)
-        homePhoneEdt.setText(t1cMember.homePhone)
+        contractReserveEdt.setText(t1cMember.homePhone)
 
         // has address?
         if (t1cMember.addresses != null && t1cMember.addresses!!.isNotEmpty()) {
@@ -633,7 +633,7 @@ class PaymentBillingFragment : Fragment() {
         homeBuildingEdit = rootView.findViewById(R.id.place_or_building_payment)
         homeSoiEdt = rootView.findViewById(R.id.soi_payment)
         homeRoadEdt = rootView.findViewById(R.id.street_payment)
-        homePhoneEdt = rootView.findViewById(R.id.tell_payment)
+        contractReserveEdt = rootView.findViewById(R.id.input_contract_reserve)
         // Setup view input address
         provinceInput = rootView.findViewById(R.id.input_province)
         districtInput = rootView.findViewById(R.id.input_district)
@@ -677,8 +677,8 @@ class PaymentBillingFragment : Fragment() {
         contactNumberEdt.setTextLength(10)
         billingContactNumberEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         billingContactNumberEdt.setTextLength(10)
-        homePhoneEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        homePhoneEdt.setTextLength(10)
+        contractReserveEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
+        contractReserveEdt.setTextLength(10)
         emailEdt.setEditTextInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
         taxIdEdt.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
         taxIdEdt.setTextLength(13)
@@ -928,14 +928,14 @@ class PaymentBillingFragment : Fragment() {
         homeSubDistrict = subDistrict?.name ?: ""
         homePostalCodeId = postcode?.postcodeId ?: ""
         homePostalCode = postcode?.postcode ?: ""
-        homePhone = homePhoneEdt.getText()
+        contractReserve = contractReserveEdt.getText()
         company = if (isRequireTaxInvoice) companyEdt.getText() else ""
         vatId = if (isRequireTaxInvoice) taxIdEdt.getText() else ""
 
         return AddressInformation.createAddress(
                 firstName = firstName, lastName = lastName, email = email, contactNo = contactNo,
                 homeNo = homeNo, homeBuilding = homeBuilding, homeSoi = homeSoi, homeRoad = homeRoad,
-                homePostalCode = homePostalCode, homePhone = homePhone, provinceId = homeProvinceId,
+                homePostalCode = homePostalCode, homePhone = contractReserve, provinceId = homeProvinceId,
                 provinceCode = homeProvinceCode, countryId = homeCountryId, districtId = homeDistrictId,
                 subDistrictId = homeSubDistrictId, postcodeId = homePostalCodeId, homeCity = homeProvince,
                 homeDistrict = homeDistrict, homeSubDistrict = homeSubDistrict,
@@ -981,11 +981,19 @@ class PaymentBillingFragment : Fragment() {
         firstNameEdt.setError(validator.validText(firstNameEdt.getText()))
         lastNameEdt.setError(validator.validText(lastNameEdt.getText()))
         emailEdt.setError(validator.validEmail(emailEdt.getText()))
+
         if (contactNumberEdt.getText().isNotEmpty()) {
-            contactNumberEdt.setError(validator.validThaiPhoneNumber(contactNumberEdt.getText()))
+            contactNumberEdt.setError(validator.validThaiMobileNumber(contactNumberEdt.getText()))
         } else {
             contactNumberEdt.setError(getString(R.string.error_form_phone_number_invalid))
         }
+
+        if (contractReserveEdt.getText().isNotEmpty()) {
+            contractReserveEdt.setError(validator.validThaiPhoneNumber(contractReserveEdt.getText()))
+        } else {
+            contractReserveEdt.setError(getString(R.string.error_form_phone_number_invalid))
+        }
+
         homeNoEdt.setError(validator.validText(homeNoEdt.getText()))
         homeRoadEdt.setError(validator.validText(homeRoadEdt.getText()))
         provinceInput.setError(validator.validText(provinceInput.getText()))
@@ -993,13 +1001,12 @@ class PaymentBillingFragment : Fragment() {
         subDistrictInput.setError(validator.validText(subDistrictInput.getText()))
         postcodeInput.setError(validator.validText(postcodeInput.getText()))
         t1cardInput.setError(validator.validTheOne(t1cardInput.getText()))
-
         taxIdEdt.setError(validator.validTax(taxIdEdt.getText()))
 
         return (firstNameEdt.getError() != null || lastNameEdt.getError() != null || emailEdt.getError() != null
-                || contactNumberEdt.getError() != null || homeNoEdt.getError() != null || provinceInput.getError() != null
-                || districtInput.getError() != null || subDistrictInput.getError() != null || postcodeInput.getError() != null
-                || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null)
+                || contactNumberEdt.getError() != null || contractReserveEdt.getError() != null || homeNoEdt.getError() != null
+                || provinceInput.getError() != null || districtInput.getError() != null || subDistrictInput.getError() != null
+                || postcodeInput.getError() != null || homeRoadEdt.getError() != null || hasRequireTaxInvoice() || t1cardInput.getError() != null)
     }
 
     private fun hasBillingEmptyInput(): Boolean {
@@ -1008,7 +1015,7 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt.setError(validator.validText(billingFirstNameEdt.getText()))
         billingLastNameEdt.setError(validator.validText(billingLastNameEdt.getText()))
         if (billingContactNumberEdt.getText().isNotEmpty()) {
-            billingContactNumberEdt.setError(validator.validThaiPhoneNumber(billingContactNumberEdt.getText()))
+            billingContactNumberEdt.setError(validator.validThaiMobileNumber(billingContactNumberEdt.getText()))
         } else {
             billingContactNumberEdt.setError(getString(R.string.error_form_phone_number_invalid))
         }
