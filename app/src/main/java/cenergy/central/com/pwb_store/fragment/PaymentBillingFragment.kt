@@ -1015,7 +1015,7 @@ class PaymentBillingFragment : Fragment() {
         billingFirstNameEdt.setError(validator.validText(billingFirstNameEdt.getText()))
         billingLastNameEdt.setError(validator.validText(billingLastNameEdt.getText()))
         if (billingContactNumberEdt.getText().isNotEmpty()) {
-            billingContactNumberEdt.setError(validator.validThaiMobileNumber(billingContactNumberEdt.getText()))
+            billingContactNumberEdt.setError(validator.validThaiPhoneNumber(billingContactNumberEdt.getText()))
         } else {
             billingContactNumberEdt.setError(getString(R.string.error_form_phone_number_invalid))
         }
