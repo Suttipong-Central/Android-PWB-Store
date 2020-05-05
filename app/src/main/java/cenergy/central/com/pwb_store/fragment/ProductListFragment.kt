@@ -135,7 +135,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         isDoneFilter = true
         isSorting = true
         resetPage()
-        sortName = sortingItem.slug
+        // TODO cds return brand is brand_name
+        sortName = if (sortingItem.slug == "brand" && BuildConfig.FLAVOR == "cds") {
+            "brand_name"
+        } else {
+            sortingItem.slug
+        }
         sortType = sortingItem.value
         retrieveProductList()
         mPowerBuyPopupWindow!!.updateSingleSortingItem(sortingItem)
@@ -375,7 +380,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             } else {
                 filterGroupsList.add(createFilterGroups("category_id", categoryId!!, "eq"))
             }
-            if (BuildConfig.FLAVOR !== "cds") {
+            if (BuildConfig.FLAVOR != "cds") {
                 filterGroupsList.add(createFilterGroups(PRODUCT_2H_FIELD, PRODUCT_2H_VALUE, "eq"))
             }
             filterGroupsList.add(createFilterGroups("status", "1", "eq"))
@@ -384,9 +389,17 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
             // TODO We have to do not display market place product
             filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
+            if (BuildConfig.FLAVOR == "cds"){
+                filterGroupsList.add(createFilterGroups("type_id", "simple", "eq"))
+            }
 
             if (brandName != null && brandName!!.isNotEmpty()) {
-                filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
+                // TODO cds return brand is brand_name
+                if (BuildConfig.FLAVOR == "cds"){
+                    filterGroupsList.add(createFilterGroups("brand_name", brandName!!, "eq"))
+                } else {
+                    filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
+                }
             }
             val sortOrders = ArrayList<SortOrder>()
             if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
