@@ -20,6 +20,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.activity.BarcodeScanActivity;
 import cenergy.central.com.pwb_store.activity.BaseActivity;
@@ -27,12 +28,12 @@ import cenergy.central.com.pwb_store.activity.MainActivity;
 import cenergy.central.com.pwb_store.activity.ProductListActivity;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.bus.event.SearchQueryBus;
-import cenergy.central.com.pwb_store.view.ClearAbleEditText;
+import cenergy.central.com.pwb_store.view.PowerBuyEditText;
 
 public class SearchSuggestionFragment extends Fragment {
     public static final String TAG = SearchSuggestionFragment.class.getSimpleName();
 
-    private ClearAbleEditText mTextSearch;
+    private PowerBuyEditText mTextSearch;
     private ImageView mBarCode;
 
     public SearchSuggestionFragment() {
@@ -77,7 +78,13 @@ public class SearchSuggestionFragment extends Fragment {
         mBarCode = rootView.findViewById(R.id.image_view_barcode);
         hideSoftKeyboard(mTextSearch);
         mTextSearch.setOnEditorActionListener(new SearchOnEditorActionListener());
-        mBarCode.setOnClickListener(view -> onBarcodeClick(mBarCode));
+        if (BuildConfig.FLAVOR == "pwb"){
+            mBarCode.setVisibility(View.VISIBLE);
+            mBarCode.setOnClickListener(view -> onBarcodeClick(mBarCode));
+        } else {
+            // TODO for now CDS not support search by barcode
+            mBarCode.setVisibility(View.GONE);
+        }
     }
 
     @Override

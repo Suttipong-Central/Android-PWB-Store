@@ -6,6 +6,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.TextView
+import cenergy.central.com.pwb_store.BuildConfig
 
 import org.greenrobot.eventbus.EventBus
 import cenergy.central.com.pwb_store.R
@@ -40,7 +41,12 @@ class SearchProductViewHolder(itemView: View, private val canBack: Boolean)
             backButton.visibility = View.GONE
             backButton.setOnClickListener(null)
         }
-        mBarCode.setOnClickListener(this)
+        if (BuildConfig.FLAVOR == "pwb") {
+            mBarCode.visibility = View.VISIBLE
+            mBarCode.setOnClickListener(this)
+        } else {
+            mBarCode.visibility = View.GONE
+        }
         mSearchView.hint = itemView.context.getString(R.string.search_hint)
         mSearchView.setOnEditorActionListener(SearchOnEditorActionListener())
     }

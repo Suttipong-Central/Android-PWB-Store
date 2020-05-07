@@ -4,25 +4,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cenergy.central.com.pwb_store.view.ClearAbleEditText
+    <ImageView
+        android:id="@+id/image_view_search"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="@dimen/margin_padding_normal"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_search"
+        app:layout_constraintBottom_toBottomOf="@id/text_search"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_search" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyEditText
         android:id="@+id/text_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_padding_normal"
-        android:layout_marginTop="@dimen/margin_padding_normal"
-        android:layout_marginEnd="@dimen/margin_padding_normal"
+        android:layout_margin="@dimen/margin_padding_normal"
         android:background="@android:color/transparent"
+        android:gravity="center_vertical"
         android:hint="@string/search_hint"
         android:imeOptions="actionSearch"
         android:inputType="textFilter"
-        android:padding="@dimen/margin_padding_xsmall"
         android:maxLines="1"
+        android:padding="@dimen/margin_padding_small"
         android:textAllCaps="true"
         android:textColor="@color/headerTextColor"
         android:textColorHint="@color/hintColor"
+        android:textCursorDrawable="@drawable/custom_cursor"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/image_view_barcode"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/image_view_search"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
