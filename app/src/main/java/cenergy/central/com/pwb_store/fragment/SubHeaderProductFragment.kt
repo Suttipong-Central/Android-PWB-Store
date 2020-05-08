@@ -78,8 +78,10 @@ class SubHeaderProductFragment : Fragment() {
                         }
 
                         override fun failure(error: APIError) {
-                            showAlertDialog(error.errorUserMessage?: getString(R.string.some_thing_wrong))
-                            Log.e(TAG, "onFailure: " + error.errorUserMessage)
+                            it.runOnUiThread {
+                                showAlertDialog(error.errorUserMessage?: getString(R.string.some_thing_wrong))
+                                Log.e(TAG, "onFailure: " + error.errorUserMessage)
+                            }
                         }
                     })
         }
