@@ -183,7 +183,7 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
         val database = RealmController.getInstance()
         val user = User(12345678L, "", "12345678", 223L,
                 "chuan@central.tech", username, "", 0, "")
-        val store = Store()
+        val store = Store(storeName = "mockup", retailerId = "00010")
 
         database.saveUserToken(UserToken(Constants.CLIENT_MAGENTO))
         // save user information
