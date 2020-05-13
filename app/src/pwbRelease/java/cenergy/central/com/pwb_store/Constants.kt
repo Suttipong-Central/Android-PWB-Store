@@ -14,19 +14,17 @@ class Constants {
 
         const val WEB_HOST_NAME = "https://www.powerbuy.co.th"
 
-        // datalake
-        const val DATALAKE_HOST_NAME = "datalake-api.powerbuy.co.th"
-        const val DATALAKE_X_SUBJECT_ID_HEADER = "x-subject-id"
-        const val DATALAKE_X_SUBJECT_ID_VALUE = "base64"
-        const val DATALAKE_X_API_KEY_HEADER = "x-api-key"
-        const val DATALAKE_X_API_KEY_VALUE = "4tsGla4Avj6ZyIL86O08h94B7DObJSHS4eIYdEgY"
-        // end region datalake
-
-        // region central
+        // Central UAT
         const val CENTRAL_HOST_NAME = "https://api.central.tech"
+
+        // Consent
+        const val CONSENT_HOSTNAME = "https://member.central.tech"
+        const val CONSENT_CHANNEL = "EORDERING"
+        const val CONSENT_PARTNER = "PWB"
+
+        // Firebase
         const val FIRE_STORE_COLLECTION_NAME = "secret-key"
         const val FIRE_STORE_DOCUMENT_KEY = "production"
-        // endregion
 
         // region formatter
         val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)

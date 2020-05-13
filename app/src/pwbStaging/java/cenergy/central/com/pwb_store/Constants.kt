@@ -15,7 +15,7 @@ class Constants {
         const val WEB_HOST_NAME = "https://staging-fe.powerbuy.co.th"
 
         // UAT
-        const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"
+        const val CENTRAL_HOST_NAME = "https://uat-api.central.tech/member"
 
         // Consent
         const val CONSENT_HOSTNAME = "https://api-uat.central.tech"
@@ -25,8 +25,6 @@ class Constants {
         // Firebase
         const val FIRE_STORE_COLLECTION_NAME = "secret-key"
         const val FIRE_STORE_DOCUMENT_KEY = "staging"
-
-        // endregion
 
         // region formatter
         val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)

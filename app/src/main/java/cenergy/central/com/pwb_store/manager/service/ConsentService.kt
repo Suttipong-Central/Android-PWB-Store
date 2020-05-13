@@ -7,14 +7,14 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface ConsentService {
-    @GET("/member/consent_info")
+    @GET("/consent_info")
     fun getConsentInfo(
             @Query("channel") channel: String,
             @Query("partner") partner: String,
             @Header("Content-Type") type: String,
             @Header("x-api-key") key: String): Call<ConsentInfoResponse>
 
-    @POST("/member/consent")
+    @POST("/consent")
     fun setConsent(
             @Header("Content-Type") type: String,
             @Header("x-api-key") key: String,
