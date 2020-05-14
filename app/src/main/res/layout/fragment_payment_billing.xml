@@ -647,13 +647,13 @@
             android:text="@string/choose_delivery_option"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/consent_checkBox"/>
+            app:layout_constraintTop_toBottomOf="@+id/consent_checkBox"
+            app:layout_constraintBottom_toTopOf="@+id/acceptText"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/acceptText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_padding_normal"
             android:layout_marginBottom="@dimen/margin_padding_normal"
             android:text="@string/accept"
             app:layout_constraintTop_toBottomOf="@+id/paymentButton"
@@ -693,6 +693,7 @@
             android:id="@+id/groupConsent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:constraint_referenced_ids="consent_checkBox,consent_display_text,acceptText,termsAndConditions,acknowledged,privacy"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
