@@ -94,7 +94,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // Firebase
     private Analytics analytics;
     private FirebaseRemoteConfig fbRemoteConfig;
-    private long cacheExpiration = 3600; // 1 hour in seconds.
     private boolean isLoadingCategory = false;
     private boolean isScanBarcode = false;
     private ArrayList<String> specialCategoryIds = new ArrayList<>();
@@ -156,7 +155,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         // setup analytic
         analytics = new Analytics(this);
 
-        setupRemoteConfig();
+        // setup firebase config
+        fbRemoteConfig = RemoteConfigUtils.INSTANCE.initFirebaseRemoteConfig();
         handleChangeLanguage();
         initView();
     }
@@ -188,20 +188,6 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
-    }
-
-    private void setupRemoteConfig() {
-        fbRemoteConfig = FirebaseRemoteConfig.getInstance();
-
-        if (!BuildConfig.IS_PRODUCTION) { // is Production?
-            cacheExpiration = 0;
-        }
-
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(cacheExpiration)
-                .build();
-        fbRemoteConfig.setDefaults(R.xml.remote_config_defaults);
-        fbRemoteConfig.setConfigSettingsAsync(configSettings);
     }
 
     private void showProgressDialog() {

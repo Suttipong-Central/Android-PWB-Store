@@ -102,7 +102,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // Firebase
     private val analytics by lazy { Analytics(this) }
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
-    private var cacheExpiration: Long = 3600 // 1 hour in seconds.
 
     companion object {
         private const val TAG = "PaymentActivity"
@@ -135,7 +134,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
         // setup remote config
-        setupRemoteConfig()
+        fbRemoteConfig = RemoteConfigUtils.initFirebaseRemoteConfig()
 
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
@@ -1196,20 +1195,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
     // endregion
-
-    private fun setupRemoteConfig() {
-        fbRemoteConfig = FirebaseRemoteConfig.getInstance()
-
-        if (!BuildConfig.IS_PRODUCTION) { // is Production?
-            cacheExpiration = 0
-        }
-
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(cacheExpiration)
-                .build()
-        fbRemoteConfig.setDefaults(R.xml.remote_config_defaults)
-        fbRemoteConfig.setConfigSettingsAsync(configSettings)
-    }
 
     private fun fetchEorderingConfig() {
         showProgressDialog()
