@@ -14,7 +14,7 @@ class Constants {
 
         const val WEB_HOST_NAME = "https://www.powerbuy.co.th"
 
-        // Central UAT
+        // Central
         const val CENTRAL_HOST_NAME = "https://api.central.tech"
 
         // Consent
