@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">PowerBuy Store</string>
+    <string name="app_name" translatable="false">E-Ordering</string>
     <string name="watermark_business" translatable="false">PowerBuy</string>
     <string name="watermark_environment" translatable="false">Production(headless)</string>
     <string name="hostname_deep_link" translatable="false">www.powerbuy.co.th</string>

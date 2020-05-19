@@ -238,12 +238,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                            privacyVersion: String?, isCheckConsent: Boolean) {
         this.shippingAddress = billingAddress // sent only address box 1
         this.theOneCardNo = t1cNumber
-        if (privacyVersion != null){ // if privacy is null because API get consent info not working
+        if (privacyVersion != null) { // if privacy is null because API get consent info not working
             setConsent(privacyVersion, isCheckConsent, true)
         } else {
             createOrderWithIspu()
         }
     }
+
     // endregion
 
     // region {@link PaymentT1Listener}

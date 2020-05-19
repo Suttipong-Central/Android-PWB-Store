@@ -13,7 +13,6 @@ class Constants {
         // endregion
         const val WEB_HOST_NAME = "https://staging.central.co.th"
 
-
         // region central
         // UAT
         const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"

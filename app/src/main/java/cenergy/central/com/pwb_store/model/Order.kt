@@ -38,9 +38,9 @@ open class Order(
         const val FIELD_ORDER_ID = "orderId"
 
         fun asOrder(orderResponse: OrderResponse, branchShipping: Branch?, paymentRedirect: String = "", theOneNumber: String = ""): Order {
-            return Order(orderId = orderResponse.orderId ?: "",
+            return Order(orderId = orderResponse.orderId!!,
                     createdAt = orderResponse.createdAt,
-                    memberName = orderResponse.billingAddress?.getDisplayName() ?: "",
+                    memberName = orderResponse.billingAddress!!.getDisplayName(),
                     shippingType = orderResponse.shippingType!!,
                     items = asItems(orderResponse.items),
                     shippingAddress = orderResponse.orderExtension?.shippingAssignments!![0]?.shipping?.shippingAddress,

@@ -48,7 +48,7 @@
     <!-- endregion -->
 
     <!-- region product detail-->
-    <TextView
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/tvProductName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -243,6 +243,7 @@
         android:visibility="gone"
         app:act_header="@string/size"
         app:act_required="false"
+        app:layout_constraintBottom_toTopOf="@id/stockIndicatorView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/inputProductShade" />
@@ -286,10 +287,33 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
             app:btn_default="false"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/availableStoreButton"
             app:layout_constraintEnd_toStartOf="@id/add1HourButton"
             app:layout_constraintStart_toStartOf="parent"
             app:text="@string/add_to_cart" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/compareCheckBox"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:theme="@style/CompareCheckBoxTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:text="@string/compare"
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintBottom_toBottomOf="@+id/availableStoreButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline50"
+            app:layout_constraintTop_toTopOf="@+id/availableStoreButton" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/add1HourButton"
@@ -300,7 +324,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
             app:btn_default="true"
-            app:layout_constraintBottom_toTopOf="@id/addToCompareButton"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/addToCartButton"
             app:text="@string/add_one_hour_item" />
@@ -315,29 +339,15 @@
             android:layout_marginBottom="8dp"
             app:btn_default="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/addToCompareButton"
+            app:layout_constraintEnd_toStartOf="@+id/guideline50"
             app:layout_constraintStart_toStartOf="parent"
             app:text="@string/product_available" />
-
-        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
-            android:id="@+id/addToCompareButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            app:btn_default="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/availableStoreButton"
-            app:text="@string/product_compare" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/layoutBottomButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="availableStoreButton,addToCompareButton"/>
+            app:constraint_referenced_ids="availableStoreButton,compareCheckBox"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -349,5 +359,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

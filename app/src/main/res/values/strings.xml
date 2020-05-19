@@ -49,9 +49,8 @@
     <string name="cancel">Cancel</string>
     <string name="product_code">Product Code: </string>
     <string name="the_1_card">Redeem your point %1$,d points</string>
-    <string name="alert_compare">มีการเพิ่มสินค้า</string>
-    <string name="alert_compare_yes">\nเรียบร้อยแล้ว</string>
-    <string name="alert_count">จำนวนสินค้ามากกว่าที่ Store กำหนด</string>
+    <string name="format_alert_compare">Has been added %s</string>
+    <string name="alert_count">You have reached the maximum number of items to compare. Please refine your selection.</string>
     <string name="alert_stock">สินค้าไม่มีในคลังสินค้า</string>
     <string name="add_to_cart">Add to cart</string>
     <string name="tab_promotion">Promotion</string>
@@ -64,6 +63,11 @@
     <string name="compare_header">Compare products</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="rating">Ratings</string>
+    <string name="add_more_to_compare">Add more product to compare.</string>
+    <string name="can_not_show_spec">You have no Items to compare.</string>
+    <string name="clear_all">Clear all</string>
+    <string name="text_comfirm_clear_all">Do you want to remove all products from compare list?</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>
@@ -181,7 +185,8 @@
 
     <!-- Shared Preference -->
     <string name="preference_file_name">pwb_app_preference</string>
-    <string name="added_to_cart">Added this item to your shopping cart.</string>
+    <string name="added_to_cart">This product has been added to your shopping cart.</string>
+    <string name="added_to_compare">This product has been added to compare products.</string>
 
     <!-- Cart -->
     <string name="title_confirm_delete_item">Are you sure to remove this item from your cart?</string>
@@ -211,7 +216,6 @@
     <string name="product">Product</string>
     <string name="sort">Sort by</string>
     <string name="regular_price">Normal Price: </string>
-    <string name="can_not_show_spec">Sorry, the product info is temporary unavailable.</string>
     <string name="user_logout">Do you want to logout?</string>
     <string name="shopping">Continue shopping</string>
     <string name="please_select_date">Please choose delivery date</string>
@@ -338,6 +342,7 @@
     <string name="information">Information</string>
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>
+    <string name="please_add_compare">Compare product is empty, please add product to compare</string>
     <string name="the_1_error">T1 number must be 10 digits and number only</string>
 
     <!-- Stock Indicator -->

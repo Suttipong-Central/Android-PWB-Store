@@ -3,16 +3,13 @@ package cenergy.central.com.pwb_store.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -26,7 +23,7 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.body.OptionBody
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
@@ -35,6 +32,8 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
+
+    // widget view
     private var childProduct: Product? = null
     private var configOptions: List<ProductOption>? = listOf()
     private var productOptionShade: ProductOption? = null
@@ -67,11 +66,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.availableStoreButton -> {
-                productDetailListener.onDisplayAvailableStore(product)
-            }
-
-            R.id.addToCompareButton -> {
-                productDetailListener.addProductToCompare(product)
+                if (!availableStoreButton.isDisable) {
+                    productDetailListener.onDisplayAvailableStore(product)
+                }
             }
 
             R.id.addToCartButton -> {
@@ -230,9 +227,23 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         availableStoreButton.setImageDrawable(R.drawable.ic_store)
         availableStoreButton.setOnClickListener(this)
 
-        // setup add to compare button
-        addToCompareButton.setImageDrawable(R.drawable.ic_compare_bar)
-        addToCompareButton.setOnClickListener(this)
+        // setup add to compare check box
+        updateCompareCheckBox()
+        compareCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            productDetailListener.addProductToCompare(product, isChecked)
+        }
+    }
+
+    fun updateCompareCheckBox() {
+        if (product != null) {
+            val compareProduct = RealmController.getInstance().getCompareProduct(product!!.sku)
+            compareCheckBox.isChecked = compareProduct != null
+        }
+    }
+
+    fun unCheckCompareCheckBox() {
+        compareCheckBox.isChecked = false
+        // setup add to compare button)
 
         shareButton.setOnClickListener(this)
     }
@@ -322,6 +333,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.setEnableStrikeThrough(false)
     }
 
+//    fun disableAddToCartButton(isDisable: Boolean = true) {
+//        addToCartButton.setButtonDisable(isDisable)
+//    }
+
     private fun hideAddToCartButton(isSalable: Boolean = true) {
         if (isSalable) {
             addToCartButton.visibility = View.VISIBLE
@@ -395,9 +410,5 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     private fun onAddToCartBy1Hrs() {
         productDetailListener.addProduct1HrsToCart(product)
-    }
-
-    companion object {
-        private const val TAG = "DetailFragment"
     }
 }

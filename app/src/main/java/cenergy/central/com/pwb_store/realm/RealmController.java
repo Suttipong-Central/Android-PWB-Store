@@ -1,8 +1,9 @@
 package cenergy.central.com.pwb_store.realm;
 
 
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.util.Date;
 import java.util.List;
@@ -138,7 +139,9 @@ public class RealmController {
             @Override
             public void execute(@NonNull Realm realm) {
                 RealmResults<CompareProduct> realmCompareProducts = realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findAll();
-                realmCompareProducts.deleteAllFromRealm();
+                if (realmCompareProducts != null) {
+                    realmCompareProducts.deleteAllFromRealm();
+                }
             }
         });
 
@@ -153,12 +156,7 @@ public class RealmController {
 
     public void deleteAllCompareProduct() {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(CompareProduct.class).findAll().deleteAllFromRealm();
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.where(CompareProduct.class).findAll().deleteAllFromRealm());
     }
 
     public CompareProduct getCompareProduct(String sku) {

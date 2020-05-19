@@ -256,6 +256,10 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
 
     @SuppressLint("SetTextI18n")
     private fun updateViewOrder(order: Order) {
+//        val shippingAddress = order.shippingAddress
+//                ?: throw IllegalArgumentException("Shipping address must not be null")
+//        val billingAddress = order.billingAddress
+//                ?: throw IllegalArgumentException("Billing address must not be null")
         val billingAddress = order.billingAddress
         val shippingAddress = order.shippingAddress
 
@@ -278,6 +282,65 @@ class PaymentSuccessFragment : Fragment(), ApiResponseCallback<OrderResponse> {
         //Setup customer
         orderDate.text = context?.let { order.getDisplayTimeCreated(it) }
         email.text = shippingAddress.email
+        contactNo.text = shippingAddress.telephone
+        finishButton.setOnClickListener {
+            finishThisPage()
+        }
+        name.text = billingAddress.getDisplayName()
+        tvBillingName.text = billingAddress.getDisplayName()
+        tvBillingAddress.text = getAddress(billingAddress)
+        if (billingAddress.sameBilling == SAME_BILLING) {
+//            billingEmailLayout.visibility = View.GONE
+            billingTelephoneLayout.visibility = View.GONE
+        } else {
+//            billingEmailLayout.visibility = View.VISIBLE
+            billingTelephoneLayout.visibility = View.VISIBLE
+//            val billingEmail = billingAddress.email
+//            tvBillingEmail.text = if (billingEmail.isBlank()) shippingAddress.email else billingEmail
+            tvBillingTelephone.text = billingAddress.telephone
+        }
+
+        // setup shipping address or pickup at store
+        if (order.shippingType != DeliveryType.STORE_PICK_UP.methodCode) {
+            deliveryLayout.visibility = View.VISIBLE
+            deliveryInfoLayout.visibility = View.VISIBLE
+            amountLayout.visibility = View.VISIBLE
+            storeAddressLayout.visibility = View.GONE
+            customerNameLayout.visibility = View.GONE
+
+            tvShippingHeader.text = getString(R.string.delivery_detail)
+            tvDeliveryType.text = when (DeliveryType.fromString(order.shippingType)) {
+                DeliveryType.EXPRESS -> getString(R.string.express)
+                DeliveryType.STANDARD -> getString(R.string.standard)
+                DeliveryType.STORE_PICK_UP -> getString(R.string.collect)
+                DeliveryType.HOME -> getString(R.string.home_delivery)
+                else -> ""
+            }
+
+            tvReceiverName.text = shippingAddress.getDisplayName()
+            tvDeliveryAddress.text = getAddress(shippingAddress)
+            tvDeliveryInfo.text = when (DeliveryType.fromString(order.shippingType)) {
+                DeliveryType.EXPRESS -> getString(R.string.express_delivery_desc)
+                DeliveryType.STANDARD -> getString(R.string.standard_delivery_desc)
+                DeliveryType.HOME -> getString(R.string.home_delivery_desc)
+                else -> ""
+            }
+        } else {
+            deliveryLayout.visibility = View.GONE
+            deliveryInfoLayout.visibility = View.GONE
+            amountLayout.visibility = View.GONE
+            storeAddressLayout.visibility = View.VISIBLE
+            customerNameLayout.visibility = View.VISIBLE
+            tvShippingHeader.text = getString(R.string.store_collection_detail)
+
+            val branchShipping = order.branchShipping
+            if (branchShipping != null) {
+                branch.text = branchShipping.storeName
+                address.text = branchShipping.getBranchAddress()
+                tel.text = branchShipping.phone
+                openToday.text = branchShipping.description
+            }
+        }
 
         // setup billing
         tvBillingName.text = billingAddress.getDisplayName()

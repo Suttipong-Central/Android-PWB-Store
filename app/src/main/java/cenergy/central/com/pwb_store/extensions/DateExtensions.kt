@@ -17,8 +17,8 @@ fun Date.formatterUTC(defaultLanguage: String): String {
 // Format of Order success page
 fun String.toOrderDateTime(defaultLanguage: String): String {
     val dateFormatter = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale(defaultLanguage))
-    dateFormatter.timeZone = TimeZone.getDefault()
-
+    val timezone = TimeZone.getTimeZone("GMT+7").id
+    dateFormatter.timeZone = TimeZone.getTimeZone(timezone)
     // old data we save with "dd MMM yyyy, HH:mm:ss" :(
     return try {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)

@@ -7,7 +7,7 @@ interface ProductDetailListener {
     fun getProduct(): Product?
     fun getChildProduct(): ArrayList<Product>
 
-    fun addProductToCompare(product: Product?)
+    fun addProductToCompare(product: Product?, isCompare: Boolean)
     fun addProductToCart(product: Product?)
     fun addProduct1HrsToCart(product: Product?)
 

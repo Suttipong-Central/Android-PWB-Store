@@ -43,6 +43,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
     var cartService: CartService
     var hdlService: HDLService
+    var compareService: CompareService
 
     private lateinit var userToken: String
 
@@ -70,6 +71,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
 
         cartService = retrofit.create(CartService::class.java)
         hdlService = retrofit.create(HDLService::class.java)
+        compareService = retrofit.create(CompareService::class.java)
     }
 
     companion object {
@@ -378,6 +380,14 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                             stockItem.isSalable = extensionObj.getBoolean("salable")
                         }
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
+
+                        // get rating
+                        if (extensionObj.has("overall_rating")) {
+                            val ratingObj = extensionObj.getJSONObject("overall_rating")
+                            if (ratingObj.has("rating") && !ratingObj.isNull("rating")) {
+                                product.rating = ratingObj.getInt("rating")
+                            }
+                        }
 
                         // get product specification
                         if (extensionObj.has("specification_attributes")) {
