@@ -990,8 +990,6 @@ class PaymentBillingFragment : Fragment() {
 
         if (contractReserveEdt.getText().isNotEmpty()) {
             contractReserveEdt.setError(validator.validThaiPhoneNumber(contractReserveEdt.getText()))
-        } else {
-            contractReserveEdt.setError(getString(R.string.error_form_phone_number_invalid))
         }
 
         homeNoEdt.setError(validator.validText(homeNoEdt.getText()))
