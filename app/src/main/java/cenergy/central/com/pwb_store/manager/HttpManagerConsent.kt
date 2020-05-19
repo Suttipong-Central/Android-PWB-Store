@@ -56,20 +56,38 @@ class HttpManagerConsent(var context: Context){
     fun getConsentInfo(callback: ApiResponseCallback<ConsentInfoResponse>){
         if (isSecretKeyNotNull()){
             val consentService = retrofit.create(ConsentService::class.java)
-            consentService.getConsentInfo(Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
-                    pref.xApiKeyConsent ?: "").enqueue(object : Callback<ConsentInfoResponse> {
-                override fun onResponse(call: Call<ConsentInfoResponse>, response: Response<ConsentInfoResponse>?) {
-                    if (response != null && response.isSuccessful && response.body() != null){
-                        callback.success(response.body())
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
+            if (BuildConfig.IS_PRODUCTION){
+                consentService.getConsentInfo(Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
+                        pref.xApiKeyConsent ?: "").enqueue(object : Callback<ConsentInfoResponse> {
+                    override fun onResponse(call: Call<ConsentInfoResponse>, response: Response<ConsentInfoResponse>?) {
+                        if (response != null && response.isSuccessful && response.body() != null){
+                            callback.success(response.body())
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<ConsentInfoResponse>, t: Throwable) {
-                    callback.failure(t.getResultError())
-                }
-            })
+                    override fun onFailure(call: Call<ConsentInfoResponse>, t: Throwable) {
+                        callback.failure(t.getResultError())
+                    }
+                })
+            } else {
+                consentService.getConsentInfoStaging(Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
+                        pref.xApiKeyConsent ?: "").enqueue(object : Callback<ConsentInfoResponse> {
+                    override fun onResponse(call: Call<ConsentInfoResponse>, response: Response<ConsentInfoResponse>?) {
+                        if (response != null && response.isSuccessful && response.body() != null){
+                            callback.success(response.body())
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ConsentInfoResponse>, t: Throwable) {
+                        callback.failure(t.getResultError())
+                    }
+                })
+            }
+
         } else {
             userLogout()
         }
