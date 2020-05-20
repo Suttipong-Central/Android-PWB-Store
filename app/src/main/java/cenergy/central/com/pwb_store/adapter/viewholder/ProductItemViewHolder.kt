@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
+import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDeleteBus
 import cenergy.central.com.pwb_store.manager.bus.event.CompareDetailBus
 import cenergy.central.com.pwb_store.model.CompareProduct
@@ -26,11 +27,9 @@ class ProductItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                 .fitCenter()
                 .into(imgProduct)
         tvProductName.text = compareProduct.name
-
-        btnAddToCart.isEnabled = compareProduct.inStock
+        btnAddToCart.isEnabled = compareProduct.isSalable
         btnAddToCart.background = ContextCompat.getDrawable(itemView.context,
-                if (compareProduct.inStock) R.drawable.button_primary else R.drawable.button_unselected)
-
+                if (compareProduct.isSalable) R.drawable.button_primary else R.drawable.button_unselected)
         layout.setOnClickListener { EventBus.getDefault().post(CompareDetailBus(compareProduct, true, layout)) }
         btnCancel.setOnClickListener { EventBus.getDefault().post(CompareDeleteBus(compareProduct, true)) }
         btnAddToCart.setOnClickListener { listener.onClickAddToCart(compareProduct) }

@@ -296,6 +296,10 @@ class MigrationDatabase : RealmMigration {
             realm.schema.get("CompareProduct")?.apply {
                 // add rating
                 addField("rating", Int::class.java)
+                // add min qty
+                addField("minQty", Int::class.java)
+                // add isSalable
+                addField("isSalable", Boolean::class.java)
             }
         }
     }

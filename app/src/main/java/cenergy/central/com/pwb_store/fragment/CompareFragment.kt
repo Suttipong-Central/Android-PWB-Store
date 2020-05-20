@@ -41,19 +41,10 @@ class CompareFragment : Fragment() {
         compareProductAdapter = context?.let { CompareProductAdapter(it) }
         compareRecyclerView.layoutManager = LinearLayoutManager(context)
         compareRecyclerView.adapter = compareProductAdapter
-
         updateCompareList()
     }
 
-    // check product in stock
-    private fun investigateProductInStock() {
-        compareProducts.forEach {
-            it.inStock = context.isProductInStock(it)
-        }
-    }
-
     fun updateCompareList() {
-        investigateProductInStock() // update product stock
         compareProductAdapter?.updateCompareProducts(compareProducts, compareProductDetailList.getDetailList())
     }
 

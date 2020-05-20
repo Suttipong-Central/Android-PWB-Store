@@ -34,29 +34,7 @@ fun Product.is1HourProduct(): Boolean{
     }
 }
 
-fun Context?.isProductInStock(compareProduct: CompareProduct) : Boolean {
-    val database = RealmController.getInstance()
-    val productInCart = database.getCacheCartItemBySKU(compareProduct.sku)
-    val productQty = compareProduct.qtyInStock ?: 0
-
-    return if (productInCart == null) {
-        productQty > 0
-    } else {
-        val productInCartQty = productInCart.qty ?: 0
-        productQty > productInCartQty
-    }
-}
-
 fun Activity?.getCompareProducts(): Int{
     val database = RealmController.getInstance()
     return database.compareProducts.size
-}
-
-fun Activity.showAlertDialog(message: String){
-    val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
-                dialog.dismiss()
-            }
-    builder.show()
 }
