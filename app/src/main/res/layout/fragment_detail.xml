@@ -278,6 +278,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline40">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/addToCartButton"
             android:layout_width="0dp"
@@ -287,33 +294,11 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
             app:btn_default="false"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/availableStoreButton"
             app:layout_constraintEnd_toStartOf="@id/add1HourButton"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:text="@string/add_to_cart" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline50"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"/>
-
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/compareCheckBox"
-            style="@style/TextAppearance.AppCompat.Subhead"
-            android:theme="@style/CompareCheckBoxTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:layout_gravity="center_vertical"
-            android:text="@string/compare"
-            app:layout_constraintVertical_weight="1"
-            app:layout_constraintBottom_toBottomOf="@+id/availableStoreButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline50"
-            app:layout_constraintTop_toTopOf="@+id/availableStoreButton" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/add1HourButton"
@@ -324,10 +309,26 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
             app:btn_default="true"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/compareCheckBox"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/addToCartButton"
+            app:layout_constraintTop_toTopOf="parent"
             app:text="@string/add_one_hour_item" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/compareCheckBox"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/compare"
+            android:textStyle="bold"
+            android:theme="@style/CompareCheckBoxTheme"
+            app:layout_constraintBottom_toBottomOf="@+id/availableStoreButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline50"
+            app:layout_constraintTop_toTopOf="@+id/availableStoreButton"
+            app:layout_constraintVertical_weight="1" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyIconButton
             android:id="@+id/availableStoreButton"
@@ -347,7 +348,7 @@
             android:id="@+id/layoutBottomButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="availableStoreButton,compareCheckBox"/>
+            app:constraint_referenced_ids="availableStoreButton,compareCheckBox" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
