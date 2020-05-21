@@ -1,8 +1,9 @@
 package cenergy.central.com.pwb_store.realm;
 
 
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.util.Date;
 import java.util.List;
@@ -108,36 +109,25 @@ public class RealmController {
     // region compare product
     public void saveCompareProduct(final Product product, final DatabaseListener listener) {
         Realm realm = getRealm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                CompareProduct compareProduct = CompareProduct.asCompareProduct(product);
-                realm.copyToRealmOrUpdate(compareProduct);
+        realm.executeTransactionAsync(realm1 -> {
+            CompareProduct compareProduct = CompareProduct.asCompareProduct(product);
+            realm1.copyToRealmOrUpdate(compareProduct);
+        }, () -> {
+            if (listener != null) {
+                listener.onSuccessfully();
             }
-        }, new Realm.Transaction.OnSuccess() {
-
-            @Override
-            public void onSuccess() {
-                if (listener != null) {
-                    listener.onSuccessfully();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                if (listener != null) {
-                    listener.onFailure(error);
-                }
+        }, error -> {
+            if (listener != null) {
+                listener.onFailure(error);
             }
         });
     }
 
     public List<CompareProduct> deleteCompareProduct(final String sku) {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                RealmResults<CompareProduct> realmCompareProducts = realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findAll();
+        realm.executeTransaction(realm1 -> {
+            RealmResults<CompareProduct> realmCompareProducts = realm1.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findAll();
+            if (realmCompareProducts != null) {
                 realmCompareProducts.deleteAllFromRealm();
             }
         });
@@ -153,12 +143,7 @@ public class RealmController {
 
     public void deleteAllCompareProduct() {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(CompareProduct.class).findAll().deleteAllFromRealm();
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.where(CompareProduct.class).findAll().deleteAllFromRealm());
     }
 
     public CompareProduct getCompareProduct(String sku) {
@@ -169,12 +154,7 @@ public class RealmController {
     // region cart item
     public void saveCartItem(final CacheCartItem cacheCartItem) {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                realm.copyToRealmOrUpdate(cacheCartItem);
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(cacheCartItem));
     }
 
     public void saveCartItem(final CacheCartItem cacheCartItem, final DatabaseListener listener) {

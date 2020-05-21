@@ -46,7 +46,7 @@ class CompareShoppingCartAdapter(val listener: CompareItemListener?) : RecyclerV
         holder.setProductCompare(compareProduct)
 
         // set onclick shopping cart
-        holder.itemView.setOnClickListener { listener?.onClickShoppingCart(compareProduct) }
+        holder.itemView.setOnClickListener { listener?.onClickAddToCart(compareProduct) }
     }
 
     fun getSpanSize(): GridLayoutManager.SpanSizeLookup {
