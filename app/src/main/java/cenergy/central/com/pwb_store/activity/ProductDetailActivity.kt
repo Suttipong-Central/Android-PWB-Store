@@ -32,6 +32,7 @@ import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.DeliveryInfo
+import cenergy.central.com.pwb_store.model.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
@@ -64,13 +65,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productJdaSku: String? = null
     private var product: Product? = null
     private var childProductList: ArrayList<Product> = arrayListOf()
+    private var offlinePriceItem: OfflinePriceItem? = null
 
     companion object {
-        private val TAG = ProductDetailActivity::class.java.simpleName
-
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
         const val ARG_PRODUCT_JDA_SKU = "ARG_PRODUCT_JDA_SKU"
+        const val ARG_PRICE_PER_STORE = "ARG_PRICE_PER_STORE"
 
         private const val TAG_DETAIL_FRAGMENT = "fragment_detail"
         private const val TAG_OVERVIEW_FRAGMENT = "fragment_overview"
@@ -87,6 +88,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             intent.putExtra(ARG_PRODUCT_JDA_SKU, jdaSku)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
+
+        fun startActivity(context: Context, sku: String, offlinePriceItem: OfflinePriceItem?){
+            val intent = Intent(context, ProductDetailActivity::class.java)
+            intent.putExtra(ARG_PRODUCT_SKU, sku)
+            intent.putExtra(ARG_PRICE_PER_STORE, offlinePriceItem)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +109,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             productSku = it.getString(ARG_PRODUCT_SKU, null)
             productId = it.getString(ARG_PRODUCT_ID, null)
             productJdaSku = it.getString(ARG_PRODUCT_JDA_SKU, null)
+            offlinePriceItem = it.getParcelable(ARG_PRICE_PER_STORE)
         }
 
         bindView()
@@ -390,6 +399,24 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun startProductDetailFragment(product: Product) {
         // set product
         this@ProductDetailActivity.productSku = product.sku
+        if (offlinePriceItem != null){
+            product.price = offlinePriceItem!!.price
+            if (offlinePriceItem!!.specialPrice > 0) {
+                product.specialPrice = offlinePriceItem!!.specialPrice
+                product.specialFromDate = null
+                product.specialToDate = null
+                if (offlinePriceItem!!.specialFromDate != null) {
+                    product.specialFromDate = offlinePriceItem!!.specialFromDate
+                }
+                if (offlinePriceItem!!.specialToDate != null) {
+                    product.specialToDate = offlinePriceItem!!.specialToDate
+                }
+            } else {
+                product.specialPrice = 0.0
+                product.specialFromDate = null
+                product.specialToDate = null
+            }
+        }
         this.product = product
 
         // setup

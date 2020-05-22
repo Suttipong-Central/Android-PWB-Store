@@ -6,16 +6,27 @@ import com.google.gson.annotations.SerializedName
 
 data class CartItemBody(var cartItem: CartBody? = null) {
     companion object {
-        fun create(cartId: String, product: Product): CartItemBody {
-            val cartBody = CartBody.create(cartId, product.sku, product.getMinSaleQty())
+        fun create(cartId: String, product: Product, retailerId: Int? = null): CartItemBody {
+            val cartBody = if (retailerId != null){
+                // offline price
+                val cartExtensionAttr = CartExtensionAttr.create(retailerId)
+                CartBody(cartId = cartId, sku =  product.sku, qty =  product.getMinSaleQty(), extensionAttr =  cartExtensionAttr)
+            } else {
+                // is chat and shop
+                CartBody(cartId = cartId, sku = product.sku, qty = product.getMinSaleQty())
+            }
             return CartItemBody(cartBody) // default add qty 1
         }
 
-        fun create(cartId: String, product: Product, branchResponse: BranchResponse): CartItemBody {
+        fun create(cartId: String, product: Product, branchResponse: BranchResponse, retailerId: Int? = null): CartItemBody {
             val shippingAssignment = ShippingAssignment(shippingMethod = "storepickup_ispu")
             val pickupStore = PickupStore(branchResponse.branch.storeId)
-            val cartExtensionAttr = CartExtensionAttr(shippingAssignment = shippingAssignment,
-                    pickupStore = pickupStore)
+            val cartExtensionAttr = if (retailerId != null){
+                CartExtensionAttr.create(shippingAssignment = shippingAssignment,
+                        pickupStore = pickupStore, retailerId = retailerId)
+            } else {
+                CartExtensionAttr.create(shippingAssignment = shippingAssignment, pickupStore = pickupStore)
+            }
             val body = CartBody(cartId = cartId,
                     sku = product.sku,
                     qty = product.getMinSaleQty(),
@@ -75,7 +86,24 @@ data class CartExtensionAttr(
         @SerializedName("shipping_assignment")
         val shippingAssignment: ShippingAssignment? = null,
         @SerializedName("pickup_store")
-        val pickupStore: PickupStore? = null)
+        val pickupStore: PickupStore? = null,
+        @SerializedName("allocated_store_id")
+        val retailerId: Int? = null)
+{
+    companion object{
+        fun create(retailerId: Int): CartExtensionAttr{
+            return CartExtensionAttr(retailerId = retailerId)
+        }
+
+        fun create(shippingAssignment: ShippingAssignment, pickupStore: PickupStore): CartExtensionAttr{
+            return CartExtensionAttr(shippingAssignment =  shippingAssignment, pickupStore = pickupStore)
+        }
+
+        fun create(shippingAssignment: ShippingAssignment, pickupStore: PickupStore, retailerId: Int): CartExtensionAttr{
+            return CartExtensionAttr(shippingAssignment =  shippingAssignment, pickupStore = pickupStore, retailerId = retailerId)
+        }
+    }
+}
 
 data class ShippingAssignment(
         @SerializedName("shipping_method")

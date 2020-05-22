@@ -17,4 +17,6 @@ class ProductExtension(
         var productConfigOptions: List<ProductOption>? = arrayListOf(),
         @SerializedName("configurable_product_links")
         var productConfigLinks: List<String>? = arrayListOf(),
-        var specifications: List<Specification> = arrayListOf()) : Parcelable
+        var specifications: List<Specification> = arrayListOf(),
+        @SerializedName("pricing_per_store")
+        var pricingPerStore: List<OfflinePriceItem> = arrayListOf()) : Parcelable

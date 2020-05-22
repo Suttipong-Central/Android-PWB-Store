@@ -149,7 +149,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     val userBranch = response.body()
 
                     //TODO: Mock up data will delete soon
-                    val user = User(userResponse.userId, "", userResponse.staffId, 223L,
+                    val user = User(userResponse.userId, "", userResponse.staffId, userResponse.levelId,
                             "chuan@central.tech", username, "", 0, "")
 
                     if (userBranch != null && userBranch.items.size > 0) {
@@ -744,14 +744,20 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun updateItem(cartId: String, itemId: Long, qty: Int, branch: Branch? = null,
+    fun updateItem(cartId: String, itemId: Long, qty: Int, branch: Branch? = null, isChatAndShop: Boolean,
                    callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
+        // is chat and shop user?
+        val retailerId = if (isChatAndShop){
+            null // is chat and shop must be null
+        } else {
+            database?.userInformation?.store?.storeId?.toInt()
+        }
 
         val updateItemBody = if (branch != null) {
-            UpdateItemBody.create(cartId, itemId, qty, branch)
+            UpdateItemBody.create(cartId, itemId, qty, branch, retailerId)
         } else {
-            UpdateItemBody.create(cartId, itemId, qty)
+            UpdateItemBody.create(cartId, itemId, qty, retailerId)
         }
 
         cartService.updateItem(getLanguage(), cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {

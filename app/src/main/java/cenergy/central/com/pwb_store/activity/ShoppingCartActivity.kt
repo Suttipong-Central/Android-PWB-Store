@@ -231,8 +231,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         deleteItem(itemId, sku)
     }
 
-    override fun onUpdateItem(itemId: Long, qty: Int) {
-        updateItem(itemId, qty)
+    override fun onUpdateItem(itemId: Long, qty: Int, isChatAndShop: Boolean) {
+        updateItem(itemId, qty, isChatAndShop)
     }
     //end region
 
@@ -469,11 +469,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun updateItem(itemId: Long, qty: Int) {
+    private fun updateItem(itemId: Long, qty: Int, isChatAndShop: Boolean) {
         hasChangingData = true
         showProgressDialog()
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch,
+            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch, isChatAndShop,
                     object : ApiResponseCallback<CartItem> {
                         override fun success(response: CartItem?) {
                             saveCartItemInLocal(response)
@@ -563,7 +563,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         fbRemoteConfig.setConfigSettingsAsync(configSettings)
     }
 
-    fun hideKeyBoard() {
+    private fun hideKeyBoard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (currentFocus != null) {
             inputManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)

@@ -287,5 +287,12 @@ class MigrationDatabase : RealmMigration {
                         .setNullable("paymentMethod", false)
             }
         }
+
+        if (oldVersion < 12) {
+            realm.schema.get("User")?.apply {
+                addField("userLevel", Long::class.java)
+            }
+
+        }
     }
 }

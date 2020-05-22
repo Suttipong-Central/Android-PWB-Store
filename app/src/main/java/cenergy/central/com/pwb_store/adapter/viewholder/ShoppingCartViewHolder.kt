@@ -16,6 +16,7 @@ import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.bumptech.glide.Glide
@@ -82,7 +83,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             qtyAdepter.setCallback(object : QtyAdapter.QtyClickListener {
                 override fun onQtyClickListener(qty: Int) {
                     productQty.clearAllFocus()
-                    item.id?.let { itemId -> listener?.onUpdateItem(itemId, qty) }
+                    item.id?.let { itemId -> listener?.onUpdateItem(itemId, qty, isChatAndShop()) }
                 }
             })
             productQty.setOnEnterKeyListener(object : View.OnKeyListener {
@@ -90,7 +91,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                         productQty.clearAllFocus()
                         if (productQty.getText() != "" && productQty.getText().toInt() > 0) {
-                            item.id?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt()) }
+                            item.id?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt(), isChatAndShop()) }
                         } else {
                             productQty.setText(item.qty.toString())
                             showAlertDialog(context.getString(R.string.empty_value))
@@ -128,6 +129,11 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         }
     }
     // endregion
+
+    private fun isChatAndShop(): Boolean{
+        val database = RealmController.getInstance()
+        return database.userInformation.user?.userLevel == 3
+    }
 
     private fun getToTalPrice(qty: Int, price: Double): Double {
         return qty * price

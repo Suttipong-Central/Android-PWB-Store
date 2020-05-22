@@ -34,6 +34,7 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFil
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.Screen
@@ -77,6 +78,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
+    // Realm
+    private val db = RealmController.getInstance()
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -166,7 +169,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         if (context != null) {
             analytics = Analytics(context!!)
         }
-        // Init Fragment level's variable(s) here
         if (arguments != null) {
             title = arguments!!.getString(ARG_TITLE)
             isSearch = arguments!!.getBoolean(ARG_SEARCH)
@@ -179,15 +181,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             }
         }
         resetPage()
-        //        mProductFilterList = new ProductFilterList(productFilterHeaders);
-// sorting
+        // sorting
         val sortingItems: MutableList<SortingItem> = ArrayList()
         sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
         sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
         sortingItems.add(SortingItem(3, getString(R.string.a_to_z), "brand", "ASC", "3", false))
         sortingItems.add(SortingItem(4, getString(R.string.z_to_a), "brand", "DESC", "4", false))
-        //        sortingItems.add(new SortingItem(5, "Discount : Low to High", "ASC", "ASC", "5", false));
-//        sortingItems.add(new SortingItem(6, "Discount : High to Low", "DESC", "DESC", "6", false));
         val sortingHeaders: MutableList<SortingHeader> = ArrayList()
         sortingHeaders.add(SortingHeader("0", "Sorting", "sorting", "single", sortingItems))
         mSortingList = SortingList(sortingHeaders)
@@ -222,8 +221,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     private fun initInstances(rootView: View, savedInstanceState: Bundle?) { // Init 'View' instance(s) with rootView.findViewById here
-//        ButterKnife.bind(this, rootView);
-        mProductListAdapter = ProductListAdapter(context)
+        mProductListAdapter = ProductListAdapter(rootView.context)
         mProductListAdapter!!.showLoading()
         // setup widget view
         val productTitle: PowerBuyTextView = rootView.findViewById(R.id.txt_title_product)
@@ -270,7 +268,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         mRecyclerView.addOnScrollListener(SCROLL)
     }
 
-    private fun resetPage() { // mProductDao.getProductListList().clear();
+    private fun resetPage() {
         currentPage = 0
         totalPage = 1
         isLoadingMore = true
@@ -316,7 +314,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         // Save Instance State here
         outState.putParcelable(ARG_CATEGORY, categoryLv2)
         outState.putParcelableArrayList(ARG_PRODUCT_FILTER, categoriesLv3)
-        //        outState.putParcelable(ARG_PRODUCT_FILTER_TEMP, mTempProductFilterList);
         outState.putString(ARG_DEPARTMENT_ID, categoryId)
         outState.putString(ARG_SORT_NAME, sortName)
         outState.putString(ARG_SORT_TYPE, sortType)
@@ -331,10 +328,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     /*
      * Restore Instance State Here
      */
-    private fun onRestoreInstanceState(savedInstanceState: Bundle) { // Restore Instance State here
+    private fun onRestoreInstanceState(savedInstanceState: Bundle) {
         categoryLv2 = savedInstanceState.getParcelable(ARG_CATEGORY)
         categoriesLv3 = savedInstanceState.getParcelableArrayList(ARG_PRODUCT_FILTER)
-        //        mTempProductFilterList = savedInstanceState.getParcelable(ARG_PRODUCT_FILTER_TEMP);
         categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
         sortName = savedInstanceState.getString(ARG_SORT_NAME)
         sortType = savedInstanceState.getString(ARG_SORT_TYPE)
@@ -381,6 +377,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("status", "1", "eq"))
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
+
+            if (!isChatAndShop()){
+                // is staff level is not chat and shop
+                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "gt"))
+            }
 
             // TODO We have to do not display market place product
             filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
@@ -434,6 +435,30 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 totalPage = totalPageCal(totalItem)
                 currentPage = nextPage
                 response.currentPage = currentPage
+                // implement price per store if staff not chat and shop
+                if (!isChatAndShop()) {
+                    response.products.forEach { product ->
+                        val offlinePriceItem = product.getPricePerStore()
+                        if (offlinePriceItem != null) {
+                            product.price = offlinePriceItem.price
+                            if (offlinePriceItem.specialPrice > 0) {
+                                product.specialPrice = offlinePriceItem.specialPrice
+                                product.specialFromDate = null
+                                product.specialToDate = null
+                                if (offlinePriceItem.specialFromDate != null) {
+                                    product.specialFromDate = offlinePriceItem.specialFromDate
+                                }
+                                if (offlinePriceItem.specialToDate != null) {
+                                    product.specialToDate = offlinePriceItem.specialToDate
+                                }
+                            } else {
+                                product.specialPrice = 0.0
+                                product.specialFromDate = null
+                                product.specialToDate = null
+                            }
+                        }
+                    }
+                }
                 mProductListAdapter!!.setProduct(response)
             } else {
                 mProductListAdapter!!.setError()
@@ -506,6 +531,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         })
     }
 
+    private fun isChatAndShop(): Boolean{
+        return db.userInformation.user?.userLevel == 3
+    }
+
     companion object {
         private val TAG = ProductListFragment::class.java.simpleName
         private const val ARG_TITLE = "ARG_TITLE"
@@ -522,6 +551,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
+        private const val CHAT_AND_SHOP_FIELD = "raw_extension_attributes.pricing_per_store.retailer_id"
         //Pagination
         private const val PER_PAGE = 20
 

@@ -18,4 +18,6 @@ open class User(
         @SerializedName("is_chat_shop_user")
         var isChatAndShopUser: Int = 0,
         @SerializedName("updated_at")
-        var updatedAt: String = "") : RealmObject()
+        var updatedAt: String = "",
+        var userLevel: Int = 0
+) : RealmObject()
