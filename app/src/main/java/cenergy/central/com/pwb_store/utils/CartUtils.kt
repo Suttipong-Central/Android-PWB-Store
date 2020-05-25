@@ -116,7 +116,7 @@ class CartUtils(private val context: Context) {
 
     private fun requestAddToCart(cartId: String, product: Product) {
         // is chat and shop user
-        val retailerId = if (db.userInformation.user?.userLevel == 3){
+        val retailerId = if (db.userInformation.user?.userLevel == 3L){
             null // is chat and shop user retailerId must be null
         } else {
             db?.userInformation?.store?.storeId?.toInt()

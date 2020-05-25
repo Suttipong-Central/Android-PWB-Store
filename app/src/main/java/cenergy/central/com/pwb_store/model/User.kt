@@ -19,5 +19,5 @@ open class User(
         var isChatAndShopUser: Int = 0,
         @SerializedName("updated_at")
         var updatedAt: String = "",
-        var userLevel: Int = 0
+        var userLevel: Long = 0
 ) : RealmObject()

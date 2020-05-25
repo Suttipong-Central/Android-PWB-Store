@@ -132,7 +132,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private fun isChatAndShop(): Boolean{
         val database = RealmController.getInstance()
-        return database.userInformation.user?.userLevel == 3
+        return database.userInformation.user?.userLevel == 3L
     }
 
     private fun getToTalPrice(qty: Int, price: Double): Double {

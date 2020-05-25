@@ -149,8 +149,8 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                     val userBranch = response.body()
 
                     //TODO: Mock up data will delete soon
-                    val user = User(userResponse.userId, "", userResponse.staffId, userResponse.levelId,
-                            "chuan@central.tech", username, "", 0, "")
+                    val user = User(userResponse.userId, "", userResponse.staffId, 0,
+                            "chuan@central.tech", username, "", 0, "", userResponse.levelId)
 
                     if (userBranch != null && userBranch.items.size > 0) {
                         val sellerCode = userBranch.items[0].code

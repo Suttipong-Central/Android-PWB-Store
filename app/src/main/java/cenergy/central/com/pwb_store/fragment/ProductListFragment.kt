@@ -532,7 +532,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     private fun isChatAndShop(): Boolean{
-        return db.userInformation.user?.userLevel == 3
+        return db.userInformation.user?.userLevel == 3L
     }
 
     companion object {
