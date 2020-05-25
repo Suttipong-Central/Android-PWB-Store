@@ -32,14 +32,15 @@ class Product(
         var viewTypeID: Int = 0,
         var attributeID: Int = 0,
         var status: Int = 1,
+        var rating: Int? = 0,
         var shippingMethods: String = "",
         var paymentMethod: String = "",
         var isHDL: Boolean = false,
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
-        var urlKey: String = "") : IViewType, Parcelable
-{
+        var urlKey: String = "") : IViewType, Parcelable {
+
     override fun getViewTypeId(): Int {
         return viewTypeID
     }

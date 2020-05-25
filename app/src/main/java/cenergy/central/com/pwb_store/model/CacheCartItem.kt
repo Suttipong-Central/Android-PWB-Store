@@ -11,7 +11,7 @@ open class CacheCartItem(
         @PrimaryKey
         var itemId: Long? = 0,
         var sku: String? = "",
-        var qty: Int? = 0,
+        var qty: Int? = 0, // qty of items in cart
         var name: String? = "",
         var price: Double? = 0.0,
         var type: String? = "",

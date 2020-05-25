@@ -51,7 +51,8 @@ class PreferenceManager(private var context: Context) {
         editor.apply()
     }
 
-    fun getDefaultLanguage(): String = pref.getString(PREF_LANGUAGE, AppLanguage.TH.key) ?:  AppLanguage.TH.key
+    fun getDefaultLanguage(): String = pref.getString(PREF_LANGUAGE, AppLanguage.TH.key)
+            ?: AppLanguage.TH.key
 
     fun setSecretKey(secretKey: SecretKey) {
         val editor = pref.edit()

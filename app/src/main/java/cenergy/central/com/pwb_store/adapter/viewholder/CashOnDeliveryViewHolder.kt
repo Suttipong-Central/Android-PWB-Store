@@ -10,11 +10,14 @@ import cenergy.central.com.pwb_store.model.PaymentMethod
 
 class CashOnDeliveryViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
 
-    val title: TextView = itemView.findViewById(R.id.tv_title)
-    val button: Button = itemView.findViewById(R.id.choose_payment_method)
+    private val title: TextView = itemView.findViewById(R.id.tv_title)
+    private val description: TextView = itemView.findViewById(R.id.tv_description)
+    private val button: Button = itemView.findViewById(R.id.choose_payment_method)
+    private val context = itemView.context
 
     override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
-        title.text = itemView.context.getString(R.string.cash_on_delivery)
+        title.text = context.getString(R.string.cash_on_delivery)
+        description.text = context.getString(R.string.cod_description)
         itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
         button.setOnClickListener { listener.onClickedItem(paymentMethod) }
     }

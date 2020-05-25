@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.model.body
 
+import cenergy.central.com.pwb_store.model.CompareProduct
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import com.google.gson.annotations.SerializedName
@@ -15,6 +16,11 @@ data class CartItemBody(var cartItem: CartBody? = null) {
                 // is chat and shop
                 CartBody(cartId = cartId, sku = product.sku, qty = product.getMinSaleQty())
             }
+            return CartItemBody(cartBody) // default add qty 1
+        }
+
+        fun create(cartId: String, compareProduct: CompareProduct): CartItemBody {
+            val cartBody = CartBody.create(cartId, compareProduct.sku, compareProduct.minQty)
             return CartItemBody(cartBody) // default add qty 1
         }
 

@@ -4,7 +4,6 @@ import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
 class MigrationDatabase : RealmMigration {
-
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
         if (oldVersion < 1) {
             // Update Product model
@@ -194,7 +193,6 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
-        // app version 1.0.13
         if (oldVersion < 8) {
             // Update Branch model
             val branchSchema = realm.schema.get("Branch")?.apply {
@@ -289,10 +287,26 @@ class MigrationDatabase : RealmMigration {
         }
 
         if (oldVersion < 12) {
+            // Update Product for get rating
+            realm.schema.get("Product")?.apply {
+                // add rating
+                addField("rating", Int::class.java)
+            }
+
+            realm.schema.get("CompareProduct")?.apply {
+                // add rating
+                addField("rating", Int::class.java)
+                // add min qty
+                addField("minQty", Int::class.java)
+                // add isSalable
+                addField("isSalable", Boolean::class.java)
+            }
+        }
+
+        if (oldVersion < 13){
             realm.schema.get("User")?.apply {
                 addField("userLevel", Long::class.java)
             }
-
         }
     }
 }

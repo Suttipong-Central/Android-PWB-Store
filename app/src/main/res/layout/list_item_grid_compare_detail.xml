@@ -7,25 +7,6 @@
     android:layout_height="wrap_content"
     android:paddingBottom="16dp"
     tools:context=".activity.CompareActivity" >
-    <!--
-        How to show border between GridView items?
-             First we set a background color for GridView.
-             Then we set different background color for items.
-             Finally, GridView vertical and horizontal spacing
-             act as a border between GridView items.
-    -->
-    <!--<GridView-->
-        <!--android:id="@+id/grid_view"-->
-        <!--android:layout_width="650dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="2dp"-->
-        <!--android:numColumns="4"-->
-        <!--android:verticalSpacing="2dp"-->
-        <!--android:horizontalSpacing="2dp"-->
-        <!--android:stretchMode="columnWidth"-->
-        <!--android:gravity="left"-->
-        <!--&gt;-->
-    <!--</GridView>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

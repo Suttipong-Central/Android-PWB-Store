@@ -82,6 +82,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private val analytics: Analytics? by lazy { Analytics(this) }
 
     companion object {
+        private const val CART_ID = "CART_ID"
         const val RESULT_UPDATE_PRODUCT = 59000
 
         @JvmStatic
@@ -179,6 +180,9 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         updateTitle(0) // default title
 
         forceUpdateView()
+        backToShopButton.setOnClickListener {
+            finishShippingCart()
+        }
 
         // setup store name
         storeNameTextView.setOnClickListener {

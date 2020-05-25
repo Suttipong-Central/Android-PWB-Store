@@ -25,8 +25,9 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) : Rec
         const val FULL_PAYMENT = 3
         const val INSTALLMENT = 4
         const val BANK_AND_COUNTER_SERVICE = 5
-        const val OTHER = 6
-        const val EMPTY_VIEW = 7
+        const val CASH_ON_DELIVERY = 6
+        const val OTHER = 7
+        const val EMPTY_VIEW = 8
     }
 
     var paymentMethodItems = listOf<PaymentMethodItem>()
@@ -61,6 +62,10 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) : Rec
             }
             BANK_AND_COUNTER_SERVICE -> {
                 BankAndCounterServiceViewHolder(layoutInflater.inflate(R.layout.list_item_pay_common,
+                        parent, false))
+            }
+            CASH_ON_DELIVERY -> {
+                CashOnDeliveryViewHolder(layoutInflater.inflate(R.layout.list_item_pay_common,
                         parent, false))
             }
             OTHER -> {
@@ -102,6 +107,9 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) : Rec
                 }
                 PaymentMethod.BANK_AND_COUNTER_SERVICE -> {
                     BANK_AND_COUNTER_SERVICE
+                }
+                PaymentMethod.CASH_ON_DELIVERY -> {
+                    CASH_ON_DELIVERY
                 }
                 else -> {
                     OTHER

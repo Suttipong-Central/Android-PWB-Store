@@ -26,7 +26,8 @@
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@mipmap/ic_launcher"/>
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@string/app_name" />
 
         <cenergy.central.com.pwb_store.view.LanguageButton
             android:id="@+id/switch_language_button"
@@ -41,10 +42,10 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             android:src="@drawable/ic_search_bar"
             android:background="?android:attr/selectableItemBackground"
-            />
+            android:contentDescription="@string/app_name" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyCompareView
             android:id="@+id/button_compare"
@@ -52,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="15dp" />
+            android:layout_marginEnd="15dp" />
 
         <cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
             android:id="@+id/shopping_cart"
@@ -60,7 +61,6 @@
             android:layout_height="48dp"
             android:layout_centerInParent="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"/>
 
     </androidx.appcompat.widget.Toolbar>

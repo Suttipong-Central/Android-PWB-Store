@@ -14,11 +14,11 @@ class Constants {
 
         const val WEB_HOST_NAME = "https://staging-fe.powerbuy.co.th"
 
-        // UAT
-        const val CENTRAL_HOST_NAME = "https://uat-api.central.tech/member"
+        // Central UAT
+        const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"
 
         // Consent
-        const val CONSENT_HOSTNAME = "https://api-uat.central.tech"
+        const val CONSENT_HOSTNAME = "https://api-uat.central.tech/member/"
         const val CONSENT_CHANNEL = "EORDERING"
         const val CONSENT_PARTNER = "PWB"
 

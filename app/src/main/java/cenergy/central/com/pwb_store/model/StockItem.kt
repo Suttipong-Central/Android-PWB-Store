@@ -20,6 +20,7 @@ data class StockItem(
         var minQTY: Int? = 0,
         var is2HProduct: Boolean = false,
         var isSalable: Boolean = false) : Parcelable {
+
     constructor(parcel: Parcel) : this(
             parcel.readValue(Long::class.java.classLoader) as? Long,
             parcel.readValue(Long::class.java.classLoader) as? Long,

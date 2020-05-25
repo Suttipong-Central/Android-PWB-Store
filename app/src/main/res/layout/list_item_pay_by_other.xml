@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="108dp"
     android:paddingStart="16dp"
     android:paddingTop="16dp"
     android:paddingEnd="16dp">
@@ -16,7 +17,6 @@
         android:layout_marginStart="@dimen/margin_padding_small"
         android:layout_marginEnd="@dimen/margin_padding_small"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/choose_payment_method"
         app:layout_constraintEnd_toStartOf="@+id/choose_payment_method"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/choose_payment_method"

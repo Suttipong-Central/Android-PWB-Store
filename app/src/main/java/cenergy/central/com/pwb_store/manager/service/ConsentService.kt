@@ -14,6 +14,13 @@ interface ConsentService {
             @Header("Content-Type") type: String,
             @Header("x-api-key") key: String): Call<ConsentInfoResponse>
 
+    @GET("/member/consent_info")
+    fun getConsentInfoStaging(
+            @Query("channel") channel: String,
+            @Query("partner") partner: String,
+            @Header("Content-Type") type: String,
+            @Header("x-api-key") key: String): Call<ConsentInfoResponse>
+
     @POST("/consent")
     fun setConsent(
             @Header("Content-Type") type: String,
