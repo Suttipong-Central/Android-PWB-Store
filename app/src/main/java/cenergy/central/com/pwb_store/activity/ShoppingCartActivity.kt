@@ -78,7 +78,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     // Firebase remote config
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
-    private var cacheExpiration: Long = 3600 // 1 hour in seconds.
     private val analytics: Analytics? by lazy { Analytics(this) }
 
     companion object {
@@ -105,7 +104,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
         // setup remote config
-        setupRemoteConfig()
+        fbRemoteConfig = RemoteConfigUtils.initFirebaseRemoteConfig()
 
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
@@ -551,20 +550,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             dialog?.dismiss()
             finish()
         })
-    }
-
-    private fun setupRemoteConfig() {
-        fbRemoteConfig = FirebaseRemoteConfig.getInstance()
-
-        if (!BuildConfig.IS_PRODUCTION) { // is Production?
-            cacheExpiration = 0
-        }
-
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(cacheExpiration)
-                .build()
-        fbRemoteConfig.setDefaults(R.xml.remote_config_defaults)
-        fbRemoteConfig.setConfigSettingsAsync(configSettings)
     }
 
     private fun hideKeyBoard() {
