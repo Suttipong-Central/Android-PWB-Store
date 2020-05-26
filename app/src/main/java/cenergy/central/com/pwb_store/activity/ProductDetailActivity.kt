@@ -158,6 +158,18 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ARG_PRODUCT_SKU, productSku)
+        outState.putParcelable(ARG_PRICE_PER_STORE, offlinePriceItem)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        productSku = savedInstanceState.getString(ARG_PRODUCT_SKU)
+        offlinePriceItem = savedInstanceState.getParcelable(ARG_PRICE_PER_STORE)
+    }
+
     private fun bindView() {
         mToolbar = findViewById(R.id.toolbar)
         mBuyCompareView = mToolbar.findViewById(R.id.button_compare)
@@ -402,7 +414,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun startProductDetailFragment(product: Product) {
         // set product
         this@ProductDetailActivity.productSku = product.sku
-        if (offlinePriceItem != null){
+        if (!isChatAndShop() && offlinePriceItem != null){
             product.price = offlinePriceItem!!.price
             if (offlinePriceItem!!.specialPrice > 0) {
                 product.specialPrice = offlinePriceItem!!.specialPrice
@@ -581,16 +593,9 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         builder.show()
     }
 
-//    private fun checkDisableAddProductButton(product: Product) {
-//        disableAddToCartButton(!isProductInStock(product))
-//    }
-//
-//    private fun disableAddToCartButton(disable: Boolean = true) {
-//        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-//        if (fragment != null && fragment is DetailFragment) {
-//            fragment.disableAddToCartButton(disable)
-//        }
-//    }
+    private fun isChatAndShop(): Boolean{
+        return database.userInformation.user?.userLevel == 3L
+    }
 
     private fun checkCompareProduct() {
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
