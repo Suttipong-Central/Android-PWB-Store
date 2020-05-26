@@ -21,14 +21,12 @@ object RemoteConfigUtils {
        val fbRemoteConfig = FirebaseRemoteConfig.getInstance()
 
         if (!BuildConfig.IS_PRODUCTION) { // is not Production?
-            cacheExpiration = 0
+            val configSettings = FirebaseRemoteConfigSettings.Builder()
+                    .setMinimumFetchIntervalInSeconds(cacheExpiration)
+                    .build()
+            fbRemoteConfig.setConfigSettingsAsync(configSettings)
         }
-
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(cacheExpiration)
-                .build()
         fbRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
-        fbRemoteConfig.setConfigSettingsAsync(configSettings)
         return fbRemoteConfig
     }
 }
