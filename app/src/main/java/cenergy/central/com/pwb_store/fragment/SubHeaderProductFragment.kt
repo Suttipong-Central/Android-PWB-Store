@@ -79,7 +79,7 @@ class SubHeaderProductFragment : Fragment() {
 
                         override fun failure(error: APIError) {
                             it.runOnUiThread {
-                                showAlertDialog(error.errorUserMessage?: getString(R.string.some_thing_wrong))
+                                showAlertDialog(error.errorUserMessage?: it.getString(R.string.some_thing_wrong))
                                 Log.e(TAG, "onFailure: " + error.errorUserMessage)
                             }
                         }
