@@ -380,7 +380,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
             if (!isChatAndShop()){
                 // is staff level is not chat and shop
-                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "gt"))
+                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "eq"))
             }
 
             // TODO We have to do not display market place product
@@ -551,7 +551,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
-        private const val CHAT_AND_SHOP_FIELD = "raw_extension_attributes.pricing_per_store.retailer_id"
+        private const val CHAT_AND_SHOP_FIELD = "retailer_id"
         //Pagination
         private const val PER_PAGE = 20
 
