@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
+import cenergy.central.com.pwb_store.BuildConfig
 
 import com.bumptech.glide.Glide
 
@@ -13,6 +14,7 @@ import cenergy.central.com.pwb_store.extensions.set1HourBadge
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import kotlinx.android.synthetic.main.fragment_detail.*
 
 class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -46,7 +48,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         productBrand.text = if (brand != "") brand else "Brand"
         productName.text = product.name
         itemView.tag = product
-        if(product.is1HourProduct()){
+        if(product.is1HourProduct() && BuildConfig.FLAVOR != "pwbOmniTv"){
             badge1H.set1HourBadge()
         } else {
             badge1H.setImageDrawable(null)
