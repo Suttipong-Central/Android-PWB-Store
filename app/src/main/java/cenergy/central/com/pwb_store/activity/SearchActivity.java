@@ -2,12 +2,10 @@ package cenergy.central.com.pwb_store.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -82,16 +80,6 @@ public class SearchActivity extends BaseActivity {
 
         mToolbar.setNavigationOnClickListener(v -> finish());
 
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

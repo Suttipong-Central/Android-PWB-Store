@@ -1,18 +1,18 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.TextView
-
-import org.greenrobot.eventbus.EventBus
+import androidx.recyclerview.widget.RecyclerView
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus
 import cenergy.central.com.pwb_store.manager.bus.event.HomeBus
 import cenergy.central.com.pwb_store.manager.bus.event.SearchEventBus
 import cenergy.central.com.pwb_store.view.PowerBuyEditText
+import org.greenrobot.eventbus.EventBus
 
 class SearchProductViewHolder(itemView: View, private val canBack: Boolean)
     : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -40,7 +40,12 @@ class SearchProductViewHolder(itemView: View, private val canBack: Boolean)
             backButton.visibility = View.GONE
             backButton.setOnClickListener(null)
         }
-        mBarCode.setOnClickListener(this)
+        if (BuildConfig.FLAVOR !== "pwbOmniTv") {
+            mBarCode.setOnClickListener(this)
+        } else {
+            mBarCode.setOnClickListener(null)
+            mBarCode.visibility = View.GONE
+        }
         mSearchView.hint = itemView.context.getString(R.string.search_hint)
         mSearchView.setOnEditorActionListener(SearchOnEditorActionListener())
     }
