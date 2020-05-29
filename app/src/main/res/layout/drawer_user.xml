@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_header_user"
     android:layout_width="match_parent"
-    android:layout_height="130dp"
+    android:layout_height="@dimen/drawer_user_height"
     android:background="@color/primaryButtonColor"
     android:orientation="horizontal"
     android:paddingStart="16dp"

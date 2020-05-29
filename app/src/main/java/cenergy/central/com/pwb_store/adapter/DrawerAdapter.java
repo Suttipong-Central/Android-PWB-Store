@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
+import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.interfaces.MenuDrawerClickListener;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerChangeViewHolder;
@@ -18,7 +19,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHeaderViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerHelpViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerItemViewHolder;
 import cenergy.central.com.pwb_store.adapter.viewholder.DrawerSubHeaderViewHolder;
-import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserNewViewHolder;
+import cenergy.central.com.pwb_store.adapter.viewholder.DrawerUserViewHolder;
 import cenergy.central.com.pwb_store.manager.bus.event.CompareMenuBus;
 import cenergy.central.com.pwb_store.model.DrawerDao;
 import cenergy.central.com.pwb_store.model.DrawerItem;
@@ -44,10 +45,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private static final ViewType VIEW_TYPE_USER = new ViewType(VIEW_TYPE_ID_USER);
     private static final ViewType VIEW_TYPE_HEADER = new ViewType(VIEW_TYPE_ID_HEADER);
-//    private static final ViewType VIEW_TYPE_DELIVERY = new ViewType(VIEW_TYPE_ID_DELIVERY);
     private static final ViewType VIEW_TYPE_COMPARE = new ViewType(VIEW_TYPE_ID_COMPARE);
-//    private static final ViewType VIEW_TYPE_CHANGE = new ViewType(VIEW_TYPE_ID_CHANGE);
-//    private static final ViewType VIEW_TYPE_HELP = new ViewType(VIEW_TYPE_ID_HELP);
     private static final ViewType VIEW_TYPE_CART = new ViewType(VIEW_TYPE_ID_CART);
     private static final ViewType VIEW_TYPE_HISTORY = new ViewType(VIEW_TYPE_ID_HISTORY);
     private static final ViewType VIEW_TYPE_LOGOUT = new ViewType(VIEW_TYPE_ID_LOGOUT);
@@ -83,7 +81,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 );
 
             case VIEW_TYPE_ID_USER:
-                return new DrawerUserNewViewHolder(
+                return new DrawerUserViewHolder(
                         LayoutInflater
                                 .from(parent.getContext())
                                 .inflate(R.layout.drawer_user, parent, false)
@@ -158,8 +156,8 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
 
             case VIEW_TYPE_ID_USER:
-                if (holder instanceof DrawerUserNewViewHolder) {
-                    DrawerUserNewViewHolder drawerUserViewHolder = (DrawerUserNewViewHolder) holder;
+                if (holder instanceof DrawerUserViewHolder) {
+                    DrawerUserViewHolder drawerUserViewHolder = (DrawerUserViewHolder) holder;
                     drawerUserViewHolder.setViewHolder();
                 }
                 break;
@@ -227,10 +225,14 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             drawerItem.setViewTypeId(VIEW_TYPE_ID_ITEM);
             mListViewType.add(drawerItem);
         }
-
         mListViewType.add(VIEW_TYPE_COMPARE);
-        mListViewType.add(VIEW_TYPE_CART);
-        mListViewType.add(VIEW_TYPE_HISTORY);
+
+        // is pwb omni tv?
+        if (BuildConfig.FLAVOR != "pwbOmniTv") {
+            mListViewType.add(VIEW_TYPE_CART);
+            mListViewType.add(VIEW_TYPE_HISTORY);
+        }
+
         mListViewType.add(VIEW_TYPE_LOGOUT);
 
         notifyDataSetChanged();
