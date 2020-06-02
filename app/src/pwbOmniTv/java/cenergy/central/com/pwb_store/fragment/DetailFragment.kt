@@ -90,11 +90,14 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
+        productSpacialPriceLayout.visibility = View.GONE
+        productPriceLayout.visibility = View.GONE
+        addToCompare.visibility = View.GONE
+
         // region compare
 //        addToCompare.setImageDrawable(R.drawable.ic_compare_bar)
 //        setEnableCompareButton()
 //        updateAddToCompareButton()
-        addToCompare.visibility = View.GONE
         // end region compare
 
         shareButton.setOnClickListener(this)

@@ -449,8 +449,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 DetailFragment(), TAG_DETAIL_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerOverview,
                 ProductOverviewFragment(), TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
-        supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
-                ProductExtensionFragment(), TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
+        if (BuildConfig.FLAVOR != "pwbOmniTv"){
+            supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
+                    ProductExtensionFragment(), TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
+        }
 
         tvNotFound.visibility = View.INVISIBLE
         containerGroupView.visibility = View.VISIBLE

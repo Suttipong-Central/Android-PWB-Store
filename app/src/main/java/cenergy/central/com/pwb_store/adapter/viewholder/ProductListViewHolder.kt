@@ -38,19 +38,20 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         oldPrice.text = product.getDisplayOldPrice(unit)
         newPrice.text = product.getDisplaySpecialPrice(unit)
 
-        if (product.isSpecialPrice()) {
-            showSpecialPrice()
-        } else {
-            hideSpecialPrice()
-        }
         val brand = product.brand
         productBrand.text = if (brand != "") brand else "Brand"
         productName.text = product.name
         itemView.tag = product
-        if(product.is1HourProduct() && BuildConfig.FLAVOR != "pwbOmniTv"){
+        if (product.is1HourProduct() && BuildConfig.FLAVOR != "pwbOmniTv") {
             badge1H.set1HourBadge()
+            if (product.isSpecialPrice()) {
+                showSpecialPrice()
+            } else {
+                hideSpecialPrice()
+            }
         } else {
             badge1H.setImageDrawable(null)
+            hidePrice()
         }
     }
 
@@ -62,5 +63,10 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private fun hideSpecialPrice() {
         newPrice.visibility = View.GONE
         oldPrice.setEnableStrikeThrough(false)
+    }
+
+    private fun hidePrice() {
+        newPrice.visibility = View.GONE
+        oldPrice.visibility = View.GONE
     }
 }
