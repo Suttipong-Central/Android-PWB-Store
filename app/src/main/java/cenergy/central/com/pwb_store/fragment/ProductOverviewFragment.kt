@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductSpecAdapter
@@ -48,6 +49,11 @@ class ProductOverviewFragment : Fragment() {
         setupProductKeyFeatures()
         setupTextHeader()
         setupOnClick()
+        if (BuildConfig.FLAVOR == "pwbOmniTv"){
+            checkExplainInfo()
+            checkExplainSpec()
+            checkExplainOverview()
+        }
     }
 
     private fun setupProductSpecification() {
@@ -103,7 +109,6 @@ class ProductOverviewFragment : Fragment() {
             val html = style + product?.extension?.shortDescription
             overviewWeb.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
             overviewWeb.setInitialScale(scale)
-
         } else {
             overviewLayout.visibility = View.GONE
             line1.visibility = View.GONE
@@ -119,14 +124,36 @@ class ProductOverviewFragment : Fragment() {
 
     private fun setupOnClick() {
         specLayout.setOnClickListener {
-            specListLayout.visibility = if (specVisible) View.GONE else View.VISIBLE
-            specArrowIcon.setImageDrawable(ContextCompat.getDrawable(context!!,
-                    if (specVisible) R.drawable.ic_keyboard_arrow_down
-                    else R.drawable.ic_keyboard_arrow_up))
-            specVisible = !specVisible
+            checkExplainSpec()
         }
 
         infoLayout.setOnClickListener {
+            checkExplainInfo()
+        }
+
+        overviewLayout.setOnClickListener {
+            checkExplainOverview()
+        }
+    }
+
+    private fun checkExplainSpec(){
+        if (!product!!.extension!!.specifications.isNullOrEmpty()) {
+            if (specVisible){
+                specListLayout.visibility =  View.GONE
+                context?.let { specArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_down)) }
+                specVisible = false
+            } else {
+                specListLayout.visibility =  View.VISIBLE
+                context?.let { specArrowIcon.setImageDrawable(
+                        ContextCompat.getDrawable(it, R.drawable.ic_keyboard_arrow_up)) }
+                specVisible = true
+            }
+        }
+    }
+
+    private fun checkExplainInfo(){
+        if (product?.extension?.description != null && product?.extension?.description!!.trim().isNotBlank()) {
             if (infoVisible) {
                 infoWebLayout.visibility = View.GONE
                 context?.let { infoArrowIcon.setImageDrawable(
@@ -139,8 +166,10 @@ class ProductOverviewFragment : Fragment() {
                 infoVisible = true
             }
         }
+    }
 
-        overviewLayout.setOnClickListener {
+    private fun checkExplainOverview(){
+        if (product?.extension?.shortDescription != null && product?.extension?.shortDescription!!.trim().isNotBlank()) {
             if (overviewVisible) {
                 overviewWebLayout.visibility = View.GONE
                 context?.let { overviewArrowIcon.setImageDrawable(
