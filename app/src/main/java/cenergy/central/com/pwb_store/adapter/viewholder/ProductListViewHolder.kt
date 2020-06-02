@@ -14,7 +14,6 @@ import cenergy.central.com.pwb_store.extensions.set1HourBadge
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import kotlinx.android.synthetic.main.fragment_detail.*
 
 class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

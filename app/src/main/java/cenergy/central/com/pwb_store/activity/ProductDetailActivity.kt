@@ -19,11 +19,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
-import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
@@ -149,7 +149,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // check compare product
-        checkCompareProduct()
+        updateAddToCompareButton()
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             // check language
             if (getSwitchButton() != null) {
@@ -192,9 +192,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                             .toBundle())
         }
 
-        // setup badge
-        mBuyCompareView.setListener(this)
-        mBuyShoppingCartView.setListener(this)
+        if (BuildConfig.FLAVOR != "pwbOmniTv"){
+            mBuyCompareView.setListener(this)
+            mBuyShoppingCartView.setListener(this)
+        } else {
+            mBuyCompareView.visibility = View.GONE
+            mBuyShoppingCartView.visibility = View.GONE
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -486,17 +490,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     // region action compare product
     private fun addToCompare(product: Product) {
-        showProgressDialog()
         val count = database.compareProducts.size
         if (count >= 4) {
-            dismissProgressDialog()
-            unCheckCompareProduct()
+            setEnableCompareButton()
             showAlertDialog(getString(R.string.alert_count))
         } else {
             val compareProduct = database.getCompareProduct(product.sku)
             // is added?
             if (compareProduct != null) {
-                dismissProgressDialog()
                 showAlertDialog(getString(R.string.format_alert_compare, compareProduct.name))
             } else {
                 // store compare product to database
@@ -508,13 +509,12 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun saveCompareProduct(product: Product) {
         database.saveCompareProduct(product, object : DatabaseListener {
             override fun onSuccessfully() {
-                dismissProgressDialog()
                 updateCompareBadge()
-                Toast.makeText(this@ProductDetailActivity, "${getString(R.string.added_to_compare)}.", Toast.LENGTH_SHORT).show()
+                setDisableCompareButton()
             }
 
             override fun onFailure(error: Throwable) {
-                dismissProgressDialog()
+                setEnableCompareButton()
                 Log.d(TAG, "" + error.message)
             }
         })
@@ -597,14 +597,19 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         return database.userInformation.user?.userLevel == 3L
     }
 
-    private fun checkCompareProduct() {
+    private fun updateAddToCompareButton() {
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-        (fragment as DetailFragment).updateCompareCheckBox()
+        (fragment as DetailFragment).updateAddToCompareButton()
     }
 
-    private fun unCheckCompareProduct() {
+    private fun setEnableCompareButton() {
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-        (fragment as DetailFragment).unCheckCompareCheckBox()
+        (fragment as DetailFragment).setEnableCompareButton()
+    }
+
+    private fun setDisableCompareButton() {
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+        (fragment as DetailFragment).setDisableCompareButton()
     }
 
     private fun clearCart() {

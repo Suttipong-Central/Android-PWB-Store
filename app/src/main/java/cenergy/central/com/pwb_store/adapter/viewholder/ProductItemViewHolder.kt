@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.extensions.isProductInStock
@@ -27,11 +28,15 @@ class ProductItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                 .fitCenter()
                 .into(imgProduct)
         tvProductName.text = compareProduct.name
-        btnAddToCart.isEnabled = compareProduct.isSalable
-        btnAddToCart.background = ContextCompat.getDrawable(itemView.context,
-                if (compareProduct.isSalable) R.drawable.button_primary else R.drawable.button_unselected)
+        if (BuildConfig.FLAVOR != "pwbOmniTv") {
+            btnAddToCart.isEnabled = compareProduct.isSalable
+            btnAddToCart.background = ContextCompat.getDrawable(itemView.context,
+                    if (compareProduct.isSalable) R.drawable.button_primary else R.drawable.button_unselected)
+            btnAddToCart.setOnClickListener { listener.onClickAddToCart(compareProduct) }
+        } else {
+            btnAddToCart.visibility = View.GONE
+        }
         layout.setOnClickListener { EventBus.getDefault().post(CompareDetailBus(compareProduct, true, layout)) }
         btnCancel.setOnClickListener { EventBus.getDefault().post(CompareDeleteBus(compareProduct, true)) }
-        btnAddToCart.setOnClickListener { listener.onClickAddToCart(compareProduct) }
     }
 }

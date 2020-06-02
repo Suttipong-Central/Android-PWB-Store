@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingTop="16dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <!-- region images-->
+    <ImageView
+        android:id="@+id/ivProductImage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/product_detail"
+        android:minHeight="300dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@id/guideline40"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_placeholder" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProductImage"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:overScrollMode="never"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@id/guideline40"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivProductImage" />
+    <!-- endregion -->
+
+    <!-- region product detail-->
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tvProductName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_small"
+        android:textColor="@color/nameProductColor"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/shareButton"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Fuji Instax รุ่น Mini 90 สีดำ" />
+
+    <ImageView
+        android:id="@+id/shareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_padding_normal"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvProductName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/productIdLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_normal"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/tvProductName">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvProductCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/nameProductColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Product Code : " />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/productSpacialPriceLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_normal"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productIdLayout">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvTitleSpecialPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/specialPriceColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="Price : " />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvSpecialPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_small"
+            android:padding="@dimen/margin_padding_xsmall"
+            android:textColor="@color/specialPriceColor"
+            android:textSize="20sp"
+            app:typeFaceAsset="Roboto-Medium.ttf"
+            tools:text="฿2,890" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/productPriceLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_normal"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productSpacialPriceLayout">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/regular_price"
+            android:textColor="@color/nameProductColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvNormalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_small"
+            android:padding="@dimen/margin_padding_xsmall"
+            android:textColor="@color/nameProductColor"
+            android:textSize="18sp"
+            app:typeFaceAsset="RobotoLight.ttf"
+            tools:text="฿4,200" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/lightGray"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/productPriceLayout" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvAvailableHere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_normal"
+        android:drawableStart="@drawable/shape_circle_green"
+        android:drawablePadding="@dimen/margin_padding_xsmall"
+        android:gravity="center_vertical"
+        android:text="@string/available_here"
+        android:textColor="@color/inStockColor"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/line1" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+        android:id="@+id/addToCompare"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_xlarge"
+        app:btn_default="true"
+        app:layout_constraintStart_toEndOf="@+id/guideline40"
+        app:layout_constraintStart_toStartOf="@+id/guideline40"
+        app:layout_constraintEnd_toEndOf="@id/guideline70"
+        app:layout_constraintTop_toBottomOf="@+id/tvAvailableHere"
+        app:text="@string/product_compare" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline70"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@id/guideline40"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.7" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="@color/lightGray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
