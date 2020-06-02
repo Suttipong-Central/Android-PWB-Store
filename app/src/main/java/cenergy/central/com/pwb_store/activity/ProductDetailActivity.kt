@@ -93,12 +93,18 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-        fun startActivity(context: Context, sku: String, offlinePriceItem: OfflinePriceItem?){
+        fun startActivity(context: Context, sku: String){
             val intent = Intent(context, ProductDetailActivity::class.java)
             intent.putExtra(ARG_PRODUCT_SKU, sku)
-            intent.putExtra(ARG_PRICE_PER_STORE, offlinePriceItem)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
+
+//        fun startActivity(context: Context, sku: String, offlinePriceItem: OfflinePriceItem?){
+//            val intent = Intent(context, ProductDetailActivity::class.java)
+//            intent.putExtra(ARG_PRODUCT_SKU, sku)
+//            intent.putExtra(ARG_PRICE_PER_STORE, offlinePriceItem)
+//            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

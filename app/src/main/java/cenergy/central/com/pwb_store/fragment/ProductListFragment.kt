@@ -378,10 +378,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
 
-            if (!isChatAndShop()){
-                // is staff level is not chat and shop
-                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "eq"))
-            }
+//            if (!isChatAndShop()){
+//                // is staff level is not chat and shop
+//                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "eq"))
+//            }
 
             // TODO We have to do not display market place product
             filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
@@ -436,29 +436,29 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 currentPage = nextPage
                 response.currentPage = currentPage
                 // implement price per store if staff not chat and shop
-                if (!isChatAndShop()) {
-                    response.products.forEach { product ->
-                        val offlinePriceItem = product.getPricePerStore()
-                        if (offlinePriceItem != null) {
-                            product.price = offlinePriceItem.price
-                            if (offlinePriceItem.specialPrice > 0) {
-                                product.specialPrice = offlinePriceItem.specialPrice
-                                product.specialFromDate = null
-                                product.specialToDate = null
-                                if (offlinePriceItem.specialFromDate != null) {
-                                    product.specialFromDate = offlinePriceItem.specialFromDate
-                                }
-                                if (offlinePriceItem.specialToDate != null) {
-                                    product.specialToDate = offlinePriceItem.specialToDate
-                                }
-                            } else {
-                                product.specialPrice = 0.0
-                                product.specialFromDate = null
-                                product.specialToDate = null
-                            }
-                        }
-                    }
-                }
+//                if (!isChatAndShop()) {
+//                    response.products.forEach { product ->
+//                        val offlinePriceItem = product.getPricePerStore()
+//                        if (offlinePriceItem != null) {
+//                            product.price = offlinePriceItem.price
+//                            if (offlinePriceItem.specialPrice > 0) {
+//                                product.specialPrice = offlinePriceItem.specialPrice
+//                                product.specialFromDate = null
+//                                product.specialToDate = null
+//                                if (offlinePriceItem.specialFromDate != null) {
+//                                    product.specialFromDate = offlinePriceItem.specialFromDate
+//                                }
+//                                if (offlinePriceItem.specialToDate != null) {
+//                                    product.specialToDate = offlinePriceItem.specialToDate
+//                                }
+//                            } else {
+//                                product.specialPrice = 0.0
+//                                product.specialFromDate = null
+//                                product.specialToDate = null
+//                            }
+//                        }
+//                    }
+//                }
                 mProductListAdapter!!.setProduct(response)
             } else {
                 mProductListAdapter!!.setError()
@@ -531,9 +531,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         })
     }
 
-    private fun isChatAndShop(): Boolean{
-        return db.userInformation.user?.userLevel == 3L
-    }
+//    private fun isChatAndShop(): Boolean{
+//        return db.userInformation.user?.userLevel == 3L
+//    }
 
     companion object {
         private val TAG = ProductListFragment::class.java.simpleName

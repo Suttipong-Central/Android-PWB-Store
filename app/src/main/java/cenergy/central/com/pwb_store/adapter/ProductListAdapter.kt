@@ -65,8 +65,9 @@ class ProductListAdapter(private val mContext: Context) : RecyclerView.Adapter<R
                             clicked = false
                             val analytics = Analytics(mContext)
                             analytics.trackViewItem(viewType.sku)
-                            ProductDetailActivity.startActivity(mContext, viewType.sku,
-                            viewType.getPricePerStore())
+//                            ProductDetailActivity.startActivity(mContext, viewType.sku,
+//                            viewType.getPricePerStore())
+                            ProductDetailActivity.startActivity(mContext, viewType.sku)
                             Handler().postDelayed({ clicked = true }, 1000)
                         }
                     }

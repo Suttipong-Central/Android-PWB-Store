@@ -91,9 +91,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
 
         // region compare
-        addToCompare.setImageDrawable(R.drawable.ic_compare_bar)
-        setEnableCompareButton()
-        updateAddToCompareButton()
+//        addToCompare.setImageDrawable(R.drawable.ic_compare_bar)
+//        setEnableCompareButton()
+//        updateAddToCompareButton()
+        addToCompare.visibility = View.GONE
         // end region compare
 
         shareButton.setOnClickListener(this)

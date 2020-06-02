@@ -1,9 +1,10 @@
 package cenergy.central.com.pwb_store.adapter;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -225,10 +226,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             drawerItem.setViewTypeId(VIEW_TYPE_ID_ITEM);
             mListViewType.add(drawerItem);
         }
-        mListViewType.add(VIEW_TYPE_COMPARE);
 
         // is pwb omni tv?
         if (BuildConfig.FLAVOR != "pwbOmniTv") {
+            mListViewType.add(VIEW_TYPE_COMPARE);
             mListViewType.add(VIEW_TYPE_CART);
             mListViewType.add(VIEW_TYPE_HISTORY);
         }
