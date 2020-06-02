@@ -149,7 +149,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             hideSpecialPrice()
         }
 
-        if (product.is1HourProduct()) {
+        if (product.is1HourProduct() && BuildConfig.FLAVOR != "pwbOmniTv") {
             badge1Hour.set1HourBadge()
         } else {
             badge1Hour.setImageDrawable(null)
