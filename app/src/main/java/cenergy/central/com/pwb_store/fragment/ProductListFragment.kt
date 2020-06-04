@@ -183,8 +183,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         resetPage()
         // sorting
         val sortingItems: MutableList<SortingItem> = ArrayList()
-        sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
-        sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
+//        sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
+//        sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
         sortingItems.add(SortingItem(3, getString(R.string.a_to_z), "brand", "ASC", "3", false))
         sortingItems.add(SortingItem(4, getString(R.string.z_to_a), "brand", "DESC", "4", false))
         val sortingHeaders: MutableList<SortingHeader> = ArrayList()
