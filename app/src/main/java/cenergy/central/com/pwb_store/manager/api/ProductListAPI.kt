@@ -1,18 +1,25 @@
 package cenergy.central.com.pwb_store.manager.api
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.view.View
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.ProductListBody
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.ParsingUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.Gson
+import kotlinx.android.synthetic.pwbOmniTv.fragment_detail.*
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.Request
@@ -45,7 +52,12 @@ class ProductListAPI {
                 override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
                     if (response != null) {
                         try {
-                            callback.success(ParsingUtils.parseToProductResponse(response))
+                            val productResponse = ParsingUtils.parseToProductResponse(response)
+                            if (BuildConfig.FLAVOR != "pwbOmniTv"){
+                                callback.success(productResponse)
+                            } else {
+                                checkAvailableStore(context, productResponse, callback)
+                            }
                         } catch (e: Exception) {
                             callback.failure(e.getResultError())
                             Log.e("JSON Parser", "Error parsing data $e")
@@ -60,6 +72,50 @@ class ProductListAPI {
                     callback.failure(e.getResultError())
                 }
             })
+        }
+
+        fun checkAvailableStore(context: Context, productResponse: ProductResponse, callback: ApiResponseCallback<ProductResponse>) {
+            var count = 0
+            productResponse.products.forEach { product ->
+                HttpManagerMagento.getInstance(context).getAvailableStore(product.sku,
+                        object : ApiResponseCallback<List<StoreAvailable>> {
+                            override fun success(response: List<StoreAvailable>?) {
+                                (context as Activity).runOnUiThread {
+                                    count += 1
+                                    product.availableThisStore = handleAvailableHere(response)
+                                    Log.d("count Available", "count $count size ${productResponse.products.size} sku ${product.sku}")
+                                    if (count == productResponse.products.size){
+                                        count = 0
+                                        callback.success(productResponse)
+                                    }
+                                }
+                            }
+
+                            override fun failure(error: APIError) {
+                                (context as Activity).runOnUiThread {
+                                    count += 1
+                                    Log.d("count Available", "count $count size ${productResponse.products.size}")
+                                    if (count == productResponse.products.size){
+                                        count = 0
+                                        callback.success(productResponse)
+                                    }
+                                }
+                            }
+                        })
+            }
+        }
+
+        fun handleAvailableHere(listStoreAvailable: List<StoreAvailable>?) : Boolean{
+            val userInformation = RealmController.getInstance().userInformation
+            val retailerId = userInformation?.store?.retailerId
+            var stockCurrentStore = false
+            if (retailerId != null && listStoreAvailable != null) {
+                val store = listStoreAvailable.firstOrNull { it.sellerCode == retailerId }
+                if (store != null) {
+                    stockCurrentStore = store.qty > 0
+                }
+            }
+            return stockCurrentStore
         }
     }
 }

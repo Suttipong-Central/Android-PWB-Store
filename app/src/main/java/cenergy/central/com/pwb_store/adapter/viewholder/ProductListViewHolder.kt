@@ -1,8 +1,10 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatTextView
 import cenergy.central.com.pwb_store.BuildConfig
 
 import com.bumptech.glide.Glide
@@ -23,6 +25,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private val newPrice: PowerBuyTextView = itemView.findViewById(R.id.txt_product_new_price)
     private val productBrand: PowerBuyTextView = itemView.findViewById(R.id.txt_product_brand)
     private val badge1H: ImageView = itemView.findViewById(R.id.badge_2h)
+    private val available: AppCompatTextView = itemView.findViewById(R.id.tvAvailableHere)
 
     fun setViewHolder(product: Product) {
 
@@ -53,6 +56,8 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
             badge1H.setImageDrawable(null)
             hidePrice()
         }
+        Log.d("PLP Available", "Available here is " + product.availableThisStore)
+        available.visibility = if (product.availableThisStore) View.VISIBLE else View.GONE
     }
 
     private fun showSpecialPrice() {
