@@ -39,7 +39,8 @@ class Product(
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
-        var urlKey: String = "") : IViewType, Parcelable {
+        var urlKey: String = "",
+        var availableThisStore: Boolean = false): IViewType, Parcelable {
 
     override fun getViewTypeId(): Int {
         return viewTypeID

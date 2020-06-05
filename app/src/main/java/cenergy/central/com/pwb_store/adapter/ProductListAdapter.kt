@@ -2,10 +2,12 @@ package cenergy.central.com.pwb_store.adapter
 
 import android.content.Context
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity
 import cenergy.central.com.pwb_store.adapter.viewholder.LoadingViewHolder
@@ -65,9 +67,12 @@ class ProductListAdapter(private val mContext: Context) : RecyclerView.Adapter<R
                             clicked = false
                             val analytics = Analytics(mContext)
                             analytics.trackViewItem(viewType.sku)
-//                            ProductDetailActivity.startActivity(mContext, viewType.sku,
-//                            viewType.getPricePerStore())
-                            ProductDetailActivity.startActivity(mContext, viewType.sku)
+//                            ProductDetailActivity.startActivity(mContext, viewType.sku, viewType.getPricePerStore())
+                            if (BuildConfig.FLAVOR != "pwbOmniTv"){
+                                ProductDetailActivity.startActivity(mContext, viewType.sku)
+                            } else {
+                                ProductDetailActivity.startActivity(mContext, viewType.sku, viewType.availableThisStore)
+                            }
                             Handler().postDelayed({ clicked = true }, 1000)
                         }
                     }

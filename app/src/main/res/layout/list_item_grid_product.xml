@@ -133,19 +133,31 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/badge_2h"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    tools:src="@drawable/ic_2h_badge_en"
+                    tools:src="@drawable/ic_1h_badge_en"
                     android:contentDescription="@string/app_name" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvAvailableHere"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/margin_padding_normal"
+                    android:paddingEnd="@dimen/margin_padding_normal"
+                    android:paddingTop="@dimen/margin_padding_xsmall"
+                    android:paddingBottom="@dimen/margin_padding_xsmall"
+                    android:gravity="center_vertical"
+                    android:text="@string/available_here"
+                    android:textColor="@color/white"
+                    android:background="@drawable/shape_orange_radius"
+                    android:textStyle="bold"
+                    app:typeFaceAsset="RobotoLight.ttf" />
             </LinearLayout>
-
         </LinearLayout>
     </RelativeLayout>
 
