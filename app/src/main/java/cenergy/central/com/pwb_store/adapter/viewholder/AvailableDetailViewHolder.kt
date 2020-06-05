@@ -4,7 +4,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.StoreStock
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class AvailableDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -15,7 +15,7 @@ class AvailableDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
     private val stock = itemView.findViewById<PowerBuyTextView>(R.id.textStock)
 
 
-    fun setViewHolder(storeAvailable: StoreAvailable) {
+    fun setViewHolder(storeAvailable: StoreStock) {
         storeCode.text = storeAvailable.sellerCode
         name.text = storeAvailable.name
         tel.text = if(storeAvailable.contactPhone.isNotBlank()) storeAvailable.contactPhone else "-"

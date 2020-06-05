@@ -23,7 +23,7 @@ import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListen
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.getInstance
-import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.retrieveProducts
+import cenergy.central.com.pwb_store.manager.api.ProductListApi
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus
@@ -51,6 +51,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var productCount: PowerBuyTextView? = null
     private var layoutProgress: LinearLayout? = null
     private var mProductLayout: LinearLayout? = null
+
     //Data Member
     private var mProductListAdapter: ProductListAdapter? = null
     private var mLayoutManger: GridLayoutManager? = null
@@ -64,10 +65,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var isSearch = false
     private var categoryId: String? = null
     private var brandName: String? = null
+
     //Sort
     private var sortName: String? = ""
     private var sortType: String? = ""
     private var categoryLv2: Category? = null
+
     // Page
     private var isLoadingMore = false
     private var isSorting = false
@@ -78,6 +81,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
+
     // Realm
     private val db = RealmController.getInstance()
 
@@ -394,7 +398,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 val sortOrder = createSortOrder(sortName!!, sortType!!)
                 sortOrders.add(sortOrder)
             }
-            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
+            ProductListApi().retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {
@@ -510,7 +514,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             override fun success(response: List<Category>?) {
                 if (activity != null) {
                     activity!!.runOnUiThread {
-                        if (response != null){
+                        if (response != null) {
                             categoriesLv3 = ArrayList() // clear category lv3 list
                             categoriesLv3!!.addAll(response)
                             mProductLayout!!.visibility = View.VISIBLE // show product layout
@@ -552,6 +556,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
         private const val CHAT_AND_SHOP_FIELD = "retailer_id"
+
         //Pagination
         private const val PER_PAGE = 20
 

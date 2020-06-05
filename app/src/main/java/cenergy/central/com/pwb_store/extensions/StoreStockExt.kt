@@ -1,9 +1,9 @@
 package cenergy.central.com.pwb_store.extensions
 
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.StoreStock
 import cenergy.central.com.pwb_store.realm.RealmController
 
-fun List<StoreAvailable>.getStockAvailability(): Pair<Boolean, Boolean> {
+fun List<StoreStock>.getStockAvailability(): Pair<Boolean, Boolean> {
     val userInformation = RealmController.getInstance().userInformation
     val retailerId = userInformation?.store?.retailerId
 

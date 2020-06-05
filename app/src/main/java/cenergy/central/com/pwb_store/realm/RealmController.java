@@ -20,7 +20,9 @@ import cenergy.central.com.pwb_store.model.Order;
 import cenergy.central.com.pwb_store.model.Postcode;
 import cenergy.central.com.pwb_store.model.Product;
 import cenergy.central.com.pwb_store.model.Province;
+import cenergy.central.com.pwb_store.model.StoreActive;
 import cenergy.central.com.pwb_store.model.StorePickupList;
+import cenergy.central.com.pwb_store.model.StoreStock;
 import cenergy.central.com.pwb_store.model.SubDistrict;
 import cenergy.central.com.pwb_store.model.UserInformation;
 import cenergy.central.com.pwb_store.model.UserToken;
@@ -447,12 +449,7 @@ public class RealmController {
 
     public void deleteAllCachedEndpoint() {
         Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.where(CachedEndpoint.class).findAll().deleteAllFromRealm();
-            }
-        });
+        realm.executeTransaction(realm1 -> realm1.where(CachedEndpoint.class).findAll().deleteAllFromRealm());
     }
 
     public boolean hasFreshlyCachedEndpoint(String endpoint) {
@@ -683,6 +680,18 @@ public class RealmController {
                 realm.where(Postcode.class).findAll().deleteAllFromRealm();
             }
         });
+    }
+    // endregion
+
+    // region StoreAvailable
+    public void saveStoreStock(final StoreActive storeActives) {
+        Realm realm = getRealm();
+        realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(storeActives));
+    }
+
+    public StoreActive getStoreActiveBySKU(String sku) {
+        Realm realm = getRealm();
+        return realm.where(StoreActive.class).equalTo(StoreActive.FIELD_PRODUCT_SKU, sku).findFirst();
     }
     // endregion
 

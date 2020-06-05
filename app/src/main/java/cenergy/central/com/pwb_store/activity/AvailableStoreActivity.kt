@@ -11,7 +11,7 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.StoreStock
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -26,7 +26,7 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
     private var sku: String? = null
-    private var storeAvailableList: List<StoreAvailable> = arrayListOf()
+    private var storeAvailableList: List<StoreStock> = arrayListOf()
     private var mProgressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,29 +60,32 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
     private fun retrieveStoreStocks() {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getAvailableStore(sku!!, object : ApiResponseCallback<List<StoreAvailable>> {
-            override fun success(response: List<StoreAvailable>?) {
-                runOnUiThread {
-                    dismissProgressDialog()
-                    if (response != null) {
-                        storeAvailableList = response
-                        val fragmentTransaction = supportFragmentManager.beginTransaction()
-                        fragmentTransaction.replace(R.id.container, AvailableFragment.newInstance())
-                                .commitAllowingStateLoss()
-                    } else {
-                        val error = APIErrorUtils.parseError(response)
-                        showAlertDialog(error.errorMessage?: getString(R.string.some_thing_wrong), false)
+        HttpManagerMagento.getInstance(this).getAvailableStore(sku!!, true,
+                object : ApiResponseCallback<Pair<List<StoreStock>, Boolean>>{
+                    override fun success(response: Pair<List<StoreStock>, Boolean>?) {
+                        runOnUiThread {
+                            dismissProgressDialog()
+                            if (response != null) {
+                                storeAvailableList = response.first
+                                val fragmentTransaction = supportFragmentManager.beginTransaction()
+                                fragmentTransaction.replace(R.id.container, AvailableFragment.newInstance())
+                                        .commitAllowingStateLoss()
+                            } else {
+                                val error = APIErrorUtils.parseError(response)
+                                showAlertDialog(error.errorMessage
+                                        ?: getString(R.string.some_thing_wrong), false)
+                            }
+                        }
                     }
-                }
-            }
 
-            override fun failure(error: APIError) {
-                runOnUiThread {
-                    dismissProgressDialog()
-                    showAlertDialog(error.errorMessage?: getString(R.string.some_thing_wrong), false)
-                }
-            }
-        })
+                    override fun failure(error: APIError) {
+                        runOnUiThread {
+                            dismissProgressDialog()
+                            showAlertDialog(error.errorMessage
+                                    ?: getString(R.string.some_thing_wrong), false)
+                        }
+                    }
+                })
     }
 
     private fun initView() {
@@ -160,5 +163,5 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 }
 
 interface AvailableProtocol {
-    fun getStoreAvailable(): List<StoreAvailable>
+    fun getStoreAvailable(): List<StoreStock>
 }

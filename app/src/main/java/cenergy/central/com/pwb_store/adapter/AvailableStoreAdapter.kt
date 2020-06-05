@@ -10,7 +10,7 @@ import cenergy.central.com.pwb_store.adapter.viewholder.AvailableDetailViewHolde
 import cenergy.central.com.pwb_store.adapter.viewholder.AvailableHeaderViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.EmptyViewHolder
 import cenergy.central.com.pwb_store.fragment.AvailableFragment.Companion.SORT_NONE
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.StoreStock
 
 class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStoreItem,
         RecyclerView.ViewHolder>(StockItemDiffCallback()) {
@@ -37,7 +37,7 @@ class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStore
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is AvailableDetailViewHolder -> {
-                holder.setViewHolder(getItem(position) as StoreAvailable) // first?
+                holder.setViewHolder(getItem(position) as StoreStock) // first?
             }
             is AvailableHeaderViewHolder -> {
                 holder.bind(sortedBy) // header
@@ -55,7 +55,7 @@ class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStore
 
     class StockItemDiffCallback : DiffUtil.ItemCallback<AvailableStoreItem>() {
         override fun areItemsTheSame(oldItem: AvailableStoreItem, newItem: AvailableStoreItem): Boolean {
-            return if (oldItem is StoreAvailable && newItem is StoreAvailable) {
+            return if (oldItem is StoreStock && newItem is StoreStock) {
                 oldItem.sellerCode == newItem.sellerCode
             } else {
                 false
@@ -63,7 +63,7 @@ class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStore
         }
 
         override fun areContentsTheSame(oldItem: AvailableStoreItem, newItem: AvailableStoreItem): Boolean {
-            return if (oldItem is StoreAvailable && newItem is StoreAvailable) {
+            return if (oldItem is StoreStock && newItem is StoreStock) {
                 (oldItem.name == newItem.name && oldItem.contactPhone == newItem.contactPhone
                         && oldItem.qty == newItem.qty && oldItem.sellerCode == newItem.sellerCode)
             } else {
@@ -72,7 +72,7 @@ class AvailableStoreAdapter() : ListAdapter<AvailableStoreAdapter.AvailableStore
         }
     }
 
-    fun setStoreStockItems(storeCode: String, storeAvailableList: List<StoreAvailable>, sortBy: Int) {
+    fun setStoreStockItems(storeCode: String, storeAvailableList: List<StoreStock>, sortBy: Int) {
         this.sortedBy = sortBy
 
         val items: ArrayList<AvailableStoreItem>

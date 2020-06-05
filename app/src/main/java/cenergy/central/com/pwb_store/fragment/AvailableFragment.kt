@@ -12,7 +12,7 @@ import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.AvailableProtocol
 import cenergy.central.com.pwb_store.adapter.AvailableStoreAdapter
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.StoreStock
 import cenergy.central.com.pwb_store.realm.RealmController
 import kotlinx.android.synthetic.main.fragment_avaliable.*
 
@@ -23,7 +23,7 @@ class AvailableFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var availableStoreAdapter: AvailableStoreAdapter
 
-    private var storeAvailableList: List<StoreAvailable> = arrayListOf()
+    private var storeAvailableList: List<StoreStock> = arrayListOf()
     private var sortedBy: Int = SORT_NONE
 
     override fun onAttach(context: Context) {
@@ -46,7 +46,7 @@ class AvailableFragment : Fragment() {
         setupOnClickHeader()
     }
 
-    private fun setupStoreStocks(items: List<StoreAvailable>) {
+    private fun setupStoreStocks(items: List<StoreStock>) {
         if (userInformation != null && userInformation.store != null) {
             availableStoreAdapter.setStoreStockItems(userInformation.store!!.retailerId, items, sortedBy)
         } else {

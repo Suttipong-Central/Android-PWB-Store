@@ -1,5 +1,7 @@
 package cenergy.central.com.pwb_store.realm
 
+import cenergy.central.com.pwb_store.model.StoreActive
+import cenergy.central.com.pwb_store.model.StoreStock
 import io.realm.DynamicRealm
 import io.realm.RealmMigration
 
@@ -268,7 +270,7 @@ class MigrationDatabase : RealmMigration {
 
             // OrderResponse add coupon object
             realm.schema.get("OrderResponse")?.apply {
-                realm.schema.get("OderExtension")?.apply{
+                realm.schema.get("OderExtension")?.apply {
                     addRealmObjectField("coupon", coupon)
                 }
             }
@@ -303,9 +305,27 @@ class MigrationDatabase : RealmMigration {
             }
         }
 
-        if (oldVersion < 13){
+        if (oldVersion < 13) {
             realm.schema.get("User")?.apply {
                 addField("userLevel", Long::class.java)
+            }
+        }
+
+        // For OmniTV app version 0.0.1
+        if (oldVersion < 14) {
+            // create store stock
+            val store = realm.schema.create(StoreStock.TABLE_NAME).apply {
+                addField(StoreStock.FIELD_STORE_ID, Int::class.java)
+                addField(StoreStock.FIELD_STORE_NAME, String::class.java)
+                addField(StoreStock.FIELD_SELLER_CODE, String::class.java)
+                addField(StoreStock.FIELD_QTY, Int::class.java)
+                addField(StoreStock.FIELD_CONTACT_PHONE, String::class.java)
+            }
+
+            // create store active
+            realm.schema.create(StoreActive.TABLE_NAME).apply {
+                addField(StoreActive.FIELD_PRODUCT_SKU, String::class.java)
+                addRealmObjectField(StoreActive.FIELD_STORES, store)
             }
         }
     }

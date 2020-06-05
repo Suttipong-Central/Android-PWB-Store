@@ -3,7 +3,6 @@ package cenergy.central.com.pwb_store.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +16,9 @@ import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
 import cenergy.central.com.pwb_store.extensions.isSpecialPrice
 import cenergy.central.com.pwb_store.extensions.setImageUrl
-import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
-import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.realm.RealmController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.pwbOmniTv.fragment_detail.*

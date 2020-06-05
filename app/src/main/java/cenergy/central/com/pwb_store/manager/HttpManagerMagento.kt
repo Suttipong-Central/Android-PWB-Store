@@ -586,11 +586,23 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
-    fun getAvailableStore(sku: String, callback: ApiResponseCallback<List<StoreAvailable>>) {
+    fun getAvailableStore(sku: String, force: Boolean = true, callback: ApiResponseCallback<Pair<List<StoreStock>, Boolean>>) {
+        val endpointName = "${getLanguage()}/rest/V1/storepickup/stores/active/$sku" // path
+
+        // If already cached then do nothing
+        if (!force && database.hasFreshlyCachedEndpoint(endpointName, 72)) { // cache 3 days
+            Log.i("ApiManager", "getAvailableStore: using cached")
+            val storeActives = database.getStoreActiveBySKU(sku)
+            val stores = storeActives?.stores?: arrayListOf()
+            Log.d("ApiManager", "getAvailableStore: sku: $sku, stores: ${stores.size}")
+
+            callback.success(Pair(stores, true))
+            return
+        }
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("${getLanguage()}/rest/V1/storepickup/stores/active/$sku")
+                .addPathSegments(endpointName)
                 .build()
 
         val request = Request.Builder()
@@ -602,41 +614,42 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 if (response != null) {
                     val data = response.body()
-                    val storeAvailableList: ArrayList<StoreAvailable> = arrayListOf()
+                    val stores: ArrayList<StoreStock> = arrayListOf()
 
                     try {
                         val storeAvailableArray = JSONArray(data?.string())
                         for (i in 0 until storeAvailableArray.length()) {
-                            val storeAvailable = StoreAvailable()
-                            val storeAvailableObject = storeAvailableArray.getJSONObject(i)
-                            if (storeAvailableObject.has("source_item")) {
-                                val sourceObject = storeAvailableObject.getJSONObject("source_item")
+                            val store = StoreStock()
+                            val storeArrayObject = storeAvailableArray.getJSONObject(i)
+                            if (storeArrayObject.has("source_item")) {
+                                val sourceObject = storeArrayObject.getJSONObject("source_item")
                                 if (sourceObject.has("quantity")) {
-                                    storeAvailable.qty = sourceObject.getInt("quantity")
+                                    store.qty = sourceObject.getInt("quantity")
                                 }
                             }
-                            if (storeAvailableObject.has("store")) {
-                                val storeObject = storeAvailableObject.getJSONObject("store")
+                            if (storeArrayObject.has("store")) {
+                                val storeObject = storeArrayObject.getJSONObject("store")
                                 if (storeObject.has("name")) {
-                                    storeAvailable.name = storeObject.getString("name")
+                                    store.name = storeObject.getString("name")
                                 }
                                 if (storeObject.has("seller_code")) {
-                                    storeAvailable.sellerCode = storeObject.getString("seller_code")
+                                    store.sellerCode = storeObject.getString("seller_code")
                                 }
                                 if (storeObject.has("custom_attributes")) {
                                     val attrArray = storeObject.getJSONArray("custom_attributes")
                                     for (j in 0 until attrArray.length()) {
                                         when (attrArray.getJSONObject(j).getString("name")) {
                                             "contact_phone" -> {
-                                                storeAvailable.contactPhone = attrArray.getJSONObject(j).getString("value")
+                                                store.contactPhone = attrArray.getJSONObject(j).getString("value")
                                             }
                                         }
                                     }
                                 }
                             }
-                            storeAvailableList.add(storeAvailable)
+                            stores.add(store)
                         }
-                        callback.success(storeAvailableList)
+
+                        callback.success(Pair(stores, false))
                     } catch (e: Exception) {
                         callback.failure(e.getResultError())
                     }
@@ -758,7 +771,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                    callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
         // is chat and shop user?
-        val retailerId = if (isChatAndShop){
+        val retailerId = if (isChatAndShop) {
             null // is chat and shop must be null
         } else {
             database?.userInformation?.store?.storeId?.toInt()

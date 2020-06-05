@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -30,11 +29,10 @@ import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
 import cenergy.central.com.pwb_store.fragment.WebViewFragment
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.manager.api.ProductListAPI
+import cenergy.central.com.pwb_store.manager.api.ProductListApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.DeliveryInfo
-import cenergy.central.com.pwb_store.model.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
@@ -51,6 +49,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         PowerBuyShoppingCartView.OnClickListener {
 
     private val analytics: Analytics? by lazy { Analytics(this) }
+
     // widget view
     private var progressDialog: ProgressDialog? = null
     private lateinit var mToolbar: Toolbar
@@ -68,7 +67,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private var productJdaSku: String? = null
     private var product: Product? = null
     private var childProductList: ArrayList<Product> = arrayListOf()
-//    private var offlinePriceItem: OfflinePriceItem? = null
+
+    //    private var offlinePriceItem: OfflinePriceItem? = null
     private var availableThisStore: Boolean = false
 
     companion object {
@@ -95,13 +95,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-        fun startActivity(context: Context, sku: String){
+        fun startActivity(context: Context, sku: String) {
             val intent = Intent(context, ProductDetailActivity::class.java)
             intent.putExtra(ARG_PRODUCT_SKU, sku)
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-        fun startActivity(context: Context, sku: String, available: Boolean){
+        fun startActivity(context: Context, sku: String, available: Boolean) {
             val intent = Intent(context, ProductDetailActivity::class.java)
             intent.putExtra(ARG_PRODUCT_SKU, sku)
             intent.putExtra(ARG_AVAILABLE_THIS_STORE, available)
@@ -208,7 +208,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                             .toBundle())
         }
 
-        if (BuildConfig.FLAVOR != "pwbOmniTv"){
+        if (BuildConfig.FLAVOR != "pwbOmniTv") {
             mBuyCompareView.setListener(this)
             mBuyShoppingCartView.setListener(this)
         } else {
@@ -393,7 +393,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             filterGroupsList.add(FilterGroups.createFilterGroups("entity_id", result, "in"))
             val sortOrders = java.util.ArrayList<SortOrder>()
 
-            ProductListAPI.retrieveProducts(this, productLinks.size, 1,
+            ProductListApi().retrieveProducts(this, productLinks.size, 1,
                     filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
                 override fun success(response: ProductResponse?) {
                     runOnUiThread {
@@ -460,7 +460,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 DetailFragment(), TAG_DETAIL_FRAGMENT).commitAllowingStateLoss()
         supportFragmentManager.beginTransaction().replace(R.id.containerOverview,
                 ProductOverviewFragment(), TAG_OVERVIEW_FRAGMENT).commitAllowingStateLoss()
-        if (BuildConfig.FLAVOR != "pwbOmniTv"){
+        if (BuildConfig.FLAVOR != "pwbOmniTv") {
             supportFragmentManager.beginTransaction().replace(R.id.containerExtension,
                     ProductExtensionFragment(), TAG_EXTENSION_FRAGMENT).commitAllowingStateLoss()
         }
@@ -612,7 +612,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         builder.show()
     }
 
-    private fun isChatAndShop(): Boolean{
+    private fun isChatAndShop(): Boolean {
         return database.userInformation.user?.userLevel == 3L
     }
 
