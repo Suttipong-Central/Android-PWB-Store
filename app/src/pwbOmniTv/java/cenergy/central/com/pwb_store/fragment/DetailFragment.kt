@@ -24,7 +24,7 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.pwbOmniTv.fragment_detail.*
 
 @SuppressLint("SetTextI18n")
-class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
+class DetailFragment : Fragment(), ProductImageListener {
     private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
     private var productChildren = arrayListOf<Product>()
@@ -43,14 +43,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         product?.let { initDetail(it) }
-    }
-
-    override fun onClick(view: View) {
-        when (view.id) {
-            R.id.shareButton -> {
-                productDetailListener.onShareButtonClickListener()
-            }
-        }
     }
 
     // region {@link ProductImageListener.onProductImageClickListener}
@@ -101,8 +93,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // end region compare
 
         tvAvailableHere.visibility = if (product.availableThisStore) View.VISIBLE else View.GONE
-
-        shareButton.setOnClickListener(this)
+        shareButton.visibility = View.GONE
     }
 
     fun updateAddToCompareButton() {
