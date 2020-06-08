@@ -316,16 +316,16 @@ class MigrationDatabase : RealmMigration {
             // create store stock
             val store = realm.schema.create(StoreStock.TABLE_NAME).apply {
                 addField(StoreStock.FIELD_STORE_ID, Int::class.java)
-                addField(StoreStock.FIELD_STORE_NAME, String::class.java)
-                addField(StoreStock.FIELD_SELLER_CODE, String::class.java)
+                addField(StoreStock.FIELD_STORE_NAME, String::class.java).setNullable(StoreStock.FIELD_STORE_NAME, false)
+                addField(StoreStock.FIELD_SELLER_CODE, String::class.java).setNullable(StoreStock.FIELD_SELLER_CODE, false)
                 addField(StoreStock.FIELD_QTY, Int::class.java)
-                addField(StoreStock.FIELD_CONTACT_PHONE, String::class.java)
+                addField(StoreStock.FIELD_CONTACT_PHONE, String::class.java).setNullable(StoreStock.FIELD_CONTACT_PHONE, false)
             }
 
             // create store active
             realm.schema.create(StoreActive.TABLE_NAME).apply {
-                addField(StoreActive.FIELD_PRODUCT_SKU, String::class.java)
-                addRealmObjectField(StoreActive.FIELD_STORES, store)
+                addField(StoreActive.FIELD_PRODUCT_SKU, String::class.java).setNullable(StoreActive.FIELD_PRODUCT_SKU, false).addPrimaryKey(StoreActive.FIELD_PRODUCT_SKU)
+                addRealmListField(StoreActive.FIELD_STORES, store)
             }
         }
     }

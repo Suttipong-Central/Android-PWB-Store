@@ -56,7 +56,6 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
             badge1H.setImageDrawable(null)
             hidePrice()
         }
-        Log.d("PLP Available", "Available here is " + product.availableThisStore)
         available.visibility = if (product.availableThisStore) View.VISIBLE else View.GONE
     }
 

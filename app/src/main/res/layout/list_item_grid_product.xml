@@ -152,7 +152,7 @@
                     android:paddingTop="@dimen/margin_padding_xsmall"
                     android:paddingBottom="@dimen/margin_padding_xsmall"
                     android:gravity="center_vertical"
-                    android:text="@string/available_here"
+                    android:text="@string/available_here_plp"
                     android:textColor="@color/white"
                     android:background="@drawable/shape_orange_radius"
                     android:textStyle="bold"

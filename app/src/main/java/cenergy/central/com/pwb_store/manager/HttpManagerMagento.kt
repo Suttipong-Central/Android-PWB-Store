@@ -19,6 +19,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.GsonBuilder
+import io.realm.RealmList
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -590,10 +591,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         val endpointName = "${getLanguage()}/rest/V1/storepickup/stores/active/$sku" // path
 
         // If already cached then do nothing
-        if (!force && database.hasFreshlyCachedEndpoint(endpointName, 72)) { // cache 3 days
+        if (!force && database.hasFreshlyCachedEndpoint(endpointName, 12)) { // cache 12 hours
             Log.i("ApiManager", "getAvailableStore: using cached")
             val storeActives = database.getStoreActiveBySKU(sku)
-            val stores = storeActives?.stores?: arrayListOf()
+            val stores = storeActives?.stores?: RealmList()
             Log.d("ApiManager", "getAvailableStore: sku: $sku, stores: ${stores.size}")
 
             callback.success(Pair(stores, true))

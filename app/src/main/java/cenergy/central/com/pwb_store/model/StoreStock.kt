@@ -29,7 +29,7 @@ open class StoreStock(
         var isHighLight: Boolean = false
 ) : AvailableStoreAdapter.AvailableStoreItem, RealmObject() {
     companion object {
-        const val TABLE_NAME = "StoreAvailable"
+        const val TABLE_NAME = "StoreStock"
         const val FIELD_STORE_ID = "storeId"
         const val FIELD_STORE_NAME = "name"
         const val FIELD_QTY = "qty"

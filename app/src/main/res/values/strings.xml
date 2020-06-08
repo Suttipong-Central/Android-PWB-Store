@@ -376,5 +376,8 @@
     <string name="terms_conditions">Terms and Conditions</string>
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
+
+    <!--  Available Here  -->
     <string name="available_here">Available in this store</string>
+    <string name="available_here_plp">Available Here</string>
 </resources>
