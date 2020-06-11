@@ -53,11 +53,13 @@ class ProductListAPI {
                     if (response != null) {
                         try {
                             val productResponse = ParsingUtils.parseToProductResponse(response)
-                            if (BuildConfig.FLAVOR != "pwbOmniTv"){
-                                callback.success(productResponse)
-                            } else {
-                                checkAvailableStore(context, productResponse, callback)
-                            }
+                            //TODO Display available here later on OmniTV
+//                            if (BuildConfig.FLAVOR != "pwbOmniTv"){
+//                                callback.success(productResponse)
+//                            } else {
+//                                checkAvailableStore(context, productResponse, callback)
+//                            }
+                            callback.success(productResponse)
                         } catch (e: Exception) {
                             callback.failure(e.getResultError())
                             Log.e("JSON Parser", "Error parsing data $e")
