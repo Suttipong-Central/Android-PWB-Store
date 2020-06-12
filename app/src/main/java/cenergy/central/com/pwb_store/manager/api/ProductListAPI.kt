@@ -76,36 +76,36 @@ class ProductListAPI {
             })
         }
 
-        fun checkAvailableStore(context: Context, productResponse: ProductResponse, callback: ApiResponseCallback<ProductResponse>) {
-            var count = 0
-            productResponse.products.forEach { product ->
-                HttpManagerMagento.getInstance(context).getAvailableStore(product.sku,
-                        object : ApiResponseCallback<List<StoreAvailable>> {
-                            override fun success(response: List<StoreAvailable>?) {
-                                (context as Activity).runOnUiThread {
-                                    count += 1
-                                    product.availableThisStore = handleAvailableHere(response)
-                                    Log.d("count Available", "count $count size ${productResponse.products.size} sku ${product.sku}")
-                                    if (count == productResponse.products.size){
-                                        count = 0
-                                        callback.success(productResponse)
-                                    }
-                                }
-                            }
-
-                            override fun failure(error: APIError) {
-                                (context as Activity).runOnUiThread {
-                                    count += 1
-                                    Log.d("count Available", "count $count size ${productResponse.products.size}")
-                                    if (count == productResponse.products.size){
-                                        count = 0
-                                        callback.success(productResponse)
-                                    }
-                                }
-                            }
-                        })
-            }
-        }
+//        fun checkAvailableStore(context: Context, productResponse: ProductResponse, callback: ApiResponseCallback<ProductResponse>) {
+//            var count = 0
+//            productResponse.products.forEach { product ->
+//                HttpManagerMagento.getInstance(context).getAvailableStore(product.sku,
+//                        object : ApiResponseCallback<List<StoreAvailable>> {
+//                            override fun success(response: List<StoreAvailable>?) {
+//                                (context as Activity).runOnUiThread {
+//                                    count += 1
+//                                    product.availableThisStore = handleAvailableHere(response)
+//                                    Log.d("count Available", "count $count size ${productResponse.products.size} sku ${product.sku}")
+//                                    if (count == productResponse.products.size){
+//                                        count = 0
+//                                        callback.success(productResponse)
+//                                    }
+//                                }
+//                            }
+//
+//                            override fun failure(error: APIError) {
+//                                (context as Activity).runOnUiThread {
+//                                    count += 1
+//                                    Log.d("count Available", "count $count size ${productResponse.products.size}")
+//                                    if (count == productResponse.products.size){
+//                                        count = 0
+//                                        callback.success(productResponse)
+//                                    }
+//                                }
+//                            }
+//                        })
+//            }
+//        }
 
         fun handleAvailableHere(listStoreAvailable: List<StoreAvailable>?) : Boolean{
             val userInformation = RealmController.getInstance().userInformation

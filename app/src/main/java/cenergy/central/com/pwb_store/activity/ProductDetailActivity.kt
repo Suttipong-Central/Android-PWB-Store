@@ -32,10 +32,7 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.DeliveryInfo
-import cenergy.central.com.pwb_store.model.OfflinePriceItem
-import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
@@ -419,17 +416,36 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                 object : ApiResponseCallback<List<DeliveryInfo>> {
                     override fun success(response: List<DeliveryInfo>?) {
                         product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
-                        dismissProgressDialog()
-                        startProductDetailFragment(product)
+                        checkAvailableHere(product)
                     }
 
                     override fun failure(error: APIError) {
-                        dismissProgressDialog()
-                        startProductDetailFragment(product)
+                        checkAvailableHere(product)
                     }
                 })
     }
     // end region
+
+    private fun checkAvailableHere(product: Product){
+        HttpManagerMagento.getInstance(this).getAvailableStore(product.sku,
+                object : ApiResponseCallback<List<StoreAvailable>> {
+                    override fun success(response: List<StoreAvailable>?) {
+                        runOnUiThread {
+                            availableThisStore = ProductListAPI.handleAvailableHere(response)
+                            dismissProgressDialog()
+                            startProductDetailFragment(product)
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
+                        runOnUiThread {
+                            Log.d("Available", "API fail")
+                            dismissProgressDialog()
+                            startProductDetailFragment(product)
+                        }
+                    }
+                })
+    }
 
     private fun startProductDetailFragment(product: Product) {
         // set product
