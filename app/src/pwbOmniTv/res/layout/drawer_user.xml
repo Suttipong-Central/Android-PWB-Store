@@ -17,12 +17,13 @@
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/storeNameTextView"
-        style="@style/TextAppearance.AppCompat.Display1"
+        style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:maxLines="1"
+        android:maxLines="2"
         android:padding="4dp"
+        android:ellipsize="end"
         android:textColor="@android:color/white"
         tools:text="Central World" />
 
