@@ -44,7 +44,6 @@
         </activity>
         <activity
             android:name=".activity.MainActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.ProductListActivity"
@@ -72,7 +71,6 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.LoginActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.ShoppingCartActivity"
@@ -88,7 +86,6 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.ProductDetailActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"/>
 
         <meta-data

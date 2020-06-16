@@ -78,8 +78,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
-    // Realm
-    private val db = RealmController.getInstance()
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -150,7 +148,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
-        savedInstanceState?.let { onRestoreInstanceState(it) }
+        if (savedInstanceState == null) {
+            arguments?.let { onRestoreInstanceState(it) }
+        } else {
+            onRestoreInstanceState(savedInstanceState)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -332,8 +334,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         categoryLv2 = savedInstanceState.getParcelable(ARG_CATEGORY)
         categoriesLv3 = savedInstanceState.getParcelableArrayList(ARG_PRODUCT_FILTER)
         categoryId = savedInstanceState.getString(ARG_DEPARTMENT_ID)
-        sortName = savedInstanceState.getString(ARG_SORT_NAME)
-        sortType = savedInstanceState.getString(ARG_SORT_TYPE)
+        sortName = savedInstanceState.getString(ARG_SORT_NAME, "")
+        sortType = savedInstanceState.getString(ARG_SORT_TYPE, "")
         isDoneFilter = savedInstanceState.getBoolean(ARG_IS_DONE)
         title = savedInstanceState.getString(ARG_TITLE)
         currentPage = savedInstanceState.getInt(ARG_PAGE)

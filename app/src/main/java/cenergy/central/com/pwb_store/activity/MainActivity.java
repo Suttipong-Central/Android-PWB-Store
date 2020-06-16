@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
@@ -72,6 +73,11 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private static final String TAG_FRAGMENT_SUB_HEADER = "category_sub_header";
     private static final String TAG_FRAGMENT_PRODUCT_LIST = "product_list";
     private static final int TIME_TO_WAIT = 2000;
+
+    // Bundle
+    private static final String EXTRA_CATEGORY_LV1 = "EXTRA_CATEGORY_LV1";
+    private static final String EXTRA_CATEGORY_LV2 = "EXTRA_CATEGORY_LV2";
+    private static final String EXTRA_CURRENT_FRAGMENT = "EXTRA_CURRENT_FRAGMENT";
 
     private Toolbar toolbar;
     private DrawerLayout drawer;
@@ -147,6 +153,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState != null) {
+            retrieveInstanceState(savedInstanceState);
+        }
+
         languageButton = findViewById(R.id.switch_language_button);
         // setup analytic
         analytics = new Analytics(this);
@@ -155,6 +165,21 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         fbRemoteConfig = RemoteConfigUtils.INSTANCE.initFirebaseRemoteConfig();
         handleChangeLanguage();
         initView();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_CATEGORY_LV1, categoryLv1);
+        outState.putParcelable(EXTRA_CATEGORY_LV2, categoryLv2);
+        //Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, EXTRA_CURRENT_FRAGMENT, currentFragment);
+    }
+
+    private void retrieveInstanceState(Bundle bundle) {
+        categoryLv1 = bundle.getParcelable(EXTRA_CATEGORY_LV1);
+        categoryLv2 = bundle.getParcelable(EXTRA_CATEGORY_LV2);
+        currentFragment = getSupportFragmentManager().getFragment(bundle, EXTRA_CURRENT_FRAGMENT);
     }
 
     private void initView() {
