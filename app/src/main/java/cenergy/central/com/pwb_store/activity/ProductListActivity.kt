@@ -14,6 +14,7 @@ class ProductListActivity : BaseActivity() {
     private var languageButton: LanguageButton? = null
     private var networkStateView: NetworkStateView? = null
     private var keyWord: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_list)

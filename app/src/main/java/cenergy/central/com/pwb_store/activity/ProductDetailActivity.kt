@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -32,7 +31,10 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.DeliveryInfo
+import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
@@ -70,6 +72,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
+        const val ARG_PRODUCT = "ARG_PRODUCT"
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
         const val ARG_PRODUCT_JDA_SKU = "ARG_PRODUCT_JDA_SKU"
         const val ARG_AVAILABLE_THIS_STORE = "ARG_AVAILABLE_THIS_STORE"
@@ -174,12 +177,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(ARG_PRODUCT_SKU, productSku)
+        outState.putParcelable(ARG_PRODUCT, product)
 //        outState.putParcelable(ARG_PRICE_PER_STORE, offlinePriceItem)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         productSku = savedInstanceState.getString(ARG_PRODUCT_SKU)
+        product = savedInstanceState.getParcelable(ARG_PRODUCT)
 //        offlinePriceItem = savedInstanceState.getParcelable(ARG_PRICE_PER_STORE)
     }
 
@@ -206,6 +211,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         }
 
         if (BuildConfig.FLAVOR != "pwbOmniTv"){
+            mBuyCompareView.visibility = View.VISIBLE
+            mBuyShoppingCartView.visibility = View.VISIBLE
             mBuyCompareView.setListener(this)
             mBuyShoppingCartView.setListener(this)
         } else {

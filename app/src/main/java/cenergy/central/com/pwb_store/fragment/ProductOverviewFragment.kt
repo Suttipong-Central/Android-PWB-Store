@@ -29,6 +29,7 @@ class ProductOverviewFragment : Fragment() {
 
     companion object {
         const val style = "<meta charset='UTF-8'><style> body, div, p { font-size: 15 !important; } </style>"
+        const val ARG_PRODUCT = "ARG_PRODUCT"
     }
 
     override fun onAttach(context: Context) {
@@ -44,6 +45,18 @@ class ProductOverviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState != null){
+            product = savedInstanceState.getParcelable(ARG_PRODUCT)
+        }
+        initView()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(ARG_PRODUCT, product)
+    }
+
+    private fun initView(){
         setupProductSpecification()
         setupProductInfo()
         setupProductKeyFeatures()

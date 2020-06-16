@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.CategoryUtils;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
@@ -173,7 +171,9 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         outState.putParcelable(EXTRA_CATEGORY_LV1, categoryLv1);
         outState.putParcelable(EXTRA_CATEGORY_LV2, categoryLv2);
         //Save the fragment's instance
-        getSupportFragmentManager().putFragment(outState, EXTRA_CURRENT_FRAGMENT, currentFragment);
+        if (currentFragment != null){
+            getSupportFragmentManager().putFragment(outState, EXTRA_CURRENT_FRAGMENT, currentFragment);
+        }
     }
 
     private void retrieveInstanceState(Bundle bundle) {

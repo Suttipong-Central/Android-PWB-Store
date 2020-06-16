@@ -87,10 +87,6 @@ class DetailFragment : Fragment(), ProductImageListener {
             hideSpecialPrice()
         }
 
-        productSpacialPriceLayout.visibility = View.GONE
-        productPriceLayout.visibility = View.GONE
-        addToCompare.visibility = View.GONE
-
         // region compare
 //        addToCompare.setImageDrawable(R.drawable.ic_compare_bar)
 //        setEnableCompareButton()

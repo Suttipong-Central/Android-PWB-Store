@@ -34,7 +34,6 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFil
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
-import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.Screen
@@ -42,7 +41,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.*
 import kotlin.math.ceil
 
 class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener {
@@ -55,7 +53,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mProductListAdapter: ProductListAdapter? = null
     private var mLayoutManger: GridLayoutManager? = null
     private var categoriesLv3: ArrayList<Category>? = null
-    private var brands: List<FilterItem> = ArrayList()
+    private var brands: ArrayList<FilterItem> = ArrayList()
     private var mSortingList: SortingList? = null
     private var title: String? = null
     private var mPowerBuyPopupWindow: PowerBuyPopupWindow? = null
@@ -152,6 +150,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             arguments?.let { onRestoreInstanceState(it) }
         } else {
             onRestoreInstanceState(savedInstanceState)
+            currentPage = 0
+            retrieveProductList()
         }
     }
 
@@ -325,6 +325,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         outState.putString(ARG_KEY_WORD, keyWord)
         outState.putBoolean(ARG_SEARCH, isSearch)
         outState.putBoolean(ARG_IS_SORTING, isSorting)
+        outState.putParcelable(ARG_PRODUCT_RESPONSE, productResponse)
+        outState.putParcelableArrayList(ARG_FILTER_ITEMS, brands)
     }
 
     /*
@@ -342,6 +344,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         keyWord = savedInstanceState.getString(ARG_KEY_WORD)
         isSearch = savedInstanceState.getBoolean(ARG_SEARCH)
         isSorting = savedInstanceState.getBoolean(ARG_IS_SORTING)
+        productResponse = savedInstanceState.getParcelable(ARG_PRODUCT_RESPONSE)
+        brands = savedInstanceState.getParcelableArrayList(ARG_FILTER_ITEMS) ?: arrayListOf()
     }
 
     private fun popUpShow() {
@@ -461,19 +465,19 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 //                        }
 //                    }
 //                }
-                mProductListAdapter!!.setProduct(response)
+                mProductListAdapter?.setProduct(response)
             } else {
-                mProductListAdapter!!.setError()
+                mProductListAdapter?.setError()
             }
             setTextHeader(totalItem, title)
         } else {
-            if (mProductListAdapter!!.itemCount == 0) {
-                mProductListAdapter!!.setError()
+            if (mProductListAdapter?.itemCount == 0) {
+                mProductListAdapter?.setError()
             }
             setTextHeader(totalItem, title)
         }
-        layoutProgress!!.visibility = View.GONE
-        mProgressDialog!!.dismiss()
+        layoutProgress?.visibility = View.GONE
+        mProgressDialog?.dismiss()
     }
 
     // region {@link OnBrandFilterClickListener}
@@ -551,6 +555,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_CATEGORY = "ARG_CATEGORY"
         private const val ARG_KEY_WORD = "ARG_KEY_WORD"
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
+        private const val ARG_PRODUCT_RESPONSE = "ARG_PRODUCT_RESPONSE"
+        private const val ARG_FILTER_ITEMS = "ARG_FILTER_ITEMS"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
         private const val CHAT_AND_SHOP_FIELD = "retailer_id"
