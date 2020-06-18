@@ -53,7 +53,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mProductListAdapter: ProductListAdapter? = null
     private var mLayoutManger: GridLayoutManager? = null
     private var categoriesLv3: ArrayList<Category>? = null
-    private var brands: ArrayList<FilterItem> = ArrayList()
+    private var brands: ArrayList<FilterItem>? = null
     private var mSortingList: SortingList? = null
     private var title: String? = null
     private var mPowerBuyPopupWindow: PowerBuyPopupWindow? = null
@@ -75,7 +75,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var totalItem = 0
     private var mContext: Context? = null
     private var keyWord: String? = null
-    private var productResponse: ProductResponse? = null
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -133,13 +132,30 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         val sortingItem = sortingItemBus.sortingItem
         isDoneFilter = true
         isSorting = true
-        resetPage()
         sortName = sortingItem.slug
         sortType = sortingItem.value
+        resetPage()
         retrieveProductList()
         mPowerBuyPopupWindow!!.updateSingleSortingItem(sortingItem)
         if (mPowerBuyPopupWindow!!.isShowing) {
             mPowerBuyPopupWindow!!.dismiss()
+        }
+    }
+
+    // region {@link OnBrandFilterClickListener}
+    override fun onClickedItem(filterItem: FilterItem?) {
+        isDoneFilter = true
+        resetPage()
+        if (filterItem != null) {
+            brandName = filterItem.value // brand name
+            showProgressDialog()
+            retrieveProductList()
+            mPowerBuyPopupWindow?.updateSingleBrandFilterItem(filterItem)
+        } else {
+            clearBrandFilter()
+        }
+        if (mPowerBuyPopupWindow != null && mPowerBuyPopupWindow!!.isShowing) {
+            mPowerBuyPopupWindow?.dismiss()
         }
     }
 
@@ -207,13 +223,13 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 mPowerBuyPopupWindow!!.showAsDropDown(v)
             }
             R.id.layout_sort ->  // Create productResponse for check because we mock up sort items
-                if (mSortingList == null || productResponse == null || productResponse!!.products.isEmpty()) {
+                if (mSortingList == null) {
                     mPowerBuyPopupWindow!!.dismiss()
                 } else {
                     mPowerBuyPopupWindow!!.setRecyclerViewSorting(mSortingList)
                     mPowerBuyPopupWindow!!.showAsDropDown(v)
                 }
-            R.id.layout_brand -> if (brands.isEmpty()) {
+            R.id.layout_brand -> if (brands == null || brands!!.isEmpty()) {
                 mPowerBuyPopupWindow!!.dismiss()
             } else {
                 mPowerBuyPopupWindow!!.setRecyclerViewFilterByBrand(brands, this)
@@ -313,7 +329,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
      */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Save Instance State here
         outState.putParcelable(ARG_CATEGORY, categoryLv2)
         outState.putParcelableArrayList(ARG_PRODUCT_FILTER, categoriesLv3)
         outState.putString(ARG_DEPARTMENT_ID, categoryId)
@@ -325,7 +340,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         outState.putString(ARG_KEY_WORD, keyWord)
         outState.putBoolean(ARG_SEARCH, isSearch)
         outState.putBoolean(ARG_IS_SORTING, isSorting)
-        outState.putParcelable(ARG_PRODUCT_RESPONSE, productResponse)
         outState.putParcelableArrayList(ARG_FILTER_ITEMS, brands)
     }
 
@@ -344,7 +358,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         keyWord = savedInstanceState.getString(ARG_KEY_WORD)
         isSearch = savedInstanceState.getBoolean(ARG_SEARCH)
         isSorting = savedInstanceState.getBoolean(ARG_IS_SORTING)
-        productResponse = savedInstanceState.getParcelable(ARG_PRODUCT_RESPONSE)
         brands = savedInstanceState.getParcelableArrayList(ARG_FILTER_ITEMS) ?: arrayListOf()
     }
 
@@ -426,13 +439,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     private fun updateProductList(response: ProductResponse?) {
-        productResponse = response
         if (response != null) {
             if (response.filters.isNotEmpty()) {
                 brands = response.filters[0].items
-                for (filterItem in brands) {
-                    if (brandName != null && brandName == filterItem.value) {
-                        filterItem.isSelected = true
+                brands?.forEach { brand ->
+                    if (brandName != null && brandName == brand.value) {
+                        brand.isSelected = true
                     }
                 }
             }
@@ -480,32 +492,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         mProgressDialog?.dismiss()
     }
 
-    // region {@link OnBrandFilterClickListener}
-    override fun onClickedItem(filterItem: FilterItem?) {
-        isDoneFilter = true
-        resetPage()
-        if (filterItem != null) {
-            brandName = filterItem.value // brand name
-            if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
-                showProgressDialog()
-            }
-            if (mPowerBuyPopupWindow!!.isShowing) {
-                mPowerBuyPopupWindow!!.dismiss()
-            }
-            retrieveProductList()
-            mPowerBuyPopupWindow!!.updateSingleBrandFilterItem(filterItem)
-        } else {
-            clearBrandFilter()
-        }
-    }
-
     private fun clearBrandFilter() {
         brandName = "" // clear brand
-        if (mProgressDialog != null && !mProgressDialog!!.isShowing) {
-            showProgressDialog()
-        }
+        showProgressDialog()
         retrieveProductList()
-        mPowerBuyPopupWindow!!.updateSingleBrandFilterItem(null)
+        mPowerBuyPopupWindow?.updateSingleBrandFilterItem(null)
     }
 
     // endregion
@@ -555,7 +546,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_CATEGORY = "ARG_CATEGORY"
         private const val ARG_KEY_WORD = "ARG_KEY_WORD"
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
-        private const val ARG_PRODUCT_RESPONSE = "ARG_PRODUCT_RESPONSE"
         private const val ARG_FILTER_ITEMS = "ARG_FILTER_ITEMS"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
