@@ -63,6 +63,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.utils.RemoteConfigUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
+import cenergy.central.com.pwb_store.view.ProductCompareView;
 
 public class MainActivity extends BaseActivity implements MenuDrawerClickListener,
         CategoryAdapter.CategoryAdapterListener {
@@ -545,5 +546,11 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         } else {
             startCategoryLvTwoFragment(categoryLv1);
         }
+    }
+
+    @Nullable
+    @Override
+    public ProductCompareView getProductCompareView() {
+        return null;
     }
 }

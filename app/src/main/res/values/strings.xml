@@ -25,7 +25,7 @@
     <string name="product_overview">Key Features</string>
     <string name="product_info">Product Info</string>
     <string name="product_available">Check store stock</string>
-    <string name="product_compare">Compare products</string>
+    <string name="product_compare">Compare Products</string>
     <string name="product_read">Read More >></string>
     <string name="product_promotion">Promotion</string>
     <string name="product_spec">Specification</string>
@@ -376,4 +376,7 @@
     <string name="terms_conditions">Terms and Conditions</string>
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
+    <string name="format_add_more_to_compare">Add more to compare (%s/4)</string>
+    <string name="compare_clear_all">Clear all</string>
+    <string name="format_compare_products">Compare Product (%s/4)</string>
 </resources>

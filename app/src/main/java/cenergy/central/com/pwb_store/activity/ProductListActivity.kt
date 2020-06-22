@@ -8,6 +8,7 @@ import cenergy.central.com.pwb_store.fragment.ProductListFragment.Companion.newI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 
 class ProductListActivity : BaseActivity() {
     private var isSearch = false
@@ -37,6 +38,8 @@ class ProductListActivity : BaseActivity() {
     override fun getSwitchButton(): LanguageButton? {
         return languageButton
     }
+
+    override fun getProductCompareView(): ProductCompareView? = null
 
     private fun initView() {
         networkStateView = findViewById(R.id.network_state_View)

@@ -26,6 +26,7 @@ import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.Screen;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
+import cenergy.central.com.pwb_store.view.ProductCompareView;
 
 /**
  * Created by napabhat on 7/11/2017 AD.
@@ -150,5 +151,11 @@ public class SearchActivity extends BaseActivity {
     @Override
     public NetworkStateView getStateView() {
         return networkStateView;
+    }
+
+    @Nullable
+    @Override
+    public ProductCompareView getProductCompareView() {
+        return null;
     }
 }

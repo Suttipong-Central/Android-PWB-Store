@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 
 class HistoryActivity : BaseActivity(), HistoryClickListener {
 
@@ -95,4 +96,6 @@ class HistoryActivity : BaseActivity(), HistoryClickListener {
     override fun getSwitchButton(): LanguageButton? = null
 
     override fun getStateView(): NetworkStateView? = networkStateView
+
+    override fun getProductCompareView(): ProductCompareView? = null
 }

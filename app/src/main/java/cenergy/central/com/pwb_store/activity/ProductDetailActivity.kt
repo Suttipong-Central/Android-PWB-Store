@@ -42,10 +42,8 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
-import cenergy.central.com.pwb_store.view.LanguageButton
-import cenergy.central.com.pwb_store.view.NetworkStateView
-import cenergy.central.com.pwb_store.view.PowerBuyCompareView
-import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import cenergy.central.com.pwb_store.view.*
+import kotlinx.android.synthetic.main.activity_product_detail.*
 
 class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
         PowerBuyShoppingCartView.OnClickListener {
@@ -118,6 +116,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
         bindView()
         retrieveProductDetail()
+        observeCompareProducts()
     }
 
     override fun onResume() {
@@ -128,6 +127,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         updateCompareBadge()
         updateShoppingCartBadge()
     }
+
+    override fun getProductCompareView(): ProductCompareView? = productCompareView
 
     private fun retrieveProductDetail() {
         if (productSku != null) {

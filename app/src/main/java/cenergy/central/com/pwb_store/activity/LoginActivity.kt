@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -113,4 +114,6 @@ class LoginActivity : BaseActivity(), UserLoginListener {
     // region network state
     override fun getStateView(): NetworkStateView? = networkStateView
     // end region
+
+    override fun getProductCompareView(): ProductCompareView? = null
 }
