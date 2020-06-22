@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cenergy.central.com.pwb_store.BuildConfig;
 import cenergy.central.com.pwb_store.CategoryUtils;
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.adapter.CategoryAdapter;
@@ -66,7 +64,7 @@ import cenergy.central.com.pwb_store.view.NetworkStateView;
 import cenergy.central.com.pwb_store.view.ProductCompareView;
 
 public class MainActivity extends BaseActivity implements MenuDrawerClickListener,
-        CategoryAdapter.CategoryAdapterListener {
+        CategoryAdapter.CategoryAdapterListener, ProductCompareView.ProductCompareViewListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
@@ -84,6 +82,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private ProgressDialog mProgressDialog;
     private LanguageButton languageButton;
     private NetworkStateView networkStateView;
+    private ProductCompareView productCompareView;
 
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
@@ -149,6 +148,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         languageButton = findViewById(R.id.switch_language_button);
+        productCompareView = findViewById(R.id.productCompareView);
+
         // setup analytic
         analytics = new Analytics(this);
 
@@ -156,6 +157,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
         fbRemoteConfig = RemoteConfigUtils.INSTANCE.initFirebaseRemoteConfig();
         handleChangeLanguage();
         initView();
+        observeCompareProducts();
     }
 
     private void initView() {
@@ -478,11 +480,10 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     }
 
     /**
-     *
      * override method from BaseActivity
      * on language change
      * on network connection change
-     * */
+     */
     @Override
     public void onChangedLanguage(@NotNull AppLanguage lang) {
         drawer.closeDrawers();
@@ -551,6 +552,17 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     @Nullable
     @Override
     public ProductCompareView getProductCompareView() {
-        return null;
+        productCompareView.addProductCompareViewListener(this);
+        return productCompareView;
+    }
+
+    @Override
+    public void resetCompareProducts() {
+        database.deleteAllCompareProduct();
+    }
+
+    @Override
+    public void openComparePage() {
+        CompareActivity.Companion.startCompareActivity(this, productCompareView);
     }
 }

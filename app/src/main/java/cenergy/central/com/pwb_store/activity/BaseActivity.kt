@@ -31,11 +31,14 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
     // widget view
     private var languageButton: LanguageButton? = null
+
     // data
     private var compareLiveData: LiveData<List<CompareProduct>>? = null
+
     // observer
     private var compareObserver = Observer<List<CompareProduct>> {
         updateCompareCountView(it.size)
+        onCompareChange(it)
     }
 
     override fun onStart() {
@@ -105,6 +108,11 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     override fun onChangedLanguage(lang: AppLanguage) {
         preferenceManager.setDefaultLanguage(lang) // save language
         handleChangeLanguage()
+
+        // update product compare view
+        getProductCompareView()?.refreshView()
+
+        // update network state view
         if (currentState != null && currentState != NetworkInfo.State.CONNECTED) {
             updateNetworkStateView(currentState!!)
         }
@@ -137,6 +145,10 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
                 }
             }
         }
+    }
+
+    fun onCompareChange(compareProducts: List<CompareProduct>?) {
+
     }
 
     companion object {

@@ -68,6 +68,9 @@
     <string name="can_not_show_spec">You have no Items to compare.</string>
     <string name="clear_all">Clear all</string>
     <string name="text_comfirm_clear_all">Do you want to remove all products from compare list?</string>
+    <string name="format_add_more_to_compare">Add more to compare (%s/4)</string>
+    <string name="compare_clear_all">Clear all</string>
+    <string name="format_compare_products">Compare Product (%s/4)</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>
@@ -376,7 +379,5 @@
     <string name="terms_conditions">Terms and Conditions</string>
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
-    <string name="format_add_more_to_compare">Add more to compare (%s/4)</string>
-    <string name="compare_clear_all">Clear all</string>
-    <string name="format_compare_products">Compare Product (%s/4)</string>
+
 </resources>

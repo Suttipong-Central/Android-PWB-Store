@@ -68,6 +68,9 @@
     <string name="text_comfirm_clear_all">ต้องการลบสินค้าทั้งหมดออกจากหน้าเปรียบเทียบใช่หรือไม่</string>
     <string name="add_more_to_compare">เลือกสินค้าเพิ่มเพื่อเปรียบเทียบ</string>
     <string name="can_not_show_spec">โปรดเลือกสินค้าที่ต้องการเปรียบเทียบ</string>
+    <string name="format_add_more_to_compare">เลือกสินค้าที่ต้องการจะเปรียบเทียบเพิ่ม (%s/4)</string>
+    <string name="compare_clear_all">ลบทั้งหมด</string>
+    <string name="format_compare_products">เปรียบเทียบสินค้า (%s/4)</string>
 
     <!-- Search -->
     <string name="clear_history">Clear History</string>
