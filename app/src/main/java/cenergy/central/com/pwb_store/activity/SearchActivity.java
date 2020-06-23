@@ -115,8 +115,6 @@ public class SearchActivity extends BaseActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() != null) {
-                //TODO แก้Barcode
-                Log.d(TAG, "barcode : " + result.getContents());
                 if (analytics != null) {
                     analytics.trackSearchByBarcode(result.getContents());
                 }

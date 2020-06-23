@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import cenergy.central.com.pwb_store.R
 
@@ -46,7 +47,12 @@ class ProductCompareView : ConstraintLayout {
         compareButton = view.findViewById(R.id.compareButton)
 
         // set onclick
-        clearButton?.setOnClickListener { listener?.resetCompareProducts() }
+        clearButton?.setOnClickListener {
+            listener?.resetCompareProducts()
+            context?.let {
+                Toast.makeText(it, it.getString(R.string.compare_cleared), Toast.LENGTH_SHORT).show()
+            }
+        }
         compareButton?.setOnClickListener { listener?.openComparePage() }
     }
 
