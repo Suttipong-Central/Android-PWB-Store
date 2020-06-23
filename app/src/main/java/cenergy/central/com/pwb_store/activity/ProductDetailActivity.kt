@@ -21,9 +21,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.GalleryActivity.Companion.RESULT_IMAGE_SELECTED
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
-import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.DetailFragment
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
 import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
@@ -75,11 +75,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
         const val ARG_PRODUCT_JDA_SKU = "ARG_PRODUCT_JDA_SKU"
         const val ARG_PRICE_PER_STORE = "ARG_PRICE_PER_STORE"
+        const val ARG_UPDATE_IMAGE_SELECTED = "ARG_UPDATE_IMAGE_SELECTED"
 
         private const val TAG = "ProductDetailActivity"
         private const val TAG_DETAIL_FRAGMENT = "fragment_detail"
         private const val TAG_OVERVIEW_FRAGMENT = "fragment_overview"
         private const val TAG_EXTENSION_FRAGMENT = "fragment_extension"
+
+        const val REQUEST_UPDATE_IMAGE_SELECTED = 4020
 
         fun startActivityBySku(context: Context, sku: String) {
             val intent = Intent(context, ProductDetailActivity::class.java)
@@ -150,6 +153,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         super.onActivityResult(requestCode, resultCode, data)
         // check compare product
         checkCompareProduct()
+
+        if (requestCode == REQUEST_UPDATE_IMAGE_SELECTED && resultCode == RESULT_IMAGE_SELECTED){
+            val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+            val imageSelectedIndex = data?.extras?.getInt(ARG_UPDATE_IMAGE_SELECTED) ?: 0
+            (fragment as DetailFragment).updateImageSelected(imageSelectedIndex)
+        }
+
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             // check language
             if (getSwitchButton() != null) {

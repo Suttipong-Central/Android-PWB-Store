@@ -8,5 +8,5 @@ import cenergy.central.com.pwb_store.model.ProductDetailImageItem
  */
 
 interface ProductImageListener{
-    fun onProductImageClickListener(productImage: ProductDetailImageItem)
+    fun onProductImageClickListener(index: Int, productImage: ProductDetailImageItem)
 }

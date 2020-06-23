@@ -57,7 +57,6 @@ public class ProductDetail implements IViewType, Parcelable {
     private String brand;
     private String brandEN;
     private String bu;
-    private List<ProductDetailImageItem> mProductDetailImageItems;
     private ProductDetailImage productImageList;
     private double savePercent;
     private double originalPrice;
@@ -137,7 +136,6 @@ public class ProductDetail implements IViewType, Parcelable {
         detailPromotionList = in.createTypedArrayList(ProductDetailPromotion.CREATOR);
         productDetailOption = in.readParcelable(ProductDetailOption.class.getClassLoader());
         mSpecDao = in.readParcelable(SpecDao.class.getClassLoader());
-        mProductDetailImageItems = in.createTypedArrayList(ProductDetailImageItem.CREATOR);
         mProductRelatedLists = in.createTypedArrayList(ProductRelatedList.CREATOR);
         mExtensionProductDetail = in.readParcelable(ExtensionProductDetail.class.getClassLoader());
         mCustomAttributesProductDetails = in.createTypedArrayList(CustomAttributesProductDetail.CREATOR);
@@ -193,7 +191,6 @@ public class ProductDetail implements IViewType, Parcelable {
         dest.writeList(detailPromotionList);
         dest.writeParcelable(productDetailOption, flags);
         dest.writeParcelable(mSpecDao, flags);
-        dest.writeList(mProductDetailImageItems);
         dest.writeList(mProductRelatedLists);
         dest.writeParcelable(mExtensionProductDetail, flags);
         dest.writeTypedList(mCustomAttributesProductDetails);
@@ -247,21 +244,6 @@ public class ProductDetail implements IViewType, Parcelable {
 
     public void setBu(String bu) {
         this.bu = bu;
-    }
-
-    public ProductDetailImage getProductImageList() {
-        if (productImageList == null) {
-            List<ProductDetailImageItem> productDetailImageItems = new ArrayList<>();
-            productDetailImageItems.add(new ProductDetailImageItem("1", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("2", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("3", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("4", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("5", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("6", ""));
-
-            productImageList = new ProductDetailImage(4, productDetailImageItems);
-        }
-        return productImageList;
     }
 
     public void setProductImageList(ProductDetailImage productImageList) {
@@ -495,14 +477,6 @@ public class ProductDetail implements IViewType, Parcelable {
 
     public void setRecommend(Recommend recommend) {
         mRecommend = recommend;
-    }
-
-    public List<ProductDetailImageItem> getProductDetailImageItems() {
-        return mProductDetailImageItems;
-    }
-
-    public void setProductDetailImageItems(List<ProductDetailImageItem> productDetailImageItems) {
-        mProductDetailImageItems = productDetailImageItems;
     }
 
     public List<ProductRelatedList> getProductRelatedLists() {

@@ -1,12 +1,13 @@
 package cenergy.central.com.pwb_store.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
+import cenergy.central.com.pwb_store.extensions.setImage
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
 
@@ -29,15 +30,20 @@ class ProductImageAdapter(private val listener: ProductImageListener,private val
         val productImage = productImageList[position]
         holder.bindItem(productImage)
         holder.itemView.setOnClickListener {
-            listener.onProductImageClickListener(productImage)
+            listener.onProductImageClickListener(position, productImage)
         }
     }
 
     inner class ProductImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val ivProductImage = itemView.findViewById<ImageView>(R.id.ivProductImage)
+
         fun bindItem(productImage: ProductDetailImageItem) {
-            ivProductImage?.setImageUrl(productImage.imgUrl)
+            if (productImage.imgUrl != null){
+                ivProductImage.setImageUrl(productImage.imgUrl!!)
+            } else {
+                ivProductImage.setImage(R.drawable.ic_placeholder)
+            }
         }
     }
 }

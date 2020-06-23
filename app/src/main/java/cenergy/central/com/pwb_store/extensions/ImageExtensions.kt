@@ -42,9 +42,9 @@ fun ImageView.set1HourBadge(){
     val preferenceManager = PreferenceManager(this.context)
     val language = preferenceManager.getDefaultLanguage()
     this.setImageDrawable(
-            if (language == "th") {
-                ContextCompat.getDrawable(this.context ,R.drawable.ic_1h_badge_th)
-            } else {
-                ContextCompat.getDrawable(this.context ,R.drawable.ic_1h_badge_en)
-            })
+        if (language == "th") {
+            ContextCompat.getDrawable(this.context ,R.drawable.ic_1h_badge_th)
+        } else {
+            ContextCompat.getDrawable(this.context ,R.drawable.ic_1h_badge_en)
+        })
 }

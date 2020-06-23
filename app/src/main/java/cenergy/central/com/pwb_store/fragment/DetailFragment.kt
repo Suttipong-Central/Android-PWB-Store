@@ -1,8 +1,11 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.GalleryActivity
+import cenergy.central.com.pwb_store.activity.ProductDetailActivity
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
@@ -32,8 +37,6 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
-
-    // widget view
     private var childProduct: Product? = null
     private var configOptions: List<ProductOption>? = listOf()
     private var productOptionShade: ProductOption? = null
@@ -45,6 +48,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private var sizeAttributeId: String = ""
     private var shadeAttributeId: String = ""
     private var productChildren = arrayListOf<Product>()
+    private var imageSelectedIndex: Int = 0
+    private lateinit var productImageList: ProductDetailImage
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -90,14 +95,32 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             R.id.shareButton -> {
                 productDetailListener.onShareButtonClickListener()
             }
+            R.id.ivProductImage -> {
+                context?.let {
+                    GalleryActivity.startActivity(it, imageSelectedIndex, productImageList.productDetailImageItems)
+                }
+            }
         }
     }
 
     // region {@link ProductImageListener.onProductImageClickListener}
-    override fun onProductImageClickListener(productImage: ProductDetailImageItem) {
-        ivProductImage.setImageUrl(productImage.imgUrl)
+    override fun onProductImageClickListener(index: Int, productImage: ProductDetailImageItem) {
+        this.imageSelectedIndex = index
+        if (productImage.imgUrl != null){
+            ivProductImage.setImageUrl(productImage.imgUrl!!)
+        } else {
+            ivProductImage.setImage(R.drawable.ic_placeholder)
+        }
     }
     // endregion
+
+    fun updateImageSelected(imageSelectedIndex: Int) {
+        if (productImageList.productDetailImageItems[imageSelectedIndex].imgUrl != null){
+            ivProductImage.setImageUrl(productImageList.productDetailImageItems[imageSelectedIndex].imgUrl!!)
+        } else {
+            ivProductImage.setImage(R.drawable.ic_placeholder)
+        }
+    }
 
     private fun setupView() {
         // is pwb?
@@ -120,7 +143,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     private fun initDetail(product: Product) {
         // setup product image
-        val productImageList = product.getProductImageList()
+        productImageList = product.getProductImageList()
         if (productImageList.productDetailImageItems.size > 0) {
             Glide.with(Contextor.getInstance().context)
                     .load(productImageList.productDetailImageItems[0].imgUrl)
@@ -226,6 +249,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // setup available store button
         availableStoreButton.setImageDrawable(R.drawable.ic_store)
         availableStoreButton.setOnClickListener(this)
+
+        ivProductImage.setOnClickListener(this)
 
         // setup add to compare check box
         updateCompareCheckBox()

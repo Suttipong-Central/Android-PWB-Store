@@ -117,21 +117,6 @@ public class ExtensionProductDetail implements IViewType,Parcelable {
         this.description = description;
     }
 
-    public ProductDetailImage getProductImageList() {
-        if (productImageList == null) {
-            List<ProductDetailImageItem> productDetailImageItems = new ArrayList<>();
-            productDetailImageItems.add(new ProductDetailImageItem("1", imageUrl));
-            productDetailImageItems.add(new ProductDetailImageItem("2", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("3", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("4", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("5", ""));
-            productDetailImageItems.add(new ProductDetailImageItem("6", ""));
-
-            productImageList = new ProductDetailImage(4, productDetailImageItems);
-        }
-        return productImageList;
-    }
-
     public List<PromotionItem> getPromotionItems() {
         return mPromotionItems;
     }

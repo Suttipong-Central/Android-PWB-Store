@@ -25,10 +25,10 @@ public class ProductDetailImage implements IViewType, Parcelable {
     };
     private int viewTypeId;
     private int total;
-    private List<ProductDetailImageItem> mProductDetailImageItems;
+    private ArrayList<ProductDetailImageItem> mProductDetailImageItems;
     private ProductDetailImageItem selectedProductDetailImageItem;
 
-    public ProductDetailImage(int total, List<ProductDetailImageItem> productDetailImageItems) {
+    public ProductDetailImage(int total, ArrayList<ProductDetailImageItem> productDetailImageItems) {
         this.total = total;
         this.mProductDetailImageItems = productDetailImageItems;
 
@@ -73,27 +73,14 @@ public class ProductDetailImage implements IViewType, Parcelable {
         this.total = total;
     }
 
-    public List<ProductDetailImageItem> getProductDetailImageItems() {
+    public ArrayList<ProductDetailImageItem> getProductDetailImageItems() {
         return mProductDetailImageItems;
     }
 
-    public void setProductDetailImageItems(List<ProductDetailImageItem> productDetailImageItems) {
+    public void setProductDetailImageItems(ArrayList<ProductDetailImageItem> productDetailImageItems) {
         mProductDetailImageItems = productDetailImageItems;
     }
 
-    public void validateProductDetailImageItemList() {
-        ProductDetailImageItem productDetailImageItem;
-        for (int i = 0; i < mProductDetailImageItems.size(); i++) {
-            productDetailImageItem = mProductDetailImageItems.get(i);
-            if (isSelectedProductDetailImageItemAvailable()) {
-                if (productDetailImageItem.getImgUrl().equalsIgnoreCase(getSelectedProductDetailImageItem().getImgUrl())) {
-                    productDetailImageItem.setSelected(true);
-                } else {
-                    productDetailImageItem.setSelected(false);
-                }
-            }
-        }
-    }
 
     public boolean isSelectedProductDetailImageItemAvailable() {
         return selectedProductDetailImageItem != null;
@@ -105,7 +92,5 @@ public class ProductDetailImage implements IViewType, Parcelable {
 
     public void setSelectedProductDetailImageItem(ProductDetailImageItem selectedProductDetailImageItem) {
         this.selectedProductDetailImageItem = selectedProductDetailImageItem;
-        validateProductDetailImageItemList();
     }
-
 }
