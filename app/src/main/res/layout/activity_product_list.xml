@@ -22,6 +22,12 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <cenergy.central.com.pwb_store.view.ProductCompareView
+        android:id="@+id/productCompareView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
+
     <cenergy.central.com.pwb_store.view.VersionWatermarkView
         android:id="@+id/watermarkView"
         android:layout_width="wrap_content"

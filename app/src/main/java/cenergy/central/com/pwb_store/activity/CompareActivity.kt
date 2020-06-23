@@ -35,6 +35,7 @@ import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 import kotlinx.android.synthetic.main.activity_compare.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -147,6 +148,8 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         EventBus.getDefault().unregister(this)
         super.onPause()
     }
+    
+    override fun getProductCompareView(): ProductCompareView? = null
 
     // region language
     override fun onChangedLanguage(lang: AppLanguage) {

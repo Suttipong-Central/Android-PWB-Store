@@ -257,6 +257,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         compareCheckBox.setOnCheckedChangeListener { _, isChecked ->
             productDetailListener.addProductToCompare(product, isChecked)
         }
+
+        // setup share button
+        shareButton.setOnClickListener(this)
     }
 
     fun updateCompareCheckBox() {
@@ -268,9 +271,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     fun unCheckCompareCheckBox() {
         compareCheckBox.isChecked = false
-        // setup add to compare button)
-
-        shareButton.setOnClickListener(this)
     }
 
     private fun handleUpdateSizeAdapter() {

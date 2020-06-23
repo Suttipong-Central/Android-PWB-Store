@@ -49,6 +49,7 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
@@ -171,6 +172,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 editStorePickup = true)
         startFragment(fragment)
     }
+
+    override fun getProductCompareView(): ProductCompareView? = null
 
     override fun getSwitchButton(): LanguageButton? = languageButton
 

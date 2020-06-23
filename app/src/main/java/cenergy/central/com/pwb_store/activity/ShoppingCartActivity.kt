@@ -259,6 +259,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
     // end region
 
+    override fun getProductCompareView(): ProductCompareView? = null
 
     private fun refreshShoppingCart() {
         showProgressDialog()
