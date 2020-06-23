@@ -30,10 +30,11 @@
             <FrameLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:background="@android:color/white"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_constraintBottom_toTopOf="@+id/productCompareView" />
+                app:layout_constraintBottom_toTopOf="@+id/productCompareView"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <cenergy.central.com.pwb_store.view.ProductCompareView
                 android:id="@+id/productCompareView"

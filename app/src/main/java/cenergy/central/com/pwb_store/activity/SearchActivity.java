@@ -22,6 +22,7 @@ import cenergy.central.com.pwb_store.fragment.SearchSuggestionFragment;
 import cenergy.central.com.pwb_store.manager.bus.event.BarcodeBus;
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage;
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager;
+import cenergy.central.com.pwb_store.realm.RealmController;
 import cenergy.central.com.pwb_store.utils.Analytics;
 import cenergy.central.com.pwb_store.utils.Screen;
 import cenergy.central.com.pwb_store.view.LanguageButton;
@@ -32,7 +33,7 @@ import cenergy.central.com.pwb_store.view.ProductCompareView;
  * Created by napabhat on 7/11/2017 AD.
  */
 
-public class SearchActivity extends BaseActivity {
+public class SearchActivity extends BaseActivity implements ProductCompareView.ProductCompareViewListener {
     public static final String TAG = SearchActivity.class.getSimpleName();
 
     private Analytics analytics;
@@ -40,6 +41,7 @@ public class SearchActivity extends BaseActivity {
     private LanguageButton languageButton;
     private PreferenceManager preferenceManager;
     private NetworkStateView networkStateView;
+    private ProductCompareView productCompareView;
 
     @Subscribe
     public void onEvent(BarcodeBus barcodeBus){
@@ -58,7 +60,9 @@ public class SearchActivity extends BaseActivity {
         analytics = new Analytics(this);
         preferenceManager = new PreferenceManager(this);
         languageButton = findViewById(R.id.switch_language_button);
+        productCompareView = findViewById(R.id.productCompareView);
 
+        observeCompareProducts();
         handleChangeLanguage();
         initView();
         //TODO ยังไม่มี Suggestion รอ API
@@ -82,7 +86,6 @@ public class SearchActivity extends BaseActivity {
         }
 
         mToolbar.setNavigationOnClickListener(v -> finish());
-
     }
 
     @Override
@@ -154,6 +157,17 @@ public class SearchActivity extends BaseActivity {
     @Nullable
     @Override
     public ProductCompareView getProductCompareView() {
-        return null;
+        productCompareView.addProductCompareViewListener(this);
+        return productCompareView;
+    }
+
+    @Override
+    public void resetCompareProducts() {
+        RealmController.getInstance().deleteAllCompareProduct();
+    }
+
+    @Override
+    public void openComparePage() {
+        CompareActivity.Companion.startCompareActivity(this, productCompareView);
     }
 }

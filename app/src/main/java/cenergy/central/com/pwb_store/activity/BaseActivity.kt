@@ -38,7 +38,6 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     // observer
     private var compareObserver = Observer<List<CompareProduct>> {
         updateCompareCountView(it.size)
-        onCompareChange(it)
     }
 
     override fun onStart() {
@@ -147,8 +146,9 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
         }
     }
 
-    fun onCompareChange(compareProducts: List<CompareProduct>?) {
-
+    override fun onDestroy() {
+        super.onDestroy()
+        compareLiveData?.removeObserver(compareObserver)
     }
 
     companion object {
