@@ -72,6 +72,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     // endregion
 
     fun updateImageSelected(imageSelectedIndex: Int) {
+        this.imageSelectedIndex = imageSelectedIndex
         if (productImageList.productDetailImageItems[imageSelectedIndex].imgUrl != null) {
             ivProductImage.setImageUrl(productImageList.productDetailImageItems[imageSelectedIndex].imgUrl!!)
         } else {
