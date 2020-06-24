@@ -10,11 +10,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.CompareProtocol
 import cenergy.central.com.pwb_store.adapter.interfaces.CompareItemListener
 import cenergy.central.com.pwb_store.extensions.getCompareProducts
-import cenergy.central.com.pwb_store.extensions.isProductInStock
 import cenergy.central.com.pwb_store.fragment.CompareFragment
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -35,6 +35,7 @@ import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 import kotlinx.android.synthetic.main.activity_compare.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -49,10 +50,10 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     private var compareProducts: List<CompareProduct> = arrayListOf()
     private var compareProductDetailList: List<CompareProductResponse> = arrayListOf()
 
-    companion object{
-        fun startCompareActivity(activity: Activity, view: View){
+    companion object {
+        fun startCompareActivity(activity: Activity, view: View) {
             val compareSize = activity.getCompareProducts()
-            if(compareSize > 1){
+            if (compareSize > 1) {
                 val intent = Intent(activity, CompareActivity::class.java)
                 ActivityCompat.startActivityForResult(activity, intent, REQUEST_UPDATE_LANGUAGE, ActivityOptionsCompat
                         .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
@@ -134,7 +135,14 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
             supportActionBar!!.setDisplayShowTitleEnabled(false)
         }
         mToolbar.setNavigationOnClickListener { finish() }
-        mBuyShoppingCartView.setListener(this)
+
+        // setup shopping cart button and badge
+        if (BuildConfig.FLAVOR != "pwbOmniTv") {
+            mBuyShoppingCartView.visibility = View.VISIBLE
+            mBuyShoppingCartView.setListener(this)
+        } else {
+            mBuyShoppingCartView.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
@@ -147,6 +155,8 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
         EventBus.getDefault().unregister(this)
         super.onPause()
     }
+
+    override fun getProductCompareView(): ProductCompareView? = null
 
     // region language
     override fun onChangedLanguage(lang: AppLanguage) {
@@ -219,12 +229,12 @@ class CompareActivity : BaseActivity(), CompareItemListener, PowerBuyShoppingCar
     // endregion
 
     override fun onClearAllProductCompare() {
-        if (getSKUs().isNotEmpty()){
+        if (getSKUs().isNotEmpty()) {
             showOKAlertDialog(getString(R.string.text_comfirm_clear_all))
         }
     }
 
-    private fun clearAllCompareProducts(){
+    private fun clearAllCompareProducts() {
         database.deleteAllCompareProduct()
         val fragment = supportFragmentManager.findFragmentByTag(CompareFragment.tag)
         if (fragment != null) {

@@ -149,6 +149,11 @@ public class RealmController {
     public CompareProduct getCompareProduct(String sku) {
         return realm.where(CompareProduct.class).equalTo(CompareProduct.FIELD_SKU, sku).findFirst();
     }
+
+    public RealmResults<CompareProduct> getCompareProductsAsync() {
+        Realm realm = getRealm();
+        return realm.where(CompareProduct.class).sort(CompareProduct.FIELD_SKU, Sort.DESCENDING).findAllAsync();
+    }
     // endregion
 
     // region cart item

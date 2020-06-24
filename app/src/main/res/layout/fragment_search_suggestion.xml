@@ -20,6 +20,7 @@
         android:textAllCaps="true"
         android:textColor="@color/headerTextColor"
         android:textColorHint="@color/hintColor"
+        android:textCursorDrawable="@drawable/custom_cursor"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/image_view_barcode"
         app:layout_constraintStart_toStartOf="parent"

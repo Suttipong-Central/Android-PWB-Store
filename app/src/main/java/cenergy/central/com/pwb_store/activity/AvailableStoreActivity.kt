@@ -18,6 +18,7 @@ import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 
 class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
 
@@ -145,6 +146,8 @@ class AvailableStoreActivity : BaseActivity(), AvailableProtocol {
     override fun getStoreAvailable() = this.storeAvailableList
 
     override fun getStateView(): NetworkStateView? = networkStateView
+
+    override fun getProductCompareView(): ProductCompareView? = null
 
     override fun getSwitchButton(): LanguageButton? = languageButton
 

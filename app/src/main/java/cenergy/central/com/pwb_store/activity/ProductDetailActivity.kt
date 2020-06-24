@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +22,7 @@ import androidx.core.app.ActivityOptionsCompat
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.GalleryActivity.Companion.RESULT_IMAGE_SELECTED
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
 import cenergy.central.com.pwb_store.fragment.DetailFragment
@@ -41,19 +43,17 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
-import cenergy.central.com.pwb_store.view.LanguageButton
-import cenergy.central.com.pwb_store.view.NetworkStateView
-import cenergy.central.com.pwb_store.view.PowerBuyCompareView
-import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import cenergy.central.com.pwb_store.view.*
+import kotlinx.android.synthetic.main.activity_product_detail.*
 
-class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCompareView.OnClickListener,
-        PowerBuyShoppingCartView.OnClickListener {
+class ProductDetailActivity : BaseActivity(), ProductDetailListener,
+        PowerBuyShoppingCartView.OnClickListener, ProductCompareView.ProductCompareViewListener {
 
     private val analytics: Analytics? by lazy { Analytics(this) }
+
     // widget view
     private var progressDialog: ProgressDialog? = null
     private lateinit var mToolbar: Toolbar
-    private lateinit var mBuyCompareView: PowerBuyCompareView
     private lateinit var mBuyShoppingCartView: PowerBuyShoppingCartView
     private lateinit var tvNotFound: TextView
     private lateinit var containerGroupView: ConstraintLayout
@@ -77,11 +77,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         const val ARG_PRODUCT_JDA_SKU = "ARG_PRODUCT_JDA_SKU"
         const val ARG_AVAILABLE_THIS_STORE = "ARG_AVAILABLE_THIS_STORE"
 //        const val ARG_PRICE_PER_STORE = "ARG_PRICE_PER_STORE"
+        const val ARG_UPDATE_IMAGE_SELECTED = "ARG_UPDATE_IMAGE_SELECTED"
 
         private const val TAG = "ProductDetailActivity"
         private const val TAG_DETAIL_FRAGMENT = "fragment_detail"
         private const val TAG_OVERVIEW_FRAGMENT = "fragment_overview"
         private const val TAG_EXTENSION_FRAGMENT = "fragment_extension"
+
+        const val REQUEST_UPDATE_IMAGE_SELECTED = 4020
 
         fun startActivityBySku(context: Context, sku: String) {
             val intent = Intent(context, ProductDetailActivity::class.java)
@@ -121,7 +124,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         setContentView(R.layout.activity_product_detail)
         languageButton = findViewById(R.id.switch_language_button)
         networkStateView = findViewById(R.id.networkStateView)
-        handleChangeLanguage()
 
         // get intent extra
         intent.extras?.let {
@@ -132,17 +134,22 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
             availableThisStore = it.getBoolean(ARG_AVAILABLE_THIS_STORE)
         }
 
+        handleChangeLanguage()
         bindView()
         retrieveProductDetail()
+        observeCompareProducts()
     }
 
     override fun onResume() {
         super.onResume()
         // analytics
         analytics?.trackScreen(Screen.PRODUCT_DETAIL)
-
-        updateCompareBadge()
         updateShoppingCartBadge()
+    }
+
+    override fun getProductCompareView(): ProductCompareView? {
+        productCompareView?.addProductCompareViewListener(this)
+        return productCompareView
     }
 
     private fun retrieveProductDetail() {
@@ -166,6 +173,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         super.onActivityResult(requestCode, resultCode, data)
         // check compare product
         updateAddToCompareButton()
+
+        if (requestCode == REQUEST_UPDATE_IMAGE_SELECTED && resultCode == RESULT_IMAGE_SELECTED){
+            val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
+            val imageSelectedIndex = data?.extras?.getInt(ARG_UPDATE_IMAGE_SELECTED) ?: 0
+            (fragment as DetailFragment).updateImageSelected(imageSelectedIndex)
+        }
+
         if (requestCode == REQUEST_UPDATE_LANGUAGE) {
             // check language
             if (getSwitchButton() != null) {
@@ -190,7 +204,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
 
     private fun bindView() {
         mToolbar = findViewById(R.id.toolbar)
-        mBuyCompareView = mToolbar.findViewById(R.id.button_compare)
         mBuyShoppingCartView = mToolbar.findViewById(R.id.shopping_cart)
         tvNotFound = findViewById(R.id.tvNotFound)
         containerGroupView = findViewById(R.id.containerGroupView)
@@ -210,13 +223,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
                             .toBundle())
         }
 
+        // setup shopping cart button and badge
         if (BuildConfig.FLAVOR != "pwbOmniTv"){
-            mBuyCompareView.visibility = View.VISIBLE
             mBuyShoppingCartView.visibility = View.VISIBLE
-            mBuyCompareView.setListener(this)
             mBuyShoppingCartView.setListener(this)
         } else {
-            mBuyCompareView.visibility = View.GONE
             mBuyShoppingCartView.visibility = View.GONE
         }
     }
@@ -289,12 +300,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     }
     // endregion
 
-    // region {@link PowerBuyCompareView.OnClickListener}
-    override fun onCompareClickListener(view: View) {
-        CompareActivity.startCompareActivity(this, view)
-    }
-    // endregion
-
     // region {@link PowerBuyShoppingCartView.OnClickListener}
     override fun onShoppingCartClick(view: View) {
         if (database.cacheCartItems.size > 0) {
@@ -315,6 +320,18 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         } else {
             showCommonDialog(getString(R.string.some_thing_wrong))
         }
+    }
+    // endregion
+
+
+    // region {@link ProductCompareView.ProductCompareViewListener}
+    override fun resetCompareProducts() {
+        database.deleteAllCompareProduct()
+        setEnableCompareButton()
+    }
+
+    override fun openComparePage() {
+        CompareActivity.startCompareActivity(this, productCompareView)
     }
     // endregion
 
@@ -503,16 +520,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         mBuyShoppingCartView.setBadgeCart(count)
     }
 
-    private fun updateCompareBadge() {
-        val count = database.compareProducts.size
-        mBuyCompareView.updateCartCount(count)
-    }
-
-    private fun updateCompareBadge(count: Int) {
-        mBuyCompareView.updateCartCount(count)
-    }
-
-
     private fun showAlertDialog(message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
@@ -551,8 +558,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
     private fun saveCompareProduct(product: Product) {
         database.saveCompareProduct(product, object : DatabaseListener {
             override fun onSuccessfully() {
-                updateCompareBadge()
                 setDisableCompareButton()
+                dismissProgressDialog()
             }
 
             override fun onFailure(error: Throwable) {
@@ -566,8 +573,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         showProgressDialog()
         val count = database.compareProducts.size
         if (count >= 1) {
-            val compareProducts = database.deleteCompareProduct(product.sku)
-            updateCompareBadge(compareProducts?.size ?: 0)
+            database.deleteCompareProduct(product.sku)
         }
         dismissProgressDialog()
     }
@@ -635,13 +641,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, PowerBuyCom
         builder.show()
     }
 
-    private fun isChatAndShop(): Boolean{
+    private fun isChatAndShop(): Boolean {
         return database.userInformation.user?.userLevel == 3L
     }
 
     private fun updateAddToCompareButton() {
         val fragment = supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)
-        (fragment as DetailFragment).updateAddToCompareButton()
+        (fragment as DetailFragment).updateCompareCheckBox()
     }
 
     private fun setEnableCompareButton() {

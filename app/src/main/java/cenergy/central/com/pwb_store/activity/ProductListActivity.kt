@@ -1,15 +1,17 @@
 package cenergy.central.com.pwb_store.activity
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.widget.Toolbar
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.fragment.ProductListFragment.Companion.newInstance
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.ProductCompareView
+import kotlinx.android.synthetic.main.activity_product_list.productCompareView
 
-class ProductListActivity : BaseActivity() {
+class ProductListActivity : BaseActivity(), ProductCompareView.ProductCompareViewListener {
     private var isSearch = false
     private var languageButton: LanguageButton? = null
     private var networkStateView: NetworkStateView? = null
@@ -27,6 +29,7 @@ class ProductListActivity : BaseActivity() {
             keyWord = extras.getString(ARG_KEY_WORD)
         }
         initView()
+        observeCompareProducts()
         startProductListFragment(keyWord, isSearch)
     }
 
@@ -37,6 +40,11 @@ class ProductListActivity : BaseActivity() {
 
     override fun getSwitchButton(): LanguageButton? {
         return languageButton
+    }
+
+    override fun getProductCompareView(): ProductCompareView? {
+        productCompareView?.addProductCompareViewListener(this)
+        return productCompareView
     }
 
     private fun initView() {
@@ -70,4 +78,14 @@ class ProductListActivity : BaseActivity() {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID"
         const val ARG_KEY_WORD = "ARG_KEY_WORD"
     }
+
+    // region {@link ProductCompareView.ProductCompareViewListener}
+    override fun resetCompareProducts() {
+        RealmController.getInstance().deleteAllCompareProduct()
+    }
+
+    override fun openComparePage() {
+        CompareActivity.startCompareActivity(this, productCompareView)
+    }
+    // endregion
 }
