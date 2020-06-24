@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.viewpager2.widget.ViewPager2
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity.Companion.ARG_UPDATE_IMAGE_SELECTED
 import cenergy.central.com.pwb_store.activity.ProductDetailActivity.Companion.REQUEST_UPDATE_IMAGE_SELECTED
@@ -20,30 +20,32 @@ import java.util.*
 
 class GalleryActivity : AppCompatActivity(), SelectedImageListener {
 
-    var imageSelectedIndex: Int = 0
-    var productImageList: ArrayList<ProductDetailImageItem> = arrayListOf()
+    private var imageSelectedIndex: Int = 0
+    private var productImageList: ArrayList<ProductDetailImageItem> = arrayListOf()
     private val galleryImageAdapter = GalleryImageAdapter()
     private val galleryIndicatorAdapter = GalleryIndicatorAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
+        imageSelectedIndex = intent?.extras?.getInt(ARG_IMAGE_SELECTED) ?: 0
+        productImageList = intent?.extras?.getParcelableArrayList(ARG_PRODUCT_IMAGE_LIST) ?: arrayListOf()
+        galleryImageAdapter.productImageList = productImageList
+        galleryIndicatorAdapter.productImageList = productImageList
         galleryIndicatorAdapter.setSelectedImageListener(this)
         galleryIndicatorRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         galleryIndicatorRecycler.adapter = galleryIndicatorAdapter
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(galleryIndicatorRecycler)
         galleryImageViewPager.adapter = galleryImageAdapter
-        finishedActivityBt.setOnClickListener { finishActivity() }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        imageSelectedIndex = intent?.extras?.getInt(ARG_IMAGE_SELECTED) ?: 0
-        productImageList = intent?.extras?.getParcelableArrayList(ARG_PRODUCT_IMAGE_LIST) ?: arrayListOf()
-        galleryImageAdapter.productImageList = productImageList
-        galleryIndicatorAdapter.productImageList = productImageList
         galleryImageViewPager.currentItem = imageSelectedIndex
+        galleryImageViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                this@GalleryActivity.imageSelectedIndex = position
+            }
+        })
+        finishedActivityBt.setOnClickListener { finishActivity() }
     }
 
     override fun onClickImageListener(index: Int) {
