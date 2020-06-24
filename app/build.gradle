@@ -108,8 +108,8 @@ android {
         pwbOmniTv {
             applicationId "cenergy.central.com.eordering.pwb_omni_tv"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 7
-            versionName "0.0.1"
+            versionCode 8
+            versionName "1.0.0"
         }
 
         cds {
