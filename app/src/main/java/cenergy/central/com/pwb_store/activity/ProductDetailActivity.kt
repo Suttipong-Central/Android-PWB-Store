@@ -67,6 +67,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     private var product: Product? = null
     private var childProductList: ArrayList<Product> = arrayListOf()
     private var offlinePriceItem: OfflinePriceItem? = null
+    private var deliveryInfoList = arrayListOf<DeliveryInfo>()
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
@@ -298,7 +299,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     }
     // endregion
 
-
     // region {@link ProductCompareView.ProductCompareViewListener}
     override fun resetCompareProducts() {
         database.deleteAllCompareProduct()
@@ -309,6 +309,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         CompareActivity.startCompareActivity(this, productCompareView)
     }
     // endregion
+
+    override fun getDeliveryInfoList(): List<DeliveryInfo> = this.deliveryInfoList
+
+    override fun setDeliveryInfoList(deliveryInfos: List<DeliveryInfo>) {
+        this.deliveryInfoList.clear()
+        this.deliveryInfoList.addAll(deliveryInfos)
+    }
 
     // region retrieve product
     private fun retrieveProductByBarcode(barcode: String) {
@@ -372,7 +379,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
             if (response.typeId == "configurable") {
                 checkProductConfig(response)
             } else {
-                checkHDLOption(response)
+                startProductDetailFragment(response)
             }
         } else {
             dismissProgressDialog()
@@ -395,7 +402,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
                     runOnUiThread {
                         if (response != null) {
                             childProductList = response.products
-                            checkHDLOption(product)
+                            startProductDetailFragment(product)
                         }
                     }
                 }
@@ -403,31 +410,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
                 override fun failure(error: APIError) {
                     runOnUiThread {
                         Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
-                        checkHDLOption(product)
+                        startProductDetailFragment(product)
                     }
                 }
             })
         }
     }
-
-    private fun checkHDLOption(product: Product) {
-        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku,
-                object : ApiResponseCallback<List<DeliveryInfo>> {
-                    override fun success(response: List<DeliveryInfo>?) {
-                        product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
-                        dismissProgressDialog()
-                        startProductDetailFragment(product)
-                    }
-
-                    override fun failure(error: APIError) {
-                        dismissProgressDialog()
-                        startProductDetailFragment(product)
-                    }
-                })
-    }
     // end region
 
     private fun startProductDetailFragment(product: Product) {
+        dismissProgressDialog()
         // set product
         this@ProductDetailActivity.productSku = product.sku
         if (!isChatAndShop() && offlinePriceItem != null) {

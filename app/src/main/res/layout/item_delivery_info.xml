@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_padding_small">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivDeliveryIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delivery_standard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDeliveryTitle"
+        style="@style/TextAppearance.AppCompat.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginEnd="@dimen/margin_padding_small"
+        app:layout_constraintBottom_toBottomOf="@id/ivDeliveryIcon"
+        app:layout_constraintEnd_toStartOf="@+id/tvDeliveryCost"
+        app:layout_constraintStart_toEndOf="@+id/ivDeliveryIcon"
+        app:layout_constraintTop_toTopOf="@+id/ivDeliveryIcon"
+        tools:text="Express" />
+
+    <TextView
+        android:id="@+id/tvDeliveryCost"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/freeColor"
+        app:layout_constraintBottom_toBottomOf="@id/ivDeliveryIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ivDeliveryIcon"
+        tools:text="Free" />
+
+    <TextView
+        android:id="@+id/tvDeliveryDescription"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/tvDeliveryTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvDeliveryTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvDeliveryTitle"
+        tools:text="Description"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
