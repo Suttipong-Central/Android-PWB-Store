@@ -1,38 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_delivery"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/margin_padding_normal">
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/txt_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:padding="5dp"
-        android:text="@string/product_delivery"
-        android:textColor="@color/nameProductColor"
-        android:textSize="20sp"
-        app:typeFaceAsset="RobotoLight.ttf" />
-
-    <cenergy.central.com.pwb_store.view.CalendarViewCustom
-        android:id="@+id/custom_calendar"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDeliveryOption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"/>
+        android:overScrollMode="never" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/tvNotHaveHomeDelivery"
-        android:layout_width="match_parent"
-        style="@style/Base.TextAppearance.AppCompat.Medium"
-        android:layout_height="200dp"
-        android:gravity="center"
-        android:text="@string/product_not_have_delivery"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </LinearLayout>
