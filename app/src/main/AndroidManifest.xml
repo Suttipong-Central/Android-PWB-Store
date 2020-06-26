@@ -54,7 +54,6 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.CompareActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.WebViewActivity"
@@ -87,7 +86,6 @@
             android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".activity.GalleryActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"/>
 
         <meta-data
