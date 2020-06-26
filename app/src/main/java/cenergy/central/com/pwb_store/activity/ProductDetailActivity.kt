@@ -219,6 +219,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
         retrieveProductDetail()
+        clearDeliveryInfo()
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
@@ -315,6 +316,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     override fun setDeliveryInfoList(deliveryInfos: List<DeliveryInfo>) {
         this.deliveryInfoList.clear()
         this.deliveryInfoList.addAll(deliveryInfos)
+    }
+
+    private fun clearDeliveryInfo() {
+        this.deliveryInfoList.clear()
     }
 
     // region retrieve product

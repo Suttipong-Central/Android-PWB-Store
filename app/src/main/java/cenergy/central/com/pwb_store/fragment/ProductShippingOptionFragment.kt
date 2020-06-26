@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.adapter.DeliveryInfoAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
@@ -25,6 +26,7 @@ class ProductShippingOptionFragment : Fragment() {
     private var product: Product? = null
     private var deliveryList: List<DeliveryInfo> = arrayListOf()
     private var progressDialog: ProgressDialog? = null
+    private val deliveryInfoAdapter by lazy { DeliveryInfoAdapter() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -62,7 +64,7 @@ class ProductShippingOptionFragment : Fragment() {
                         response?.let {
                             deliveryList = it
                             productDetailListener?.setDeliveryInfoList(it)
-                            Toast.makeText(context, "de ${response.size}", Toast.LENGTH_SHORT).show()
+                            updateDeliveryList()
                         }
                         dismissProgressDialog()
                     }
@@ -76,12 +78,13 @@ class ProductShippingOptionFragment : Fragment() {
     private fun setupView() {
         rvDeliveryOption?.apply {
             layoutManager = LinearLayoutManager(context)
-
+            adapter = deliveryInfoAdapter
+            setHasFixedSize(true)
         }
     }
 
     private fun updateDeliveryList() {
-
+        deliveryInfoAdapter.items = ArrayList(deliveryList)
     }
 
     private fun showProgressDialog() {
