@@ -378,17 +378,13 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
 
-            if (!isChatAndShop()){
-                // is staff level is not chat and shop
-                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "eq"))
-            }
-
             // TODO We have to do not display market place product
             filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
 
             if (brandName != null && brandName!!.isNotEmpty()) {
                 filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
             }
+
             val sortOrders = ArrayList<SortOrder>()
             if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
                 val sortOrder = createSortOrder(sortName!!, sortType!!)
@@ -551,7 +547,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
-        private const val CHAT_AND_SHOP_FIELD = "retailer_id"
         //Pagination
         private const val PER_PAGE = 20
 
