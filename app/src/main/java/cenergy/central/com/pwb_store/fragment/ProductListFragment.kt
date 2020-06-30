@@ -452,6 +452,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                                 product.specialFromDate = null
                                 product.specialToDate = null
                             }
+                        } else {
+                            product.specialPrice = 0.0
+                            product.specialFromDate = null
+                            product.specialToDate = null
                         }
                     }
                 }
