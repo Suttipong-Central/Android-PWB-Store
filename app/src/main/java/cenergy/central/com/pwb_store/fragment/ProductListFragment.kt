@@ -469,6 +469,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                                 product.specialToDate = null
                             }
                         } else {
+                            // this case is don't have offline price will display online normal price only
                             product.specialPrice = 0.0
                             product.specialFromDate = null
                             product.specialToDate = null
