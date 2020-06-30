@@ -34,6 +34,7 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFil
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import cenergy.central.com.pwb_store.utils.Screen
@@ -201,8 +202,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         resetPage()
         // sorting
         val sortingItems: MutableList<SortingItem> = ArrayList()
-//        sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
-//        sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
         sortingItems.add(SortingItem(3, getString(R.string.a_to_z), "brand", "ASC", "3", false))
         sortingItems.add(SortingItem(4, getString(R.string.z_to_a), "brand", "DESC", "4", false))
         val sortingHeaders: MutableList<SortingHeader> = ArrayList()
@@ -397,11 +396,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
 
-//            if (!isChatAndShop()){
-//                // is staff level is not chat and shop
-//                filterGroupsList.add(createFilterGroups(CHAT_AND_SHOP_FIELD, db.userInformation.store?.storeId.toString(), "eq"))
-//            }
-
             // TODO We have to do not display market place product
             filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
 
@@ -454,29 +448,29 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 currentPage = nextPage
                 response.currentPage = currentPage
                 // implement price per store if staff not chat and shop
-//                if (!isChatAndShop()) {
-//                    response.products.forEach { product ->
-//                        val offlinePriceItem = product.getPricePerStore()
-//                        if (offlinePriceItem != null) {
-//                            product.price = offlinePriceItem.price
-//                            if (offlinePriceItem.specialPrice > 0) {
-//                                product.specialPrice = offlinePriceItem.specialPrice
-//                                product.specialFromDate = null
-//                                product.specialToDate = null
-//                                if (offlinePriceItem.specialFromDate != null) {
-//                                    product.specialFromDate = offlinePriceItem.specialFromDate
-//                                }
-//                                if (offlinePriceItem.specialToDate != null) {
-//                                    product.specialToDate = offlinePriceItem.specialToDate
-//                                }
-//                            } else {
-//                                product.specialPrice = 0.0
-//                                product.specialFromDate = null
-//                                product.specialToDate = null
-//                            }
-//                        }
-//                    }
-//                }
+                if (!isChatAndShop()) {
+                    response.products.forEach { product ->
+                        val offlinePriceItem = product.getPricePerStore()
+                        if (offlinePriceItem != null) {
+                            product.price = offlinePriceItem.price
+                            if (offlinePriceItem.specialPrice > 0) {
+                                product.specialPrice = offlinePriceItem.specialPrice
+                                product.specialFromDate = null
+                                product.specialToDate = null
+                                if (offlinePriceItem.specialFromDate != null) {
+                                    product.specialFromDate = offlinePriceItem.specialFromDate
+                                }
+                                if (offlinePriceItem.specialToDate != null) {
+                                    product.specialToDate = offlinePriceItem.specialToDate
+                                }
+                            } else {
+                                product.specialPrice = 0.0
+                                product.specialFromDate = null
+                                product.specialToDate = null
+                            }
+                        }
+                    }
+                }
                 mProductListAdapter?.setProduct(response)
             } else {
                 mProductListAdapter?.setError()
@@ -528,9 +522,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         })
     }
 
-//    private fun isChatAndShop(): Boolean{
-//        return db.userInformation.user?.userLevel == 3L
-//    }
+    private fun isChatAndShop(): Boolean{
+        val db = RealmController.getInstance()
+        return db.userInformation.user?.userLevel == 3L
+    }
 
     companion object {
         private val TAG = ProductListFragment::class.java.simpleName

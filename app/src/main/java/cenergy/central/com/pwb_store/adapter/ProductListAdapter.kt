@@ -67,12 +67,7 @@ class ProductListAdapter(private val mContext: Context) : RecyclerView.Adapter<R
                             clicked = false
                             val analytics = Analytics(mContext)
                             analytics.trackViewItem(viewType.sku)
-//                            ProductDetailActivity.startActivity(mContext, viewType.sku, viewType.getPricePerStore())
-                            if (BuildConfig.FLAVOR != "pwbOmniTv"){
-                                ProductDetailActivity.startActivity(mContext, viewType.sku)
-                            } else {
-                                ProductDetailActivity.startActivity(mContext, viewType.sku, viewType.availableThisStore)
-                            }
+                            ProductDetailActivity.startActivity(mContext, viewType.sku, viewType.getPricePerStore())
                             Handler().postDelayed({ clicked = true }, 1000)
                         }
                     }

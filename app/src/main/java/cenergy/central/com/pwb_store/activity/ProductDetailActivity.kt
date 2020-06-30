@@ -33,10 +33,7 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.DeliveryInfo
-import cenergy.central.com.pwb_store.model.Product
-import cenergy.central.com.pwb_store.model.StoreAvailable
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
@@ -67,7 +64,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     private var productJdaSku: String? = null
     private var product: Product? = null
     private var childProductList: ArrayList<Product> = arrayListOf()
-//    private var offlinePriceItem: OfflinePriceItem? = null
+    private var offlinePriceItem: OfflinePriceItem? = null
     private var availableThisStore: Boolean = false
 
     companion object {
@@ -76,7 +73,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         const val ARG_PRODUCT_SKU = "ARG_PRODUCT_SKU"
         const val ARG_PRODUCT_JDA_SKU = "ARG_PRODUCT_JDA_SKU"
         const val ARG_AVAILABLE_THIS_STORE = "ARG_AVAILABLE_THIS_STORE"
-//        const val ARG_PRICE_PER_STORE = "ARG_PRICE_PER_STORE"
+        const val ARG_PRICE_PER_STORE = "ARG_PRICE_PER_STORE"
         const val ARG_UPDATE_IMAGE_SELECTED = "ARG_UPDATE_IMAGE_SELECTED"
 
         private const val TAG = "ProductDetailActivity"
@@ -111,12 +108,12 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
             (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
         }
 
-//        fun startActivity(context: Context, sku: String, offlinePriceItem: OfflinePriceItem?){
-//            val intent = Intent(context, ProductDetailActivity::class.java)
-//            intent.putExtra(ARG_PRODUCT_SKU, sku)
-//            intent.putExtra(ARG_PRICE_PER_STORE, offlinePriceItem)
-//            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
-//        }
+        fun startActivity(context: Context, sku: String, offlinePriceItem: OfflinePriceItem?){
+            val intent = Intent(context, ProductDetailActivity::class.java)
+            intent.putExtra(ARG_PRODUCT_SKU, sku)
+            intent.putExtra(ARG_PRICE_PER_STORE, offlinePriceItem)
+            (context as Activity).startActivityForResult(intent, REQUEST_UPDATE_LANGUAGE)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -192,14 +189,14 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         super.onSaveInstanceState(outState)
         outState.putString(ARG_PRODUCT_SKU, productSku)
         outState.putParcelable(ARG_PRODUCT, product)
-//        outState.putParcelable(ARG_PRICE_PER_STORE, offlinePriceItem)
+        outState.putParcelable(ARG_PRICE_PER_STORE, offlinePriceItem)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         productSku = savedInstanceState.getString(ARG_PRODUCT_SKU)
         product = savedInstanceState.getParcelable(ARG_PRODUCT)
-//        offlinePriceItem = savedInstanceState.getParcelable(ARG_PRICE_PER_STORE)
+        offlinePriceItem = savedInstanceState.getParcelable(ARG_PRICE_PER_STORE)
     }
 
     private fun bindView() {
@@ -474,24 +471,24 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     private fun startProductDetailFragment(product: Product) {
         // set product
         this@ProductDetailActivity.productSku = product.sku
-//        if (!isChatAndShop() && offlinePriceItem != null){
-//            product.price = offlinePriceItem!!.price
-//            if (offlinePriceItem!!.specialPrice > 0) {
-//                product.specialPrice = offlinePriceItem!!.specialPrice
-//                product.specialFromDate = null
-//                product.specialToDate = null
-//                if (offlinePriceItem!!.specialFromDate != null) {
-//                    product.specialFromDate = offlinePriceItem!!.specialFromDate
-//                }
-//                if (offlinePriceItem!!.specialToDate != null) {
-//                    product.specialToDate = offlinePriceItem!!.specialToDate
-//                }
-//            } else {
-//                product.specialPrice = 0.0
-//                product.specialFromDate = null
-//                product.specialToDate = null
-//            }
-//        }
+        if (!isChatAndShop() && offlinePriceItem != null){
+            product.price = offlinePriceItem!!.price
+            if (offlinePriceItem!!.specialPrice > 0) {
+                product.specialPrice = offlinePriceItem!!.specialPrice
+                product.specialFromDate = null
+                product.specialToDate = null
+                if (offlinePriceItem!!.specialFromDate != null) {
+                    product.specialFromDate = offlinePriceItem!!.specialFromDate
+                }
+                if (offlinePriceItem!!.specialToDate != null) {
+                    product.specialToDate = offlinePriceItem!!.specialToDate
+                }
+            } else {
+                product.specialPrice = 0.0
+                product.specialFromDate = null
+                product.specialToDate = null
+            }
+        }
         product.availableThisStore = availableThisStore
         this.product = product
 

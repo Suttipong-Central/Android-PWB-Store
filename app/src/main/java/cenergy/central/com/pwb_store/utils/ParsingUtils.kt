@@ -105,6 +105,9 @@ class ParsingUtils{
                         pricingPerStore.add(offlinePriceItem)
                     }
                 }
+                if (extensionObj.has("default_retailer_id")){
+                    productExtension.defaultRetailerId = extensionObj.getString("default_retailer_id")
+                }
                 productExtension.pricingPerStore = pricingPerStore
                 productExtension.stokeItem = stockItem // add stockItem to productExtension
                 product.extension = productExtension // set productExtension to product

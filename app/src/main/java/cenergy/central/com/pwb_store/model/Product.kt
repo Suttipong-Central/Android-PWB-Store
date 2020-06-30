@@ -100,7 +100,7 @@ class Product(
         val db = RealmController.getInstance()
         val retailerId = db.userInformation?.store?.storeId?.toString()
         return if (extension != null && extension!!.pricingPerStore.isNotEmpty()) {
-            extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId }
+            extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId } ?: extension!!.pricingPerStore.firstOrNull { it.retailerId == extension!!.defaultRetailerId }
         } else {
             null
         }
