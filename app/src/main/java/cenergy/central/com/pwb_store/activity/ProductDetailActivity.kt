@@ -427,19 +427,26 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         dismissProgressDialog()
         // set product
         this@ProductDetailActivity.productSku = product.sku
-        if (!isChatAndShop() && offlinePriceItem != null) {
-            product.price = offlinePriceItem!!.price
-            if (offlinePriceItem!!.specialPrice > 0) {
-                product.specialPrice = offlinePriceItem!!.specialPrice
-                product.specialFromDate = null
-                product.specialToDate = null
-                if (offlinePriceItem!!.specialFromDate != null) {
-                    product.specialFromDate = offlinePriceItem!!.specialFromDate
-                }
-                if (offlinePriceItem!!.specialToDate != null) {
-                    product.specialToDate = offlinePriceItem!!.specialToDate
+        if (!isChatAndShop()) {
+            if (offlinePriceItem != null){
+                product.price = offlinePriceItem!!.price
+                if (offlinePriceItem!!.specialPrice > 0) {
+                    product.specialPrice = offlinePriceItem!!.specialPrice
+                    product.specialFromDate = null
+                    product.specialToDate = null
+                    if (offlinePriceItem!!.specialFromDate != null) {
+                        product.specialFromDate = offlinePriceItem!!.specialFromDate
+                    }
+                    if (offlinePriceItem!!.specialToDate != null) {
+                        product.specialToDate = offlinePriceItem!!.specialToDate
+                    }
+                } else {
+                    product.specialPrice = 0.0
+                    product.specialFromDate = null
+                    product.specialToDate = null
                 }
             } else {
+                // this case is don't have offline price will display online normal price only
                 product.specialPrice = 0.0
                 product.specialFromDate = null
                 product.specialToDate = null
