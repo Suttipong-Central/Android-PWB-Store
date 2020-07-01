@@ -177,6 +177,8 @@
         app:layout_constraintBottom_toTopOf="@id/layout_progress"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/app_bottom_bar_size"
         app:layout_constraintTop_toBottomOf="@+id/layout_category" />
 
     <LinearLayout

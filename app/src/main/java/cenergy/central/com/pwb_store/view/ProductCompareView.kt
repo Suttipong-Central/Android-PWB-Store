@@ -1,15 +1,18 @@
 package cenergy.central.com.pwb_store.view
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import cenergy.central.com.pwb_store.R
 
-class ProductCompareView : ConstraintLayout {
+class ProductCompareView : FrameLayout {
     // widget view
     private var compareLayout: ConstraintLayout? = null
     private var compareTextView: TextView? = null
