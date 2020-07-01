@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
@@ -51,8 +52,8 @@ import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.ProductCompareView
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.layout_order_detail_bar.*
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -518,6 +519,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
+        updateOrderDetailView(cartTotal)
+
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
@@ -536,6 +539,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         retrieveConsentInfo()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateOrderDetailView(cartTotal: CartTotalResponse) {
+        tvTotal.text = "฿ ${cartTotal.totalPrice}"
     }
 
     private fun retrieveConsentInfo(){
