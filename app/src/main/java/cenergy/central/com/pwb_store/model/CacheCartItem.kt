@@ -1,12 +1,19 @@
 package cenergy.central.com.pwb_store.model
 
 import android.os.Parcelable
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
+import cenergy.central.com.pwb_store.model.`interface`.CacheFreeItemRealmListParceler
 import cenergy.central.com.pwb_store.model.response.BranchResponse
+import io.realm.RealmList
+import io.realm.RealmModel
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import io.realm.annotations.RealmClass
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.WriteWith
 
 @Parcelize
+@RealmClass
 open class CacheCartItem(
         @PrimaryKey
         var itemId: Long? = 0,
@@ -20,8 +27,10 @@ open class CacheCartItem(
         var maxQTY: Int? = 0,
         var qtyInStock: Int? = null,
         var paymentMethod: String = "",
-        var branch: Branch? = null) : RealmObject(), Parcelable {
-
+        var branch: Branch? = null,
+        var soldBy: String? = null,
+        var freeItems: @WriteWith<CacheFreeItemRealmListParceler> RealmList<CacheFreeItem>? = RealmList()) : Parcelable, RealmModel
+{
     fun updateItem(cartItem: CartItem) {
         this.itemId = cartItem.id
         this.sku = cartItem.sku
@@ -49,7 +58,8 @@ open class CacheCartItem(
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
                     qtyInStock = product.extension?.stokeItem?.qty,
                     imageUrl = product.getImageUrl(),
-                    paymentMethod = product.paymentMethod) // cache payment_method
+                    paymentMethod = product.paymentMethod,
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY) // cache payment_method
         }
 
         @JvmStatic
@@ -64,7 +74,8 @@ open class CacheCartItem(
                     cartId = cartItem.cartId,
                     maxQTY = compareProduct.maxQty ?: 1,
                     qtyInStock = compareProduct.qtyInStock,
-                    imageUrl = compareProduct.imageUrl)
+                    imageUrl = compareProduct.imageUrl,
+                    soldBy = compareProduct.soldBy ?: DEFAULT_SOLD_BY)
         }
 
         @JvmStatic
@@ -78,9 +89,18 @@ open class CacheCartItem(
                     type = cartItem.type,
                     cartId = cartItem.cartId,
                     maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
-                    qtyInStock = branchResponse.sourceItem?.quantity?: 0,
+                    qtyInStock = branchResponse.sourceItem?.quantity ?: 0,
                     imageUrl = product.getImageUrl(),
-                    branch = branchResponse.branch)
+                    branch = branchResponse.branch,
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY)
         }
     }
 }
+
+@Parcelize
+open class CacheFreeItem(
+        var sku: String = "",
+        var imageUrl: String = "",
+        var forItemId: Long = 0,
+        var qty: Int = 0
+) : Parcelable, RealmObject()

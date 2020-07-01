@@ -1,48 +1,70 @@
 package cenergy.central.com.pwb_store.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
+import cenergy.central.com.pwb_store.adapter.viewholder.EmptyViewHolder
+import cenergy.central.com.pwb_store.adapter.viewholder.HeaderCartItemViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
-import cenergy.central.com.pwb_store.realm.RealmController
+import cenergy.central.com.pwb_store.model.CacheCartItem
 
-class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
-    private val database = RealmController.getInstance()
+class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    companion object {
+        const val HEADER_VIEW_TYPE = 0
+        const val ITEM_VIEW_TYPE = 1
+        const val EMPTY_VIEW_TYPE = 2
+    }
 
-    var shoppingCartItem = listOf<ShoppingCartItem>()
+    var cartItem: List<Any> = arrayListOf()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingCartViewHolder {
-        return ShoppingCartViewHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_item_shopping_cart, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            HEADER_VIEW_TYPE -> {
+                HeaderCartItemViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_header_item_shopping_cart, parent, false))
+            }
+            ITEM_VIEW_TYPE -> {
+                ShoppingCartViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_new_shopping_cart, parent, false))
+            }
+            else -> {
+                EmptyViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.list_item_new_shopping_cart, parent, false))
+            }
+        }
     }
 
     override fun getItemCount(): Int {
-        return shoppingCartItem.size
+        return cartItem.size
     }
 
-    override fun onBindViewHolder(holder: ShoppingCartViewHolder, position: Int) {
-        val item = shoppingCartItem[position]
-        val cacheCartItem = database.getCacheCartItem(item.id) // get cacheCartItem
-
-        if (cacheCartItem != null) {
-            holder.bindProductView(item, listener, cacheCartItem)
-        } else {
-            holder.bindFreebieView(item, listener)
-        }
-        if (isDescription) {
-            holder.hideDeleteItem(item)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (getItemViewType(position)) {
+            HEADER_VIEW_TYPE -> {
+                (holder as HeaderCartItemViewHolder).bindView(cartItem[position] as String)
+            }
+            ITEM_VIEW_TYPE -> {
+                val itemViewHolder = holder as ShoppingCartViewHolder
+                val item = cartItem[position] as CacheCartItem
+                itemViewHolder.bindProductView(item, listener)
+                if (isDescription) {
+                    itemViewHolder.hideDeleteItem(item)
+                }
+            }
         }
     }
 
-    interface ShoppingCartListener {
-        fun onDeleteItem(itemId: Long, sku: String)
-        fun onUpdateItem(itemId: Long, qty: Int, isChatAndShop: Boolean)
+    override fun getItemViewType(position: Int): Int {
+        return when (cartItem[position]) {
+            is String -> HEADER_VIEW_TYPE
+            is CacheCartItem -> ITEM_VIEW_TYPE
+            else -> EMPTY_VIEW_TYPE
+        }
     }
 }

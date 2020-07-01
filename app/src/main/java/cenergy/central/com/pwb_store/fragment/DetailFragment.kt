@@ -1,11 +1,8 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +13,6 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.GalleryActivity
-import cenergy.central.com.pwb_store.activity.ProductDetailActivity
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
@@ -166,6 +162,8 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvProductName.text = product.name
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
+
+        tvSoldBy.text = product.getSoldByProduct()
 
         if (product.isSpecialPrice()) {
             showSpecialPrice(unit, product)
@@ -344,9 +342,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 tvSpecialPrice.text = product.getDisplaySpecialPrice(unit)
                 tvTitleSpecialPrice.text = getString(R.string.name_price)
                 tvNormalPrice.setEnableStrikeThrough(true)
+                productSpacialPriceLayout.visibility = View.VISIBLE
                 tvSpecialPrice.visibility = View.VISIBLE
                 tvTitleSpecialPrice.visibility = View.VISIBLE
             } else {
+                productSpacialPriceLayout.visibility = View.GONE
                 tvSpecialPrice.visibility = View.GONE
                 tvTitleSpecialPrice.visibility = View.GONE
             }
@@ -354,6 +354,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun hideSpecialPrice() {
+        productSpacialPriceLayout.visibility = View.GONE
         tvSpecialPrice.visibility = View.GONE
         tvTitleSpecialPrice.visibility = View.GONE
         tvNormalPrice.setEnableStrikeThrough(false)

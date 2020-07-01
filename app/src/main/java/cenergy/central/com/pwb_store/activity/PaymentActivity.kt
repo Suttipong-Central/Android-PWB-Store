@@ -20,7 +20,6 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
-import cenergy.central.com.pwb_store.extensions.checkItemsBy
 import cenergy.central.com.pwb_store.extensions.getPaymentType
 import cenergy.central.com.pwb_store.extensions.isBankAndCounterServiceType
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
@@ -40,7 +39,6 @@ import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.body.ConsentBody
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
@@ -51,7 +49,6 @@ import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.ProductCompareView
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
@@ -70,7 +67,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // data
     private val database = RealmController.getInstance()
     private var cartId: String? = null
-    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var membersList: List<MemberResponse> = listOf()
     private var eOrderingMembers: List<EOrderingMember> = listOf()
     private var membersHDL: List<HDLCustomerInfos> = listOf()
@@ -271,15 +267,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         deliveryType = DeliveryType.fromString(deliveryOption.methodCode)
         analytics.trackSelectDelivery(deliveryOption.methodCode)
         when (deliveryType) {
-            EXPRESS, STANDARD -> {
+            DeliveryType.EXPRESS, DeliveryType.STANDARD -> {
                 showProgressDialog()
                 handleCreateShippingInformation(deliveryOption, null)
             }
-            STORE_PICK_UP -> {
+            DeliveryType.STORE_PICK_UP -> {
                 showProgressDialog()
                 getStoresDelivery(deliveryOption) // default page
             }
-            HOME -> {
+            DeliveryType.HOME -> {
                 this.enableShippingSlot = deliveryOption.extension.shippingSlots
                 startDeliveryHomeFragment()
             }
@@ -301,7 +297,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
         paymentMethods = cacheCartItems.getPaymentType(this)
-        getItemTotal()
+
+        startCheckOut() // default page
+        getCartTotal()
     }
 
     private fun checkoutWithProduct2hr(product: Product) {
@@ -394,18 +392,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startCreatedOrderFragment() {
         languageButton.visibility = View.VISIBLE
-        val cacheCart = ArrayList<CacheCartItem>()
-        cacheCart.addAll(cacheCartItems)
         startFragment(PaymentCreatedOrder.newInstance())
         clearCachedCart() // clear cache item
     }
 
     private fun startSuccessfullyFragment(orderId: String, urlRedirect: String) {
         languageButton.visibility = View.VISIBLE
-        val cacheCart = ArrayList<CacheCartItem>()
-        cacheCart.addAll(cacheCartItems)
-        startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart, urlRedirect))
-        clearCachedCart() // clear cache item
+        startFragment(PaymentSuccessFragment.newInstance(orderId, urlRedirect))
     }
 
     private fun startStorePickupFragment() {
@@ -493,7 +486,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mProgressDialog?.dismiss()
     }
 
-    private fun getItemTotal() {
+    private fun getCartTotal() {
         preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
                 override fun success(response: CartTotalResponse?) {
@@ -518,7 +511,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
-        this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
         if (discount != null) {
@@ -603,7 +595,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody?) {
         if (cartId != null && shippingAddress != null) {
             when (val type = DeliveryType.fromString(deliveryOption.methodCode)) {
-                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
+                DeliveryType.STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
                 else -> createShippingInfor(type, addressInfoExtensionBody)
             }
         }
@@ -656,7 +648,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
-        if (type == HOME) {
+        if (type == DeliveryType.HOME) {
             createBookingHomeDelivery(paymentMethods)
             return
         }
@@ -1070,9 +1062,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mProgressDialog?.dismiss()
     }
 
-    // region {@link PaymentProtocol}
-    override fun getItems(): List<ShoppingCartItem> = this.shoppingCartItem
-
     override fun getDiscount(): Double = this.discountPrice
 
     override fun getPromotionDiscount(): Double = this.promotionDiscount
@@ -1116,6 +1105,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getPaymentAgents(): List<PaymentAgent> = this.paymentAgents
 
     override fun getConsentInfo(): ConsentInfoResponse? = this.consentInfo
+
+    override fun clearAllCache() {
+        clearCachedCart()
+    }
     // endregion
 
     // region {@link StorePickUpListener}
@@ -1221,7 +1214,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             val storePickup = StorePickup(this.branch!!.storeId)
             val subscribeCheckOut = AddressInfoExtensionBody(storePickup = storePickup)
-            createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
+            createShippingInforWithClickAndCollect(DeliveryType.STORE_PICK_UP_ISPU, subscribeCheckOut)
         }
     }
 

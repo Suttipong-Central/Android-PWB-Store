@@ -381,4 +381,6 @@
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
 
+    <string name="sold_by_title">Sold by:</string>
+    <string name="free_item">Free items with this product</string>
 </resources>

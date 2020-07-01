@@ -32,6 +32,7 @@ import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.PrivacyDialogFragment
+import cenergy.central.com.pwb_store.extensions.getCartItem
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -44,7 +45,6 @@ import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.ConsentInfoResponse
 import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -113,7 +113,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
-    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private var paymentBillingListener: PaymentBillingListener? = null
@@ -230,7 +229,6 @@ class PaymentBillingFragment : Fragment() {
         defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
-        shoppingCartItem = paymentProtocol.getItems()
         discount = paymentProtocol.getDiscount()
         promotionDiscount = paymentProtocol.getPromotionDiscount()
         totalPrice = paymentProtocol.getTotalPrice()
@@ -273,7 +271,8 @@ class PaymentBillingFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recycler.isNestedScrollingEnabled = false
         recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
+
+        shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         if (discount > 0){

@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.realm
 
 import io.realm.DynamicRealm
+import io.realm.FieldAttribute
 import io.realm.RealmMigration
 
 class MigrationDatabase : RealmMigration {
@@ -306,6 +307,26 @@ class MigrationDatabase : RealmMigration {
         if (oldVersion < 13){
             realm.schema.get("User")?.apply {
                 addField("userLevel", Long::class.java)
+            }
+        }
+
+        if (oldVersion < 14) {
+            val cacheFreeItem = realm.schema.create("CacheFreeItem")?.apply {
+                addField("sku", String::class.java).setNullable("sku", false)
+                addField("imageUrl", String::class.java).setNullable("imageUrl", false)
+                addField("forItemId", Long::class.java)
+                addField("qty", Int::class.java)
+            }
+
+            realm.schema.get("CacheCartItem")?.apply {
+                addField("soldBy", String::class.java)
+                cacheFreeItem?.let {
+                    addRealmListField("freeItems", it)
+                }
+            }
+
+            realm.schema.get("CompareProduct")?.apply {
+                addField("soldBy", String::class.java)
             }
         }
     }

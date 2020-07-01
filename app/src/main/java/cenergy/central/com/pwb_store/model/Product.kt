@@ -1,9 +1,9 @@
 package cenergy.central.com.pwb_store.model
 
 import android.os.Parcelable
-import android.util.Log
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.realm.RealmController
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
@@ -40,7 +40,8 @@ class Product(
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,
-        var urlKey: String = "") : IViewType, Parcelable {
+        var urlKey: String = "",
+        var soldBy: String? = null) : IViewType, Parcelable {
 
     override fun getViewTypeId(): Int {
         return viewTypeID
@@ -96,17 +97,26 @@ class Product(
         }
     }
 
-    fun getPricePerStore(): OfflinePriceItem?{
+    fun getPricePerStore(): OfflinePriceItem? {
         val db = RealmController.getInstance()
         val retailerId = db.userInformation?.store?.storeId?.toString()
         return if (extension != null && extension!!.pricingPerStore.isNotEmpty()) {
-            extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId } ?: extension!!.pricingPerStore.firstOrNull { it.retailerId == extension!!.defaultRetailerId }
+            extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId }
+                    ?: extension!!.pricingPerStore.firstOrNull { it.retailerId == extension!!.defaultRetailerId }
         } else {
             null
         }
     }
 
+    fun getSoldByProduct(): String {
+        return if(!soldBy.isNullOrEmpty()){
+            soldBy!!
+        } else {
+            DEFAULT_SOLD_BY
+        }
+    }
+
     companion object {
-        const val PRODUCT_TWO_HOUR = "storepickup_ispu"
+        const val PRODUCT_ONE_HOUR = "storepickup_ispu"
     }
 }

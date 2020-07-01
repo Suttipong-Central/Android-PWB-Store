@@ -2,9 +2,6 @@ package cenergy.central.com.pwb_store.extensions
 
 import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AlertDialog
-import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.model.CompareProduct
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.realm.RealmController
 
@@ -28,7 +25,7 @@ fun Product.isSalable(): Boolean{
 fun Product.is1HourProduct(): Boolean{
     return if (extension?.stokeItem?.is2HProduct != null && extension!!.stokeItem!!.is2HProduct &&
             shippingMethods.isNotEmpty()){
-        shippingMethods.contains(Product.PRODUCT_TWO_HOUR)
+        shippingMethods.contains(Product.PRODUCT_ONE_HOUR)
     } else {
         false
     }

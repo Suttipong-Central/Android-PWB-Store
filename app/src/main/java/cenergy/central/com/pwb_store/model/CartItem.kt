@@ -1,8 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
+import cenergy.central.com.pwb_store.model.response.ItemExtension
 import com.google.gson.annotations.SerializedName
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
 
 data class CartItem(
         @SerializedName("item_id")
@@ -14,4 +13,6 @@ data class CartItem(
         @SerializedName("product_type")
         var type: String? = "",
         @SerializedName("quote_id")
-        var cartId: String? = "")
+        var cartId: String? = "",
+        @SerializedName("extension_attributes")
+        var extension: ItemExtension? = null)

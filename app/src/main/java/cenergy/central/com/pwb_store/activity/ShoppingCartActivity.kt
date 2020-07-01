@@ -18,10 +18,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
-import cenergy.central.com.pwb_store.extensions.checkItems
+import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
+import cenergy.central.com.pwb_store.extensions.getCartItem
+import cenergy.central.com.pwb_store.extensions.mergeItems
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
@@ -37,12 +38,11 @@ import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
 
-class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
+class ShoppingCartActivity : BaseActivity(), ShoppingCartListener {
 
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
@@ -364,7 +364,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 promotionCode = shoppingCartResponse.couponCode
                 couponCodeEdt.setText(promotionCode)
             }
-            shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
+
+            database.cacheCartItems.mergeItems(cartItemList, items).forEach {
+                database.saveCartItem(it)
+            }
+
+            shoppingCartAdapter.cartItem = database.cacheCartItems.getCartItem()
 
             updateTitle(shoppingCartResponse.qty)
             val t1Points = (total - (total % 50)) / 50

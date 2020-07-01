@@ -4,4 +4,5 @@
     <string name="watermark_business" translatable="false">Central Department Store</string>
     <string name="watermark_environment" translatable="false">Staging(headless)</string>
     <string name="hostname_deep_link" translatable="false">staging.central.co.th</string>
+    <string name="sold_by_title">Sold by:</string>
 </resources>

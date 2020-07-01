@@ -1,21 +1,19 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.RecyclerView
-
-import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.adapter.FreeItemAdapter
 import cenergy.central.com.pwb_store.adapter.QtyAdapter
-import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.adapter.interfaces.ShoppingCartListener
 import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -23,7 +21,6 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -37,32 +34,29 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val totalPrice: PowerBuyTextView = itemView.findViewById(R.id.total_price_list_shopping_cart)
     private val deleteItemTextView: TextView = itemView.findViewById(R.id.deleteItemTextView)
     private val productImage: ImageView = itemView.findViewById(R.id.product_image_list_shopping_cart)
+    private val freeBieImageRecycler: RecyclerView = itemView.findViewById(R.id.freeBieImageRecycler)
+    private val freeBieDropdown: ImageView = itemView.findViewById(R.id.freeBieDropdown)
+    private val freeBieTitle: TextView = itemView.findViewById(R.id.freeBieTitle)
     private val tvOverQty: TextView = itemView.findViewById(R.id.tvOverQty)
-    private val tvTitleFreebie: TextView = itemView.findViewById(R.id.tvTitleFreebie)
 
     // data
-    private var listener: ShoppingCartAdapter.ShoppingCartListener? = null
-    private lateinit var item: ShoppingCartItem
-    private var cacheCartItem: CacheCartItem? = null
+    private var listener: ShoppingCartListener? = null
+    private var isShowing = true
 
     @SuppressLint("SetTextI18n")
-    fun bindProductView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
+    fun bindProductView(item: CacheCartItem, listener: ShoppingCartListener?) {
         itemView.context?.let { context ->
             qtyTextTitle.text = context.resources.getString(R.string.qty)
             deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
-
-            tvTitleFreebie.visibility = View.GONE // hide title free item
             val unit = context.getString(R.string.baht)
             this.listener = listener
-            this.item = item
-            this.cacheCartItem = cacheCartItem
-            productName.text = cacheCartItem.name
+            productName.text = item.name
             productCode.text = "${context.resources.getString(R.string.product_code)} ${item.sku}"
             productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
 
             // get image from cache
             Glide.with(context)
-                    .load(cacheCartItem.imageUrl)
+                    .load(item.imageUrl)
                     .placeholder(R.drawable.ic_placeholder)
                     .crossFade()
                     .fitCenter()
@@ -70,10 +64,10 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
             deleteItemTextView.visibility = View.VISIBLE
             deleteItemTextView.setOnClickListener {
-                confirmDelete(item, listener)
+                confirmDelete(item.itemId, item.sku, listener)
             }
 
-            val max = min(cacheCartItem.qtyInStock ?: 1, cacheCartItem.maxQTY ?: 1)
+            val max = min(item.qtyInStock ?: 1, item.maxQTY ?: 1)
             productQty.setText(item.qty.toString())
             val qtyAdepter = QtyAdapter(context, R.layout.layout_text_item, arrayListOf())
             qtyAdepter.setItems(max)
@@ -83,7 +77,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             qtyAdepter.setCallback(object : QtyAdapter.QtyClickListener {
                 override fun onQtyClickListener(qty: Int) {
                     productQty.clearAllFocus()
-                    item.id?.let { itemId -> listener?.onUpdateItem(itemId, qty, isChatAndShop()) }
+                    item.itemId?.let { itemId -> listener?.onUpdateItem(itemId, qty, isChatAndShop()) }
                 }
             })
             productQty.setOnEnterKeyListener(object : View.OnKeyListener {
@@ -91,7 +85,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                         productQty.clearAllFocus()
                         if (productQty.getText() != "" && productQty.getText().toInt() > 0) {
-                            item.id?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt(), isChatAndShop()) }
+                            item.itemId?.let { itemId -> listener?.onUpdateItem(itemId, productQty.getText().toInt(), isChatAndShop()) }
                         } else {
                             productQty.setText(item.qty.toString())
                             showAlertDialog(context.getString(R.string.empty_value))
@@ -102,33 +96,33 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                 }
             })
             totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price ?: 0.0))
+
+            if (!item.freeItems.isNullOrEmpty()) {
+                freeBieDropdown.visibility = View.VISIBLE
+                freeBieTitle.visibility = View.VISIBLE
+                freeBieImageRecycler.visibility = View.VISIBLE
+                val freeItemAdapter = FreeItemAdapter(context)
+                freeBieImageRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                freeBieImageRecycler.adapter = freeItemAdapter
+                freeItemAdapter.freeItems = item.freeItems ?: listOf()
+                freeBieDropdown.setOnClickListener {
+                    if (isShowing) {
+                        isShowing = false
+                        freeBieDropdown.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_keyboard_arrow_down))
+                        freeBieImageRecycler.visibility = View.GONE
+                    } else {
+                        isShowing = true
+                        freeBieDropdown.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_keyboard_arrow_up))
+                        freeBieImageRecycler.visibility = View.VISIBLE
+                    }
+                }
+            } else {
+                freeBieDropdown.visibility = View.GONE
+                freeBieTitle.visibility = View.GONE
+                freeBieImageRecycler.visibility = View.GONE
+            }
         }
     }
-
-
-    // region freebie item
-    @SuppressLint("SetTextI18n")
-    fun bindFreebieView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
-        itemView.context?.let { context ->
-            qtyTextTitle.text = context.resources.getString(R.string.qty)
-            deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
-            tvTitleFreebie.visibility = View.VISIBLE // visible title free item
-
-            val unit = context.getString(R.string.baht)
-            this.listener = listener
-            this.item = item
-            productName.text = item.name
-            productCode.text = "${context.resources.getString(R.string.product_code)} ${item.sku}"
-            productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
-
-            // hide for freebie
-            deleteItemTextView.visibility = View.GONE
-            productQty.setText(item.qty.toString())
-            totalPrice.text = "FREE"
-            totalPrice.setTextColor(ContextCompat.getColor(context, R.color.freeColor))
-        }
-    }
-    // endregion
 
     private fun isChatAndShop(): Boolean{
         val database = RealmController.getInstance()
@@ -143,13 +137,13 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(Locale.getDefault()).format(price))
     }
 
-    private fun confirmDelete(shoppingCartItem: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
+    private fun confirmDelete(itemId: Long?, itemSKU: String?, listener: ShoppingCartListener?) {
         itemView.context?.let { context ->
             val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
             builder.setMessage(context.getString(R.string.title_confirm_delete_item))
             builder.setPositiveButton(context.getString(R.string.yes)) { dialog, _ ->
-                if (shoppingCartItem.id != null && shoppingCartItem.sku != null) {
-                    listener?.onDeleteItem(shoppingCartItem.id!!, shoppingCartItem.sku!!)
+                if (itemId != null && itemSKU != null) {
+                    listener?.onDeleteItem(itemId, itemSKU)
                 } else {
                     showAlertDialog(context.getString(R.string.some_thing_wrong))
                 }
@@ -160,13 +154,13 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
         }
     }
 
-    fun hideDeleteItem(shoppingCartItem: ShoppingCartItem) {
+    fun hideDeleteItem(item: CacheCartItem) {
         itemView.context?.let { context ->
             tvOverQty.visibility = View.GONE
             deleteItemTextView.visibility = View.GONE
             qtyTextTitle.text = context.resources.getString(R.string.qty_title)
             productQty.visibility = View.GONE
-            qtyText.text = shoppingCartItem.qty.toString()
+            qtyText.text = item.qty.toString()
         }
     }
 

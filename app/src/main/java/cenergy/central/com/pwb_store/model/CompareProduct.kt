@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.model
 
 import cenergy.central.com.pwb_store.extensions.isSpecialPrice
 import cenergy.central.com.pwb_store.extensions.toPriceDisplay
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -14,9 +15,10 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                           var maxQty: Int? = 0,
                           var qtyInStock: Int? = 0,
                           var rating: Int = 0,
-                          var brand: String? = "",
                           var minQty: Int = 0,
-                          var isSalable: Boolean = false) : RealmObject(), IViewType {
+                          var isSalable: Boolean = false,
+                          var brand: String? = "",
+                          var soldBy: String? = null) : RealmObject(), IViewType {
 
     // for set view type in adapter
     var viewTypeID: Int = 0
@@ -54,7 +56,8 @@ open class CompareProduct(@PrimaryKey var sku: String = "",
                     maxQty = product.extension?.stokeItem?.maxQTY ?: 1,
                     qtyInStock = product.extension?.stokeItem?.qty ?: 0,
                     minQty = product.extension?.stokeItem?.minQTY ?: 0,
-                    isSalable = product.extension?.stokeItem?.isSalable ?: false)
+                    isSalable = product.extension?.stokeItem?.isSalable ?: false,
+                    soldBy = product.soldBy ?: DEFAULT_SOLD_BY)
         }
     }
 }

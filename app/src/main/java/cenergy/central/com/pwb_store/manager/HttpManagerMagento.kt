@@ -6,6 +6,7 @@ import android.util.Log
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.Constants.Companion.DEFAULT_SOLD_BY
 import cenergy.central.com.pwb_store.extensions.asPostcode
 import cenergy.central.com.pwb_store.extensions.modifyToCdsType
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
@@ -549,6 +550,12 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                                     it.value = customAttrValue
                                 }
                             }
+                            if (customAttrCode == "marketplace_seller"){
+                                if (attrOption.getString("value").isNullOrEmpty()){
+                                    product.soldBy = DEFAULT_SOLD_BY
+                                } else {
+                                    product.soldBy = attrOption.getString("value")
+                                }                            }
                         }
                         productExtension.specifications = specifications // addd product spec to product extension
                         product.extension = productExtension // add product extension to product
