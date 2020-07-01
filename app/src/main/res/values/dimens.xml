@@ -30,5 +30,5 @@
     <dimen name="margin_padding_xlarge">32dp</dimen>
     <dimen name="share_menu_size">80dp</dimen>
     <dimen name="ic_payment_agent_size">36dp</dimen>
-    <dimen name="product_compare_bar_size">56dp</dimen>
+    <dimen name="app_bottom_bar_size">56dp</dimen>
 </resources>

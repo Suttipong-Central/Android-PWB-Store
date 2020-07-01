@@ -381,4 +381,8 @@
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
 
+    <!--  Payment Order Detail  -->
+    <string name="label_order_total">Order Total</string>
+    <string name="view_order_detail">View Details</string>
+
 </resources>
