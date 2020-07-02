@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import cenergy.central.com.pwb_store.BuildConfig
+import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.GalleryActivity
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
@@ -127,12 +128,12 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 stockIndicatorView.setOnClickOtherStores(View.OnClickListener {
                     productDetailListener.onDisplayAvailableStore(product)
                 })
-                layoutBottomButton.visibility = View.VISIBLE
                 loadStockData(product)
             }
             else -> {
-                layoutBottomButton.visibility = View.GONE
-                stockIndicatorView.visibility = View.GONE
+                availableStoreButton.visibility = View.GONE
+                compareCheckBox.visibility = View.GONE
+                stockIndicatorView.visibility = View.INVISIBLE
                 stockIndicatorLoading.dismiss()
             }
         }
@@ -162,20 +163,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvProductName.text = product.name
         tvProductCode.text = "${getString(R.string.product_code)} ${product.sku}"
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
-
-        tvSoldBy.text = product.getSoldByProduct()
-
-        if (product.isSpecialPrice()) {
-            showSpecialPrice(unit, product)
-        } else {
-            hideSpecialPrice()
-        }
-
-        if (product.is1HourProduct()) {
-            badge1Hour.set1HourBadge()
-        } else {
-            badge1Hour.setImageDrawable(null)
-        }
 
         if (product.typeId == "configurable" && product.extension != null) {
             configOptions = product.extension!!.productConfigOptions
@@ -232,6 +219,32 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             inputProductShade.visibility = View.GONE
         }
 
+        tvSoldBy.text = product.getSoldByProduct()
+
+        if (product.isSpecialPrice()) {
+            showSpecialPrice(unit, product)
+        } else {
+            hideSpecialPrice()
+        }
+
+        if (product.soldBy != Constants.DEFAULT_SOLD_BY){
+            badge1Hour.setImageDrawable(null)
+            badge1Hour.visibility = View.GONE
+            availableStoreButton.visibility = View.GONE
+        } else {
+            // setup 1 hour badge
+            if (product.is1HourProduct()) {
+                badge1Hour.set1HourBadge()
+            } else {
+                badge1Hour.setImageDrawable(null)
+            }
+
+            // setup available store button
+            availableStoreButton.setImageDrawable(R.drawable.ic_store)
+            availableStoreButton.setOnClickListener(this)
+            availableStoreButton.visibility = View.VISIBLE
+        }
+
         // setup add item button
         addToCartButton.setImageDrawable(R.drawable.ic_shopping_cart)
         if (BuildConfig.FLAVOR == "pwb"){
@@ -244,10 +257,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         add1HourButton.setImageDrawable(R.drawable.ic_1_hour_pick_up)
         add1HourButton.setOnClickListener(this)
         hideAdd1HourItemButton(product.is1HourProduct())
-
-        // setup available store button
-        availableStoreButton.setImageDrawable(R.drawable.ic_store)
-        availableStoreButton.setOnClickListener(this)
 
         ivProductImage.setOnClickListener(this)
 

@@ -131,12 +131,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/nameProductColor"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:maxLines="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/soldByTitle"
         app:layout_constraintTop_toBottomOf="@+id/productIdLayout"
@@ -243,7 +243,7 @@
     <cenergy.central.com.pwb_store.view.PowerBuyShadeSelectView
         android:id="@+id/inputProductShade"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_padding_small"
         android:layout_marginTop="@dimen/margin_padding_small"
         android:layout_marginEnd="@dimen/margin_padding_normal"
@@ -259,7 +259,7 @@
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
         android:id="@+id/inputProductSize"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_padding_small"
         android:layout_marginTop="@dimen/margin_padding_small"
         android:layout_marginEnd="@dimen/margin_padding_normal"
@@ -287,7 +287,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:theme="@style/AlertDialogTheme"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/stockIndicatorView"
         app:layout_constraintEnd_toEndOf="@+id/stockIndicatorView"
         app:layout_constraintStart_toStartOf="@+id/stockIndicatorView"
@@ -319,7 +319,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
             app:btn_default="false"
-            app:layout_constraintBottom_toTopOf="@+id/availableStoreButton"
+            app:layout_constraintBottom_toTopOf="@+id/compareCheckBox"
             app:layout_constraintEnd_toStartOf="@id/add1HourButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -329,10 +329,10 @@
             android:id="@+id/add1HourButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="@dimen/margin_padding_xsmall"
+            android:layout_marginTop="@dimen/margin_padding_small"
+            android:layout_marginEnd="@dimen/margin_padding_xsmall"
+            android:layout_marginBottom="@dimen/margin_padding_small"
             app:btn_default="true"
             app:layout_constraintBottom_toTopOf="@+id/compareCheckBox"
             app:layout_constraintEnd_toEndOf="parent"
@@ -340,40 +340,33 @@
             app:layout_constraintTop_toTopOf="parent"
             app:text="@string/add_one_hour_item" />
 
+        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
+            android:id="@+id/availableStoreButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_xsmall"
+            android:layout_marginEnd="@dimen/margin_padding_xsmall"
+            android:layout_marginBottom="@dimen/margin_padding_small"
+            app:btn_default="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline50"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/compareCheckBox"
+            app:text="@string/product_available" />
+
         <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/compareCheckBox"
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/margin_padding_small"
             android:text="@string/compare"
             android:textStyle="bold"
             android:theme="@style/CompareCheckBoxTheme"
-            app:layout_constraintBottom_toBottomOf="@+id/availableStoreButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline50"
-            app:layout_constraintTop_toTopOf="@+id/availableStoreButton"
-            app:layout_constraintVertical_weight="1" />
-
-        <cenergy.central.com.pwb_store.view.PowerBuyIconButton
-            android:id="@+id/availableStoreButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            app:btn_default="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline50"
-            app:layout_constraintStart_toStartOf="parent"
-            app:text="@string/product_available" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/layoutBottomButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="availableStoreButton,compareCheckBox" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline50" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
