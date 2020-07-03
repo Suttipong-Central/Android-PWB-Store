@@ -128,7 +128,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
             productSku = it.getString(ARG_PRODUCT_SKU, null)
             productId = it.getString(ARG_PRODUCT_ID, null)
             productJdaSku = it.getString(ARG_PRODUCT_JDA_SKU, null)
-//            offlinePriceItem = it.getParcelable(ARG_PRICE_PER_STORE)
+            offlinePriceItem = it.getParcelable(ARG_PRICE_PER_STORE)
             availableThisStore = it.getBoolean(ARG_AVAILABLE_THIS_STORE)
         }
 
