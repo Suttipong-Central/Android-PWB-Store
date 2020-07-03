@@ -109,7 +109,7 @@ android {
         pwbOmniTv {
             applicationId "cenergy.central.com.eordering.pwb_omni_tv"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 12
+            versionCode 13
             versionName "1.0.1"
             buildConfigField 'boolean', 'ENABLE_ADD_TO_CART', 'false'
         }
