@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.activity
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
@@ -21,10 +20,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
-import cenergy.central.com.pwb_store.extensions.checkItemsBy
-import cenergy.central.com.pwb_store.extensions.getPaymentType
-import cenergy.central.com.pwb_store.extensions.isBankAndCounterServiceType
-import cenergy.central.com.pwb_store.extensions.toStringDiscount
+import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.PaymentTransferListener
@@ -541,28 +537,28 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         retrieveConsentInfo()
     }
 
-    @SuppressLint("SetTextI18n")
     private fun updateOrderDetailView(cartTotal: CartTotalResponse) {
-        tvTotal.text = "฿ ${cartTotal.totalPrice}"
+        tvTotal.text = cartTotal.totalPrice.toPriceDisplay()
+
     }
 
-    private fun retrieveConsentInfo(){
-        HttpManagerConsent.getInstance(this).getConsentInfo(object : ApiResponseCallback<ConsentInfoResponse>{
+    private fun retrieveConsentInfo() {
+        HttpManagerConsent.getInstance(this).getConsentInfo(object : ApiResponseCallback<ConsentInfoResponse> {
             override fun success(response: ConsentInfoResponse?) {
-                if (response != null){
+                if (response != null) {
                     this@PaymentActivity.consentInfo = response
                 }
                 handleStartFragment()
             }
 
             override fun failure(error: APIError) {
-                Log.d("Consent Error", error.errorMessage?: "")
+                Log.d("Consent Error", error.errorMessage ?: "")
                 handleStartFragment()
             }
         })
     }
 
-    private fun handleStartFragment(){
+    private fun handleStartFragment() {
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)

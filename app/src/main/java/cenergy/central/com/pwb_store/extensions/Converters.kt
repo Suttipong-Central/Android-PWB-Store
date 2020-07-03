@@ -66,7 +66,7 @@ fun Parcel.createLongList(): List<Long> {
 
 fun Double.toPriceDisplay(): String {
     val price = NumberFormat.getInstance(Locale.getDefault()).format(this)
-    return "฿ $price"
+    return "฿$price"
 }
 
 fun Double.toStringDiscount(): Double {
