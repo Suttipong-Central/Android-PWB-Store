@@ -688,15 +688,13 @@ class PaymentBillingFragment : Fragment() {
         t1MemberNameTextView = rootView.findViewById(R.id.tvT1MemberName)
         t1cardInput.setDrawableStart(R.drawable.ic_the1)
         t1cardInput.setEditTextInputType(InputType.TYPE_CLASS_NUMBER)
-        t1cardInput.setTextLength(10)
+        t1cardInput.setTextLength(16)
         t1cardInput.setOnTextChanging(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                changeT1Button.text = getString(
-                        if (s.length >= 10) R.string.t1_change else R.string.t1_add)
+                changeT1Button.text = getString(if (s.length == 10 || s.length == 16) R.string.t1_change else R.string.t1_add)
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (t1MemberNameTextView.visibility == View.VISIBLE) {

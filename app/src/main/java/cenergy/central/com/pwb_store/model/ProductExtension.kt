@@ -10,7 +10,7 @@ class ProductExtension(
         var description: String? = "",
         @SerializedName("short_description")
         var shortDescription: String? = "",
-        var barcode:String? = "",
+        var barcode: String? = "",
         @SerializedName("stock_item")
         var stokeItem: StockItem? = null,
         @SerializedName("configurable_product_options")

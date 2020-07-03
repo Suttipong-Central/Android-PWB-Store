@@ -347,7 +347,7 @@
     <string name="close">Close</string>
     <string name="payment_description">Scan QR code to pay for this order.</string>
     <string name="please_add_compare">Compare product is empty, please add product to compare</string>
-    <string name="the_1_error">T1 number must be 10 digits and number only</string>
+    <string name="the_1_error">T1 number must be 10 digits or 16 digits and number only</string>
 
     <!-- Stock Indicator -->
     <string name="label_stock_availability">Stock Availability</string>

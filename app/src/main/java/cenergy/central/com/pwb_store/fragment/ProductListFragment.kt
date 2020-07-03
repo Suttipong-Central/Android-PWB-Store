@@ -402,6 +402,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             if (brandName != null && brandName!!.isNotEmpty()) {
                 filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
             }
+
             val sortOrders = ArrayList<SortOrder>()
             if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
                 val sortOrder = createSortOrder(sortName!!, sortType!!)
@@ -549,7 +550,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_FILTER_ITEMS = "ARG_FILTER_ITEMS"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
-        private const val CHAT_AND_SHOP_FIELD = "retailer_id"
         //Pagination
         private const val PER_PAGE = 20
 

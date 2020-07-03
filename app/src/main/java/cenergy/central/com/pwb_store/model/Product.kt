@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
 import android.os.Parcelable
+import android.util.Log
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.realm.RealmController

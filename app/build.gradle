@@ -101,15 +101,17 @@ android {
         pwb {
             applicationId "cenergy.central.com.eordering.pwb"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 113
-            versionName "1.2.0"
+            versionCode 118
+            versionName "1.2.1"
+            buildConfigField 'boolean', 'ENABLE_ADD_TO_CART', 'true'
         }
 
         pwbOmniTv {
             applicationId "cenergy.central.com.eordering.pwb_omni_tv"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 12
-            versionName "1.0.0"
+            versionName "1.0.1"
+            buildConfigField 'boolean', 'ENABLE_ADD_TO_CART', 'false'
         }
 
         cds {
@@ -117,6 +119,7 @@ android {
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 113
             versionName "1.2.0"
+            buildConfigField 'boolean', 'ENABLE_ADD_TO_CART', 'true'
         }
 
         rbs {
@@ -124,6 +127,7 @@ android {
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             versionCode 113
             versionName "1.2.0"
+            buildConfigField 'boolean', 'ENABLE_ADD_TO_CART', 'true'
         }
     }
 

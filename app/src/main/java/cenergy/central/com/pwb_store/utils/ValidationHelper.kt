@@ -173,7 +173,7 @@ class ValidationHelper(private val context: Context) {
 
     fun validTheOne(theOne: String): String? {
         return if (!isEmptyData(theOne)) {
-            if (theOne.length == THE_ONE_NUMBER_LENGTH) {
+            if (theOne.length == THE_ONE_NUMBER_LENGTH || theOne.length == THE_ONE_NUMBER_MAX_LENGTH) {
                 null
             } else {
                 context.getString(R.string.the_1_error)
@@ -189,6 +189,7 @@ class ValidationHelper(private val context: Context) {
         private const val MIN_TAX_ID = 13
         private const val MIN_PASSPORT_LENGTH = 5
         private const val THE_ONE_NUMBER_LENGTH = 10
+        private const val THE_ONE_NUMBER_MAX_LENGTH = 16
         private const val LANGUAGE_THAI = "th"
         private const val LANGUAGE_ENGLISH = "en"
         private val thaiPhoneNumber = arrayListOf("032", "034", "035", "036",

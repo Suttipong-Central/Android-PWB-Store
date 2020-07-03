@@ -66,6 +66,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     private var childProductList: ArrayList<Product> = arrayListOf()
     private var offlinePriceItem: OfflinePriceItem? = null
     private var availableThisStore: Boolean = false
+    private var deliveryInfoList = arrayListOf<DeliveryInfo>()
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
@@ -221,7 +222,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         }
 
         // setup shopping cart button and badge
-        if (BuildConfig.FLAVOR != "pwbOmniTv"){
+        if (BuildConfig.ENABLE_ADD_TO_CART){
             mBuyShoppingCartView.visibility = View.VISIBLE
             mBuyShoppingCartView.setListener(this)
         } else {
@@ -240,6 +241,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     override fun onChangedLanguage(lang: AppLanguage) {
         super.onChangedLanguage(lang)
         retrieveProductDetail()
+        clearDeliveryInfo()
     }
 
     override fun getSwitchButton(): LanguageButton? = languageButton
@@ -320,7 +322,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     }
     // endregion
 
-
     // region {@link ProductCompareView.ProductCompareViewListener}
     override fun resetCompareProducts() {
         database.deleteAllCompareProduct()
@@ -331,6 +332,17 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         CompareActivity.startCompareActivity(this, productCompareView)
     }
     // endregion
+
+    override fun getDeliveryInfoList(): List<DeliveryInfo> = this.deliveryInfoList
+
+    override fun setDeliveryInfoList(deliveryInfos: List<DeliveryInfo>) {
+        this.deliveryInfoList.clear()
+        this.deliveryInfoList.addAll(deliveryInfos)
+    }
+
+    private fun clearDeliveryInfo() {
+        this.deliveryInfoList.clear()
+    }
 
     // region retrieve product
     private fun retrieveProductByBarcode(barcode: String) {
@@ -394,7 +406,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
             if (response.typeId == "configurable") {
                 checkProductConfig(response)
             } else {
-                checkHDLOption(response)
+                startProductDetailFragment(response)
             }
         } else {
             dismissProgressDialog()
@@ -417,7 +429,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
                     runOnUiThread {
                         if (response != null) {
                             childProductList = response.products
-                            checkHDLOption(product)
+                            startProductDetailFragment(product)
                         }
                     }
                 }
@@ -425,25 +437,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
                 override fun failure(error: APIError) {
                     runOnUiThread {
                         Log.d("ProductConfigChild", "${error.errorCode} ${error.errorMessage}")
-                        checkHDLOption(product)
+                        startProductDetailFragment(product)
                     }
                 }
             })
         }
-    }
-
-    private fun checkHDLOption(product: Product) {
-        HttpManagerMagento.getInstance(this).getDeliveryInformation(product.sku,
-                object : ApiResponseCallback<List<DeliveryInfo>> {
-                    override fun success(response: List<DeliveryInfo>?) {
-                        product.isHDL = response?.firstOrNull { it.shippingMethod == "pwb_hdl" } != null
-                        checkAvailableHere(product)
-                    }
-
-                    override fun failure(error: APIError) {
-                        checkAvailableHere(product)
-                    }
-                })
     }
     // end region
 
@@ -469,9 +467,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     }
 
     private fun startProductDetailFragment(product: Product) {
+        dismissProgressDialog()
         // set product
         this@ProductDetailActivity.productSku = product.sku
-        if (!isChatAndShop()){
+        if (!isChatAndShop()) {
             if (offlinePriceItem != null){
                 product.price = offlinePriceItem!!.price
                 if (offlinePriceItem!!.specialPrice > 0) {
