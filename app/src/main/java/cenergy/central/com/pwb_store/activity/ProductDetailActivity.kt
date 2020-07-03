@@ -151,19 +151,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     }
 
     private fun retrieveProductDetail() {
-        if (productSku != null) {
-            retrieveProduct(productSku!!)
-            return
-        }
-
-        if (productId != null) { // is barcode?
-            retrieveProductByBarcode(productId!!)
-            return
-        }
-
-        if (productJdaSku != null) { // is from offline store cds/rbs?
-            retrieveProductByProductJda(productJdaSku!!)
-            return
+        when {
+            productSku != null -> {
+                retrieveProduct(productSku!!)
+            }
+            productId != null -> { // is barcode?
+                retrieveProductByBarcode(productId!!)
+            }
+            productJdaSku != null -> { // is from offline store cds/rbs?
+                retrieveProductByProductJda(productJdaSku!!)
+            }
         }
     }
 
@@ -403,6 +400,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
 
     private fun handleGetProductSuccess(response: Product?) {
         if (response != null) {
+            checkAvailableHere(response)
             if (response.typeId == "configurable") {
                 checkProductConfig(response)
             } else {
@@ -450,17 +448,23 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
                 object : ApiResponseCallback<List<StoreAvailable>> {
                     override fun success(response: List<StoreAvailable>?) {
                         runOnUiThread {
-                            availableThisStore = ProductListAPI.handleAvailableHere(response)
-                            dismissProgressDialog()
-                            startProductDetailFragment(product)
+                            supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)?.let {
+                                availableThisStore = ProductListAPI.handleAvailableHere(response)
+                                if (availableThisStore){
+                                    (it as DetailFragment).showAvailableHere()
+                                } else {
+                                    (it as DetailFragment).hideAvailableHere()
+                                }
+                            }
                         }
                     }
 
                     override fun failure(error: APIError) {
                         runOnUiThread {
                             Log.d("Available", "API fail")
-                            dismissProgressDialog()
-                            startProductDetailFragment(product)
+                            supportFragmentManager.findFragmentByTag(TAG_DETAIL_FRAGMENT)?.let {
+                                (it as DetailFragment).hideAvailableHere()
+                            }
                         }
                     }
                 })

@@ -1,14 +1,10 @@
 package cenergy.central.com.pwb_store.manager.api
 
-import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.view.View
-import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
-import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.StoreAvailable
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.ProductListBody
@@ -19,13 +15,12 @@ import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.ParsingUtils
 import cenergy.central.com.pwb_store.utils.getResultError
 import com.google.gson.Gson
-import kotlinx.android.synthetic.pwbOmniTv.fragment_detail.*
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 class ProductListAPI {
     companion object{
@@ -53,12 +48,6 @@ class ProductListAPI {
                     if (response != null) {
                         try {
                             val productResponse = ParsingUtils.parseToProductResponse(response)
-                            //TODO Display available here later on OmniTV
-//                            if (BuildConfig.FLAVOR != "pwbOmniTv"){
-//                                callback.success(productResponse)
-//                            } else {
-//                                checkAvailableStore(context, productResponse, callback)
-//                            }
                             callback.success(productResponse)
                         } catch (e: Exception) {
                             callback.failure(e.getResultError())
@@ -75,37 +64,6 @@ class ProductListAPI {
                 }
             })
         }
-
-//        fun checkAvailableStore(context: Context, productResponse: ProductResponse, callback: ApiResponseCallback<ProductResponse>) {
-//            var count = 0
-//            productResponse.products.forEach { product ->
-//                HttpManagerMagento.getInstance(context).getAvailableStore(product.sku,
-//                        object : ApiResponseCallback<List<StoreAvailable>> {
-//                            override fun success(response: List<StoreAvailable>?) {
-//                                (context as Activity).runOnUiThread {
-//                                    count += 1
-//                                    product.availableThisStore = handleAvailableHere(response)
-//                                    Log.d("count Available", "count $count size ${productResponse.products.size} sku ${product.sku}")
-//                                    if (count == productResponse.products.size){
-//                                        count = 0
-//                                        callback.success(productResponse)
-//                                    }
-//                                }
-//                            }
-//
-//                            override fun failure(error: APIError) {
-//                                (context as Activity).runOnUiThread {
-//                                    count += 1
-//                                    Log.d("count Available", "count $count size ${productResponse.products.size}")
-//                                    if (count == productResponse.products.size){
-//                                        count = 0
-//                                        callback.success(productResponse)
-//                                    }
-//                                }
-//                            }
-//                        })
-//            }
-//        }
 
         fun handleAvailableHere(listStoreAvailable: List<StoreAvailable>?) : Boolean{
             val userInformation = RealmController.getInstance().userInformation
