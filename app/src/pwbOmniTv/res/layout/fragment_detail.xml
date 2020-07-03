@@ -196,18 +196,28 @@
         app:layout_constraintStart_toEndOf="@+id/guideline40"
         app:layout_constraintTop_toBottomOf="@+id/line1" />
 
+    <ProgressBar
+        android:id="@+id/availableHereLoading"
+        android:layout_width="@dimen/margin_padding_xlarge"
+        android:layout_height="@dimen/margin_padding_xlarge"
+        android:theme="@style/AlertDialogTheme"
+        android:layout_marginTop="@dimen/margin_padding_xsmall"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        app:layout_constraintStart_toEndOf="@+id/guideline40"
+        app:layout_constraintTop_toBottomOf="@+id/line1" />
+
     <cenergy.central.com.pwb_store.view.PowerBuyIconButton
         android:id="@+id/btnCompare"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_padding_small"
         android:layout_marginEnd="@dimen/margin_padding_small"
-        android:layout_marginTop="@dimen/margin_padding_xlarge"
+        android:layout_marginTop="@dimen/margin_padding_large"
         app:btn_default="true"
         app:layout_constraintStart_toEndOf="@+id/guideline40"
         app:layout_constraintStart_toStartOf="@+id/guideline40"
         app:layout_constraintEnd_toEndOf="@id/guideline70"
-        app:layout_constraintTop_toBottomOf="@+id/tvAvailableHere"
+        app:layout_constraintTop_toBottomOf="@+id/availableHereLoading"
         app:text="@string/product_compare" />
 
     <androidx.constraintlayout.widget.Guideline

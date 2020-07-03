@@ -145,6 +145,16 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         btnCompare.setOnClickListener(null)
     }
 
+    fun showAvailableHere(){
+        availableHereLoading.visibility = View.INVISIBLE
+        tvAvailableHere.visibility = View.VISIBLE
+    }
+
+    fun hideAvailableHere(){
+        availableHereLoading.visibility = View.INVISIBLE
+        tvAvailableHere.visibility = View.GONE
+    }
+
     private fun showSpecialPrice(unit: String, product: Product) {
         if (product.specialPrice > 0) {
             if (product.price != product.specialPrice) {
