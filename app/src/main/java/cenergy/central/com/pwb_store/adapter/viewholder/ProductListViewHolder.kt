@@ -45,12 +45,11 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         productBrand.text = if (brand != "") brand else "Brand"
         productName.text = product.name
         itemView.tag = product
-        if (product.is1HourProduct()) {
+        if (product.is1HourProduct() && BuildConfig.FLAVOR != "pwbOmniTv") {
             badge1H.set1HourBadge()
         } else {
             badge1H.setImageDrawable(null)
         }
-
         if (product.isSpecialPrice()) {
             showSpecialPrice()
         } else {
