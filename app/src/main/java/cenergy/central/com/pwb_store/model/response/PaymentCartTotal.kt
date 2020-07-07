@@ -4,7 +4,7 @@ import cenergy.central.com.pwb_store.model.TotalSegment
 import com.google.gson.annotations.SerializedName
 import io.realm.annotations.PrimaryKey
 
-class CartTotalResponse(
+class PaymentCartTotal(
         @SerializedName("subtotal_incl_tax")
         var totalPrice: Double = 0.0,
         @SerializedName("base_discount_amount")
@@ -14,7 +14,9 @@ class CartTotalResponse(
         var items: List<ShoppingCartItem>? = arrayListOf(),
         @SerializedName("total_segments")
         var totalSegment: List<TotalSegment>? = arrayListOf(),
-        var couponCode: String = ""
+        var couponCode: String = "",
+        @SerializedName("base_shipping_amount")
+        var shippingAmount: Double = 0.0
 )
 
 class ShoppingCartItem(

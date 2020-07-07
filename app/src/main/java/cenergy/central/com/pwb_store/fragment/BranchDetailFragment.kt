@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
+import cenergy.central.com.pwb_store.model.CheckoutType
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class BranchDetailFragment : Fragment() {

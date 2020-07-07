@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter

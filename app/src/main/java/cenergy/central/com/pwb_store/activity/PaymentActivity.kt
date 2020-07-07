@@ -63,6 +63,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
+    private var orderDetailDialog: OrderDetailsFragment? = null
 
     // data
     private val database = RealmController.getInstance()
@@ -91,6 +92,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var totalPrice = 0.0
     private var paymentAgents = listOf<PaymentAgent>()
     private var consentInfo: ConsentInfoResponse? = null
+    private var mCartTotal: PaymentCartTotal? = null
 
     // data product 2h
     private var product2h: Product? = null
@@ -103,6 +105,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     companion object {
         private const val TAG = "PaymentActivity"
+        private const val TAG_ORDER_DETAIL_FRAGMENT = "OrderDetailFragment"
+
         private const val EXTRA_PRODUCT_2H = "extra_product_2h"
         private const val EXTRA_CHECK_OUT_ISPU = "extra_check_out_ispu"
         private const val EXTRA_EDIT_STORE_PICKUP = "extra_edit_store_pickup"
@@ -186,6 +190,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getStateView(): NetworkStateView? = networkStateView
 
+    override fun getCartTotal(): PaymentCartTotal? = this.mCartTotal
+
+    override fun getCacheItems(): List<CacheCartItem>  = this.cacheCartItems
+
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {
         // skip?
@@ -226,7 +234,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.shippingAddress = shippingAddress
         this.billingAddress = billingAddress
         this.theOneCardNo = t1cNumber
-        if (privacyVersion != null){ // if privacy is null because API get consent info not working
+        if (privacyVersion != null) { // if privacy is null because API get consent info not working
             setConsent(privacyVersion, isCheckConsent, false)
         } else {
             cartId?.let { getDeliveryOptions(it) } // request delivery options
@@ -473,6 +481,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mToolbar?.setNavigationOnClickListener {
             backPressed()
         }
+
+        // setup click order detail
+        btnOderDetail.setOnClickListener {
+            showOrderDetail()
+        }
     }
 
     private fun showProgressDialog() {
@@ -492,8 +505,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun getItemTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
-                override fun success(response: CartTotalResponse?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
+                override fun success(response: PaymentCartTotal?) {
                     runOnUiThread {
                         if (response != null) {
                             handleGetCartItemsSuccess(response)
@@ -514,7 +527,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
+    private fun handleGetCartItemsSuccess(cartTotal: PaymentCartTotal) {
         updateOrderDetailView(cartTotal)
 
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
@@ -537,9 +550,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         retrieveConsentInfo()
     }
 
-    private fun updateOrderDetailView(cartTotal: CartTotalResponse) {
+    private fun updateOrderDetailView(cartTotal: PaymentCartTotal) {
+        this.mCartTotal = cartTotal
         tvTotal.text = cartTotal.totalPrice.toPriceDisplay()
-
     }
 
     private fun retrieveConsentInfo() {
@@ -875,12 +888,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun setConsent(privacyVersion: String, isCheckConsent: Boolean, isISPU: Boolean = false) {
-        if (shippingAddress != null && cacheCartItems.isNotEmpty() && cacheCartItems[0].cartId != null){
-            val consentBody = ConsentBody.createBody(shippingAddress!!.email, cacheCartItems[0].cartId!! ,privacyVersion, isCheckConsent)
+        if (shippingAddress != null && cacheCartItems.isNotEmpty() && cacheCartItems[0].cartId != null) {
+            val consentBody = ConsentBody.createBody(shippingAddress!!.email, cacheCartItems[0].cartId!!, privacyVersion, isCheckConsent)
             HttpManagerConsent.getInstance(this).setConsent(consentBody,
-                    object : ApiResponseCallback<ConsentResponse>{
+                    object : ApiResponseCallback<ConsentResponse> {
                         override fun success(response: ConsentResponse?) {
-                            if(isISPU){
+                            if (isISPU) {
                                 createOrderWithIspu()
                             } else {
                                 cartId?.let { getDeliveryOptions(it) }
@@ -888,11 +901,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         }
 
                         override fun failure(error: APIError) {
-                            if(isISPU){
+                            if (isISPU) {
                                 createOrderWithIspu()
                             } else {
                                 cartId?.let { getDeliveryOptions(it) }
-                            }                        }
+                            }
+                        }
                     })
         }
     }
@@ -1342,8 +1356,19 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
-}
 
-enum class CheckoutType {
-    NORMAL, ISPU
+    private fun showOrderDetail() {
+        val orderDetailFragment: OrderDetailsFragment =
+                supportFragmentManager.findFragmentByTag(TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailsFragment?
+                        ?: run {
+                            OrderDetailsFragment()
+                        }
+        orderDetailFragment.show(supportFragmentManager, TAG_ORDER_DETAIL_FRAGMENT)
+    }
+
+    private fun hideOrderDetail() {
+        val orderDetailFragment: OrderDetailsFragment? =
+                supportFragmentManager.findFragmentByTag(TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailsFragment?
+        orderDetailFragment?.dismiss()
+    }
 }

@@ -22,6 +22,7 @@
 
     <!-- Image -->
     <dimen name="img_qr_code_payment">192dp</dimen>
+    <dimen name="order_product_image_size">96dp</dimen>
 
     <dimen name="margin_padding_xsmall">4dp</dimen>
     <dimen name="margin_padding_small">8dp</dimen>

@@ -11,12 +11,10 @@ import cenergy.central.com.pwb_store.extensions.setImage
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
 
-/**
- * Created by Anuphap Suwannamas on 2/10/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
-class ProductImageAdapter(private val listener: ProductImageListener,private val productImageList: List<ProductDetailImageItem>) : RecyclerView.Adapter<ProductImageAdapter.ProductImageViewHolder>() {
+class ProductImageAdapter(private val listener: ProductImageListener,
+                          private val productImageList: List<ProductDetailImageItem>)
+    : RecyclerView.Adapter<ProductImageAdapter.ProductImageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductImageViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.adapter_product_image, parent, false)
@@ -39,7 +37,7 @@ class ProductImageAdapter(private val listener: ProductImageListener,private val
         private val ivProductImage = itemView.findViewById<ImageView>(R.id.ivProductImage)
 
         fun bindItem(productImage: ProductDetailImageItem) {
-            if (productImage.imgUrl != null){
+            if (productImage.imgUrl != null) {
                 ivProductImage.setImageUrl(productImage.imgUrl!!)
             } else {
                 ivProductImage.setImage(R.drawable.ic_placeholder)
