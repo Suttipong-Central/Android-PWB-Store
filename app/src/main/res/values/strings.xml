@@ -390,5 +390,6 @@
     <string name="label_order_promotion_code">Promotion Code</string>
     <string name="label_order_shipping_fee">Shipping Fee</string>
     <string name="not_found_shipping_amount">ยังไม่ได้คำนวณ</string>
+    <string name="label_your_order_detail">Your Order Details</string>
 
 </resources>

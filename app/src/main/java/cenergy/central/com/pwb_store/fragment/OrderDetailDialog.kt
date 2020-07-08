@@ -25,7 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_order_details.*
 
 
-class OrderDetailsFragment : BottomSheetDialogFragment() {
+class OrderDetailDialog : BottomSheetDialogFragment() {
     private val orderDetailAdapter by lazy { OrderDetailAdapter() }
 
     private var paymentProtocol: PaymentProtocol? = null
@@ -39,31 +39,13 @@ class OrderDetailsFragment : BottomSheetDialogFragment() {
         this.cacheItems = paymentProtocol?.getCacheItems() ?: listOf()
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-        bottomSheetDialog.setOnShowListener { dialog: DialogInterface ->
-            val btmSheetDialog = dialog as BottomSheetDialog
-            val bottomSheet = btmSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
-            bottomSheet?.let {
-                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-
-                val bottomSheetBehavior = BottomSheetBehavior.from(it)
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                bottomSheetBehavior.peekHeight = Resources.getSystem().displayMetrics.heightPixels;
-                bottomSheetBehavior.skipCollapsed = true
-                bottomSheetBehavior.setHideable(true)
-            }
-        }
-        return bottomSheetDialog
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_order_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupView()
+        initAdapter()
         updateOrderDetail()
     }
 
@@ -103,7 +85,7 @@ class OrderDetailsFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setupView() {
+    private fun initAdapter() {
         rvOrderItems?.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = orderDetailAdapter

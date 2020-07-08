@@ -6,7 +6,6 @@
     android:id="@+id/app_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:fitsSystemWindows="true"
     tools:context=".activity.CompareActivity">
 
@@ -19,8 +18,7 @@
         app:contentInsetEnd="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        app:contentInsetStart="0dp">
 
         <ImageView
             android:id="@+id/image_view_logo"

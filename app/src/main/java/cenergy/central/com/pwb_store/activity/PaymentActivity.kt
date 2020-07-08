@@ -13,6 +13,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
@@ -47,8 +48,10 @@ import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.ProductCompareView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_payment.*
 import kotlinx.android.synthetic.main.layout_order_detail_bar.*
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
@@ -63,7 +66,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
-    private var orderDetailDialog: OrderDetailsFragment? = null
+    private var orderDetailDialog: OrderDetailDialog? = null
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     // data
     private val database = RealmController.getInstance()
@@ -192,7 +196,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getCartTotal(): PaymentCartTotal? = this.mCartTotal
 
-    override fun getCacheItems(): List<CacheCartItem>  = this.cacheCartItems
+    override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
 
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {
@@ -482,10 +486,33 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             backPressed()
         }
 
+        setupOrderDetail()
         // setup click order detail
         btnOderDetail.setOnClickListener {
             showOrderDetail()
         }
+    }
+
+    private fun setupOrderDetail() {
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    layout_app_bar.visibility = View.VISIBLE
+                    val bottomSheetFragment = supportFragmentManager.findFragmentByTag(TAG_ORDER_DETAIL_FRAGMENT)
+                    if (bottomSheetFragment != null) {
+                        supportFragmentManager.beginTransaction()
+                                .remove(bottomSheetFragment)
+                                .commit()
+                    }
+                } else {
+                    layout_app_bar.visibility = View.INVISIBLE
+                }
+            }
+        })
     }
 
     private fun showProgressDialog() {
@@ -1358,17 +1385,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun showOrderDetail() {
-        val orderDetailFragment: OrderDetailsFragment =
-                supportFragmentManager.findFragmentByTag(TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailsFragment?
-                        ?: run {
-                            OrderDetailsFragment()
-                        }
-        orderDetailFragment.show(supportFragmentManager, TAG_ORDER_DETAIL_FRAGMENT)
+        orderDetailDialog = supportFragmentManager.findFragmentByTag(
+                TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailDialog? ?: run { OrderDetailDialog() }
+
+        val layoutParams: CoordinatorLayout.LayoutParams = bottomSheetContainer.layoutParams
+                as CoordinatorLayout.LayoutParams
+        bottomSheetContainer.layoutParams = layoutParams
+
+        supportFragmentManager.beginTransaction()
+                .replace(bottomSheetContainer.id, orderDetailDialog!!, TAG_ORDER_DETAIL_FRAGMENT)
+                .commit()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     private fun hideOrderDetail() {
-        val orderDetailFragment: OrderDetailsFragment? =
-                supportFragmentManager.findFragmentByTag(TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailsFragment?
-        orderDetailFragment?.dismiss()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 }
