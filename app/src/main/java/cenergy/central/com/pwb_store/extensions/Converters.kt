@@ -69,6 +69,11 @@ fun Double.toPriceDisplay(): String {
     return "฿$price"
 }
 
+fun Double.toDisplayPriceDisplay(): String {
+    val price = NumberFormat.getInstance(Locale.getDefault()).format(this)
+    return "-฿$price"
+}
+
 fun Double.toStringDiscount(): Double {
     return this.toString().replace("-", "").toDouble()
 }

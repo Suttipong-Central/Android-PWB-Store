@@ -562,8 +562,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun handleGetCartItemsSuccess(cartTotal: PaymentCartTotal) {
-        updateOrderDetailView(cartTotal)
-
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
@@ -580,13 +578,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (discountPrice > 0) {
             this.totalPrice -= discountPrice
         }
-
+        updateOrderDetailView(cartTotal)
         retrieveConsentInfo()
     }
 
     private fun updateOrderDetailView(cartTotal: PaymentCartTotal) {
         this.mCartTotal = cartTotal
-        tvTotal.text = cartTotal.totalPrice.toPriceDisplay()
+        tvTotal.text = this.totalPrice.toPriceDisplay()
         showOrderDetailBar()
     }
 

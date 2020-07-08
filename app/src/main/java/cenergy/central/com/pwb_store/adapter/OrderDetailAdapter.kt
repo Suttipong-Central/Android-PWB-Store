@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.setImageUrl
+import cenergy.central.com.pwb_store.extensions.toDisplayPriceDisplay
 import cenergy.central.com.pwb_store.extensions.toPriceDisplay
 import cenergy.central.com.pwb_store.model.OrderDetailView
 import kotlinx.android.synthetic.main.item_order_detail.view.*
@@ -80,16 +81,18 @@ class OrderDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             totalTextView.text = orderDetail.total.toPriceDisplay()
             if (orderDetail.discount > 0.0) {
                 discountTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.dangerColor))
+                discountTextView.text = orderDetail.discount.toDisplayPriceDisplay()
             } else {
                 discountTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.blackText))
+                discountTextView.text = orderDetail.discount.toPriceDisplay()
             }
-            discountTextView.text = orderDetail.discount.toPriceDisplay()
             if (orderDetail.promotionCode > 0.0) {
                 promotionTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.dangerColor))
+                promotionTextView.text = orderDetail.promotionCode.toDisplayPriceDisplay()
             } else {
                 promotionTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.blackText))
+                promotionTextView.text = orderDetail.promotionCode.toPriceDisplay()
             }
-            promotionTextView.text = orderDetail.promotionCode.toPriceDisplay()
             shippingFeeTextView.text = orderDetail.shippingFee
             orderTotalTextView.text = orderDetail.orderTotal.toPriceDisplay()
         }
