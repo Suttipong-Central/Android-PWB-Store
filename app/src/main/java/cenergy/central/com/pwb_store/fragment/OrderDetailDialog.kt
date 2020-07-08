@@ -82,11 +82,11 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
             totalPrice -= it.shippingAmount
 
             val detailItem = OrderDetailView.OrderDetail(
-                    orderTotal = it.totalPrice,
+                    orderTotal = totalPrice,
                     discount = discountPrice,
                     promotionCode = promotionDiscount,
                     shippingFee = if (it.shippingAmount == 0.0) getString(R.string.not_found_shipping_amount) else it.shippingAmount.toPriceDisplay(),
-                    total = totalPrice
+                    total = it.totalPrice
             )
 
             items.add(detailItem)
