@@ -382,4 +382,15 @@
     <string name="acknowledged">และรับทราบ</string>
     <string name="privacy">นโยบายความเป็นส่วนตัว</string>
 
+    <!--  Payment Order Detail  -->
+    <string name="label_order_total">ยอดสั่งซื้อทั้งหมด</string>
+    <string name="view_order_detail">ดูรายละเอียด</string>
+    <string name="label_order_details">รายละเอียดการชำระเงิน</string>
+    <string name="label_total">ยอดรวม</string>
+    <string name="label_discount">ส่วนลด</string>
+    <string name="label_order_promotion_code">โค้ดส่วนลด</string>
+    <string name="label_order_shipping_fee">การจัดส่งสินค้า</string>
+    <string name="not_found_shipping_amount">ยังไม่ได้คำนวณ</string>
+    <string name="label_your_order_detail">รายละเอียดการสั่งสินค้า</string>
+
 </resources>
