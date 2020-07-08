@@ -11,10 +11,10 @@ sealed class OrderDetailView {
                             val qty: Int,
                             override val viewType: Int = OrderDetailAdapter.ORDER_PRODUCT_ITEM) : OrderDetailView()
 
-    data class OrderDetail(val total: String,
+    data class OrderDetail(val total: Double,
                            val discount: Double,
                            val promotionCode: Double,
                            val shippingFee: String,
-                           val orderTotal: String,
+                           val orderTotal: Double,
                            override val viewType: Int = OrderDetailAdapter.ORDER_CONTENT_ITEM) : OrderDetailView()
 }

@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.setImageUrl
@@ -76,11 +77,21 @@ class OrderDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val orderTotalTextView = itemView.tvOrderTotal
 
         fun bind(orderDetail: OrderDetailView.OrderDetail) {
-            totalTextView.text = orderDetail.total
-            discountTextView.text = orderDetail.discount.toString()
-            promotionTextView.text = orderDetail.promotionCode.toString()
+            totalTextView.text = orderDetail.total.toPriceDisplay()
+            if (orderDetail.discount > 0.0) {
+                discountTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.dangerColor))
+            } else {
+                discountTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.blackText))
+            }
+            discountTextView.text = orderDetail.discount.toPriceDisplay()
+            if (orderDetail.promotionCode > 0.0) {
+                promotionTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.dangerColor))
+            } else {
+                promotionTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.blackText))
+            }
+            promotionTextView.text = orderDetail.promotionCode.toPriceDisplay()
             shippingFeeTextView.text = orderDetail.shippingFee
-            orderTotalTextView.text = orderDetail.orderTotal
+            orderTotalTextView.text = orderDetail.orderTotal.toPriceDisplay()
         }
     }
 }

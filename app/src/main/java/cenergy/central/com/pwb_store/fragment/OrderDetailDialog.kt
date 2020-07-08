@@ -18,6 +18,7 @@ import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.OrderDetailView
 import cenergy.central.com.pwb_store.model.TotalSegment
+import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.PaymentCartTotal
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -62,22 +63,30 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
 
             // setup detail
             var totalPrice = it.totalPrice
-            val coupon = it.totalSegment?.firstOrNull { it2 -> it2.code == TotalSegment.COUPON_KEY }
-            var discountPrice = it.discountPrice
+            var discountPrice: Double = 0.0
             var promotionDiscount = 0.0
+            val discount = it.totalSegment?.firstOrNull { it2 -> it2.code == TotalSegment.DISCOUNT_KEY }
+            if (discount != null) {
+                discountPrice = discount.value.toStringDiscount()
+            }
+            val coupon = it.totalSegment?.firstOrNull { it2 -> it2.code == TotalSegment.COUPON_KEY }
             if (coupon != null) {
                 val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
                 promotionDiscount = couponDiscount?.couponAmount.toStringDiscount()
                 discountPrice -= promotionDiscount
                 totalPrice -= promotionDiscount
-                totalPrice -= it.shippingAmount
             }
+            if (discountPrice > 0) {
+                totalPrice -= discountPrice
+            }
+            totalPrice -= it.shippingAmount
+
             val detailItem = OrderDetailView.OrderDetail(
-                    orderTotal = it.totalPrice.toPriceDisplay(),
-                    discount = it.discountPrice,
+                    orderTotal = it.totalPrice,
+                    discount = discountPrice,
                     promotionCode = promotionDiscount,
                     shippingFee = if (it.shippingAmount == 0.0) getString(R.string.not_found_shipping_amount) else it.shippingAmount.toPriceDisplay(),
-                    total = totalPrice.toPriceDisplay()
+                    total = totalPrice
             )
 
             items.add(detailItem)
