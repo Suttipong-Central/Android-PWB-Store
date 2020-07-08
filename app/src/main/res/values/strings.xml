@@ -384,6 +384,7 @@
     <!--  Payment Order Detail  -->
     <string name="label_order_total">Order Total</string>
     <string name="view_order_detail">View Details</string>
+    <string name="hide_order_detail">Hide Details</string>
     <string name="label_order_details">Payment Details</string>
     <string name="label_total">Total</string>
     <string name="label_discount">Discount</string>

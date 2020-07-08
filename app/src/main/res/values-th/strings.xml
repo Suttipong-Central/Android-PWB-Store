@@ -385,6 +385,7 @@
     <!--  Payment Order Detail  -->
     <string name="label_order_total">ยอดสั่งซื้อทั้งหมด</string>
     <string name="view_order_detail">ดูรายละเอียด</string>
+    <string name="hide_order_detail">ซ่อนรายละเอียด</string>
     <string name="label_order_details">รายละเอียดการชำระเงิน</string>
     <string name="label_total">ยอดรวม</string>
     <string name="label_discount">ส่วนลด</string>

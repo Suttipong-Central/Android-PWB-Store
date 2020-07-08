@@ -138,8 +138,6 @@ class DeliveryStorePickUpFragment : Fragment() {
                     }
                 }
             } else {
-                // State edit store pickup
-                //TODO: Refactor and improve this fuction
                 diffStores.forEach {
                     newItem.add(BranchResponse(null, it))
                 }

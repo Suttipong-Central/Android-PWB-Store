@@ -23,6 +23,9 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:padding="@dimen/margin_padding_small" />
+        android:paddingStart="@dimen/margin_padding_small"
+        android:paddingTop="@dimen/margin_padding_small"
+        android:paddingEnd="@dimen/margin_padding_small"
+        android:paddingBottom="@dimen/app_bottom_bar_size" />
 
 </LinearLayout>

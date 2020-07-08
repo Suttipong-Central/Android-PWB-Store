@@ -97,6 +97,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var paymentAgents = listOf<PaymentAgent>()
     private var consentInfo: ConsentInfoResponse? = null
     private var mCartTotal: PaymentCartTotal? = null
+    private var shownOrderDetail = false
 
     // data product 2h
     private var product2h: Product? = null
@@ -149,6 +150,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         initView()
 
+        hideOrderDetailBar()
         showProgressDialog()
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
@@ -310,7 +312,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
         paymentMethods = cacheCartItems.getPaymentType(this)
-        getItemTotal()
+        retrieveCartTotal()
     }
 
     private fun checkoutWithProduct2hr(product: Product) {
@@ -411,6 +413,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startSuccessfullyFragment(orderId: String, urlRedirect: String) {
         languageButton.visibility = View.VISIBLE
+        hideOrderDetailBar()
         val cacheCart = ArrayList<CacheCartItem>()
         cacheCart.addAll(cacheCartItems)
         startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart, urlRedirect))
@@ -489,7 +492,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         setupOrderDetail()
         // setup click order detail
         btnOderDetail.setOnClickListener {
-            showOrderDetail()
+            if (!shownOrderDetail) showOrderDetailView() else hideOrderDetailView()
         }
     }
 
@@ -508,8 +511,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 .remove(bottomSheetFragment)
                                 .commit()
                     }
+                    this@PaymentActivity.shownOrderDetail = false
+                    btnOderDetail.text = getString(R.string.view_order_detail)
                 } else {
                     layout_app_bar.visibility = View.INVISIBLE
+                    this@PaymentActivity.shownOrderDetail = true
+                    btnOderDetail.text = getString(R.string.hide_order_detail)
                 }
             }
         })
@@ -530,7 +537,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mProgressDialog?.dismiss()
     }
 
-    private fun getItemTotal() {
+    private fun retrieveCartTotal() {
         preferenceManager.cartId?.let { cartId ->
             CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
                 override fun success(response: PaymentCartTotal?) {
@@ -580,6 +587,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun updateOrderDetailView(cartTotal: PaymentCartTotal) {
         this.mCartTotal = cartTotal
         tvTotal.text = cartTotal.totalPrice.toPriceDisplay()
+        showOrderDetailBar()
     }
 
     private fun retrieveConsentInfo() {
@@ -1384,7 +1392,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
 
-    private fun showOrderDetail() {
+    private fun showOrderDetailBar() {
+        orderDetailLayout.visibility = View.VISIBLE
+    }
+
+    private fun hideOrderDetailBar() {
+        orderDetailLayout.visibility = View.GONE
+    }
+
+    private fun showOrderDetailView() {
         orderDetailDialog = supportFragmentManager.findFragmentByTag(
                 TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailDialog? ?: run { OrderDetailDialog() }
 
@@ -1398,7 +1414,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    private fun hideOrderDetail() {
+    private fun hideOrderDetailView() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 }
