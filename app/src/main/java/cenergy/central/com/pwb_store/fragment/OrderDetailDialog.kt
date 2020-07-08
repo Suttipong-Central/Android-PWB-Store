@@ -1,14 +1,10 @@
 package cenergy.central.com.pwb_store.fragment
 
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
@@ -18,10 +14,8 @@ import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.OrderDetailView
 import cenergy.central.com.pwb_store.model.TotalSegment
-import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.PaymentCartTotal
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import cenergy.central.com.pwb_store.realm.RealmController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_order_details.*
 
@@ -37,7 +31,6 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
         super.onAttach(context)
         this.paymentProtocol = context as PaymentProtocol
         this.cartTotal = paymentProtocol?.getCartTotal()
-        this.cacheItems = paymentProtocol?.getCacheItems() ?: listOf()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,19 +44,21 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
     }
 
     private fun updateOrderDetail() {
+        cacheItems = RealmController.getInstance().cacheCartItems
         cartTotal?.let {
             // setup product item
             val items = arrayListOf<OrderDetailView>()
-            it.items?.mapTo(items, { cartItem ->
-                val cacheItem = cacheItems.firstOrNull { c -> c.sku == cartItem.sku }
-                OrderDetailView.OrderProduct(cartItem.name
-                        ?: "", cacheItem?.imageUrl, (cartItem.price
-                        ?: 0.0).toPriceDisplay(), cartItem.qty ?: 1)
+            cacheItems.sortedBy { c -> c.itemId }.mapTo(items, { cacheItem ->
+                val cartItem = it.items?.firstOrNull { cItem -> cacheItem.sku == cItem.sku }
+
+                OrderDetailView.OrderProduct(cacheItem.name
+                        ?: "", cacheItem.imageUrl, (cartItem?.price
+                        ?: 0.0).toPriceDisplay(), cacheItem.qty ?: 1)
             })
 
             // setup detail
             var totalPrice = it.totalPrice
-            var discountPrice: Double = 0.0
+            var discountPrice = 0.0
             var promotionDiscount = 0.0
             val discount = it.totalSegment?.firstOrNull { it2 -> it2.code == TotalSegment.DISCOUNT_KEY }
             if (discount != null) {

@@ -278,22 +278,41 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun getCartItem() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
-                override fun success(response: CartResponse?) {
-                    if (response != null) {
-                        cartResponse = response
-                        getCartTotal()
-                    } else {
-                        mProgressDialog?.dismiss()
-                        showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<Pair<CartResponse?, List<Product>>> {
+                override fun success(response: Pair<CartResponse?, List<Product>>?) {
+                    runOnUiThread {
+                        if (response?.first != null) {
+                            cartResponse = response.first
+                            getCartTotal()
+                            updateCacheCartItem(response.second)
+                        } else {
+                            mProgressDialog?.dismiss()
+                            showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+                        }
                     }
                 }
 
                 override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    displayError(error)
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        displayError(error)
+                    }
                 }
             })
+        }
+    }
+
+    private fun updateCacheCartItem(products: List<Product>) {
+        cartResponse?.let {
+            val cacheCartItems = arrayListOf<CacheCartItem>()
+            it.items.forEach { item ->
+                val product = products.firstOrNull { p -> item.sku == p.sku }
+                product?.let {
+                    cacheCartItems.add(CacheCartItem.asCartItem(item, product))
+                }
+            }
+
+            database.saveCartItems(cacheCartItems)
         }
     }
 

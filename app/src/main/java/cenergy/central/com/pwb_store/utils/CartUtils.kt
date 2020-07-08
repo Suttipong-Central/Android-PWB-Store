@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.utils
 
 import android.app.Dialog
 import android.content.Context
+import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
@@ -10,9 +11,11 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.CartItemBody
+import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -116,7 +119,7 @@ class CartUtils(private val context: Context) {
 
     private fun requestAddToCart(cartId: String, product: Product) {
         // is chat and shop user
-        val retailerId = if (db.userInformation.user?.userLevel == 3L){
+        val retailerId = if (db.userInformation.user?.userLevel == 3L) {
             null // is chat and shop user retailerId must be null
         } else {
             db?.userInformation?.store?.storeId?.toInt()
@@ -270,11 +273,35 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun viewCart(cartId: String, callback: ApiResponseCallback<CartResponse>) {
+    fun viewCart(cartId: String, callback: ApiResponseCallback<Pair<CartResponse?, List<Product>>>) {
         HttpManagerMagento(context).cartService.viewCart(requestLanguage(context), cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
                 if (response.body() != null && response.isSuccessful) {
-                    callback.success(response.body())
+
+                    // force load product
+                    val cartResponse = response.body()
+                    if (cartResponse != null) {
+                        val skuList = cartResponse.items.map { it.sku }
+                        val result = TextUtils.join(",", skuList)
+                        val filterGroupsList = java.util.ArrayList<FilterGroups>()
+                        filterGroupsList.add(FilterGroups.createFilterGroups("sku", result, "in"))
+
+                        ProductListAPI.retrieveProducts(context, skuList.size, 1,
+                                filterGroupsList, arrayListOf(),
+                                object : ApiResponseCallback<ProductResponse> {
+                                    override fun success(response: ProductResponse?) {
+                                        val products = response?.products ?: arrayListOf()
+                                        callback.success(Pair(cartResponse, products))
+                                    }
+
+                                    override fun failure(error: APIError) {
+                                        callback.failure(APIErrorUtils.parseError(response))
+                                    }
+                                })
+
+                    } else {
+                        callback.success(Pair(cartResponse, listOf()))
+                    }
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
