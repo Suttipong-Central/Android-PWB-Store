@@ -515,117 +515,13 @@
             app:act_header="@string/post_code"
             app:act_required="true" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_cart_items"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_padding_normal"
-            android:layout_marginBottom="@dimen/margin_padding_normal"
-            app:layout_constraintTop_toBottomOf="@+id/billing_input_sub_district"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_discount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="label_discount,txt_discount"/>
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/label_discount"
-            style="@style/textNameProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_padding_normal"
-            android:layout_marginEnd="@dimen/margin_padding_normal"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_cart_items"
-            app:layout_constraintEnd_toStartOf="@+id/txt_discount"
-            android:text="@string/discount"
-            android:textSize="18sp" />
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/txt_discount"
-            style="@style/textNameProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_padding_normal"
-            android:textColor="@color/dangerColor"
-            android:textSize="18sp"
-            app:layout_constraintTop_toTopOf="@+id/label_discount"
-            app:layout_constraintBottom_toBottomOf="@+id/label_discount"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="4,404" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_promotion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="label_promotion,txt_promotion"/>
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/label_promotion"
-            style="@style/textNameProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/promotion_code"
-            android:layout_marginTop="@dimen/margin_padding_normal"
-            android:layout_marginEnd="@dimen/margin_padding_normal"
-            app:layout_constraintTop_toBottomOf="@+id/label_discount"
-            app:layout_constraintEnd_toStartOf="@+id/txt_promotion"
-            android:textSize="18sp" />
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/txt_promotion"
-            style="@style/textNameProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_padding_normal"
-            app:layout_constraintTop_toTopOf="@id/label_promotion"
-            app:layout_constraintBottom_toBottomOf="@id/label_promotion"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:textColor="@color/dangerColor"
-            android:textSize="18sp"
-            tools:text="4,404" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/layout_total_shopping_cart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids=""/>
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/label_total"
-            style="@style/textNameProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/total_price"
-            android:layout_marginTop="@dimen/margin_padding_normal"
-            android:layout_marginEnd="@dimen/margin_padding_normal"
-            app:layout_constraintEnd_toStartOf="@+id/txt_total"
-            app:layout_constraintTop_toBottomOf="@+id/label_promotion"
-            android:textSize="18sp" />
-
-        <cenergy.central.com.pwb_store.view.PowerBuyTextView
-            android:id="@+id/txt_total"
-            style="@style/textNameProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_padding_normal"
-            app:layout_constraintTop_toTopOf="@+id/label_total"
-            app:layout_constraintBottom_toBottomOf="@+id/label_total"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:textSize="22sp"
-            tools:text="4,404" />
-
         <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/consent_checkBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_padding_normal"
             android:theme="@style/checkBoxPrimary"
-            app:layout_constraintTop_toBottomOf="@+id/label_total"
+            app:layout_constraintTop_toBottomOf="@+id/billing_input_sub_district"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
