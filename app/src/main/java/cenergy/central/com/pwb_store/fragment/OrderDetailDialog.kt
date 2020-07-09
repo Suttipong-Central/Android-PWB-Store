@@ -14,7 +14,6 @@ import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.OrderDetailView
 import cenergy.central.com.pwb_store.model.TotalSegment
-import cenergy.central.com.pwb_store.model.response.PaymentCartTotal
 import cenergy.central.com.pwb_store.realm.RealmController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_order_details.*
@@ -24,13 +23,11 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
     private val orderDetailAdapter by lazy { OrderDetailAdapter() }
 
     private var paymentProtocol: PaymentProtocol? = null
-    private var cartTotal: PaymentCartTotal? = null
     private var cacheItems: List<CacheCartItem> = listOf()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.paymentProtocol = context as PaymentProtocol
-        this.cartTotal = paymentProtocol?.getCartTotal()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,17 +40,17 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
         updateOrderDetail()
     }
 
-    private fun updateOrderDetail() {
+    fun updateOrderDetail() {
         cacheItems = RealmController.getInstance().cacheCartItems
+        val cartTotal = paymentProtocol?.getCartTotal()
         cartTotal?.let {
             // setup product item
             val items = arrayListOf<OrderDetailView>()
             cacheItems.sortedBy { c -> c.itemId }.mapTo(items, { cacheItem ->
                 val cartItem = it.items?.firstOrNull { cItem -> cacheItem.sku == cItem.sku }
-
-                OrderDetailView.OrderProduct(cacheItem.name
-                        ?: "", cacheItem.imageUrl, (cartItem?.price
-                        ?: 0.0).toPriceDisplay(), cacheItem.qty ?: 1)
+                OrderDetailView.OrderProduct(cacheItem.name ?: "",
+                        cacheItem.imageUrl, (cartItem?.price ?: 0.0).toPriceDisplay(),
+                        cacheItem.qty ?: 1)
             })
 
             // setup detail
@@ -74,16 +71,14 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
             if (discountPrice > 0) {
                 totalPrice -= discountPrice
             }
-            totalPrice -= it.shippingAmount
 
             val detailItem = OrderDetailView.OrderDetail(
                     orderTotal = totalPrice,
                     discount = discountPrice,
                     promotionCode = promotionDiscount,
                     shippingFee = if (it.shippingAmount == 0.0) getString(R.string.not_found_shipping_amount) else it.shippingAmount.toPriceDisplay(),
-                    total = it.totalPrice
+                    total = (it.totalPrice - it.shippingAmount)
             )
-
             items.add(detailItem)
             orderDetailAdapter.items = items
         }

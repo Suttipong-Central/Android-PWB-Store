@@ -66,7 +66,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
-    private var orderDetailDialog: OrderDetailDialog? = null
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     // data
@@ -711,7 +710,23 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             return
         }
 
-        displayEorderingPayment(paymentMethods)
+        cartId?.let {
+            CartUtils(this).viewCartTotal(it, object : ApiResponseCallback<PaymentCartTotal> {
+                override fun success(response: PaymentCartTotal?) {
+                    runOnUiThread {
+                        this@PaymentActivity.mCartTotal = response
+                        displayEorderingPayment(paymentMethods)
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    runOnUiThread {
+                        showCommonAPIErrorDialog(error)
+                        displayEorderingPayment(paymentMethods)
+                    }
+                }
+            })
+        }
     }
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
@@ -1399,7 +1414,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun showOrderDetailView() {
-        orderDetailDialog = supportFragmentManager.findFragmentByTag(
+        val orderDetailDialog = supportFragmentManager.findFragmentByTag(
                 TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailDialog? ?: run { OrderDetailDialog() }
 
         val layoutParams: CoordinatorLayout.LayoutParams = bottomSheetContainer.layoutParams

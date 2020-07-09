@@ -382,7 +382,7 @@
     <string name="privacy">Privacy Policy.</string>
 
     <!--  Payment Order Detail  -->
-    <string name="label_items">%d Item(s)</string>
+    <string name="format_count_items">%d Item(s)</string>
     <string name="label_order_total">Order Total</string>
     <string name="view_order_detail">View Details</string>
     <string name="hide_order_detail">Hide Details</string>

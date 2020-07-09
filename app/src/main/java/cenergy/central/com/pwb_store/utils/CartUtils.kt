@@ -317,7 +317,7 @@ class CartUtils(private val context: Context) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
-                .addPathSegments("/rest/${requestLanguage(context)}/V1/guest-carts/$cartId/totals")
+                .addPathSegments("rest/${requestLanguage(context)}/V1/guest-carts/$cartId/totals")
                 .build()
 
         val request = Request.Builder()
@@ -342,6 +342,10 @@ class CartUtils(private val context: Context) {
                         }
                         if (dataObject.has("coupon_code")) {
                             cartTotalResponse.couponCode = dataObject.getString("coupon_code")
+                        }
+
+                        if (dataObject.has("base_shipping_amount")) {
+                            cartTotalResponse.shippingAmount = dataObject.getDouble("base_shipping_amount")
                         }
                         if (dataObject.has("items")) {
                             val shoppingCartItems = ArrayList<ShoppingCartItem>()

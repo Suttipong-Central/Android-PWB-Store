@@ -383,7 +383,7 @@
     <string name="privacy">นโยบายความเป็นส่วนตัว</string>
 
     <!--  Payment Order Detail  -->
-    <string name="label_items">%d ชิ้น</string>
+    <string name="format_count_items">%d ชิ้น</string>
     <string name="label_order_total">ยอดสั่งซื้อทั้งหมด</string>
     <string name="view_order_detail">ดูรายละเอียด</string>
     <string name="hide_order_detail">ซ่อนรายละเอียด</string>

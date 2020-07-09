@@ -66,7 +66,7 @@ class OrderDetailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             orderProduct.productImage?.let { productImageView.setImageUrl(it, R.drawable.ic_placeholder) }
             productNameTextView.text = orderProduct.productName
             productPriceTextView.text = orderProduct.productPrice
-            qtyTextView.text = itemView.context.resources.getString(R.string.label_items, orderProduct.qty)
+            qtyTextView.text = itemView.context.resources.getString(R.string.format_count_items, orderProduct.qty)
         }
     }
 
