@@ -4,10 +4,10 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.adapter.viewholder.Stores2hViewHolder
 import cenergy.central.com.pwb_store.adapter.viewholder.StoresViewHolder
+import cenergy.central.com.pwb_store.model.CheckoutType
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class StoresDeliveryAdapter(val listener: StoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

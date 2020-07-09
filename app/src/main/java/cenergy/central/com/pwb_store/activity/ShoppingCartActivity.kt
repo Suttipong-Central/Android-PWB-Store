@@ -18,7 +18,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
@@ -27,17 +26,13 @@ import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.Branch
-import cenergy.central.com.pwb_store.model.CartItem
-import cenergy.central.com.pwb_store.model.TotalSegment
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartResponse
-import cenergy.central.com.pwb_store.model.response.CartTotalResponse
+import cenergy.central.com.pwb_store.model.response.PaymentCartTotal
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
@@ -65,6 +60,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var couponCodeEdt: PowerBuyEditText
     private lateinit var cartItemList: List<CartItem>
     private var mProgressDialog: ProgressDialog? = null
+
     // data
     private var shoppingCartAdapter = ShoppingCartAdapter(this, false)
     private var unit: String = ""
@@ -282,29 +278,48 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun getCartItem() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<CartResponse> {
-                override fun success(response: CartResponse?) {
-                    if (response != null) {
-                        cartResponse = response
-                        getCartTotal()
-                    } else {
-                        mProgressDialog?.dismiss()
-                        showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<Pair<CartResponse?, List<Product>>> {
+                override fun success(response: Pair<CartResponse?, List<Product>>?) {
+                    runOnUiThread {
+                        if (response?.first != null) {
+                            cartResponse = response.first
+                            getCartTotal()
+                            updateCacheCartItem(response.second)
+                        } else {
+                            mProgressDialog?.dismiss()
+                            showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+                        }
                     }
                 }
 
                 override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    displayError(error)
+                    runOnUiThread {
+                        mProgressDialog?.dismiss()
+                        displayError(error)
+                    }
                 }
             })
         }
     }
 
+    private fun updateCacheCartItem(products: List<Product>) {
+        cartResponse?.let {
+            val cacheCartItems = arrayListOf<CacheCartItem>()
+            it.items.forEach { item ->
+                val product = products.firstOrNull { p -> item.sku == p.sku }
+                product?.let {
+                    cacheCartItems.add(CacheCartItem.asCartItem(item, product))
+                }
+            }
+
+            database.saveCartItems(cacheCartItems)
+        }
+    }
+
     private fun getCartTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
-                override fun success(response: CartTotalResponse?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
+                override fun success(response: PaymentCartTotal?) {
                     runOnUiThread {
                         mProgressDialog?.dismiss()
                         if (response != null) {
@@ -325,7 +340,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun updateViewShoppingCart(shoppingCartResponse: CartTotalResponse) {
+    private fun updateViewShoppingCart(shoppingCartResponse: PaymentCartTotal) {
         if (cartResponse != null) {
             cartItemList = cartResponse!!.items
 

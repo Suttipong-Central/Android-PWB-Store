@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.adapter.StoresDeliveryAdapter
 import cenergy.central.com.pwb_store.adapter.interfaces.StoreClickListener
 import cenergy.central.com.pwb_store.fragment.interfaces.StorePickUpListener
+import cenergy.central.com.pwb_store.model.CheckoutType
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 
 class BranchesFragment : Fragment(), StoreClickListener {

@@ -21,9 +21,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_select_methods"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/app_bottom_bar_size"
+        android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_select_methods"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/list_item_pay_by_other"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

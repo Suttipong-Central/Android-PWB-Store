@@ -22,20 +22,15 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.AddressAdapter
-import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.dialogs.ChangeTheOneDialogFragment
 import cenergy.central.com.pwb_store.dialogs.PrivacyDialogFragment
 import cenergy.central.com.pwb_store.extensions.getPostcodeList
 import cenergy.central.com.pwb_store.extensions.toDistinctId
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
@@ -44,19 +39,15 @@ import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.ConsentInfoResponse
 import cenergy.central.com.pwb_store.model.response.HDLCustomerInfos
 import cenergy.central.com.pwb_store.model.response.MemberResponse
-import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
 import cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import java.text.NumberFormat
-import java.util.*
 
 class PaymentBillingFragment : Fragment() {
 
     // widget view
-    private lateinit var recycler: RecyclerView
     private lateinit var firstNameEdt: PowerBuyEditTextBorder
     private lateinit var lastNameEdt: PowerBuyEditTextBorder
     private lateinit var contactNumberEdt: PowerBuyEditTextBorder
@@ -77,9 +68,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingHomeRoadEdt: PowerBuyEditTextBorder
     private lateinit var companyEdt: PowerBuyEditTextBorder
     private lateinit var taxIdEdt: PowerBuyEditTextBorder
-    private lateinit var discountPriceTextView: PowerBuyTextView
-    private lateinit var promotionPriceTextView: PowerBuyTextView
-    private lateinit var totalPriceTextView: PowerBuyTextView
     private lateinit var deliveryBtn: AppCompatButton
     private lateinit var radioGroup: RadioGroup
     private lateinit var radioTaxGroup: RadioGroup
@@ -96,8 +84,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var billingPostcodeInput: PowerBuyAutoCompleteTextStroke
 
     private lateinit var billingLayout: Group
-    private lateinit var layoutDiscountPrice: Group
-    private lateinit var layoutPromotionPrice: Group
     private lateinit var layoutsConsentGroup: Group
 
     private lateinit var consentCheck: AppCompatCheckBox
@@ -113,7 +99,6 @@ class PaymentBillingFragment : Fragment() {
     private lateinit var paymentProtocol: PaymentProtocol
     private var defaultLanguage = AppLanguage.TH.key
     private val database by lazy { RealmController.getInstance() }
-    private var shoppingCartItem: List<ShoppingCartItem> = listOf()
     private var shippingAddress: AddressInformation? = null
     private var billingAddress: AddressInformation? = null
     private var paymentBillingListener: PaymentBillingListener? = null
@@ -230,7 +215,6 @@ class PaymentBillingFragment : Fragment() {
         defaultLanguage = preferenceManager.getDefaultLanguage()
         paymentProtocol = context as PaymentProtocol
         paymentBillingListener = context as PaymentBillingListener
-        shoppingCartItem = paymentProtocol.getItems()
         discount = paymentProtocol.getDiscount()
         promotionDiscount = paymentProtocol.getPromotionDiscount()
         totalPrice = paymentProtocol.getTotalPrice()
@@ -260,47 +244,14 @@ class PaymentBillingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupInputAddress()
         loadProvinceList() // on start
-        setupCartItems()
+        deliveryBtn.setOnClickListener {
+            checkConfirm()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         analytics?.trackScreen(Screen.SHIPING_AND_BILLING_ADDRESSES)
-    }
-
-    private fun setupCartItems() {
-        val shoppingCartAdapter = ShoppingCartAdapter(null, true)
-        recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recycler.isNestedScrollingEnabled = false
-        recycler.adapter = shoppingCartAdapter
-        shoppingCartAdapter.shoppingCartItem = this.shoppingCartItem
-
-        val unit = Contextor.getInstance().context.getString(R.string.baht)
-        if (discount > 0){
-            discountPriceTextView.text = getDisplayDiscount(unit, discount.toString())
-            layoutDiscountPrice.visibility = View.VISIBLE
-            discountPriceTextView.visibility = View.VISIBLE
-        } else {
-            layoutDiscountPrice.visibility = View.GONE
-            discountPriceTextView.visibility = View.GONE
-        }
-        if (promotionDiscount > 0){
-            promotionPriceTextView.text = getDisplayDiscount(unit, promotionDiscount.toString())
-            layoutPromotionPrice.visibility = View.VISIBLE
-            promotionPriceTextView.visibility = View.VISIBLE
-        } else {
-            layoutPromotionPrice.visibility = View.GONE
-            promotionPriceTextView.visibility = View.GONE
-        }
-        if (totalPrice > 0){
-            totalPriceTextView.text = getDisplayPrice(unit, totalPrice.toString())
-            totalPriceTextView.visibility = View.VISIBLE
-        } else {
-            totalPriceTextView.visibility = View.GONE
-        }
-        deliveryBtn.setOnClickListener {
-            checkConfirm()
-        }
     }
 
     private fun verifyMember() {
@@ -659,12 +610,6 @@ class PaymentBillingFragment : Fragment() {
         billingSubDistrictInput = rootView.findViewById(R.id.billing_input_sub_district)
         billingPostcodeInput = rootView.findViewById(R.id.billing_input_postcode)
 
-        recycler = rootView.findViewById(R.id.recycler_cart_items)
-        layoutDiscountPrice = rootView.findViewById(R.id.group_discount)
-        layoutPromotionPrice = rootView.findViewById(R.id.group_promotion)
-        discountPriceTextView = rootView.findViewById(R.id.txt_discount)
-        promotionPriceTextView = rootView.findViewById(R.id.txt_promotion)
-        totalPriceTextView = rootView.findViewById(R.id.txt_total)
         consentCheck = rootView.findViewById(R.id.consent_checkBox)
         consentDisplay = rootView.findViewById(R.id.consent_display_text)
         deliveryBtn = rootView.findViewById(R.id.paymentButton)
@@ -1034,16 +979,6 @@ class PaymentBillingFragment : Fragment() {
         } else {
             false
         }
-    }
-
-    private fun getDisplayPrice(unit: String, price: String): String {
-        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
-                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
-    }
-
-    private fun getDisplayDiscount(unit: String, price: String): String {
-        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
-                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
     }
 
     private fun showProgressDialog() {

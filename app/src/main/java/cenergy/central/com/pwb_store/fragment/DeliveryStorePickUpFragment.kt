@@ -7,10 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.extensions.getDiff
 import cenergy.central.com.pwb_store.model.Branch
+import cenergy.central.com.pwb_store.model.CheckoutType
 import cenergy.central.com.pwb_store.model.response.BranchResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import kotlinx.android.synthetic.main.fragment_delivery_stores.*
@@ -138,8 +138,6 @@ class DeliveryStorePickUpFragment : Fragment() {
                     }
                 }
             } else {
-                // State edit store pickup
-                //TODO: Refactor and improve this fuction
                 diffStores.forEach {
                     newItem.add(BranchResponse(null, it))
                 }

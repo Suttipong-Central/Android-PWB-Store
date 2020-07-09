@@ -13,6 +13,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
@@ -20,10 +21,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
-import cenergy.central.com.pwb_store.extensions.checkItemsBy
-import cenergy.central.com.pwb_store.extensions.getPaymentType
-import cenergy.central.com.pwb_store.extensions.isBankAndCounterServiceType
-import cenergy.central.com.pwb_store.extensions.toStringDiscount
+import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.interfaces.DeliveryHomeListener
 import cenergy.central.com.pwb_store.fragment.interfaces.PaymentTransferListener
@@ -50,9 +48,11 @@ import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.ProductCompareView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_payment.*
+import kotlinx.android.synthetic.main.layout_order_detail_bar.*
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
@@ -66,6 +66,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private lateinit var deliveryOption: DeliveryOption
     private lateinit var languageButton: LanguageButton
     private lateinit var networkStateView: NetworkStateView
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     // data
     private val database = RealmController.getInstance()
@@ -94,6 +95,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var totalPrice = 0.0
     private var paymentAgents = listOf<PaymentAgent>()
     private var consentInfo: ConsentInfoResponse? = null
+    private var mCartTotal: PaymentCartTotal? = null
+    private var shownOrderDetail = false
 
     // data product 2h
     private var product2h: Product? = null
@@ -106,6 +109,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     companion object {
         private const val TAG = "PaymentActivity"
+        private const val TAG_ORDER_DETAIL_FRAGMENT = "OrderDetailFragment"
+
         private const val EXTRA_PRODUCT_2H = "extra_product_2h"
         private const val EXTRA_CHECK_OUT_ISPU = "extra_check_out_ispu"
         private const val EXTRA_EDIT_STORE_PICKUP = "extra_edit_store_pickup"
@@ -144,6 +149,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
         initView()
 
+        hideOrderDetailBar()
         showProgressDialog()
         cartId = preferenceManager.cartId
         userInformation = database.userInformation
@@ -189,6 +195,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getStateView(): NetworkStateView? = networkStateView
 
+    override fun getCartTotal(): PaymentCartTotal? = this.mCartTotal
+
+    override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
+
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {
         // skip?
@@ -229,7 +239,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.shippingAddress = shippingAddress
         this.billingAddress = billingAddress
         this.theOneCardNo = t1cNumber
-        if (privacyVersion != null){ // if privacy is null because API get consent info not working
+        if (privacyVersion != null) { // if privacy is null because API get consent info not working
             setConsent(privacyVersion, isCheckConsent, false)
         } else {
             cartId?.let { getDeliveryOptions(it) } // request delivery options
@@ -301,7 +311,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun standardCheckout() {
         cacheCartItems = database.cacheCartItems
         paymentMethods = cacheCartItems.getPaymentType(this)
-        getItemTotal()
+        retrieveCartTotal()
     }
 
     private fun checkoutWithProduct2hr(product: Product) {
@@ -402,6 +412,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun startSuccessfullyFragment(orderId: String, urlRedirect: String) {
         languageButton.visibility = View.VISIBLE
+        hideOrderDetailBar()
         val cacheCart = ArrayList<CacheCartItem>()
         cacheCart.addAll(cacheCartItems)
         startFragment(PaymentSuccessFragment.newInstance(orderId, cacheCart, urlRedirect))
@@ -476,6 +487,38 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mToolbar?.setNavigationOnClickListener {
             backPressed()
         }
+
+        setupOrderDetail()
+        // setup click order detail
+        btnOderDetail.setOnClickListener {
+            if (!shownOrderDetail) showOrderDetailView() else hideOrderDetailView()
+        }
+    }
+
+    private fun setupOrderDetail() {
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    layout_app_bar.visibility = View.VISIBLE
+                    val bottomSheetFragment = supportFragmentManager.findFragmentByTag(TAG_ORDER_DETAIL_FRAGMENT)
+                    if (bottomSheetFragment != null) {
+                        supportFragmentManager.beginTransaction()
+                                .remove(bottomSheetFragment)
+                                .commit()
+                    }
+                    this@PaymentActivity.shownOrderDetail = false
+                    btnOderDetail.text = getString(R.string.view_order_detail)
+                } else {
+                    layout_app_bar.visibility = View.INVISIBLE
+                    this@PaymentActivity.shownOrderDetail = true
+                    btnOderDetail.text = getString(R.string.hide_order_detail)
+                }
+            }
+        })
     }
 
     private fun showProgressDialog() {
@@ -493,10 +536,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         mProgressDialog?.dismiss()
     }
 
-    private fun getItemTotal() {
+    private fun retrieveCartTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotalResponse> {
-                override fun success(response: CartTotalResponse?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
+                override fun success(response: PaymentCartTotal?) {
                     runOnUiThread {
                         if (response != null) {
                             handleGetCartItemsSuccess(response)
@@ -517,7 +560,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun handleGetCartItemsSuccess(cartTotal: CartTotalResponse) {
+    private fun handleGetCartItemsSuccess(cartTotal: PaymentCartTotal) {
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
@@ -534,27 +577,33 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (discountPrice > 0) {
             this.totalPrice -= discountPrice
         }
-
+        updateOrderDetailView(cartTotal)
         retrieveConsentInfo()
     }
 
-    private fun retrieveConsentInfo(){
-        HttpManagerConsent.getInstance(this).getConsentInfo(object : ApiResponseCallback<ConsentInfoResponse>{
+    private fun updateOrderDetailView(cartTotal: PaymentCartTotal) {
+        this.mCartTotal = cartTotal
+        tvTotal.text = this.totalPrice.toPriceDisplay()
+        showOrderDetailBar()
+    }
+
+    private fun retrieveConsentInfo() {
+        HttpManagerConsent.getInstance(this).getConsentInfo(object : ApiResponseCallback<ConsentInfoResponse> {
             override fun success(response: ConsentInfoResponse?) {
-                if (response != null){
+                if (response != null) {
                     this@PaymentActivity.consentInfo = response
                 }
                 handleStartFragment()
             }
 
             override fun failure(error: APIError) {
-                Log.d("Consent Error", error.errorMessage?: "")
+                Log.d("Consent Error", error.errorMessage ?: "")
                 handleStartFragment()
             }
         })
     }
 
-    private fun handleStartFragment(){
+    private fun handleStartFragment() {
         // check retrieving eodering customer information
         val isEorderingMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_MEMBER_ON)
         val isT1CMemberOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_T1C_MEMBER_ON)
@@ -661,7 +710,23 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             return
         }
 
-        displayEorderingPayment(paymentMethods)
+        cartId?.let {
+            CartUtils(this).viewCartTotal(it, object : ApiResponseCallback<PaymentCartTotal> {
+                override fun success(response: PaymentCartTotal?) {
+                    runOnUiThread {
+                        this@PaymentActivity.mCartTotal = response
+                        displayEorderingPayment(paymentMethods)
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    runOnUiThread {
+                        showCommonAPIErrorDialog(error)
+                        displayEorderingPayment(paymentMethods)
+                    }
+                }
+            })
+        }
     }
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
@@ -871,12 +936,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun setConsent(privacyVersion: String, isCheckConsent: Boolean, isISPU: Boolean = false) {
-        if (shippingAddress != null && cacheCartItems.isNotEmpty() && cacheCartItems[0].cartId != null){
-            val consentBody = ConsentBody.createBody(shippingAddress!!.email, cacheCartItems[0].cartId!! ,privacyVersion, isCheckConsent)
+        if (shippingAddress != null && cacheCartItems.isNotEmpty() && cacheCartItems[0].cartId != null) {
+            val consentBody = ConsentBody.createBody(shippingAddress!!.email, cacheCartItems[0].cartId!!, privacyVersion, isCheckConsent)
             HttpManagerConsent.getInstance(this).setConsent(consentBody,
-                    object : ApiResponseCallback<ConsentResponse>{
+                    object : ApiResponseCallback<ConsentResponse> {
                         override fun success(response: ConsentResponse?) {
-                            if(isISPU){
+                            if (isISPU) {
                                 createOrderWithIspu()
                             } else {
                                 cartId?.let { getDeliveryOptions(it) }
@@ -884,11 +949,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         }
 
                         override fun failure(error: APIError) {
-                            if(isISPU){
+                            if (isISPU) {
                                 createOrderWithIspu()
                             } else {
                                 cartId?.let { getDeliveryOptions(it) }
-                            }                        }
+                            }
+                        }
                     })
         }
     }
@@ -1338,8 +1404,30 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
-}
 
-enum class CheckoutType {
-    NORMAL, ISPU
+    private fun showOrderDetailBar() {
+        orderDetailLayout.visibility = View.VISIBLE
+    }
+
+    private fun hideOrderDetailBar() {
+        orderDetailLayout.visibility = View.GONE
+    }
+
+    private fun showOrderDetailView() {
+        val orderDetailDialog = supportFragmentManager.findFragmentByTag(
+                TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailDialog? ?: run { OrderDetailDialog() }
+
+        val layoutParams: CoordinatorLayout.LayoutParams = bottomSheetContainer.layoutParams
+                as CoordinatorLayout.LayoutParams
+        bottomSheetContainer.layoutParams = layoutParams
+
+        supportFragmentManager.beginTransaction()
+                .replace(bottomSheetContainer.id, orderDetailDialog!!, TAG_ORDER_DETAIL_FRAGMENT)
+                .commit()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    private fun hideOrderDetailView() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
 }

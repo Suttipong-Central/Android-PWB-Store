@@ -381,4 +381,17 @@
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
 
+    <!--  Payment Order Detail  -->
+    <string name="format_count_items">%d Item(s)</string>
+    <string name="label_order_total">Order Total</string>
+    <string name="view_order_detail">View Details</string>
+    <string name="hide_order_detail">Hide Details</string>
+    <string name="label_order_details">Payment Details</string>
+    <string name="label_total">Total</string>
+    <string name="label_discount">Discount</string>
+    <string name="label_order_promotion_code">Promotion Code</string>
+    <string name="label_order_shipping_fee">Shipping Fee</string>
+    <string name="not_found_shipping_amount">Not yet calculated</string>
+    <string name="label_your_order_detail">Your Order Details</string>
+
 </resources>

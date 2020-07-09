@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -160,6 +161,11 @@ public class RealmController {
     public void saveCartItem(final CacheCartItem cacheCartItem) {
         Realm realm = getRealm();
         realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(cacheCartItem));
+    }
+
+    public void saveCartItems(final List<CacheCartItem> cacheCartItems) {
+        Realm realm = getRealm();
+        realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(cacheCartItems));
     }
 
     public void saveCartItem(final CacheCartItem cacheCartItem, final DatabaseListener listener) {

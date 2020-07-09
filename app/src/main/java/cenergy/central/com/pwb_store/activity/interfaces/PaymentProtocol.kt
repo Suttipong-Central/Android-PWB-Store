@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.activity.interfaces
 
-import cenergy.central.com.pwb_store.activity.CheckoutType
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.*
@@ -32,4 +31,6 @@ interface PaymentProtocol {
     fun getCheckType(): CheckoutType
     fun getPaymentAgents(): List<PaymentAgent>
     fun getConsentInfo(): ConsentInfoResponse?
+    fun getCartTotal(): PaymentCartTotal?
+    fun getCacheItems(): List<CacheCartItem>
 }

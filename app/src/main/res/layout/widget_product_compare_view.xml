@@ -3,16 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/rect_layout">
+    android:background="@color/transparent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_padding_xsmall"
+        android:background="@drawable/shadow_top"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/compareLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:layout_marginTop="1dp"
-        android:minHeight="@dimen/product_compare_bar_size">
+        android:layout_marginTop="@dimen/margin_padding_xsmall"
+        android:minHeight="@dimen/app_bottom_bar_size">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/compareText"

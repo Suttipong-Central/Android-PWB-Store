@@ -23,6 +23,8 @@
         android:id="@+id/recycler_view_members"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:paddingBottom="@dimen/app_bottom_bar_size"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@+id/txt_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
