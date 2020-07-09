@@ -1,15 +1,16 @@
 package cenergy.central.com.pwb_store.model
 
 import android.os.Parcelable
-import android.util.Log
 import android.webkit.URLUtil
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.extensions.isSpecialPrice
 import cenergy.central.com.pwb_store.realm.RealmController
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 @Parcelize
 class Product(
@@ -88,21 +89,30 @@ class Product(
         }
     }
 
-    fun getMinSaleQty(): Int{
-        return if (extension?.stokeItem?.minQTY != null && extension!!.stokeItem!!.minQTY!! > 0){
+    fun getMinSaleQty(): Int {
+        return if (extension?.stokeItem?.minQTY != null && extension!!.stokeItem!!.minQTY!! > 0) {
             extension!!.stokeItem!!.minQTY!!
         } else {
             1 // default qty is 1 when min sale qty is null or min sale qty < 1
         }
     }
 
-    fun getPricePerStore(): OfflinePriceItem?{
+    fun getPricePerStore(): OfflinePriceItem? {
         val db = RealmController.getInstance()
         val retailerId = db.userInformation?.store?.storeId?.toString()
         return if (extension != null && extension!!.pricingPerStore.isNotEmpty()) {
-            extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId } ?: extension!!.pricingPerStore.firstOrNull { it.retailerId == extension!!.defaultRetailerId }
+            extension!!.pricingPerStore.firstOrNull { it.retailerId == retailerId }
+                    ?: extension!!.pricingPerStore.firstOrNull { it.retailerId == extension!!.defaultRetailerId }
         } else {
             null
+        }
+    }
+
+    fun getProductSale(): Int {
+        return if (isSpecialPrice()) {
+            (((price - specialPrice) / price) * 100).roundToInt()
+        } else {
+            0
         }
     }
 
