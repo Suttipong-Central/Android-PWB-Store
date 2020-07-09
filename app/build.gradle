@@ -101,8 +101,8 @@ android {
         pwb {
             applicationId "cenergy.central.com.eordering.pwb"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
-            versionCode 118
-            versionName "1.2.1"
+            versionCode 119
+            versionName "1.2.2"
         }
 
         cds {
