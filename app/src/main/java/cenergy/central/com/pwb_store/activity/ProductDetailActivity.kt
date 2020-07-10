@@ -279,7 +279,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
 
     // region {@link PowerBuyShoppingCartView.OnClickListener}
     override fun onShoppingCartClick(view: View) {
-        if (database.cacheCartItems.size > 0) {
+        if (database.cartItemCount > 0) {
             ShoppingCartActivity.startActivity(this, view)
         } else {
             showCommonDialog(resources.getString(R.string.not_have_products_in_cart))

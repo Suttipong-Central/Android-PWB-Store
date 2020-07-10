@@ -245,6 +245,11 @@ public class RealmController {
         return realm.where(CacheCartItem.class).sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAllAsync();
     }
 
+    public long getCartItemCount() {
+        Realm realm = getRealm();
+        return realm.where(CacheCartItem.class).count();
+    }
+
     public List<CacheCartItem> getCacheCartItems() {
         Realm realm = getRealm();
         RealmResults<CacheCartItem> realmCartItems = realm.where(CacheCartItem.class).sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAll();

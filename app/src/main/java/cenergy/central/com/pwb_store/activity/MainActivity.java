@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -61,10 +62,11 @@ import cenergy.central.com.pwb_store.utils.DialogUtils;
 import cenergy.central.com.pwb_store.utils.RemoteConfigUtils;
 import cenergy.central.com.pwb_store.view.LanguageButton;
 import cenergy.central.com.pwb_store.view.NetworkStateView;
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView;
 import cenergy.central.com.pwb_store.view.ProductCompareView;
 
 public class MainActivity extends BaseActivity implements MenuDrawerClickListener,
-        CategoryAdapter.CategoryAdapterListener, ProductCompareView.ProductCompareViewListener {
+        CategoryAdapter.CategoryAdapterListener, ProductCompareView.ProductCompareViewListener, PowerBuyShoppingCartView.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String TAG_FRAGMENT_CATEGORY_DEFAULT = "category_default";
@@ -83,6 +85,7 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private LanguageButton languageButton;
     private NetworkStateView networkStateView;
     private ProductCompareView productCompareView;
+    private PowerBuyShoppingCartView shoppingCartView;
 
     public static Handler handler = new Handler();
     private RealmController database = RealmController.getInstance();
@@ -147,23 +150,29 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        languageButton = findViewById(R.id.switch_language_button);
-        productCompareView = findViewById(R.id.productCompareView);
-
         // setup analytic
         analytics = new Analytics(this);
+
+        initView();
 
         // setup firebase config
         fbRemoteConfig = RemoteConfigUtils.INSTANCE.initFirebaseRemoteConfig();
         handleChangeLanguage();
-        initView();
         observeCompareProducts();
+        observeCartItems();
     }
 
     private void initView() {
+        languageButton = findViewById(R.id.switch_language_button);
+        productCompareView = findViewById(R.id.productCompareView);
         networkStateView = findViewById(R.id.network_state_View);
         toolbar = findViewById(R.id.toolbar);
         drawer = findViewById(R.id.drawer_layout);
+
+        shoppingCartView = toolbar.findViewById(R.id.shopping_cart);
+        shoppingCartView.setListener(this);
+        setShoppingCartView(shoppingCartView);
+
         RecyclerView recyclerViewMenu = findViewById(R.id.recycler_view_menu);
 
         setSupportActionBar(toolbar);
@@ -565,4 +574,15 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     public void openComparePage() {
         CompareActivity.Companion.startCompareActivity(this, productCompareView);
     }
+
+    // region {@link PowerBuyShoppingCartView.OnClickListener}
+    @Override
+    public void onShoppingCartClick(View view) {
+        if (database.getCartItemCount() > 0) {
+            ShoppingCartActivity.startActivity(this, view);
+        } else {
+            showAlertDialog(getString(R.string.not_have_products_in_cart));
+        }
+    }
+    // endregion
 }

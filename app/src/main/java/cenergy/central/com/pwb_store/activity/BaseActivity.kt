@@ -33,6 +33,7 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
     // widget view
     private var languageButton: LanguageButton? = null
+    private var shoppingCartView: PowerBuyShoppingCartView? = null
 
     // data
     private var compareLiveData: LiveData<List<CompareProduct>>? = null
@@ -44,7 +45,7 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     }
 
     private var shoppingCartObserver = Observer<List<CacheCartItem>> {
-        updateShoppingCartView(it.size)
+        updateShoppingCartView(it)
     }
 
     override fun onStart() {
@@ -89,8 +90,12 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
         getProductCompareView()?.setCompareCount(count)
     }
 
-    private fun updateShoppingCartView(size: Int) {
-        getShoppingCartView()?.setBadgeCart(size)
+    private fun updateShoppingCartView(items: List<CacheCartItem>) {
+        var count = 0
+        for (item in items) {
+            count += item.qty ?: 0
+        }
+        shoppingCartView?.setBadgeCart(count)
     }
 
     fun handleChangeLanguage() {
@@ -122,7 +127,9 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
     abstract fun getStateView(): NetworkStateView?
 
-    abstract fun getShoppingCartView(): PowerBuyShoppingCartView?
+    protected fun setShoppingCartView(view: PowerBuyShoppingCartView) {
+        this.shoppingCartView = view
+    }
 
     // region {@link LanguageButton.LanguageListener}
     override fun onChangedLanguage(lang: AppLanguage) {
