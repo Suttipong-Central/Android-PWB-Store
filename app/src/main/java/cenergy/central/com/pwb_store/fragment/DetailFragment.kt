@@ -164,7 +164,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
 
         if (product.isSpecialPrice()) {
-            showDiscountPercentage(product.getProductSale())
+            showDiscountPercentage(product.getDiscountPercentage())
             showSpecialPrice(unit, product)
         } else {
             hideDiscountPercentage()
@@ -306,6 +306,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateViewProductConfig() {
         // setup product image
         if (childProduct != null) {

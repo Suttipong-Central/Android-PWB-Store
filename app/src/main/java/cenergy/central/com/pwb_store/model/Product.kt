@@ -108,7 +108,7 @@ class Product(
         }
     }
 
-    fun getProductSale(): Int {
+    fun getDiscountPercentage(): Int {
         return if (isSpecialPrice()) {
             (((price - specialPrice) / price) * 100).roundToInt()
         } else {
