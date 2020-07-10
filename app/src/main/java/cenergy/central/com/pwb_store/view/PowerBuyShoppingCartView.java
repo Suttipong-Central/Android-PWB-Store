@@ -30,7 +30,6 @@ public class PowerBuyShoppingCartView extends FrameLayout {
 
     private static final String ARG_CHILD_STATES = "ARG_CHILD_STATES";
     private static final String ARG_SHOPPING_CART_ITEM_COUNT = "ARG_SHOPPING_CART_ITEM_COUNT";
-    private static final String ARG_SHOPPING_CART_COUNT = "ARG_SHOPPING_CART_COUNT";
 
     //View Members
     RelativeLayout mLayoutCart;
@@ -38,11 +37,8 @@ public class PowerBuyShoppingCartView extends FrameLayout {
     TickerView mBadgeCart;
 
     //Data Members
-    private int mCompareItemCount;
+    private int mCartItemCount;
     private OnClickListener mListener;
-    private CompareCount mCompareCount;
-    private boolean isAddCart;
-    private Realm mRealm;
 
     public PowerBuyShoppingCartView(@NonNull Context context) {
         super(context);
@@ -93,13 +89,13 @@ public class PowerBuyShoppingCartView extends FrameLayout {
     }
 
     public void setBadgeCart(int count) {
-        this.mCompareItemCount = count;
+        this.mCartItemCount = count;
         setInfo();
     }
 
     private void setInfo() {
-        mBadgeCart.setText(String.valueOf(mCompareItemCount));
-        if (mCompareItemCount == 0) {
+        mBadgeCart.setText(String.valueOf(mCartItemCount));
+        if (mCartItemCount == 0) {
             mLayoutBadge.animate()
                     .alpha(0.0f)
                     .setDuration(300)
@@ -184,7 +180,7 @@ public class PowerBuyShoppingCartView extends FrameLayout {
         }
         Bundle bundle = new Bundle();
         bundle.putBundle(ARG_CHILD_STATES, childrenStates);
-        bundle.putInt(ARG_SHOPPING_CART_ITEM_COUNT, mCompareItemCount);
+        bundle.putInt(ARG_SHOPPING_CART_ITEM_COUNT, mCartItemCount);
 
         //Save it to Parcelable
         BundleSavedState ss = new BundleSavedState(superState);
@@ -216,50 +212,7 @@ public class PowerBuyShoppingCartView extends FrameLayout {
         }
 
         //Restore State Here
-        this.mCompareItemCount = bundle.getInt(ARG_SHOPPING_CART_ITEM_COUNT);
-        this.mCompareCount = bundle.getParcelable(ARG_SHOPPING_CART_COUNT);
-    }
-
-    public void updateCartCount(int count) {
-        setBadgeCart(count);
-//        HttpManager.getInstance().getCartService().getCartCount().enqueue(new Callback<CartCountDao>() {
-//            @Override
-//            public void onResponse(Call<CartCountDao> call, Response<CartCountDao> response) {
-//                if (response.isSuccessful()) {
-//                    CartCountDao cartCountDao = response.body();
-//                    CartCount cartCount = cartCountDao.getCartCount();
-//                    setBadgeCart(cartCount.getCount());
-//                } else {
-//                    //Parse Error Body
-//                    setBadgeCart(0);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<CartCountDao> call, Throwable t) {
-//                //TODO Handle no internet
-//            }
-//        });
-//
-//        //mCartCount.setCount(mCartItemCount);
-////        HttpManager.getInstance().getCartService().getCartCount().enqueue(new Callback<CartCountDao>() {
-////            @Override
-////            public void onResponse(Call<CartCountDao> call, Response<CartCountDao> response) {
-////                if (response.isSuccessful()) {
-////                    CartCountDao cartCountDao = response.body();
-////                    CartCount cartCount = cartCountDao.getCartCount();
-////                    setBadgeCart(cartCount.getCount());
-////                } else {
-////                    //Parse Error Body
-////                    setBadgeCart(0);
-////                }
-////            }
-////
-////            @Override
-////            public void onFailure(Call<CartCountDao> call, Throwable t) {
-////                //TODO Handle no internet
-////            }
-////        });
+        this.mCartItemCount = bundle.getInt(ARG_SHOPPING_CART_ITEM_COUNT);
     }
 
     public void setListener(OnClickListener listener) {
