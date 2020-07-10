@@ -12,10 +12,12 @@ import cenergy.central.com.pwb_store.extensions.asLiveData
 import cenergy.central.com.pwb_store.manager.network.NetworkReceiver
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
+import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CompareProduct
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
 import cenergy.central.com.pwb_store.view.ProductCompareView
 import java.util.*
 
@@ -34,10 +36,15 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
     // data
     private var compareLiveData: LiveData<List<CompareProduct>>? = null
+    private var cartItemLiveData: LiveData<List<CacheCartItem>>? = null
 
     // observer
     private var compareObserver = Observer<List<CompareProduct>> {
         updateCompareCountView(it.size)
+    }
+
+    private var shoppingCartObserver = Observer<List<CacheCartItem>> {
+        updateShoppingCartView(it.size)
     }
 
     override fun onStart() {
@@ -62,6 +69,14 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
         super.onPause()
     }
 
+    protected fun observeCartItems() {
+        val db = RealmController.getInstance()
+        cartItemLiveData = Transformations.map(db.cacheCartItemsAsync.asLiveData()) {
+            it
+        }
+        cartItemLiveData?.observeForever(shoppingCartObserver)
+    }
+
     protected fun observeCompareProducts() {
         val db = RealmController.getInstance()
         compareLiveData = Transformations.map(db.compareProductsAsync.asLiveData()) {
@@ -72,6 +87,10 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
 
     private fun updateCompareCountView(count: Int) {
         getProductCompareView()?.setCompareCount(count)
+    }
+
+    private fun updateShoppingCartView(size: Int) {
+        getShoppingCartView()?.setBadgeCart(size)
     }
 
     fun handleChangeLanguage() {
@@ -102,6 +121,8 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     abstract fun getSwitchButton(): LanguageButton?
 
     abstract fun getStateView(): NetworkStateView?
+
+    abstract fun getShoppingCartView(): PowerBuyShoppingCartView?
 
     // region {@link LanguageButton.LanguageListener}
     override fun onChangedLanguage(lang: AppLanguage) {
@@ -149,6 +170,7 @@ abstract class BaseActivity : AppCompatActivity(), LanguageButton.LanguageListen
     override fun onDestroy() {
         super.onDestroy()
         compareLiveData?.removeObserver(compareObserver)
+        cartItemLiveData?.removeObserver(shoppingCartObserver)
     }
 
     companion object {

@@ -240,6 +240,11 @@ public class RealmController {
         });
     }
 
+    public RealmResults<CacheCartItem> getCacheCartItemsAsync() {
+        Realm realm = getRealm();
+        return realm.where(CacheCartItem.class).sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAllAsync();
+    }
+
     public List<CacheCartItem> getCacheCartItems() {
         Realm realm = getRealm();
         RealmResults<CacheCartItem> realmCartItems = realm.where(CacheCartItem.class).sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAll();
@@ -310,20 +315,6 @@ public class RealmController {
                 listener.onFailure(error);
             }
         });
-    }
-
-    public List<Order> deleteOrder(final String orderId) {
-        Realm realm = getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                RealmResults<Order> realmOrderResponses = realm.where(Order.class).equalTo(
-                        Order.FIELD_ORDER_ID, orderId).findAll();
-                realmOrderResponses.deleteAllFromRealm();
-            }
-        });
-
-        return getOrders();
     }
 
     public List<Order> getOrders() {
