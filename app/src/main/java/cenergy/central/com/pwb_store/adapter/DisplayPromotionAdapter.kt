@@ -32,8 +32,14 @@ class DisplayPromotionAdapter : RecyclerView.Adapter<DisplayPromotionViewHolder>
 class DisplayPromotionViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
     private val productImg = itemView.findViewById<ImageView>(R.id.imgProduct)
     private val productName = itemView.findViewById<PowerBuyTextView>(R.id.freebieNameTv)
+    private val outOfStockTv = itemView.findViewById<PowerBuyTextView>(R.id.tvOutOfStock)
     fun bind(product: Product) {
         productImg.setImageUrl(product.getImageUrl())
         productName.text = product.name
+        if (product.extension?.stokeItem != null &&  product.extension!!.stokeItem!!.isInStock){
+            outOfStockTv.visibility = View.VISIBLE
+        } else {
+            outOfStockTv.visibility = View.GONE
+        }
     }
 }

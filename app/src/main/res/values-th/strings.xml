@@ -280,6 +280,7 @@
     <string name="title_clear_cart">เราเจอปัญหากับรถเข็นนี้ (จำเป็นต้องลบรถเข็น)</string>
     <string name="developing_system_compare">กำลังพัฒนาระบบ ไม่สามารถเปรียบเทียบสินค้าในขณะนี้</string>
     <string name="freebie_promotion_not_found">ไม่มีโปรโมชั่นสำหรับสินค้าชิ้นนี้</string>
+    <string name="freebie_out_of_stock">สินค้าหมด</string>
     <string name="not_have_day_to_delivery">ไม่มีวันจัดส่ง</string>
     <string name="next_step">ขั้นตอนต่อไป</string>
     <string name="staff_descriptions">1. คุณจะได้รับอีเมลยืนยันการสั่งซื้อ\n2. แสดงอีเมลที่ได้รับ /หรือแสดงหน้าจอนี้ /หรือเลขที่ใบสั่งซื้อ ต่อเจ้าหน้าที่แคชเชียร์\n3. ทำการจ่ายเงินที่แคชเชียร์ จากนั้นรับใบเสร็จจากเจ้าหน้าที่</string>
