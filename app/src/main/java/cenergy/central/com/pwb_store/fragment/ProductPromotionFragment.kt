@@ -89,6 +89,7 @@ class ProductPromotionFragment : Fragment() {
                 } else {
                     Log.d("Product Promotion Tab", "freebieSKUs is Empty")
                     tvPromotionNotFound.visibility = View.VISIBLE
+                    groupDisplayPromotion.visibility = View.GONE
                 }
             }
         }
@@ -123,11 +124,12 @@ class ProductPromotionFragment : Fragment() {
                         badgeSelected(0)
                         dismissProgressDialog()
                         tvPromotionNotFound.visibility = View.GONE
-                        badgeRecycler.visibility = View.VISIBLE
+                        groupDisplayPromotion.visibility = View.VISIBLE
                     } else {
                         Log.d("Product Promotion Tab", "PromotionResponse is Null")
                         dismissProgressDialog()
                         tvPromotionNotFound.visibility = View.VISIBLE
+                        groupDisplayPromotion.visibility = View.GONE
                     }
                 }
 
@@ -135,6 +137,7 @@ class ProductPromotionFragment : Fragment() {
                     Log.d("Product Promotion Tab", "${error.errorCode} ${error.errorMessage}")
                     dismissProgressDialog()
                     tvPromotionNotFound.visibility = View.VISIBLE
+                    groupDisplayPromotion.visibility = View.GONE
                 }
             })
         }
@@ -156,9 +159,11 @@ class ProductPromotionFragment : Fragment() {
                         if (response != null) {
                             productDetailListener?.setFreeItems(response.products)
                             displayPromotionAdapter.items = response.products
+                            groupDisplayPromotion.visibility = View.VISIBLE
                         } else {
-                            Log.d("Product Promotion Tab", "PeroductResponse is Null")
+                            Log.d("Product Promotion Tab", "ProductResponse is Null")
                             tvPromotionNotFound.visibility = View.VISIBLE
+                            groupDisplayPromotion.visibility = View.GONE
                         }
                     }
                 }
@@ -168,6 +173,7 @@ class ProductPromotionFragment : Fragment() {
                         Log.d("Product Promotion Tab", "${error.errorCode} ${error.errorMessage}")
                         dismissProgressDialog()
                         tvPromotionNotFound.visibility = View.VISIBLE
+                        groupDisplayPromotion.visibility = View.GONE
                     }
                 }
             })
