@@ -121,13 +121,13 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         bindView()
         retrieveProductDetail()
         observeCompareProducts()
+        observeCartItems()
     }
 
     override fun onResume() {
         super.onResume()
         // analytics
         analytics?.trackScreen(Screen.PRODUCT_DETAIL)
-        updateShoppingCartBadge()
     }
 
     override fun getProductCompareView(): ProductCompareView? {
@@ -188,7 +188,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         mBuyShoppingCartView = mToolbar.findViewById(R.id.shopping_cart)
         tvNotFound = findViewById(R.id.tvNotFound)
         containerGroupView = findViewById(R.id.containerGroupView)
-
         val searchImageView = findViewById<ImageView>(R.id.img_search)
 
         setSupportActionBar(mToolbar)
@@ -206,6 +205,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
 
         // setup badge
         mBuyShoppingCartView.setListener(this)
+        setShoppingCartView(mBuyShoppingCartView)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -466,17 +466,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         containerGroupView.visibility = View.VISIBLE
     }
 
-    private fun updateShoppingCartBadge() {
-        var count = 0
-        val items = database.cacheCartItems
-        for (item in items!!) {
-            if (item.qty != null) {
-                count += item.qty!!
-            }
-        }
-        mBuyShoppingCartView.setBadgeCart(count)
-    }
-
     private fun showAlertDialog(message: String) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(message)
@@ -548,7 +537,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
         showProgressDialog()
         CartUtils(this).addProductToCart(product, object : AddProductToCartCallback {
             override fun onSuccessfully() {
-                updateShoppingCartBadge()
                 dismissProgressDialog()
             }
 
@@ -595,7 +583,6 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
                 .setMessage(getString(R.string.title_clear_cart))
                 .setPositiveButton(getString(R.string.ok_alert)) { dialog, _ ->
                     clearCart() // clear item cart
-                    updateShoppingCartBadge() // update ui
                     dialog.dismiss()
                 }
         builder.show()
