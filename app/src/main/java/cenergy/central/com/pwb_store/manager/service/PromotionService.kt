@@ -11,5 +11,5 @@ interface PromotionService {
     @GET("/rest/{lang}/V1/promotion-suggestion/product/{sku}")
     fun getPromotionSuggestion(@Header("Authorization") token: String,
                                @Path("lang") language: String,
-                               @Query("sku") sku: String): Call<PromotionResponse>
+                               @Path("sku") sku: String): Call<PromotionResponse>
 }

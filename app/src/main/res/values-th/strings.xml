@@ -381,5 +381,6 @@
     <string name="terms_conditions">ข้อกำหนดและเงื่อนไข</string>
     <string name="acknowledged">และรับทราบ</string>
     <string name="privacy">นโยบายความเป็นส่วนตัว</string>
+    <string name="get_free_item">รับฟรีของแถม:</string>
 
 </resources>

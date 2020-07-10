@@ -23,11 +23,10 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.GalleryActivity.Companion.RESULT_IMAGE_SELECTED
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
+import cenergy.central.com.pwb_store.adapter.BadgeListener
 import cenergy.central.com.pwb_store.dialogs.ShareBottomSheetDialogFragment
-import cenergy.central.com.pwb_store.fragment.DetailFragment
-import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment
-import cenergy.central.com.pwb_store.fragment.ProductOverviewFragment
-import cenergy.central.com.pwb_store.fragment.WebViewFragment
+import cenergy.central.com.pwb_store.fragment.*
+import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment.Companion.TAB_PROMOTION_FREEBIE
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
@@ -45,7 +44,7 @@ import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
 import kotlinx.android.synthetic.main.activity_product_detail.*
 
-class ProductDetailActivity : BaseActivity(), ProductDetailListener,
+class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListener,
         PowerBuyShoppingCartView.OnClickListener, ProductCompareView.ProductCompareViewListener {
 
     private val analytics: Analytics? by lazy { Analytics(this) }
@@ -68,6 +67,11 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     private var childProductList: ArrayList<Product> = arrayListOf()
     private var offlinePriceItem: OfflinePriceItem? = null
     private var deliveryInfoList = arrayListOf<DeliveryInfo>()
+
+    // promotion tab
+    private var badgesSelects: ArrayList<String> = arrayListOf()
+    private var freebieSKUs: ArrayList<String> = arrayListOf()
+    private var freeItems: ArrayList<Product> = arrayListOf()
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
@@ -316,6 +320,33 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener,
     override fun setDeliveryInfoList(deliveryInfos: List<DeliveryInfo>) {
         this.deliveryInfoList.clear()
         this.deliveryInfoList.addAll(deliveryInfos)
+    }
+
+    override fun setFreebieSKUs(freebieSKUs: ArrayList<String>) {
+        this.freebieSKUs = freebieSKUs
+    }
+
+    override fun setBadgeSelects(badgeSelects: ArrayList<String>) {
+        this.badgesSelects = badgeSelects
+    }
+
+    override fun setFreeItems(freeItems: ArrayList<Product>) {
+        this.freeItems = freeItems
+    }
+
+    override fun getBadgeSelects(): ArrayList<String> = this.badgesSelects
+
+    override fun getFreeItems(): ArrayList<Product> = this.freeItems
+
+    override fun getFreebieSKUs(): ArrayList<String> = this.freebieSKUs
+
+    // region badgeListener
+    override fun onBadgeSelectedListener(position: Int) {
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_EXTENSION_FRAGMENT)
+        val childFragment = (fragment as ProductExtensionFragment).childFragmentManager.findFragmentByTag(TAB_PROMOTION_FREEBIE)
+        childFragment?.let {
+            (childFragment as ProductPromotionFragment).badgeSelected(position)
+        }
     }
 
     private fun clearDeliveryInfo() {

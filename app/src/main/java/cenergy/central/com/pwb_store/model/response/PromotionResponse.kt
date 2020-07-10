@@ -5,11 +5,13 @@ import com.google.gson.annotations.SerializedName
 open class PromotionResponse(
         var sku: String = "",
         @SerializedName("extension_attributes")
-        var extention: PromotionExtension? = null
+        var extension: PromotionExtension? = null
 )
 
 open class PromotionExtension(
+        @SerializedName("credit_card_promotions")
         var creditCardPromotions: ArrayList<CreditCardPromotion> = arrayListOf(),
+        @SerializedName("free_items")
         var freeItems: ArrayList<FreeItems> = arrayListOf()
 )
 
@@ -19,7 +21,7 @@ open class CreditCardPromotion(
         @SerializedName("bank_icon")
         var bankIcon: String = "",
         @SerializedName("bank_color")
-        var  bankColor: String = "",
+        var bankColor: String = "",
         @SerializedName("rule_id")
         var ruleId: Long = 0,
         @SerializedName("rule_name")
