@@ -6,14 +6,13 @@ import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
-import cenergy.central.com.pwb_store.adapter.BadgeListener
 import cenergy.central.com.pwb_store.adapter.BadgeSelectAdapter
 import cenergy.central.com.pwb_store.adapter.DisplayPromotionAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -27,12 +26,6 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.utils.DialogUtils
 import kotlinx.android.synthetic.main.fragment_promotion.*
-import java.time.LocalDate
-
-/**
- * Created by Anuphap Suwannamas on 24/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
 
 class ProductPromotionFragment : Fragment() {
 
@@ -57,20 +50,20 @@ class ProductPromotionFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        badgesSelects = productDetailListener?.getBadgeSelects()?: arrayListOf()
-        freebieSKUs = productDetailListener?.getFreebieSKUs()?: arrayListOf()
-        freeItems = productDetailListener?.getFreeItems()?: arrayListOf()
+        badgesSelects = productDetailListener?.getBadgeSelects() ?: arrayListOf()
+        freebieSKUs = productDetailListener?.getFreebieSKUs() ?: arrayListOf()
+        freeItems = productDetailListener?.getFreeItems() ?: arrayListOf()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isAdded) {
             setupView()
-            if (badgesSelects.isEmpty() || freebieSKUs.isEmpty()){
+            if (badgesSelects.isEmpty() || freebieSKUs.isEmpty()) {
                 product?.let { retrievePromotion(it) }
             } else {
                 tvPromotionNotFound.visibility = View.GONE
-                badgeSelectAdapter.badgesSelect =badgesSelects
+                badgeSelectAdapter.badgesSelect = badgesSelects
                 badgeSelected(0)
             }
         }
@@ -81,7 +74,7 @@ class ProductPromotionFragment : Fragment() {
         when (badgesSelects[position]) {
             FREEBIE_ITEM -> {
                 if (freebieSKUs.isNotEmpty()) {
-                    if (freeItems.isNotEmpty()){
+                    if (freeItems.isNotEmpty()) {
                         displayPromotionAdapter.items = freeItems
                     } else {
                         retrieveProductFreebies(freebieSKUs)

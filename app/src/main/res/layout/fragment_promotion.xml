@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp">
@@ -22,20 +23,23 @@
         android:id="@+id/groupDisplayPromotion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="badgeRecycler,layoutPromotionTitle,displayPromotionRecycler"/>
+        android:visibility="visible"
+        app:constraint_referenced_ids="badgeRecycler,layoutPromotionTitle,displayPromotionRecycler" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/badgeRecycler"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/list_item_badge_select" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutPromotionTitle"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_padding_normal"
         android:background="@color/colorPrimary"
@@ -56,9 +60,12 @@
 
         <cenergy.central.com.pwb_store.view.PowerBuyTextView
             android:id="@+id/titleDisplayPromotion"
+            style="@style/textSub"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_padding_small"
+            android:paddingTop="@dimen/margin_padding_small"
+            android:paddingBottom="@dimen/margin_padding_small"
             android:text="@string/get_free_item"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"

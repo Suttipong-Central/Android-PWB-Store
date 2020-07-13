@@ -41,7 +41,10 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
-import cenergy.central.com.pwb_store.view.*
+import cenergy.central.com.pwb_store.view.LanguageButton
+import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 import kotlinx.android.synthetic.main.activity_product_detail.*
 
 class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListener,
@@ -458,23 +461,17 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
         dismissProgressDialog()
         // set product
         this@ProductDetailActivity.productSku = product.sku
-        if (!isChatAndShop()) {
-            if (offlinePriceItem != null){
-                product.price = offlinePriceItem!!.price
-                if (offlinePriceItem!!.specialPrice > 0) {
-                    product.specialPrice = offlinePriceItem!!.specialPrice
-                    product.specialFromDate = null
-                    product.specialToDate = null
-                    if (offlinePriceItem!!.specialFromDate != null) {
-                        product.specialFromDate = offlinePriceItem!!.specialFromDate
-                    }
-                    if (offlinePriceItem!!.specialToDate != null) {
-                        product.specialToDate = offlinePriceItem!!.specialToDate
-                    }
-                } else {
-                    product.specialPrice = 0.0
-                    product.specialFromDate = null
-                    product.specialToDate = null
+        if (!isChatAndShop() && offlinePriceItem != null) {
+            product.price = offlinePriceItem!!.price
+            if (offlinePriceItem!!.specialPrice > 0) {
+                product.specialPrice = offlinePriceItem!!.specialPrice
+                product.specialFromDate = null
+                product.specialToDate = null
+                if (offlinePriceItem!!.specialFromDate != null) {
+                    product.specialFromDate = offlinePriceItem!!.specialFromDate
+                }
+                if (offlinePriceItem!!.specialToDate != null) {
+                    product.specialToDate = offlinePriceItem!!.specialToDate
                 }
             } else {
                 // this case is don't have offline price will display online normal price only

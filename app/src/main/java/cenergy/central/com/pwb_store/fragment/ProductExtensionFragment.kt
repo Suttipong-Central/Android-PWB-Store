@@ -104,7 +104,6 @@ class ProductExtensionFragment : Fragment() {
         tvDeliveryTabTitle.text = getString(R.string.tab_delivery)
         ivDeliveryIcon.setImage(R.drawable.ic_fast_delivery)
 
-
         extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_PROMOTION_FREEBIE).setCustomView(promotionTab))
         extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_DELIVERY).setCustomView(deliveryTab))
     }
