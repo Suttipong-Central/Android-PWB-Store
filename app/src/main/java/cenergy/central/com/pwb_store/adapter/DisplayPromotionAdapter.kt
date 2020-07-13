@@ -15,10 +15,10 @@ import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class DisplayPromotionAdapter : RecyclerView.Adapter<DisplayPromotionViewHolder>() {
     var items: ArrayList<Product> = arrayListOf()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DisplayPromotionViewHolder {
         return DisplayPromotionViewHolder(LayoutInflater.from(parent.context)
@@ -32,7 +32,7 @@ class DisplayPromotionAdapter : RecyclerView.Adapter<DisplayPromotionViewHolder>
     }
 }
 
-class DisplayPromotionViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+class DisplayPromotionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val productImg = itemView.findViewById<ImageView>(R.id.imgProduct)
     private val productName = itemView.findViewById<PowerBuyTextView>(R.id.freebieNameTv)
     private val outOfStockTv = itemView.findViewById<PowerBuyTextView>(R.id.tvOutOfStock)
@@ -42,20 +42,21 @@ class DisplayPromotionViewHolder(itemView: View): RecyclerView.ViewHolder(itemVi
         val context = itemView.context
         productImg.setImageUrl(product.getImageUrl())
         productName.text = product.name
-        if (product.extension?.stokeItem != null &&  product.extension!!.stokeItem!!.isInStock){
-            outOfStockTv.visibility = View.VISIBLE
-        } else {
-            outOfStockTv.visibility = View.GONE
-        }
-        itemView.setOnClickListener {
-            if (clicked) {
-                clicked = false
-                val analytics = Analytics(context)
-                analytics.trackViewItem(product.sku)
-                ProductDetailActivity.startActivity(context, product.sku,
-                        product.getPricePerStore())
-                Handler().postDelayed({ clicked = true }, 1000)
+        if (product.extension?.stokeItem != null && product.extension!!.stokeItem!!.isSalable) {
+            itemView.setOnClickListener {
+                if (clicked) {
+                    clicked = false
+                    val analytics = Analytics(context)
+                    analytics.trackViewItem(product.sku)
+                    ProductDetailActivity.startActivity(context, product.sku,
+                            product.getPricePerStore())
+                    Handler().postDelayed({ clicked = true }, 1000)
+                }
             }
+            outOfStockTv.visibility = View.GONE
+        } else {
+            outOfStockTv.visibility = View.VISIBLE
+            itemView.setOnClickListener(null)
         }
     }
 }

@@ -62,7 +62,6 @@ class ProductPromotionFragment : Fragment() {
             if (badgesSelects.isEmpty() || freebieSKUs.isEmpty()) {
                 product?.let { retrievePromotion(it) }
             } else {
-                tvPromotionNotFound.visibility = View.GONE
                 badgeSelectAdapter.badgesSelect = badgesSelects
                 badgeSelected(0)
             }
@@ -76,11 +75,13 @@ class ProductPromotionFragment : Fragment() {
                 if (freebieSKUs.isNotEmpty()) {
                     if (freeItems.isNotEmpty()) {
                         displayPromotionAdapter.items = freeItems
+                        tvPromotionNotFound.visibility = View.GONE
+                        groupDisplayPromotion.visibility = View.VISIBLE
                     } else {
                         retrieveProductFreebies(freebieSKUs)
                     }
                 } else {
-                    Log.d("Product Promotion Tab", "freebieSKUs is Empty")
+                    Log.d(TAG_LOG_PROMOTION, "freebieSKUs is Empty")
                     tvPromotionNotFound.visibility = View.VISIBLE
                     groupDisplayPromotion.visibility = View.GONE
                 }
@@ -119,7 +120,7 @@ class ProductPromotionFragment : Fragment() {
                         tvPromotionNotFound.visibility = View.GONE
                         groupDisplayPromotion.visibility = View.VISIBLE
                     } else {
-                        Log.d("Product Promotion Tab", "PromotionResponse is Null")
+                        Log.d(TAG_LOG_PROMOTION, "PromotionResponse is Null")
                         dismissProgressDialog()
                         tvPromotionNotFound.visibility = View.VISIBLE
                         groupDisplayPromotion.visibility = View.GONE
@@ -127,7 +128,7 @@ class ProductPromotionFragment : Fragment() {
                 }
 
                 override fun failure(error: APIError) {
-                    Log.d("Product Promotion Tab", "${error.errorCode} ${error.errorMessage}")
+                    Log.d(TAG_LOG_PROMOTION, "${error.errorCode} ${error.errorMessage}")
                     dismissProgressDialog()
                     tvPromotionNotFound.visibility = View.VISIBLE
                     groupDisplayPromotion.visibility = View.GONE
@@ -137,7 +138,6 @@ class ProductPromotionFragment : Fragment() {
     }
 
     private fun retrieveProductFreebies(freebieSKUs: ArrayList<String>) {
-        showProgressDialog()
         val result = TextUtils.join(",", freebieSKUs)
         val filterGroupsList = java.util.ArrayList<FilterGroups>()
         filterGroupsList.add(FilterGroups.createFilterGroups("sku", result, "in"))
@@ -154,7 +154,7 @@ class ProductPromotionFragment : Fragment() {
                             displayPromotionAdapter.items = response.products
                             groupDisplayPromotion.visibility = View.VISIBLE
                         } else {
-                            Log.d("Product Promotion Tab", "ProductResponse is Null")
+                            Log.d(TAG_LOG_PROMOTION, "ProductResponse is Null")
                             tvPromotionNotFound.visibility = View.VISIBLE
                             groupDisplayPromotion.visibility = View.GONE
                         }
@@ -163,7 +163,7 @@ class ProductPromotionFragment : Fragment() {
 
                 override fun failure(error: APIError) {
                     (context as Activity).runOnUiThread {
-                        Log.d("Product Promotion Tab", "${error.errorCode} ${error.errorMessage}")
+                        Log.d(TAG_LOG_PROMOTION, "${error.errorCode} ${error.errorMessage}")
                         dismissProgressDialog()
                         tvPromotionNotFound.visibility = View.VISIBLE
                         groupDisplayPromotion.visibility = View.GONE
@@ -189,5 +189,6 @@ class ProductPromotionFragment : Fragment() {
     companion object {
         const val FREEBIE_ITEM = "Free Item"
         const val INSTALLMENT_0_PERCENT = "0% Installment"
+        const val TAG_LOG_PROMOTION = "Product Promotion Tab"
     }
 }

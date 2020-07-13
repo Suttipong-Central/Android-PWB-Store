@@ -9,21 +9,21 @@
     <TextView
         android:id="@+id/tvPromotionNotFound"
         style="@style/Base.TextAppearance.AppCompat.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:gravity="center"
         android:text="@string/freebie_promotion_not_found"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/freebie_promotion_not_found"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupDisplayPromotion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         app:constraint_referenced_ids="badgeRecycler,layoutPromotionTitle,displayPromotionRecycler" />
 
     <androidx.recyclerview.widget.RecyclerView
