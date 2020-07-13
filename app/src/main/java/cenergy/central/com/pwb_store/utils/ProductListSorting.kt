@@ -15,7 +15,7 @@ object ProductListSorting {
             SortingItem(7, context.getString(R.string.sorting_brands_asc), "brand", "ASC", "0", false),
             SortingItem(8, context.getString(R.string.sorting_brands_desc), "brand", "DESC", "0", false),
             SortingItem(9, context.getString(R.string.sorting_most_favorites), "favorite_count", "DESC", "0", false),
-            SortingItem(9, context.getString(R.string.sorting_top_rated), "ratings", "DESC", "0", false),
-            SortingItem(9, context.getString(R.string.sorting_most_reviews), "review_count", "DESC", "0", false)
+            SortingItem(10, context.getString(R.string.sorting_top_rated), "ratings", "DESC", "0", false),
+            SortingItem(11, context.getString(R.string.sorting_most_reviews), "review_count", "DESC", "0", false)
     )
 }
