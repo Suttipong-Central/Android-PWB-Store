@@ -46,7 +46,7 @@ class ProductExtensionFragment : Fragment() {
         extensionTabLayout.getTabAt(0)?.select()
 
         // setup default fragment
-        startChildFragment(ProductFreeItemFragment())
+        startChildFragment(ProductPromotionFragment(), TAB_PROMOTION_FREEBIE)
     }
 
     private fun setOnTabSelectedListener() {
@@ -75,13 +75,13 @@ class ProductExtensionFragment : Fragment() {
                         tvPromotionTabTitle.text = getString(R.string.tab_promotion)
                         tvPromotionTabTitle.setTextColor(ContextCompat.getColor(context!!, R.color.blackText))
                         ivPromotionIcon.setImage(R.drawable.ic_freebies_selected)
-                        startChildFragment(ProductFreeItemFragment())
+                        startChildFragment(ProductPromotionFragment(), TAB_PROMOTION_FREEBIE)
                     }
                     TAB_DELIVERY -> {
                         tvDeliveryTabTitle.text = getString(R.string.tab_delivery)
                         tvDeliveryTabTitle.setTextColor(ContextCompat.getColor(context!!, R.color.blackText))
                         ivDeliveryIcon.setImage(R.drawable.ic_fast_delivery_selected)
-                        startChildFragment(ProductShippingOptionFragment())
+                        startChildFragment(ProductShippingOptionFragment(), TAB_DELIVERY)
                     }
                 }
             }
@@ -104,17 +104,16 @@ class ProductExtensionFragment : Fragment() {
         tvDeliveryTabTitle.text = getString(R.string.tab_delivery)
         ivDeliveryIcon.setImage(R.drawable.ic_fast_delivery)
 
-
         extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_PROMOTION_FREEBIE).setCustomView(promotionTab))
         extensionTabLayout.addTab(extensionTabLayout.newTab().setTag(TAB_DELIVERY).setCustomView(deliveryTab))
     }
 
-    fun startChildFragment(fragment: Fragment) {
-        childFragmentManager.beginTransaction().replace(R.id.extensionContainer, fragment).commitAllowingStateLoss()
+    fun startChildFragment(fragment: Fragment, tag: String) {
+        childFragmentManager.beginTransaction().replace(R.id.extensionContainer, fragment, tag).commitAllowingStateLoss()
     }
 
     companion object {
-        private const val TAB_PROMOTION_FREEBIE = "promotion_and_freebie"
-        private const val TAB_DELIVERY = "delivery"
+        const val TAB_PROMOTION_FREEBIE = "promotion_and_freebie"
+        const val TAB_DELIVERY = "delivery"
     }
 }

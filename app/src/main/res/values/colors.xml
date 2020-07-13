@@ -54,6 +54,9 @@
     <!-- Language toggle-->
     <color name="transparent">#00ffffff</color>
 
+    <!-- Badge Select -->
+    <color name="badge">#33658a</color>
+
     <color name="primaryButtonColor">#542D87</color>
     <color name="primaryButtonTextColor">@color/white</color>
     <color name="defaultButtonColor">#F4893F</color>

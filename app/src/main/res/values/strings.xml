@@ -279,7 +279,6 @@
     <string name="select_store_dialog">Collect</string>
     <string name="title_clear_cart">There is problem with current shopping cart (cart will be re-generated).</string>
     <string name="developing_system_compare">Compare feature is temporary unavailable.</string>
-    <string name="freebie_promotion_not_found">Please check promotion or free item when added item to cart</string>
     <string name="not_have_day_to_delivery">Sorry, there is no available slot.</string>
     <string name="next_step">How to do next?</string>
     <string name="staff_descriptions">1. You will receive order confirmation email\n2. Show that email OR this screen OR order number to our staff at payment cashier.\n3. Pay at the cashier. You will get a receipt from our staff.</string>
@@ -320,7 +319,6 @@
     <!-- Custom calendar -->
     <string name="product_delivery">Delivery / Warranty / Refund</string>
     <string name="full">FULL</string>
-    <string name="free">FREE</string>
 
     <!-- Payment -->
     <string name="select_payment_types">Select a payment method</string>
@@ -394,5 +392,11 @@
     <string name="not_found_shipping_amount">Not yet calculated</string>
     <string name="label_your_order_detail">Your Order Details</string>
     <string name="format_product_sale" translatable="false">%d%%</string>
+
+    <!--  Promotion freebie  -->
+    <string name="get_free_item">Free items with this product:</string>
+    <string name="free">FREE</string>
+    <string name="freebie_promotion_not_found">No promotion for this product</string>
+    <string name="freebie_out_of_stock">OUT OF STOCK</string>
 
 </resources>

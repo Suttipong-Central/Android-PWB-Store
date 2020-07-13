@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imgProduct"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_margin="@dimen/margin_padding_small"
+        android:background="@drawable/border_grey"
+        android:contentDescription="@string/product_detail"
+        android:padding="@dimen/margin_padding_small"
+        android:src="@drawable/ic_launcher"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/freebieNameTv"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_padding_normal"
+        android:ellipsize="end"
+        android:maxLines="3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgProduct"
+        app:layout_constraintTop_toTopOf="parent"
+        tool:text="Product name" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/freeTV"
+        style="@style/TextAppearance.AppCompat.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_padding_normal"
+        android:text="@string/free"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgProduct" />
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/tvOutOfStock"
+        style="@style/TextAppearance.AppCompat.Body2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/freebie_out_of_stock"
+        android:background="@color/white80"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/margin_padding_xsmall"
+        android:background="@color/gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgProduct" />
+</androidx.constraintlayout.widget.ConstraintLayout>

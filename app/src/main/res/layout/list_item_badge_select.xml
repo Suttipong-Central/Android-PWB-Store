@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/badgeLayout"
+    android:layout_marginEnd="@dimen/margin_padding_xsmall"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/badgeTv"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/badge"
+        android:paddingTop="@dimen/margin_padding_xsmall"
+        android:paddingBottom="@dimen/margin_padding_xsmall"
+        android:paddingStart="@dimen/margin_padding_large"
+        android:paddingEnd="@dimen/margin_padding_large"
+        android:background="@drawable/bg_badge_unselected"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tool:text="Free Item"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
