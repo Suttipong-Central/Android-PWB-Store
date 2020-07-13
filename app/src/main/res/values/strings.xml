@@ -315,6 +315,17 @@
     <string name="high_to_low">Price : High to Low</string>
     <string name="a_to_z">Brand : Name(A-Z)</string>
     <string name="z_to_a">Brand : Name(Z-A)</string>
+    <string name="sorting_view_count">Most View</string>
+    <string name="sorting_best_sellers">Bast Sellers</string>
+    <string name="sorting_biggest_saving">Biggest saving</string>
+    <string name="sorting_new">New</string>
+    <string name="sorting_price_asc">Price (low to high)</string>
+    <string name="sorting_price_desc">Price (high to low)</string>
+    <string name="sorting_brands_asc">Brands (A-Z)</string>
+    <string name="sorting_brands_desc">Brands (Z-A)</string>
+    <string name="sorting_most_favorites">Most Favorites</string>
+    <string name="sorting_top_rated">Top Rated</string>
+    <string name="sorting_most_reviews">Most Reviews</string>
 
     <!-- Custom calendar -->
     <string name="product_delivery">Delivery / Warranty / Refund</string>
