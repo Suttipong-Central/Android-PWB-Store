@@ -37,12 +37,14 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.DialogUtils
+import cenergy.central.com.pwb_store.utils.ProductListSorting
 import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.ceil
 
 class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener {
@@ -181,13 +183,14 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             }
         }
         resetPage()
-        // sorting
-        val sortingItems: MutableList<SortingItem> = ArrayList()
-        sortingItems.add(SortingItem(1, getString(R.string.low_to_high), "price", "ASC", "1", false))
-        sortingItems.add(SortingItem(2, getString(R.string.high_to_low), "price", "DESC", "2", false))
-        sortingItems.add(SortingItem(3, getString(R.string.a_to_z), "brand", "ASC", "3", false))
-        sortingItems.add(SortingItem(4, getString(R.string.z_to_a), "brand", "DESC", "4", false))
-        val sortingHeaders: MutableList<SortingHeader> = ArrayList()
+        setupSorting()
+    }
+
+    private fun setupSorting() {
+        // TODO: Improve sorting list (still use because have no effort time for this task)
+        // setup sorting
+        val sortingItems = context?.let { ProductListSorting.getSortingItems(it) } ?: arrayListOf()
+        val sortingHeaders: ArrayList<SortingHeader> = arrayListOf()
         sortingHeaders.add(SortingHeader("0", "Sorting", "sorting", "single", sortingItems))
         mSortingList = SortingList(sortingHeaders)
         for (sortingHeader in sortingHeaders) {
