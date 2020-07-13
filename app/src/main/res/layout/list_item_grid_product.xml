@@ -11,33 +11,38 @@
     app:cardCornerRadius="0dp"
     app:cardElevation="0dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
+        android:orientation="vertical"
         android:padding="5dp">
 
         <ImageView
             android:id="@+id/img_product"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
-            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:contentDescription="@string/product_detail"
+            android:minHeight="130dp"
             android:paddingLeft="10dp"
             android:paddingTop="10dp"
             android:paddingRight="10dp"
             android:paddingBottom="10dp"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/ic_launcher"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/img_product"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:orientation="vertical"
-            android:weightSum="4">
+            android:weightSum="4"
+            app:layout_constraintTop_toBottomOf="@+id/img_product">
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_product_brand"
@@ -71,7 +76,6 @@
                 android:textColor="@color/nameProductColor"
                 app:typeFaceAsset="RobotoLight.ttf"
                 tools:text="APPLE" />
-
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/txt_product_description"
@@ -127,26 +131,53 @@
                     android:textStyle="bold"
                     app:typeFaceAsset="RobotoLight.ttf"
                     tools:text="12,600" />
-
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/badge_2h"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
-
-                <ImageView
-                    android:id="@+id/badge_2h"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    tools:src="@drawable/ic_2h_badge_en"
-                    android:contentDescription="@string/app_name" />
-
-            </LinearLayout>
-
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="@string/app_name"
+                tools:src="@drawable/ic_1h_badge_en" />
         </LinearLayout>
-    </RelativeLayout>
 
+        <FrameLayout
+            android:id="@+id/saleBadgeLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_padding_xsmall"
+            android:visibility="visible"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintEnd_toEndOf="@+id/img_product"
+            app:layout_constraintStart_toStartOf="@+id/img_product"
+            app:layout_constraintTop_toTopOf="@+id/img_product">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSaleBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_sale"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <cenergy.central.com.pwb_store.view.PowerBuyTextView
+                android:id="@+id/tvDiscountPercentage"
+                style="@style/textProductSale"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_padding_xsmall"
+                android:gravity="center"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="@+id/ivSaleBadge"
+                app:layout_constraintEnd_toEndOf="@+id/ivSaleBadge"
+                app:layout_constraintStart_toStartOf="@+id/ivSaleBadge"
+                app:layout_constraintTop_toTopOf="@+id/ivSaleBadge"
+                tools:text="99%" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -30,6 +30,41 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_placeholder" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/saleBadgeLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_padding_xsmall"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/ivProductImage"
+        app:layout_constraintStart_toStartOf="@+id/ivProductImage"
+        app:layout_constraintTop_toTopOf="@+id/ivProductImage">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivSaleBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_sale"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSale"
+            style="@style/textProductSale"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_padding_xsmall"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="@+id/ivSaleBadge"
+            app:layout_constraintEnd_toEndOf="@+id/ivSaleBadge"
+            app:layout_constraintStart_toStartOf="@+id/ivSaleBadge"
+            app:layout_constraintTop_toTopOf="@+id/ivSaleBadge"
+            tools:text="99%" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProductImage"
         android:layout_width="0dp"
@@ -66,12 +101,12 @@
         android:id="@+id/shareButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_share"
         android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_share"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvProductName"
-        android:contentDescription="@string/app_name" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/productIdLayout"
@@ -313,6 +348,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/addToCartButton"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0"
             app:text="@string/add_one_hour_item" />
 
         <androidx.appcompat.widget.AppCompatCheckBox

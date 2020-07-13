@@ -393,5 +393,6 @@
     <string name="label_order_shipping_fee">Shipping Fee</string>
     <string name="not_found_shipping_amount">Not yet calculated</string>
     <string name="label_your_order_detail">Your Order Details</string>
+    <string name="format_product_sale" translatable="false">%d%%</string>
 
 </resources>

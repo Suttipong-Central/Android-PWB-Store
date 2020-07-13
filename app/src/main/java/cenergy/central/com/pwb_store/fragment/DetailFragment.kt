@@ -1,11 +1,8 @@
 package cenergy.central.com.pwb_store.fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +13,6 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.GalleryActivity
-import cenergy.central.com.pwb_store.activity.ProductDetailActivity
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.ProductImageAdapter
 import cenergy.central.com.pwb_store.adapter.ProductOptionAdepter
@@ -33,7 +29,6 @@ import cenergy.central.com.pwb_store.view.PowerBuyIconButton
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
 
-@SuppressLint("SetTextI18n")
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     private lateinit var productDetailListener: ProductDetailListener
     private var product: Product? = null
@@ -95,6 +90,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             R.id.shareButton -> {
                 productDetailListener.onShareButtonClickListener()
             }
+
             R.id.ivProductImage -> {
                 context?.let {
                     GalleryActivity.startActivity(it, imageSelectedIndex, productImageList.productDetailImageItems)
@@ -106,7 +102,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     // region {@link ProductImageListener.onProductImageClickListener}
     override fun onProductImageClickListener(index: Int, productImage: ProductDetailImageItem) {
         this.imageSelectedIndex = index
-        if (productImage.imgUrl != null){
+        if (productImage.imgUrl != null) {
             ivProductImage.setImageUrl(productImage.imgUrl!!)
         } else {
             ivProductImage.setImage(R.drawable.ic_placeholder)
@@ -116,7 +112,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     fun updateImageSelected(imageSelectedIndex: Int) {
         this.imageSelectedIndex = imageSelectedIndex
-        if (productImageList.productDetailImageItems[imageSelectedIndex].imgUrl != null){
+        if (productImageList.productDetailImageItems[imageSelectedIndex].imgUrl != null) {
             ivProductImage.setImageUrl(productImageList.productDetailImageItems[imageSelectedIndex].imgUrl!!)
         } else {
             ivProductImage.setImage(R.drawable.ic_placeholder)
@@ -168,8 +164,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.text = product.getDisplayOldPrice(unit)
 
         if (product.isSpecialPrice()) {
+            showDiscountPercentage(product.getDiscountPercentage())
             showSpecialPrice(unit, product)
         } else {
+            hideDiscountPercentage()
             hideSpecialPrice()
         }
 
@@ -183,10 +181,11 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             configOptions = product.extension!!.productConfigOptions
             configOptions?.let { configOption ->
                 productOptionShade = configOption.firstOrNull { option -> option.label == "Shade" }
-                if (productOptionShade != null){
+                if (productOptionShade != null) {
                     shadeAttributeId = productOptionShade!!.attrId
                     val shadeValues = productOptionShade!!.values.filter {
-                        it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
+                        it.valueExtension != null && it.valueExtension!!.products.isNotEmpty()
+                    }
                     val shadeAdapter = ShadeSelectAdapter(shadeValues)
                     inputProductShade.setAdapter(shadeAdapter)
                     shadeSelectedOption = shadeValues[0]
@@ -196,7 +195,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                         override fun onShadeClickListener(shade: ProductValue) {
                             inputProductShade.setShadeName(shade.valueExtension?.label)
                             shadeSelectedOption = shade
-                            if (productOptionSize != null){
+                            if (productOptionSize != null) {
                                 handleUpdateSizeAdapter()
                             }
                             handleUpdateViewProductConfig()
@@ -205,10 +204,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
                 }
 
                 productOptionSize = configOption.firstOrNull { option -> option.label == "Size" }
-                if(productOptionSize != null){
+                if (productOptionSize != null) {
                     sizeAttributeId = productOptionSize!!.attrId
                     sizeValues = productOptionSize!!.values.filter { it.valueExtension != null && it.valueExtension!!.products.isNotEmpty() }
-                    if (shadeSelectedOption != null){
+                    if (shadeSelectedOption != null) {
                         handleUpdateSizeAdapter()
                     } else {
                         sizeAdepter.setItems(sizeValues)
@@ -236,12 +235,10 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
         // setup add item button
         addToCartButton.setImageDrawable(R.drawable.ic_shopping_cart)
-        if (BuildConfig.FLAVOR == "pwb"){
-            hideAddToCartButton(product.isSalable())
+        if (BuildConfig.ENABLE_VERIFY_PRODUCT_SALABEL) {
+            handleAddToCartButton(product.isSalable())
         }
         addToCartButton.setOnClickListener(this)
-        // check disable product
-//        disableAddToCartButton(!context.isProductInStock(product))
 
         add1HourButton.setImageDrawable(R.drawable.ic_1_hour_pick_up)
         add1HourButton.setOnClickListener(this)
@@ -276,41 +273,43 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
 
     private fun handleUpdateSizeAdapter() {
         val shadeOptions = shadeSelectedOption!!.valueExtension?.products ?: listOf()
-        val newSizeValues = sizeValues.filter { it.valueExtension?.products?.firstOrNull { key->shadeOptions.contains(key) } != null }
+        val newSizeValues = sizeValues.filter { it.valueExtension?.products?.firstOrNull { key -> shadeOptions.contains(key) } != null }
         sizeAdepter.setItems(newSizeValues)
         sizeSelectedOption = newSizeValues[0]
         inputProductSize.setText(sizeSelectedOption!!.valueExtension?.label)
     }
 
     private fun handleDefaultSizeOption(sizeValues: List<ProductValue>): ProductValue {
-        return if (shadeSelectedOption != null){
+        return if (shadeSelectedOption != null) {
             val shadeChildId = shadeSelectedOption!!.valueExtension!!.products[0]
-            sizeValues.firstOrNull { it.valueExtension!!.products.first() == shadeChildId } ?: sizeValues[0]
+            sizeValues.firstOrNull { it.valueExtension!!.products.first() == shadeChildId }
+                    ?: sizeValues[0]
         } else {
             sizeValues[0]
         }
     }
 
     private fun handleUpdateViewProductConfig() {
-        if (shadeSelectedOption != null && sizeSelectedOption != null){
+        if (shadeSelectedOption != null && sizeSelectedOption != null) {
             val listProductShadeChild = shadeSelectedOption!!.valueExtension!!.products
             val listProductSizeChild = sizeSelectedOption!!.valueExtension!!.products
             val groupProductChildren = listOf(listProductShadeChild, listProductSizeChild)
             val childProductId = groupProductChildren.findIntersect()[0] // index 0 because we think just only one have intersect
             childProduct = productChildren.first { it.id == childProductId }
             updateViewProductConfig()
-        } else if (shadeSelectedOption != null){
+        } else if (shadeSelectedOption != null) {
             childProduct = productChildren.first { it.id == shadeSelectedOption!!.valueExtension!!.products[0] }
             updateViewProductConfig()
-        } else if (sizeSelectedOption != null){
+        } else if (sizeSelectedOption != null) {
             childProduct = productChildren.first { it.id == sizeSelectedOption!!.valueExtension!!.products[0] }
             updateViewProductConfig()
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateViewProductConfig() {
         // setup product image
-        if (childProduct != null){
+        if (childProduct != null) {
             val productImageList = childProduct!!.getProductImageList()
             if (productImageList.productDetailImageItems.size > 0) {
                 Glide.with(Contextor.getInstance().context)
@@ -338,6 +337,15 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
+    private fun showDiscountPercentage(sale: Int) {
+        saleBadgeLayout.visibility = View.VISIBLE
+        tvSale.text = getString(R.string.format_product_sale, sale)
+    }
+
+    private fun hideDiscountPercentage() {
+        saleBadgeLayout.visibility = View.GONE
+    }
+
     private fun showSpecialPrice(unit: String, product: Product) {
         if (product.specialPrice > 0) {
             if (product.price != product.specialPrice) {
@@ -359,11 +367,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         tvNormalPrice.setEnableStrikeThrough(false)
     }
 
-//    fun disableAddToCartButton(isDisable: Boolean = true) {
-//        addToCartButton.setButtonDisable(isDisable)
-//    }
-
-    private fun hideAddToCartButton(isSalable: Boolean = true) {
+    private fun handleAddToCartButton(isSalable: Boolean = true) {
         if (isSalable) {
             addToCartButton.visibility = View.VISIBLE
         } else {
@@ -372,8 +376,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun hideAdd1HourItemButton(is1Hour: Boolean = true) {
-        // TODO: Refactor checking app flavor
-        if (is1Hour && BuildConfig.FLAVOR == "pwb") {
+        if (is1Hour && BuildConfig.ENABLE_2H_PICKUP) {
             add1HourButton.visibility = View.VISIBLE
         } else {
             add1HourButton.visibility = View.GONE
@@ -391,7 +394,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             HttpManagerMagento.getInstance(it).getAvailableStore(product.sku,
                     object : ApiResponseCallback<List<StoreAvailable>> {
                         override fun success(response: List<StoreAvailable>?) {
-                            if (activity != null && !activity!!.isFinishing){
+                            if (activity != null && !activity!!.isFinishing) {
                                 activity!!.runOnUiThread {
                                     handleStockSuccess(response)
                                     stockIndicatorLoading.dismiss()
@@ -412,7 +415,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun handleStockFailure() {
-        if (product != null){
+        if (product != null) {
             val inStock = context.isProductInStock(product!!)
             stockIndicatorView.setState(hasOnline = inStock, hasStoreOffline = false, hasStoresOffline = false)
         } else {
@@ -422,7 +425,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
     }
 
     private fun handleStockSuccess(response: List<StoreAvailable>?) {
-        if (response != null){
+        if (response != null) {
             val inStock = if (product != null) context.isProductInStock(product!!) else false
             val stockAvailability = response.getStockAvailability()
             stockIndicatorView.setState(hasOnline = inStock,
