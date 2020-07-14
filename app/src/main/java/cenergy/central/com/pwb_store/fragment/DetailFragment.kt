@@ -138,6 +138,7 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initDetail(product: Product) {
         // setup product image
         productImageList = product.getProductImageList()

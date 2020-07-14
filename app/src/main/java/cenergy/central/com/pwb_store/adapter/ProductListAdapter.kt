@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.model.IViewType
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.ViewType
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
 import java.util.*
 
@@ -65,8 +66,12 @@ class ProductListAdapter(private val mContext: Context) : RecyclerView.Adapter<R
                             clicked = false
                             val analytics = Analytics(mContext)
                             analytics.trackViewItem(viewType.sku)
-                            ProductDetailActivity.startActivity(mContext, viewType.sku,
-                            viewType.getPricePerStore())
+                            // is chat and shop user offline price must be null
+                            if (!isChatAndShop()){
+                                ProductDetailActivity.startActivity(mContext, viewType.sku, viewType.getPricePerStore())
+                            } else {
+                                ProductDetailActivity.startActivity(mContext, viewType.sku, null)
+                            }
                             Handler().postDelayed({ clicked = true }, 1000)
                         }
                     }
@@ -132,6 +137,11 @@ class ProductListAdapter(private val mContext: Context) : RecyclerView.Adapter<R
             notifyItemInserted(0)
             notifyItemRangeInserted(0, mListViewType.size)
         }
+    }
+
+    private fun isChatAndShop(): Boolean {
+        val database = RealmController.getInstance()
+        return database.userInformation.user?.userLevel == 3L
     }
 
     companion object {
