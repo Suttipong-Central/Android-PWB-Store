@@ -60,7 +60,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable false // Set false when singed new apk
+            debuggable true // Set false when singed new apk
             jniDebuggable false
             renderscriptDebuggable false
             renderscriptOptimLevel 3
@@ -103,7 +103,7 @@ android {
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             buildConfigField 'boolean', 'ENABLE_VERIFY_PRODUCT_SALABEL', 'true'
             buildConfigField 'boolean', 'ENABLE_2H_PICKUP', 'true'
-            versionCode 121
+            versionCode 122
             versionName "1.2.2"
         }
 
