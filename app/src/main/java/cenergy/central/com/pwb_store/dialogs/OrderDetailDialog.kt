@@ -1,4 +1,4 @@
-package cenergy.central.com.pwb_store.fragment
+package cenergy.central.com.pwb_store.dialogs
 
 import android.content.Context
 import android.os.Bundle
@@ -40,7 +40,7 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
         updateOrderDetail()
     }
 
-    fun updateOrderDetail() {
+    private fun updateOrderDetail() {
         cacheItems = RealmController.getInstance().cacheCartItems
         val cartTotal = paymentProtocol?.getCartTotal()
         cartTotal?.let {

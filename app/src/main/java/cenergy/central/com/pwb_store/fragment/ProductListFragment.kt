@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,9 +21,10 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener
+import cenergy.central.com.pwb_store.dialogs.ProductFilterBottomSheet
+import cenergy.central.com.pwb_store.dialogs.ProductFilterListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.getInstance
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.retrieveProducts
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
@@ -41,23 +43,25 @@ import cenergy.central.com.pwb_store.utils.ProductListSorting
 import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.fragment_product_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.ceil
 
-class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener {
+class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener, ProductFilterListener {
     // Analytic
     private var analytics: Analytics? = null
+
+    // View
     private var productCount: PowerBuyTextView? = null
     private var layoutProgress: LinearLayout? = null
-    private var mProductLayout: LinearLayout? = null
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+
     //Data Member
     private var mProductListAdapter: ProductListAdapter? = null
     private var mLayoutManger: GridLayoutManager? = null
     private var categoriesLv3: ArrayList<Category>? = null
-    private var brands: List<FilterItem> = ArrayList()
     private var mSortingList: SortingList? = null
     private var title: String? = null
     private var mPowerBuyPopupWindow: PowerBuyPopupWindow? = null
@@ -66,10 +70,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var isSearch = false
     private var categoryId: String? = null
     private var brandName: String? = null
+
     //Sort
     private var sortName: String? = ""
     private var sortType: String? = ""
     private var categoryLv2: Category? = null
+
     // Page
     private var isLoadingMore = false
     private var isSorting = false
@@ -80,12 +86,13 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
+
     // Realm
     private val db = RealmController.getInstance()
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
-    private val SCROLL: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
+    private val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
             val totalItemCount = mLayoutManger!!.itemCount
@@ -162,6 +169,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupFilterOptions()
+    }
+
     override fun onResume() {
         super.onResume()
         analytics!!.trackScreen(Screen.PRODUCT_LIST)
@@ -177,13 +189,36 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             categoryId = arguments!!.getString(ARG_DEPARTMENT_ID)
             categoryLv2 = arguments!!.getParcelable(ARG_CATEGORY)
             keyWord = arguments!!.getString(ARG_KEY_WORD)
-            // no search
-            if (!isSearch) { // setup product filter list
-                loadCategoryLv3(categoryLv2)
-            }
+//            // no search
+//            if (!isSearch) { // setup product filter list
+//                loadCategoryLv3(categoryLv2)
+//            }
         }
         resetPage()
         setupSorting()
+    }
+
+    private fun setupFilterOptions() {
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    val bottomSheetFragment = childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT)
+                    if (bottomSheetFragment != null) {
+                        childFragmentManager.beginTransaction()
+                                .remove(bottomSheetFragment)
+                                .commit()
+                    }
+                }
+            }
+        })
+
+        filterOptionsButton.setOnClickListener {
+            showFilterOptions()
+        }
     }
 
     private fun setupSorting() {
@@ -201,12 +236,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     override fun onClick(v: View) {
         when (v.id) {
             R.id.layout_title -> EventBus.getDefault().post(CategoryTwoBus())
-            R.id.layout_product -> if (categoriesLv3 == null || categoriesLv3!!.isEmpty()) {
-                mPowerBuyPopupWindow!!.dismiss()
-            } else {
-                mPowerBuyPopupWindow!!.setRecyclerViewFilter(categoriesLv3)
-                mPowerBuyPopupWindow!!.showAsDropDown(v)
-            }
             R.id.layout_sort ->  // Create productResponse for check because we mock up sort items
                 if (mSortingList == null || productResponse == null || productResponse!!.products.isEmpty()) {
                     mPowerBuyPopupWindow!!.dismiss()
@@ -214,12 +243,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                     mPowerBuyPopupWindow!!.setRecyclerViewSorting(mSortingList)
                     mPowerBuyPopupWindow!!.showAsDropDown(v)
                 }
-            R.id.layout_brand -> if (brands.isEmpty()) {
-                mPowerBuyPopupWindow!!.dismiss()
-            } else {
-                mPowerBuyPopupWindow!!.setRecyclerViewFilterByBrand(brands, this)
-                mPowerBuyPopupWindow!!.showAsDropDown(v)
-            }
         }
     }
 
@@ -237,21 +260,18 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         productCount?.text = title
         // setup onClick
         val titleLayout = rootView.findViewById<LinearLayout>(R.id.layout_title)
-        mProductLayout = rootView.findViewById(R.id.layout_product)
         val sortLayout = rootView.findViewById<LinearLayout>(R.id.layout_sort)
-        val brandLayout = rootView.findViewById<LinearLayout>(R.id.layout_brand)
         titleLayout.setOnClickListener(this)
-        mProductLayout?.setOnClickListener(this)
         sortLayout.setOnClickListener(this)
-        brandLayout.setOnClickListener(this)
+
         if (isSearch) {
             layoutFilter.visibility = View.GONE
         }
-        if (categoriesLv3 == null) {
-            mProductLayout?.visibility = View.GONE
-        } else {
-            mProductLayout?.visibility = View.VISIBLE
-        }
+//        if (categoriesLv3 == null) {
+//            mProductLayout?.visibility = View.GONE
+//        } else {
+//            mProductLayout?.visibility = View.VISIBLE
+//        }
         popUpShow()
         mLayoutManger = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
         mLayoutManger!!.spanSizeLookup = mProductListAdapter!!.spanSize
@@ -268,7 +288,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             scrollPosition = (mRecyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
         }
         mRecyclerView.scrollToPosition(scrollPosition)
-        mRecyclerView.addOnScrollListener(SCROLL)
+        mRecyclerView.addOnScrollListener(scrollListener)
     }
 
     private fun resetPage() {
@@ -421,14 +441,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private fun updateProductList(response: ProductResponse?) {
         productResponse = response
         if (response != null) {
-            if (response.filters.isNotEmpty()) {
-                brands = response.filters[0].items
-                for (filterItem in brands) {
-                    if (brandName != null && brandName == filterItem.value) {
-                        filterItem.isSelected = true
-                    }
-                }
-            }
             if (response.products.isNotEmpty()) {
                 totalItem = response.totalCount
                 totalPage = totalPageCal(totalItem)
@@ -505,43 +517,43 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         retrieveProductList()
         mPowerBuyPopupWindow!!.updateSingleBrandFilterItem(null)
     }
-
     // endregion
-    private fun loadCategoryLv3(categoryLv2: Category?) {
-        if (context == null) return
-        getInstance(context!!).retrieveCategory(categoryLv2!!.id,
-                true, ArrayList(), object : ApiResponseCallback<List<Category>> {
-            override fun success(response: List<Category>?) {
-                if (activity != null) {
-                    activity!!.runOnUiThread {
-                        if (response != null){
-                            categoriesLv3 = ArrayList() // clear category lv3 list
-                            categoriesLv3!!.addAll(response)
-                            mProductLayout!!.visibility = View.VISIBLE // show product layout
-                        }
-                    }
-                }
-            }
 
-            override fun failure(error: APIError) {
-                if (activity != null) {
-                    activity!!.runOnUiThread {
-                        Log.e(TAG, "onFailure: " + error.errorUserMessage)
-                        categoriesLv3 = null
-                        mProductLayout!!.visibility = View.GONE
-                    }
-                }
-            }
-        })
+    // region {@link ProductFilterListener}
+    override fun getChildCategory(): String = categoryLv2?.children ?: ""
+
+    override fun getProductFilters(): List<ProductFilter> = productResponse?.filters
+            ?: arrayListOf()
+    // endregion
+
+    private fun showFilterOptions() {
+        val productFilterFragment = childFragmentManager.findFragmentByTag(
+                TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet?
+                ?: run { ProductFilterBottomSheet() }
+        productFilterFragment.listener = this
+
+        val layoutParams: CoordinatorLayout.LayoutParams = bottomSheetContainer.layoutParams
+                as CoordinatorLayout.LayoutParams
+        bottomSheetContainer.layoutParams = layoutParams
+
+        childFragmentManager.beginTransaction()
+                .replace(bottomSheetContainer.id, productFilterFragment, TAG_FILTERS_FRAGMENT)
+                .commit()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    private fun isChatAndShop(): Boolean{
+    private fun isChatAndShop(): Boolean {
         // level 3 is chat and shop
         return db.userInformation.user?.userLevel == 3L
     }
 
+    private fun hideFilterOptions() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
     companion object {
         private val TAG = ProductListFragment::class.java.simpleName
+        private const val TAG_FILTERS_FRAGMENT = "TAG_FILTERS_FRAGMENT"
         private const val ARG_TITLE = "ARG_TITLE"
         private const val ARG_SEARCH = "ARG_SEARCH"
         private const val ARG_DEPARTMENT_ID = "ARG_DEPARTMENT_ID"
@@ -556,6 +568,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
+
         //Pagination
         private const val PER_PAGE = 20
 

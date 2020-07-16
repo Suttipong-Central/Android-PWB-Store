@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.dialogs.OrderDetailDialog
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
@@ -1422,7 +1423,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         bottomSheetContainer.layoutParams = layoutParams
 
         supportFragmentManager.beginTransaction()
-                .replace(bottomSheetContainer.id, orderDetailDialog!!, TAG_ORDER_DETAIL_FRAGMENT)
+                .replace(bottomSheetContainer.id, orderDetailDialog, TAG_ORDER_DETAIL_FRAGMENT)
                 .commit()
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }

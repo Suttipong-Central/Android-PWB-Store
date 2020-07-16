@@ -2,12 +2,12 @@ package cenergy.central.com.pwb_store.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ProductFilter (
-    var name: String = "",
-    @SerializedName("attribute_code")
-    var code: String = "",
-    var items: ArrayList<FilterItem> = arrayListOf(),
-    var position: Int = 0
+data class ProductFilter(
+        var name: String = "",
+        @SerializedName("attribute_code")
+        var code: String = "",
+        var items: ArrayList<FilterItem> = arrayListOf(),
+        var position: Int = 0
 )
 
 data class FilterItem(
