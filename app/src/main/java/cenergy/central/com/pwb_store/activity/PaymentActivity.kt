@@ -13,10 +13,12 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
+import cenergy.central.com.pwb_store.dialogs.OrderDetailDialog
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
@@ -50,8 +52,8 @@ import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
 import cenergy.central.com.pwb_store.view.ProductCompareView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.gson.reflect.TypeToken
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
@@ -1338,6 +1340,32 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         database.deleteAllCacheCartItem()
         Log.d("Order Success", "Cleared cached CartId and CartItem")
     }
+
+//    private fun showOrderDetailBar() {
+//        orderDetailLayout.visibility = View.VISIBLE
+//    }
+//
+//    private fun hideOrderDetailBar() {
+//        orderDetailLayout.visibility = View.GONE
+//    }
+//
+//    private fun showOrderDetailView() {
+//        val orderDetailDialog = supportFragmentManager.findFragmentByTag(
+//                TAG_ORDER_DETAIL_FRAGMENT) as OrderDetailDialog? ?: run { OrderDetailDialog() }
+//
+//        val layoutParams: CoordinatorLayout.LayoutParams = bottomSheetContainer.layoutParams
+//                as CoordinatorLayout.LayoutParams
+//        bottomSheetContainer.layoutParams = layoutParams
+//
+//        supportFragmentManager.beginTransaction()
+//                .replace(bottomSheetContainer.id, orderDetailDialog, TAG_ORDER_DETAIL_FRAGMENT)
+//                .commit()
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+//    }
+//
+//    private fun hideOrderDetailView() {
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+//    }
 }
 
 enum class CheckoutType {
