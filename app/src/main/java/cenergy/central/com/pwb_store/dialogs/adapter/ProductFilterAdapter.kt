@@ -8,11 +8,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.dialogs.FilterView
+import cenergy.central.com.pwb_store.dialogs.ProductFilterListener
 import kotlinx.android.synthetic.main.item_product_filter_checkbox.view.*
 import kotlinx.android.synthetic.main.item_product_filter_title.view.*
 import kotlinx.android.synthetic.main.item_product_filter_topic.view.*
 
 class ProductFilterAdapter : ListAdapter<FilterView, RecyclerView.ViewHolder>(ProductFilterViewDiffUtil()) {
+
+    var listener: ProductFilterListener? = null
+
     class ProductFilterViewDiffUtil : DiffUtil.ItemCallback<FilterView>() {
         override fun areItemsTheSame(oldItem: FilterView, newItem: FilterView): Boolean {
             return oldItem.viewType == newItem.viewType
@@ -61,16 +65,20 @@ class ProductFilterAdapter : ListAdapter<FilterView, RecyclerView.ViewHolder>(Pr
         val item = getItem(position)
         when (holder) {
             is ProductFilterTitleViewHolder -> {
-                holder.bind(item as FilterView.FilterTileView)
+                holder.bind(item as FilterView.FilterTileView, listener)
             }
             is ProductFilterTopicViewHolder -> {
-                holder.bind(item as FilterView.FilterTopicView)
+                holder.bind(item as FilterView.FilterTopicView, listener)
             }
 
             is ProductFilterCheckboxViewHolder -> {
-                holder.bind(item as FilterView.FilterCheckBoxView)
+                holder.bind(item as FilterView.FilterCheckBoxView, listener)
             }
         }
+    }
+
+    fun setFilterListener(listener: ProductFilterListener?) {
+        this.listener = listener
     }
 
     companion object {
@@ -82,13 +90,13 @@ class ProductFilterAdapter : ListAdapter<FilterView, RecyclerView.ViewHolder>(Pr
     }
 
     abstract class ProductFilterViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        abstract fun bind(item: T)
+        abstract fun bind(item: T, listener: ProductFilterListener?)
     }
 
     inner class ProductFilterTitleViewHolder(itemView: View) :
             ProductFilterViewHolder<FilterView.FilterTileView>(itemView) {
         private val tvTitle = itemView.tvFilterTitle
-        override fun bind(item: FilterView.FilterTileView) {
+        override fun bind(item: FilterView.FilterTileView, listener: ProductFilterListener?) {
             tvTitle.text = item.title
         }
     }
@@ -97,9 +105,12 @@ class ProductFilterAdapter : ListAdapter<FilterView, RecyclerView.ViewHolder>(Pr
             ProductFilterViewHolder<FilterView.FilterTopicView>(itemView) {
         private val tvFilterName = itemView.tvFilterCategory
         private val tvFilterCount = itemView.tvFilterTopicCount
-        override fun bind(item: FilterView.FilterTopicView) {
+        override fun bind(item: FilterView.FilterTopicView, listener: ProductFilterListener?) {
             tvFilterName.text = item.filterItem.label
             tvFilterCount.text = String.format(FORMAT_FILTER_COUNT, item.filterItem.count)
+            itemView.setOnClickListener {
+                listener?.onTopicClickListener(item.filterItem)
+            }
         }
     }
 
@@ -107,9 +118,21 @@ class ProductFilterAdapter : ListAdapter<FilterView, RecyclerView.ViewHolder>(Pr
             ProductFilterViewHolder<FilterView.FilterCheckBoxView>(itemView) {
         private val filterCheckbox = itemView.filterCheckbox
         private val tvFilterCount = itemView.tvFilterCount
-        override fun bind(item: FilterView.FilterCheckBoxView) {
+        override fun bind(item: FilterView.FilterCheckBoxView, listener: ProductFilterListener?) {
             filterCheckbox.text = item.filterItem.label
             tvFilterCount.text = String.format(FORMAT_FILTER_COUNT, item.filterItem.count)
+            //in some cases, it will prevent unwanted situations
+            filterCheckbox.setOnCheckedChangeListener(null)
+            filterCheckbox.isChecked = item.selected
+            filterCheckbox.setOnCheckedChangeListener { _, checked ->
+                if (checked){
+                    item.selected = true
+                    listener?.onSelectFilter(item)
+                } else {
+                    item.selected = false
+                    listener?.onUnSelectFilter(item)
+                }
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener
+import cenergy.central.com.pwb_store.dialogs.FilterView
 import cenergy.central.com.pwb_store.dialogs.ProductFilterBottomSheet
 import cenergy.central.com.pwb_store.dialogs.ProductFilterListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
@@ -70,6 +72,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var isSearch = false
     private var categoryId: String? = null
     private var brandName: String? = null
+    private var moreFilter: ArrayList<Pair<String, ArrayList<String>>> = arrayListOf()
+    private var categoryIdLv4: String? = null
 
     //Sort
     private var sortName: String? = ""
@@ -404,8 +408,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             // TODO We have to do not display market place product
             filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
 
-            if (brandName != null && brandName!!.isNotEmpty()) {
-                filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
+            if (moreFilter.isNotEmpty()) {
+                moreFilter.forEach {
+                    val filterValues = TextUtils.join(",", it.second)
+                    filterGroupsList.add(createFilterGroups(it.first, filterValues, "in"))
+                }
             }
 
             val sortOrders = ArrayList<SortOrder>()
@@ -439,8 +446,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     private fun updateProductList(response: ProductResponse?) {
-        productResponse = response
         if (response != null) {
+            this.productResponse = response
             if (response.products.isNotEmpty()) {
                 totalItem = response.totalCount
                 totalPage = totalPageCal(totalItem)
@@ -480,6 +487,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 mProductListAdapter!!.setError()
             }
             setTextHeader(totalItem, title)
+            // however must be update filter option
+            (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet?)?.updateProductFilters()
         } else {
             if (mProductListAdapter!!.itemCount == 0) {
                 mProductListAdapter!!.setError()
@@ -520,10 +529,64 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     // endregion
 
     // region {@link ProductFilterListener}
+    override fun getTotalProducts(): Int = productResponse?.totalCount ?: 0
+
     override fun getChildCategory(): String = categoryLv2?.children ?: ""
 
     override fun getProductFilters(): List<ProductFilter> = productResponse?.filters
             ?: arrayListOf()
+
+    override fun getCategoryIdLv4(): String? = categoryIdLv4
+
+    override fun getMoreFilters(): ArrayList<Pair<String, ArrayList<String>>> = this.moreFilter
+
+    override fun onTopicClickListener(filterItem: FilterItem) {
+        this.title = filterItem.label
+        this.categoryIdLv4 = filterItem.value
+        this.categoryId = filterItem.value
+        moreFilter = arrayListOf()
+        resetPage()
+        showProgressDialog()
+        retrieveProductList()
+    }
+
+    override fun onSelectFilter(filter: FilterView.FilterCheckBoxView) {
+        if (moreFilter.firstOrNull{ it.first == filter.code} == null){
+            moreFilter.add(Pair(first = filter.code, second = arrayListOf(filter.filterItem.value)))
+        } else {
+            moreFilter.first { it.first == filter.code }.second.add(filter.filterItem.value)
+        }
+        resetPage()
+        showProgressDialog()
+        retrieveProductList()
+    }
+
+    override fun onUnSelectFilter(filter: FilterView.FilterCheckBoxView) {
+        if (moreFilter.firstOrNull{ it.first == filter.code} != null) {
+            if (moreFilter.first { it.first == filter.code }.second.size > 1){
+                moreFilter.first { it.first == filter.code }.second.remove(filter.filterItem.value)
+            } else {
+                moreFilter.remove(moreFilter.first { it.first == filter.code })
+            }
+        }
+        resetPage()
+        showProgressDialog()
+        retrieveProductList()
+    }
+
+    override fun onResetFilter() {
+        if (categoryIdLv4 != null){
+            categoryId = categoryIdLv4
+        }
+        moreFilter = arrayListOf()
+        resetPage()
+        showProgressDialog()
+        retrieveProductList()
+    }
+
+    override fun onCloseListener() {
+        hideFilterOptions()
+    }
     // endregion
 
     private fun showFilterOptions() {
