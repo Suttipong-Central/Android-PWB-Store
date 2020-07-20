@@ -260,7 +260,6 @@
     <string name="select_store_dialog">เลือกรับที่สาขา</string>
     <string name="title_clear_cart">เราเจอปัญหากับรถเข็นนี้ (จำเป็นต้องลบรถเข็น)</string>
     <string name="developing_system_compare">กำลังพัฒนาระบบ ไม่สามารถเปรียบเทียบสินค้าในขณะนี้</string>
-    <string name="freebie_promotion_not_found">โปรดเช็คโปรโมชั่นและของแถมเมื่อใส่สินค้าลงรถเข็น</string>
     <string name="not_have_day_to_delivery">ไม่มีวันจัดส่ง</string>
     <string name="next_step">ขั้นตอนต่อไป</string>
     <string name="staff_descriptions">1. คุณจะได้รับอีเมลยืนยันการสั่งซื้อ\n2. แสดงอีเมลที่ได้รับ /หรือแสดงหน้าจอนี้ /หรือเลขที่ใบสั่งซื้อ ต่อเจ้าหน้าที่แคชเชียร์\n3. ทำการจ่ายเงินที่แคชเชียร์ จากนั้นรับใบเสร็จจากเจ้าหน้าที่</string>
@@ -313,7 +312,6 @@
     <!-- Custom calendar -->
     <string name="product_delivery">การจัดส่ง / รับประกัน / คืนเงิน</string>
     <string name="full">ไม่ว่าง</string>
-    <string name="free">ว่าง</string>
 
     <!-- Payment-->
     <string name="select_payment_types">เลือกวิธีการจ่ายเงิน</string>
@@ -375,4 +373,29 @@
     <string name="privacy">นโยบายความเป็นส่วนตัว</string>
     <string name="available_here">มีขายที่สาขานี้</string>
     <string name="available_here_badge">มีขายที่สาขานี้</string>
+
+    <!--  Payment Order Detail  -->
+    <string name="format_count_items">%d ชิ้น</string>
+    <string name="label_order_total">ยอดสั่งซื้อทั้งหมด</string>
+    <string name="view_order_detail">ดูรายละเอียด</string>
+    <string name="hide_order_detail">ซ่อนรายละเอียด</string>
+    <string name="label_order_details">รายละเอียดการชำระเงิน</string>
+    <string name="label_total">ยอดรวม</string>
+    <string name="label_discount">ส่วนลด</string>
+    <string name="label_order_promotion_code">โค้ดส่วนลด</string>
+    <string name="label_order_shipping_fee">การจัดส่งสินค้า</string>
+    <string name="not_found_shipping_amount">ยังไม่ได้คำนวณ</string>
+    <string name="label_your_order_detail">รายละเอียดการสั่งสินค้า</string>
+
+    <!--  Promotion freebie  -->
+    <string name="get_free_item">รับฟรีของแถม:</string>
+    <string name="free">ฟรี</string>
+    <string name="freebie_promotion_not_found">ไม่มีโปรโมชั่นสำหรับสินค้าชิ้นนี้</string>
+    <string name="freebie_out_of_stock">สินค้าหมด</string>
+
+    <!--  Filter  -->
+    <string name="filter_cancel">X</string>
+    <string name="filter_by">ตัวกรอง</string>
+    <string name="reset_filter">รีเซต</string>
+    <string name="format_add_filter">ตกลง (%d สินค้า)</string>
 </resources>
