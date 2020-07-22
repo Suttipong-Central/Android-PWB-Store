@@ -7,6 +7,8 @@ import android.widget.ImageView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 
 fun ImageView.setImage(@DrawableRes res: Int) {
     this.setImageResource(res)
@@ -24,7 +26,7 @@ fun ImageView.setImageUrl(context: Context, url: String) {
     Glide.with(context)
             .load(url)
             .placeholder(R.drawable.ic_placeholder)
-            .crossFade()
+            .transition(DrawableTransitionOptions.withCrossFade())
             .fitCenter()
             .into(this)
 }
@@ -33,8 +35,8 @@ fun ImageView.setImageUrl(url: String, @DrawableRes placeHolder: Int) {
     Glide.with(context)
             .load(url)
             .placeholder(placeHolder)
-            .crossFade()
             .fitCenter()
+            .transition(DrawableTransitionOptions.withCrossFade())
             .into(this)
 }
 

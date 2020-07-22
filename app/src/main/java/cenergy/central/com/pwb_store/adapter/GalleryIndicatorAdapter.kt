@@ -7,9 +7,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.interfaces.SelectedImageListener
-import cenergy.central.com.pwb_store.manager.Contextor
+import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
-import com.bumptech.glide.Glide
 import java.util.*
 
 class GalleryIndicatorAdapter : RecyclerView.Adapter<GalleryIndicatorViewHolder>() {
@@ -42,12 +41,9 @@ class GalleryIndicatorAdapter : RecyclerView.Adapter<GalleryIndicatorViewHolder>
 class GalleryIndicatorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val itemImage = itemView.findViewById<ImageView>(R.id.itemImage)
     fun bindView(productDetailImageItem: ProductDetailImageItem, listener: SelectedImageListener?) {
-        Glide.with(Contextor.getInstance().context)
-                .load(productDetailImageItem.imgUrl)
-                .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
-                .fitCenter()
-                .into(itemImage)
+        productDetailImageItem.imgUrl?.let { itemImage.setImageUrl(it, R.drawable.ic_placeholder) }
         itemImage.setOnClickListener { listener?.onClickImageListener(adapterPosition) }
+
+
     }
 }

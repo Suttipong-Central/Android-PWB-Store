@@ -5,12 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.manager.Contextor
+import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.ProductDetailImageItem
-import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoView
 import kotlinx.android.extensions.LayoutContainer
-import java.util.ArrayList
+import java.util.*
 
 class GalleryImageAdapter : RecyclerView.Adapter<GalleryImageViewHolder>() {
 
@@ -30,14 +29,9 @@ class GalleryImageAdapter : RecyclerView.Adapter<GalleryImageViewHolder>() {
     }
 }
 
-class GalleryImageViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
+class GalleryImageViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     fun bind(productDetailImageItem: ProductDetailImageItem) {
         val itemImage = containerView.findViewById<PhotoView>(R.id.itemImage)
-        Glide.with(Contextor.getInstance().context)
-                .load(productDetailImageItem.imgUrl)
-                .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
-                .fitCenter()
-                .into(itemImage)
+        productDetailImageItem.imgUrl?.let { itemImage.setImageUrl(it, R.drawable.ic_placeholder) }
     }
 }

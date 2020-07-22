@@ -13,6 +13,7 @@ import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.model.PaymentMethod
+import cenergy.central.com.pwb_store.model.PaymentMethodView
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.Screen
 
@@ -70,8 +71,51 @@ class PaymentSelectMethodFragment : Fragment() {
     }
 
     private fun setupPaymentMethodOptions() {
-        // add more filter?
-        selectMethodAdapter.paymentMethodItems = paymentMethods
+        val items = arrayListOf<PaymentMethodView>()
+
+        // add header item
+        items.add(PaymentMethodView.HeaderItemView(getString(R.string.select_payment_types)))
+
+        // add payment method item
+        if (paymentMethods.isNotEmpty()) {
+            items.addAll(paymentMethods.mapTo(arrayListOf<PaymentMethodView>(), {
+                when (it.code) {
+                    PaymentMethod.PAY_AT_STORE -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.PAY_AT_STORE)
+                    }
+                    PaymentMethod.FULL_PAYMENT -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.FULL_PAYMENT)
+                    }
+                    PaymentMethod.INSTALLMENT -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.INSTALLMENT)
+                    }
+                    PaymentMethod.E_ORDERING -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.E_ORDERING)
+                    }
+                    PaymentMethod.BANK_AND_COUNTER_SERVICE -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.BANK_AND_COUNTER_SERVICE)
+                    }
+                    PaymentMethod.CASH_ON_DELIVERY -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.CASH_ON_DELIVERY)
+                    }
+                    else -> {
+                        PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                viewType = PaymentMethodAdapter.OTHER)
+                    }
+                }
+            }))
+        } else {
+            items.add(PaymentMethodView.EmptyItemView())
+        }
+
+        // set to adapter
+        selectMethodAdapter.submitList(items)
     }
 
     private fun setupView(rootView: View) {

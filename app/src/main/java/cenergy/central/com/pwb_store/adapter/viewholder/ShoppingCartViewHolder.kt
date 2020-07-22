@@ -1,20 +1,18 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.RecyclerView
-
-import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -23,7 +21,6 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -61,12 +58,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
 
             // get image from cache
-            Glide.with(context)
-                    .load(cacheCartItem.imageUrl)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
-                    .fitCenter()
-                    .into(productImage)
+            productImage.setImageUrl(cacheCartItem.imageUrl, R.drawable.ic_placeholder)
 
             deleteItemTextView.visibility = View.VISIBLE
             deleteItemTextView.setOnClickListener {
@@ -101,7 +93,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     return false
                 }
             })
-            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price ?: 0.0))
+            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price
+                    ?: 0.0))
         }
     }
 
@@ -130,7 +123,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
     // endregion
 
-    private fun isChatAndShop(): Boolean{
+    private fun isChatAndShop(): Boolean {
         val database = RealmController.getInstance()
         return database.userInformation.user?.userLevel == 3L
     }

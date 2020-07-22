@@ -20,8 +20,8 @@ fun HttpException?.getErrorFormApi(): Exception {
             return ApiException(this?.code(), "error and missing error body")
         }
 
-        val url = this.response().raw().request().url().toString()
-        val errString = this.response().errorBody()?.string()
+        val url = this.response()?.raw()?.request()?.url().toString()
+        val errString = this.response()?.errorBody()?.string()
         Log.e("ApiError", url)
 
         val error: ErrorResponse = GsonProvider.getInstance().gson.fromJson(

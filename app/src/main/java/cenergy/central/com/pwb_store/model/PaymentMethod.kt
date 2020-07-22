@@ -1,8 +1,6 @@
 package cenergy.central.com.pwb_store.model
 
-import cenergy.central.com.pwb_store.adapter.PaymentMethodItem
-
-data class PaymentMethod(var code: String = "", var title: String = "") : PaymentMethodItem {
+data class PaymentMethod(var code: String = "", var title: String = ""){
     companion object {
         // payment methods code
         const val CASH_ON_DELIVERY = "cashondelivery"

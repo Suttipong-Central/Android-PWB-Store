@@ -105,8 +105,8 @@ class DeliveryStorePickUpFragment : Fragment() {
         branchesFragment.updateBranches(this.displayItems, checkoutType)
     }
 
-    /*
-    * Logic display store pick up
+    /**
+    * Return intersect Branch -- Logic display store pick up (2hr)
     * */
     private fun getMultiStorePickup(): ArrayList<BranchResponse> {
         val multiStorePickup = RealmController.getInstance().storePickupLists

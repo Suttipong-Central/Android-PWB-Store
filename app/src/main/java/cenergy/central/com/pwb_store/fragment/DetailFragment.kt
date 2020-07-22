@@ -21,12 +21,10 @@ import cenergy.central.com.pwb_store.adapter.interfaces.ProductImageListener
 import cenergy.central.com.pwb_store.adapter.interfaces.ShadeClickListener
 import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
-import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyIconButton
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_detail.*
 
 class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
@@ -143,12 +141,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         // setup product image
         productImageList = product.getProductImageList()
         if (productImageList.productDetailImageItems.size > 0) {
-            Glide.with(Contextor.getInstance().context)
-                    .load(productImageList.productDetailImageItems[0].imgUrl)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
-                    .fitCenter()
-                    .into(ivProductImage)
+            productImageList.productDetailImageItems[0].imgUrl?.let {
+                ivProductImage.setImageUrl(it, R.drawable.ic_placeholder)
+            }
         } else {
             ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
         }
@@ -313,12 +308,9 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
         if (childProduct != null) {
             val productImageList = childProduct!!.getProductImageList()
             if (productImageList.productDetailImageItems.size > 0) {
-                Glide.with(Contextor.getInstance().context)
-                        .load(productImageList.productDetailImageItems[0].imgUrl)
-                        .placeholder(R.drawable.ic_placeholder)
-                        .crossFade()
-                        .fitCenter()
-                        .into(ivProductImage)
+                productImageList.productDetailImageItems[0].imgUrl?.let {
+                    ivProductImage.setImageUrl(it, R.drawable.ic_placeholder)
+                }
             } else {
                 ivProductImage.setImageDrawable(context?.let { ContextCompat.getDrawable(it, R.drawable.ic_placeholder) })
             }
