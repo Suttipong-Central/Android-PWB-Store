@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 
-import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
@@ -14,7 +13,6 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.model.CacheCartItem
-import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.PromotionExtension
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -24,7 +22,6 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -117,11 +114,20 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     // region freebie item
     @SuppressLint("SetTextI18n")
-    fun bindFreebieView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?) {
+    fun bindFreebieView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
         itemView.context?.let { context ->
             qtyTextTitle.text = context.resources.getString(R.string.qty)
             deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
             tvTitleFreebie.visibility = View.VISIBLE // visible title free item
+            badgeCreditCard.visibility = View.GONE
+
+            // get image from cache
+            Glide.with(context)
+                    .load(cacheCartItem.imageUrl)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .crossFade()
+                    .fitCenter()
+                    .into(productImage)
 
             val unit = context.getString(R.string.baht)
             this.listener = listener

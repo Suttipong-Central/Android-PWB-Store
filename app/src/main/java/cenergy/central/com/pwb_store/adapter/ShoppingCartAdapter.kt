@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
-import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -39,11 +38,11 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
         val item = shoppingCartItem[position]
         val cacheCartItem = database.getCacheCartItem(item.id) // get cacheCartItem
 
-        if (cacheCartItem != null) {
+        if (item.price != null && item.price!! > 0.0) {
             val promotion = promotions.first { it.sku == cacheCartItem.sku }.extension
             holder.bindProductView(item, listener, cacheCartItem, promotion)
         } else {
-            holder.bindFreebieView(item, listener)
+            holder.bindFreebieView(item, listener, cacheCartItem)
         }
         if (isDescription) {
             holder.hideDeleteItem(item)
