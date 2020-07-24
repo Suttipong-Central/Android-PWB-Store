@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.CartItem
+import cenergy.central.com.pwb_store.model.response.PromotionExtension
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
@@ -29,6 +30,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     // widget view
     private val productName: PowerBuyTextView = itemView.findViewById(R.id.product_name_list_shopping_cart)
+    private val badgeCreditCard: PowerBuyTextView = itemView.findViewById(R.id.badgeCreditCard)
     private val productCode: PowerBuyTextView = itemView.findViewById(R.id.product_code_list_shopping_card)
     private val productPrice: PowerBuyTextView = itemView.findViewById(R.id.price_list_shopping_cart)
     private val productQty: PowerBuyAutoCompleteTextStroke = itemView.findViewById(R.id.qty_list_shopping_cart)
@@ -46,7 +48,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private var cacheCartItem: CacheCartItem? = null
 
     @SuppressLint("SetTextI18n")
-    fun bindProductView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem) {
+    fun bindProductView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem, promotion: PromotionExtension?) {
         itemView.context?.let { context ->
             qtyTextTitle.text = context.resources.getString(R.string.qty)
             deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
@@ -59,6 +61,13 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             productName.text = cacheCartItem.name
             productCode.text = "${context.resources.getString(R.string.product_code)} ${item.sku}"
             productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
+
+            if (promotion != null && !promotion.creditCardPromotions.isNullOrEmpty()){
+                badgeCreditCard.text = context.getString(R.string.credit_card_on_top)
+                badgeCreditCard.visibility = View.VISIBLE
+            } else {
+                badgeCreditCard.visibility = View.GONE
+            }
 
             // get image from cache
             Glide.with(context)

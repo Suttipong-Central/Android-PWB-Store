@@ -410,4 +410,8 @@
     <string name="freebie_promotion_not_found">No promotion for this product</string>
     <string name="freebie_out_of_stock">OUT OF STOCK</string>
 
+    <!-- Credit card on top -->
+    <string name="credit_card_on_top">Credit Card On-Top</string>
+    <string name="warning_credit_care_on_top">You combine products with different credit card promotions. Please split order to get each promotion separately.</string>
+
 </resources>

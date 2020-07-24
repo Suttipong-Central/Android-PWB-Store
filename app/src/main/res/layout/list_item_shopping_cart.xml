@@ -10,13 +10,11 @@
         android:id="@+id/product_image_list_shopping_cart"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/border_grey"
         android:contentDescription="@string/product_detail"
         android:padding="6dp"
         android:src="@drawable/ic_placeholder"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/product_name_list_shopping_cart"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -70,6 +68,23 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
+        android:id="@+id/badgeCreditCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/badge"
+        tools:text="@string/credit_card_on_top"
+        android:paddingTop="@dimen/margin_padding_xsmall"
+        android:paddingBottom="@dimen/margin_padding_xsmall"
+        android:paddingStart="@dimen/margin_padding_large"
+        android:paddingEnd="@dimen/margin_padding_large"
+        android:background="@drawable/bg_badge_unselected"
+        app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
+        app:layout_constraintTop_toBottomOf="@+id/product_name_list_shopping_cart"/>
+
+    <cenergy.central.com.pwb_store.view.PowerBuyTextView
         android:id="@+id/product_code_list_shopping_card"
         style="@style/descriptionProduct"
         android:layout_width="0dp"
@@ -79,7 +94,7 @@
         android:layout_marginTop="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/product_name_list_shopping_cart"
+        app:layout_constraintTop_toBottomOf="@+id/badgeCreditCard"
         tools:text="@string/product_code" />
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -106,16 +121,6 @@
         android:text="@string/qty"
         app:layout_constraintStart_toEndOf="@id/product_image_list_shopping_cart"
         app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart" />
-
-    <!--<cenergy.central.com.pwb_store.view.PowerBuyIncreaseOrDecreaseView-->
-        <!--android:id="@+id/qty_list_shopping_cart"-->
-        <!--android:layout_width="160dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="6dp"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/qty_title_list_shopping_cart"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart" />-->
 
     <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
         android:id="@+id/qty_list_shopping_cart"
@@ -172,6 +177,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightGray"
+        android:layout_marginTop="@dimen/margin_padding_xlarge"
+        app:layout_constraintTop_toBottomOf="@+id/total_price_list_shopping_cart"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
