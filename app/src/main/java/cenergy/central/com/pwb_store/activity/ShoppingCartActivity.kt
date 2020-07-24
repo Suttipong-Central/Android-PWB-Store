@@ -168,7 +168,6 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         couponBtn = findViewById(R.id.couponBtn)
-        warningCreditCardTv.text = getString(R.string.warning_credit_care_on_top)
         couponBtn.setText(getString(R.string.add_coupon))
 
         val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
@@ -279,6 +278,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         paymentButton.setText(getString(R.string.check_out))
 
         // update text label
+        warningCreditCardTv.text = getString(R.string.warning_credit_care_on_top)
         couponCodeEdt.hint = getString(R.string.enter_promo_code_hint)
         discountTitle.text = getString(R.string.discount)
         promotionTitle.text = getString(R.string.promotion_code)
