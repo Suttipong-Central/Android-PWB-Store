@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.NetworkInfo
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -21,14 +22,17 @@ import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
+import cenergy.central.com.pwb_store.extensions.toProductPromotions
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.api.PromotionAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.PaymentCartTotal
+import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
@@ -36,6 +40,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
@@ -49,6 +54,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private lateinit var searchImageView: ImageView
     private lateinit var layoutDiscountPrice: LinearLayout
     private lateinit var layoutPromotionPrice: LinearLayout
+    private lateinit var warningCreditCardTv: PowerBuyTextView
     private lateinit var discountTitle: PowerBuyTextView
     private lateinit var discountPrice: PowerBuyTextView
     private lateinit var promotionTitle: PowerBuyTextView
@@ -71,6 +77,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var cartResponse: CartResponse? = null
     private var isCouponAdded = false
     private var promotionCode = ""
+    private var promotions: ArrayList<PromotionResponse> = arrayListOf()
 
     // Firebase remote config
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
@@ -150,6 +157,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         layoutDiscountPrice = findViewById(R.id.layout_discount_shopping_cart)
         layoutPromotionPrice = findViewById(R.id.layout_promotion_shopping_cart)
         couponCodeEdt = findViewById(R.id.couponCodeEdt)
+        warningCreditCardTv = findViewById(R.id.warningCreditCardTv)
         discountTitle = findViewById(R.id.label_discount_text_view)
         discountPrice = findViewById(R.id.txt_discount_shopping_cart)
         promotionTitle = findViewById(R.id.label_promotion_text_view)
@@ -160,6 +168,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         title = findViewById(R.id.txt_header_shopping_cart)
         backToShopButton = findViewById(R.id.back_to_shop)
         couponBtn = findViewById(R.id.couponBtn)
+        warningCreditCardTv.text = getString(R.string.warning_credit_care_on_top)
         couponBtn.setText(getString(R.string.add_coupon))
 
         val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
@@ -323,7 +332,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                     runOnUiThread {
                         mProgressDialog?.dismiss()
                         if (response != null) {
-                            updateViewShoppingCart(response)
+                            retrievePromotion(response)
                         } else {
                             showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
                         }
@@ -337,6 +346,28 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                     }
                 }
             })
+        }
+    }
+
+    private fun retrievePromotion(shoppingCartResponse: PaymentCartTotal){
+        if (cartResponse != null && cartResponse!!.items.isNotEmpty()){
+            val skuList = cartResponse!!.items.map { it.sku }
+            val result = TextUtils.join(",", skuList)
+            PromotionAPI.retrievePromotionBySKUs(this, result, object : ApiResponseCallback<ArrayList<PromotionResponse>>{
+                override fun success(response: ArrayList<PromotionResponse>?) {
+                    if (response != null)
+                    promotions = response
+                    updateViewShoppingCart(shoppingCartResponse)
+                }
+
+                override fun failure(error: APIError) {
+                    Log.d("ShoppingCart", "Call promotions fail")
+                    updateViewShoppingCart(shoppingCartResponse)
+                }
+            })
+        } else {
+            Log.d("ShoppingCart", "CartResponse items is empty")
+            updateViewShoppingCart(shoppingCartResponse)
         }
     }
 
@@ -379,6 +410,38 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 promotionCode = shoppingCartResponse.couponCode
                 couponCodeEdt.setText(promotionCode)
             }
+            if (promotions.size > 1){
+                var isPromotionEmpty = true
+                var isPromotionAllHave = true
+                val listDiscount: ArrayList<Int> = arrayListOf()
+                /**
+                 * List<SKU, List<DiscountAmount>>
+                 */
+                promotions.toProductPromotions().forEach {
+                    if (it.second.isNotEmpty()){
+                        isPromotionEmpty = false
+                    } else {
+                        isPromotionAllHave = false
+                    }
+                    listDiscount.addAll(it.second)
+                }
+                if (isPromotionEmpty){
+                    // all empty not show
+                    warningCreditCardTv.visibility = View.GONE
+                } else {
+                    if (isPromotionAllHave && listDiscount.distinct().size == 1){
+                        // all have promotion and equal will show
+                        warningCreditCardTv.visibility = View.GONE
+                    } else {
+                        // all have promotion but not equal && some product have promotion will show
+                        warningCreditCardTv.visibility = View.VISIBLE
+                    }
+                }
+            } else {
+                // product size 1 not show
+                warningCreditCardTv.visibility = View.GONE
+            }
+            shoppingCartAdapter.promotions = promotions
             shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
 
             updateTitle(shoppingCartResponse.qty)

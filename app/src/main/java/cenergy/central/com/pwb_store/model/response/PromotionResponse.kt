@@ -38,7 +38,7 @@ open class CreditCardPromotion(
         var toDate: String? = null,
         var label: String? = null,
         @SerializedName("discount_amount")
-        var discountAmount: Int = 300,
+        var discountAmount: Int = 0,
         @SerializedName("discount_qty")
         var discountQty: Int = 0,
         @SerializedName("discount_step")

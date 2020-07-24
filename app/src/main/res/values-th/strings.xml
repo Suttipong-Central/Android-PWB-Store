@@ -391,9 +391,14 @@
     <string name="freebie_promotion_not_found">ไม่มีโปรโมชั่นสำหรับสินค้าชิ้นนี้</string>
     <string name="freebie_out_of_stock">สินค้าหมด</string>
 
+
     <!--  Filter  -->
     <string name="filter_cancel">X</string>
     <string name="filter_by">ตัวกรอง</string>
     <string name="reset_filter">รีเซต</string>
     <string name="format_add_filter">ตกลง (%d สินค้า)</string>
+
+    <!-- Credit card on top -->
+    <string name="credit_card_on_top">รูดบัตรลดเพิ่ม</string>
+    <string name="warning_credit_care_on_top">ในรถเข็นมีสินค้าที่ร่วมโปรโมชั่นบัตรเครดิตที่ต่างกันอยู่ กรุณาแยกทำรายการเพื่อรับโปรโมชั่นดังกล่าว</string>
 </resources>

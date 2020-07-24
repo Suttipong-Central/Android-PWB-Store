@@ -416,4 +416,7 @@
     <string name="reset_filter">Reset</string>
     <string name="format_add_filter">Apply (%d items)</string>
 
+    <!-- Credit card on top -->
+    <string name="credit_card_on_top">Credit Card On-Top</string>
+    <string name="warning_credit_care_on_top">You combine products with different credit card promotions. Please split order to get each promotion separately.</string>
 </resources>

@@ -12,4 +12,13 @@ interface PromotionService {
     fun getPromotionSuggestion(@Header("Authorization") token: String,
                                @Path("lang") language: String,
                                @Path("sku") sku: String): Call<PromotionResponse>
+
+    @GET("/rest/{lang}/V1/promotion-suggestion/product/")
+    fun getPromotionSuggestionBySKUs(
+            @Header("Authorization") token: String,
+            @Path("lang") language: String,
+            @Query("searchCriteria[filterGroups][0][filters][0][field]") fieldSKU: String,
+            @Query("searchCriteria[filterGroups][0][filters][0][value]") valueSKUs: String,
+            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") conditionType: String
+    ): Call<ArrayList<PromotionResponse>>
 }
