@@ -10,7 +10,7 @@ sealed class PaymentMethodView {
                               override val viewType: Int = TITLE_VIEW) : PaymentMethodView()
 
     data class PaymentItemView(val paymentMethod: PaymentMethod,
-                               val selected: Boolean = false,
+                               var selected: Boolean = false,
                                override val viewType: Int) : PaymentMethodView()
 
     data class EmptyItemView(override val viewType: Int = EMPTY_VIEW) : PaymentMethodView()

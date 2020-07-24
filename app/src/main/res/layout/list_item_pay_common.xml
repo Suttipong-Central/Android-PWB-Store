@@ -10,32 +10,37 @@
 
     <RadioButton
         android:id="@+id/radioPayment"
-        style="@style/TextAppearance.AppCompat.Large"
+        android:theme="@style/RadioButton.PaymentSelection"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/tv_description"
+        android:clickable="false"
+        app:layout_constraintBottom_toTopOf="@id/expandLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Full Payment" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/tv_description"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/expandLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/pay_at_store_description"
-        android:textColor="@color/graySelect"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioPayment" />
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/radioPayment">
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_xlarge"
+            android:layout_marginTop="@dimen/margin_padding_normal"
+            android:text="@string/pay_at_store_description"
+            android:textColor="@color/graySelect"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/option_line"
@@ -46,5 +51,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_description" />
+        app:layout_constraintTop_toBottomOf="@+id/expandLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

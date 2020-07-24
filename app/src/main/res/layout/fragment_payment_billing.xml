@@ -283,7 +283,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/yes"
-                android:theme="@style/RadioButtonStyle" />
+                android:theme="@style/RadioButton.Primary" />
 
             <RadioButton
                 android:id="@+id/radio_tax_no"
@@ -291,7 +291,7 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/no"
-                android:theme="@style/RadioButtonStyle" />
+                android:theme="@style/RadioButton.Primary" />
         </RadioGroup>
 
         <cenergy.central.com.pwb_store.view.PowerBuyEditTextBorder
@@ -357,14 +357,14 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/yes"
-                android:theme="@style/RadioButtonStyle" />
+                android:theme="@style/RadioButton.Primary" />
 
             <RadioButton
                 android:id="@+id/radio_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no"
-                android:theme="@style/RadioButtonStyle" />
+                android:theme="@style/RadioButton.Primary" />
         </RadioGroup>
 
         <androidx.constraintlayout.widget.Group

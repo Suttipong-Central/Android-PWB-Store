@@ -20,7 +20,6 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.OrderDetailDialog
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.fragment.*
@@ -57,7 +56,7 @@ import kotlinx.android.synthetic.main.layout_order_detail_bar.*
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentItemClickListener,
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener,
         PaymentT1Listener, PaymentTransferListener {
 
     var mToolbar: Toolbar? = null
@@ -373,7 +372,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     // region {@link PaymentTypesClickListener}
-    override fun onClickedItem(paymentMethod: PaymentMethod) {
+    fun onSelectPaymentMethod(paymentMethod: PaymentMethod) {
         this.paymentMethod = paymentMethod
         if (paymentMethod.isBankAndCounterServiceType()) {
             // open bank/counter service options

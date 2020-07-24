@@ -178,4 +178,15 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <!--  RadioButton  -->
+    <style name="RadioButton" />
+
+    <style name="RadioButton.PaymentSelection" parent="RadioButton">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="colorControlNormal">@color/graySelect</item>
+        <item name="colorAccent">@color/defaultButtonColor</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/blackText</item>
+    </style>
+
 </resources>

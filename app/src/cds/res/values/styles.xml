@@ -56,7 +56,7 @@
         <item name="colorControlActivated">@color/cdsRed</item>
     </style>
 
-    <style name="RadioButtonStyle">
+    <style name="RadioButton.Primary">
         <item name="colorControlNormal">@color/graySelect</item>
         <item name="colorAccent">@color/cdsRed</item>
         <item name="android:textColorPrimaryDisableOnly">@color/graySelect</item>

@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,16 +18,16 @@ import cenergy.central.com.pwb_store.model.PaymentMethodView
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.Screen
 
-class PaymentSelectMethodFragment : Fragment() {
+class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     private val analytics by lazy { context?.let { Analytics(it) } }
 
     private lateinit var paymentProtocol: PaymentProtocol
     private lateinit var recycler: RecyclerView
-    private lateinit var paymentItemClickListener: PaymentItemClickListener
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
 
     private var paymentMethods: List<PaymentMethod> = listOf()
     private var deliveryCode: String = ""
+    private var items = arrayListOf<PaymentMethodView>()
 
     companion object {
         private const val ARG_DELIVERY_CODE = "arg_delivery_code"
@@ -43,7 +44,6 @@ class PaymentSelectMethodFragment : Fragment() {
         super.onAttach(context)
         paymentProtocol = context as PaymentProtocol
         paymentMethods = paymentProtocol.getPaymentMethods()
-        paymentItemClickListener = context as PaymentItemClickListener
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +61,6 @@ class PaymentSelectMethodFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupPaymentMethodOptions()
     }
 
@@ -70,9 +69,23 @@ class PaymentSelectMethodFragment : Fragment() {
         analytics?.trackScreen(Screen.SELECT_PAYMENT)
     }
 
-    private fun setupPaymentMethodOptions() {
-        val items = arrayListOf<PaymentMethodView>()
+    // region {@link PaymentTypesClickListener.onClickedItem}
+    override fun onClickedItem(paymentMethod: PaymentMethod) {
+        Log.d("onClickedItem", "test!")
 
+        val newItems = items.map {
+            if (it is PaymentMethodView.PaymentItemView) {
+                it.selected = it.paymentMethod.code == paymentMethod.code
+            }
+            it
+        }
+        this.items = ArrayList(newItems)
+        selectMethodAdapter.submitList(this.items)
+    }
+    // endregion
+
+    private fun setupPaymentMethodOptions() {
+        items.clear()
         // add header item
         items.add(PaymentMethodView.HeaderItemView(getString(R.string.select_payment_types)))
 
@@ -120,8 +133,7 @@ class PaymentSelectMethodFragment : Fragment() {
 
     private fun setupView(rootView: View) {
         recycler = rootView.findViewById(R.id.recycler_select_methods)
-        selectMethodAdapter = PaymentMethodAdapter(paymentItemClickListener)
-        recycler.setHasFixedSize(true)
+        selectMethodAdapter = PaymentMethodAdapter(this)
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = selectMethodAdapter
 

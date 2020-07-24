@@ -10,65 +10,71 @@
 
     <RadioButton
         android:id="@+id/radioPayment"
-        style="@style/TextAppearance.AppCompat.Large"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/tv_description"
+        android:layout_marginBottom="@dimen/margin_padding_normal"
+        android:clickable="false"
+        android:theme="@style/RadioButton.PaymentSelection"
+        app:layout_constraintBottom_toTopOf="@+id/expandLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Pay by Installment" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/tv_description"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/expandLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/pay_credit_card_description"
-        android:textColor="@color/graySelect"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/ic_visa"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioPayment" />
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/radioPayment">
 
-    <ImageView
-        android:id="@+id/ic_visa"
-        android:layout_width="90dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/app_name"
-        android:paddingTop="3dp"
-        android:src="@drawable/ic_visa"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_description" />
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tv_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_padding_xlarge"
+            android:layout_marginTop="@dimen/margin_padding_normal"
+            android:layout_marginEnd="@dimen/margin_padding_small"
+            android:text="@string/pay_credit_card_description"
+            android:textColor="@color/graySelect"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/ic_visa"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ic_master_card"
-        android:layout_width="90dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_master_card"
-        app:layout_constraintStart_toEndOf="@id/ic_visa"
-        app:layout_constraintTop_toBottomOf="@+id/tv_description" />
+        <ImageView
+            android:id="@+id/ic_visa"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/app_name"
+            android:paddingTop="3dp"
+            android:src="@drawable/ic_visa"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_description" />
+
+        <ImageView
+            android:id="@+id/ic_master_card"
+            android:layout_width="90dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_master_card"
+            app:layout_constraintStart_toEndOf="@id/ic_visa"
+            app:layout_constraintTop_toBottomOf="@+id/tv_description" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/option_line"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="@dimen/margin_padding_normal"
         android:background="@color/graySelect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_visa" />
+        app:layout_constraintTop_toBottomOf="@+id/expandLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

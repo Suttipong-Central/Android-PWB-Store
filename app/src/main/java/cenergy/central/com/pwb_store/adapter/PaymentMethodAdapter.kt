@@ -25,11 +25,8 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) :
 
         override fun areContentsTheSame(oldItem: PaymentMethodView, newItem: PaymentMethodView): Boolean {
             return if (oldItem is PaymentMethodView.HeaderItemView && newItem is PaymentMethodView.HeaderItemView) {
-                oldItem.title == newItem.title
-            } else if (oldItem is PaymentMethodView.PaymentItemView && newItem is PaymentMethodView.PaymentItemView) {
-                oldItem.paymentMethod.code == newItem.paymentMethod.code
-                        && oldItem.paymentMethod.title == newItem.paymentMethod.title
-                        && oldItem.selected == newItem.selected
+                oldItem.title == newItem.title &&
+                        oldItem.viewType == newItem.viewType
             } else if (oldItem is PaymentMethodView.EmptyItemView && newItem is PaymentMethodView.EmptyItemView) {
                 oldItem.viewType == newItem.viewType
             } else {

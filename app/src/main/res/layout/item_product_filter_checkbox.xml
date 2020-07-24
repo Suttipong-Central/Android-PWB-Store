@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/nameProductColor"
-        android:theme="@style/RadioButtonStyle"
+        android:theme="@style/RadioButton.Primary"
         app:layout_constraintEnd_toStartOf="@+id/tvFilterCount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
