@@ -3,182 +3,188 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/product_image_list_shopping_cart"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/border_grey"
-        android:contentDescription="@string/product_detail"
-        android:padding="6dp"
-        android:src="@drawable/ic_placeholder"
-        app:layout_constraintEnd_toStartOf="@id/product_name_list_shopping_cart"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/product_name_list_shopping_cart"
-        style="@style/descriptionProduct"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/deleteItemTextView"
-        app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitleFreebie"
-        tools:text="Product Name" />
+        android:layout_marginBottom="@dimen/margin_padding_normal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/tvTitleFreebie"
-        style="@style/descriptionProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@color/itemFreebieTabColor"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:textColor="@color/white"
-        android:visibility="gone"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toTopOf="@+id/product_image_list_shopping_cart"
-        android:text="@string/title_free_item" />
+        <ImageView
+            android:id="@+id/product_image_list_shopping_cart"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/border_grey"
+            android:contentDescription="@string/product_detail"
+            android:padding="6dp"
+            android:src="@drawable/ic_placeholder"
+            app:layout_constraintEnd_toStartOf="@id/product_name_list_shopping_cart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/deleteItemTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:drawablePadding="4dp"
-        android:contentDescription="@string/product_detail"
-        android:drawableStart="@drawable/ic_trash"
-        android:text="@string/shopping_delete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_name_list_shopping_cart"
-        app:layout_constraintTop_toTopOf="parent" />
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/product_name_list_shopping_cart"
+            style="@style/descriptionProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toStartOf="@+id/deleteItemTextView"
+            app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitleFreebie"
+            tools:text="Product Name" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/badgeCreditCard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/badge"
-        tools:text="@string/credit_card_on_top"
-        android:paddingTop="@dimen/margin_padding_xsmall"
-        android:paddingBottom="@dimen/margin_padding_xsmall"
-        android:paddingStart="@dimen/margin_padding_large"
-        android:paddingEnd="@dimen/margin_padding_large"
-        android:background="@drawable/bg_badge_unselected"
-        app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/product_name_list_shopping_cart"/>
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvTitleFreebie"
+            style="@style/descriptionProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@color/itemFreebieTabColor"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:textSize="20sp"
+            app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
+            app:layout_constraintTop_toTopOf="@+id/product_image_list_shopping_cart"
+            android:text="@string/title_free_item" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/product_code_list_shopping_card"
-        style="@style/descriptionProduct"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/badgeCreditCard"
-        tools:text="@string/product_code" />
+        <TextView
+            android:id="@+id/deleteItemTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:drawablePadding="4dp"
+            android:contentDescription="@string/product_detail"
+            android:drawableStart="@drawable/ic_trash"
+            android:text="@string/shopping_delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/product_name_list_shopping_cart"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/price_list_shopping_cart"
-        style="@style/descriptionProduct"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/product_code_list_shopping_card"
-        tools:text="Price : ฿68" />
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/badgeCreditCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/badge"
+            tools:text="@string/credit_card_on_top"
+            android:paddingTop="@dimen/margin_padding_xsmall"
+            android:paddingBottom="@dimen/margin_padding_xsmall"
+            android:paddingStart="@dimen/margin_padding_large"
+            android:paddingEnd="@dimen/margin_padding_large"
+            android:background="@drawable/bg_badge_unselected"
+            app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/product_name_list_shopping_cart"/>
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/qty_title_list_shopping_cart"
-        style="@style/descriptionProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        android:text="@string/qty"
-        app:layout_constraintStart_toEndOf="@id/product_image_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart" />
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/product_code_list_shopping_card"
+            style="@style/descriptionProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/product_image_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/badgeCreditCard"
+            tools:text="@string/product_code" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
-        android:id="@+id/qty_list_shopping_cart"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:completionThreshold="1"
-        android:layout_marginStart="16dp"
-        app:act_required="false"
-        app:hide_header="true"
-        app:layout_constraintStart_toEndOf="@id/qty_title_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart"/>
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/price_list_shopping_cart"
+            style="@style/descriptionProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/product_image_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/product_code_list_shopping_card"
+            tools:text="Price : ฿68" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/txt_qty_title_list_shopping_cart"
-        style="@style/descriptionProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        app:layout_constraintStart_toEndOf="@id/qty_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@id/price_list_shopping_cart"
-        tools:text="6" />
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/qty_title_list_shopping_cart"
+            style="@style/descriptionProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/qty"
+            app:layout_constraintStart_toEndOf="@id/product_image_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart" />
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/tvOverQty"
-        style="@style/descriptionProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        android:text="@string/add_over_qty"
-        android:textColor="@color/dangerColor"
-        android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@id/qty_list_shopping_cart"
-        app:layout_constraintTop_toBottomOf="@id/price_list_shopping_cart" />
+        <cenergy.central.com.pwb_store.view.PowerBuyAutoCompleteTextStroke
+            android:id="@+id/qty_list_shopping_cart"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:layout_marginStart="16dp"
+            app:act_required="false"
+            app:hide_header="true"
+            app:layout_constraintStart_toEndOf="@id/qty_title_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart"/>
 
-    <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/total_price_list_shopping_cart"
-        style="@style/textNameProduct"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="18dp"
-        android:gravity="end"
-        android:maxLines="1"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvOverQty"
-        app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart"
-        tools:ignore="RelativeOverlap"
-        tools:text="฿204" />
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/txt_qty_title_list_shopping_cart"
+            style="@style/descriptionProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="18dp"
+            app:layout_constraintStart_toEndOf="@id/qty_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@id/price_list_shopping_cart"
+            tools:text="6" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/tvOverQty"
+            style="@style/descriptionProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/add_over_qty"
+            android:textColor="@color/dangerColor"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/qty_list_shopping_cart"
+            app:layout_constraintTop_toBottomOf="@id/price_list_shopping_cart" />
+
+        <cenergy.central.com.pwb_store.view.PowerBuyTextView
+            android:id="@+id/total_price_list_shopping_cart"
+            style="@style/textNameProduct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="18dp"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvOverQty"
+            app:layout_constraintTop_toBottomOf="@+id/price_list_shopping_cart"
+            tools:ignore="RelativeOverlap"
+            tools:text="฿204" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightGray"
-        android:layout_marginTop="@dimen/margin_padding_xlarge"
-        app:layout_constraintTop_toBottomOf="@+id/total_price_list_shopping_cart"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
