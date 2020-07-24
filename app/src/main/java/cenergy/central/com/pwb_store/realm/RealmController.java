@@ -5,7 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import cenergy.central.com.pwb_store.model.Branch;
 import cenergy.central.com.pwb_store.model.Brand;
 import cenergy.central.com.pwb_store.model.CacheCartItem;
 import cenergy.central.com.pwb_store.model.CachedEndpoint;
+import cenergy.central.com.pwb_store.model.CartItem;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.CompareProduct;
 import cenergy.central.com.pwb_store.model.District;
@@ -158,6 +158,34 @@ public class RealmController {
     // endregion
 
     // region cart item
+    public void updateCartItems(List<Long> itemIds) {
+        Realm realm = getRealm();
+        realm.executeTransaction(realm1 -> {
+            RealmResults<CacheCartItem> realmCartItems = realm.where(CacheCartItem.class)
+                    .sort(CacheCartItem.FIELD_ID, Sort.DESCENDING).findAll();
+
+            for (CacheCartItem cacheCartItem : realmCartItems) {
+                Long cacheItemId = cacheCartItem.getItemId();
+                if (!itemIds.contains(cacheItemId)) {
+                    RealmResults<CacheCartItem> items = realm1.where(CacheCartItem.class).equalTo(
+                            CacheCartItem.FIELD_ID, cacheItemId).findAll();
+
+                    // Delete Store Pick List for 1hr
+                    if (items.get(0) != null) {
+                        String sku = items.get(0).getSku();
+                        RealmResults<StorePickupList> storePickupLists = realm1.where(
+                                StorePickupList.class).equalTo(StorePickupList.FIELD_SKU, sku).findAll();
+                        storePickupLists.deleteAllFromRealm();
+                    }
+
+                    // Delete Cache Cart Item
+                    items.deleteAllFromRealm();
+                }
+            }
+
+        });
+    }
+
     public void saveCartItem(final CacheCartItem cacheCartItem) {
         Realm realm = getRealm();
         realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(cacheCartItem));
@@ -227,7 +255,7 @@ public class RealmController {
             RealmResults<CacheCartItem> items = realm1.where(CacheCartItem.class).equalTo(
                     CacheCartItem.FIELD_ID, itemId).findAll();
 
-            // Delete Store Pick List
+            // Delete Store Pick List For 1Hr
             if (items.get(0) != null) {
                 String sku = items.get(0).getSku();
                 RealmResults<StorePickupList> storePickupLists = realm1.where(

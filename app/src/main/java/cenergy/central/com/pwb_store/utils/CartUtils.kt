@@ -281,11 +281,14 @@ class CartUtils(private val context: Context) {
                     // force load product
                     val cartResponse = response.body()
                     if (cartResponse != null) {
+                        // update cart item
+                        db.updateCartItems(cartResponse.items.map { item -> item.id })
+
+                        // retrieve all product for solve issue freebie have no image
                         val skuList = cartResponse.items.map { it.sku }
                         val result = TextUtils.join(",", skuList)
                         val filterGroupsList = java.util.ArrayList<FilterGroups>()
                         filterGroupsList.add(FilterGroups.createFilterGroups("sku", result, "in"))
-
                         ProductListAPI.retrieveProducts(context, skuList.size, 1,
                                 filterGroupsList, arrayListOf(),
                                 object : ApiResponseCallback<ProductResponse> {
@@ -298,7 +301,6 @@ class CartUtils(private val context: Context) {
                                         callback.failure(APIErrorUtils.parseError(response))
                                     }
                                 })
-
                     } else {
                         callback.success(Pair(cartResponse, listOf()))
                     }
