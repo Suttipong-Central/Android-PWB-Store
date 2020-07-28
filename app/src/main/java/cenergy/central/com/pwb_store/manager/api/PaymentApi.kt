@@ -13,7 +13,7 @@ import retrofit2.Response
 
 class PaymentApi {
     fun retrievePaymentInformation(context: Context, cartId: String,
-                                   callback: ApiResponseCallback<List<PaymentAgent>>) {
+                                   callback: ApiResponseCallback<PaymentInformationResponse>) {
         val apiManager = HttpManagerMagento.getInstance(context)
         apiManager.cartService.retrievePaymentInformation(apiManager.getLanguage(),
                 cartId).enqueue(object : Callback<PaymentInformationResponse> {
@@ -21,8 +21,7 @@ class PaymentApi {
                                     response: Response<PaymentInformationResponse>) {
                 if (response.isSuccessful) {
                     val paymentInformation = response.body()
-                    val paymentAgents = paymentInformation?.extension?.paymentAgents  ?: arrayListOf()
-                    callback.success(paymentAgents)
+                    callback.success(paymentInformation)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }

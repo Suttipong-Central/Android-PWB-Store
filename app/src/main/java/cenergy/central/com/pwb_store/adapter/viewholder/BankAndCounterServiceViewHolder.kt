@@ -20,7 +20,7 @@ class BankAndCounterServiceViewHolder(itemView: View, private val listener: Paym
         radioPayment.text = itemView.context.getString(R.string.pay_by_bank_transfer)
         radioPayment.isChecked = item.selected
         expandLayout.visibility = if (item.selected) View.VISIBLE else View.GONE
-        description.text = ""
+        description.visibility = View.GONE
         itemView.setOnClickListener { listener.onClickedItem(item.paymentMethod) }
     }
 }

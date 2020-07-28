@@ -2,9 +2,8 @@ package cenergy.central.com.pwb_store.model.response
 
 import cenergy.central.com.pwb_store.model.TotalSegment
 import com.google.gson.annotations.SerializedName
-import io.realm.annotations.PrimaryKey
 
-class PaymentCartTotal(
+class CartTotal(
         @SerializedName("subtotal_incl_tax")
         var totalPrice: Double = 0.0,
         @SerializedName("base_discount_amount")
@@ -20,7 +19,6 @@ class PaymentCartTotal(
 )
 
 class ShoppingCartItem(
-        @PrimaryKey
         @SerializedName("item_id")
         var id: Long? = 0,
         var qty: Int? = 0,

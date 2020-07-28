@@ -313,7 +313,7 @@ class CartUtils(private val context: Context) {
         })
     }
 
-    fun viewCartTotal(cartId: String, callback: ApiResponseCallback<PaymentCartTotal>) {
+    fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotal>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.PWB_HOST_NAME)
@@ -328,7 +328,7 @@ class CartUtils(private val context: Context) {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 if (response != null) {
                     val data = response.body()
-                    val cartTotalResponse = PaymentCartTotal()
+                    val cartTotalResponse = CartTotal()
                     try {
                         val dataObject = JSONObject(data?.string())
                         if (dataObject.has("subtotal_incl_tax")) {

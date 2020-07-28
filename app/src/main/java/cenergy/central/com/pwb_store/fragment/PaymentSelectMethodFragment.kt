@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.model.PaymentMethodView
+import cenergy.central.com.pwb_store.model.response.PaymentCreditCardPromotion
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.utils.Screen
 
@@ -26,6 +27,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     private lateinit var selectMethodAdapter: PaymentMethodAdapter
 
     private var paymentMethods: List<PaymentMethod> = listOf()
+    private var paymentPromotions: List<PaymentCreditCardPromotion> = listOf()
     private var deliveryCode: String = ""
     private var items = arrayListOf<PaymentMethodView>()
 
@@ -44,6 +46,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         super.onAttach(context)
         paymentProtocol = context as PaymentProtocol
         paymentMethods = paymentProtocol.getPaymentMethods()
+        paymentPromotions = paymentProtocol.getPaymentPromotions()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,8 +74,6 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
 
     // region {@link PaymentTypesClickListener.onClickedItem}
     override fun onClickedItem(paymentMethod: PaymentMethod) {
-        Log.d("onClickedItem", "test!")
-
         val newItems = items.map {
             if (it is PaymentMethodView.PaymentItemView) {
                 it.selected = it.paymentMethod.code == paymentMethod.code
@@ -98,7 +99,11 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                                 viewType = PaymentMethodAdapter.PAY_AT_STORE)
                     }
                     PaymentMethod.FULL_PAYMENT -> {
+                        val creditCardPromotions = paymentPromotions.filter { p ->
+                            p.paymentMethod == PaymentMethod.FULL_PAYMENT
+                        }
                         PaymentMethodView.PaymentItemView(paymentMethod = it,
+                                promotions = creditCardPromotions,
                                 viewType = PaymentMethodAdapter.FULL_PAYMENT)
                     }
                     PaymentMethod.INSTALLMENT -> {

@@ -38,7 +38,6 @@ import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.body.ConsentBody
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
@@ -94,8 +93,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var promotionDiscount = 0.0
     private var totalPrice = 0.0
     private var paymentAgents = listOf<PaymentAgent>()
+    private var paymentPromotions = listOf<PaymentCreditCardPromotion>()
     private var consentInfo: ConsentInfoResponse? = null
-    private var mCartTotal: PaymentCartTotal? = null
+    private var mCartTotal: CartTotal? = null
     private var shownOrderDetail = false
 
     // data product 2h
@@ -195,7 +195,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getStateView(): NetworkStateView? = networkStateView
 
-    override fun getCartTotal(): PaymentCartTotal? = this.mCartTotal
+    override fun getCartTotal(): CartTotal? = this.mCartTotal
 
     override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
 
@@ -281,15 +281,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         deliveryType = DeliveryType.fromString(deliveryOption.methodCode)
         analytics.trackSelectDelivery(deliveryOption.methodCode)
         when (deliveryType) {
-            EXPRESS, STANDARD -> {
+            DeliveryType.EXPRESS, DeliveryType.STANDARD -> {
                 showProgressDialog()
                 handleCreateShippingInformation(deliveryOption, null)
             }
-            STORE_PICK_UP -> {
+            DeliveryType.STORE_PICK_UP -> {
                 showProgressDialog()
                 getStoresDelivery(deliveryOption) // default page
             }
-            HOME -> {
+            DeliveryType.HOME -> {
                 this.enableShippingSlot = deliveryOption.extension.shippingSlots
                 startDeliveryHomeFragment()
             }
@@ -370,18 +370,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     }
                 })
     }
-
-    // region {@link PaymentTypesClickListener}
-    fun onSelectPaymentMethod(paymentMethod: PaymentMethod) {
-        this.paymentMethod = paymentMethod
-        if (paymentMethod.isBankAndCounterServiceType()) {
-            // open bank/counter service options
-            retrievePaymentInformation()
-        } else {
-            showAlertConfirmPayment(paymentMethod)
-        }
-    }
-    // endregion
 
     // region {@link HomeDeliveryListener}
     override fun onPaymentClickListener(shippingSlot: ShippingSlot, date: Int, month: Int, year: Int, shippingDate: String) {
@@ -538,8 +526,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun retrieveCartTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
-                override fun success(response: PaymentCartTotal?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotal> {
+                override fun success(response: CartTotal?) {
                     runOnUiThread {
                         if (response != null) {
                             handleGetCartItemsSuccess(response)
@@ -560,16 +548,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun handleGetCartItemsSuccess(cartTotal: PaymentCartTotal) {
+    private fun handleGetCartItemsSuccess(cartTotal: CartTotal) {
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
         if (discount != null) {
-            this.discountPrice = discount.value.toStringDiscount()
+            this.discountPrice = discount.value.toString().toStringDiscount()
         }
         val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
         if (coupon != null) {
-            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value.toString())
             this.promotionDiscount = couponDiscount?.couponAmount.toStringDiscount()
             this.discountPrice -= promotionDiscount
             this.totalPrice -= promotionDiscount
@@ -581,7 +569,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         retrieveConsentInfo()
     }
 
-    private fun updateOrderDetailView(cartTotal: PaymentCartTotal) {
+    private fun updateOrderDetailView(cartTotal: CartTotal) {
         this.mCartTotal = cartTotal
         tvTotal.text = this.totalPrice.toPriceDisplay()
         showOrderDetailBar()
@@ -652,7 +640,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody?) {
         if (cartId != null && shippingAddress != null) {
             when (val type = DeliveryType.fromString(deliveryOption.methodCode)) {
-                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
+                DeliveryType.STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
                 else -> createShippingInfor(type, addressInfoExtensionBody)
             }
         }
@@ -665,7 +653,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
             override fun success(response: ShippingInformationResponse?) {
                 if (response != null) {
-                    handleShippingInforSuccess(type, response.paymentMethods)
+                    // set payment methods
+                    this@PaymentActivity.paymentMethods = response.paymentMethods
+                    handleShippingInforSuccess(type)
                 } else {
                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
                     mProgressDialog?.dismiss()
@@ -690,7 +680,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
-                                    handleShippingInforSuccess(type, response.paymentMethods)
+                                    // set payment methods
+                                    this@PaymentActivity.paymentMethods = response.paymentMethods
+                                    handleShippingInforSuccess(type)
                                 } else {
                                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
                                     mProgressDialog?.dismiss()
@@ -704,30 +696,54 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         })
     }
 
-    private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
-        if (type == HOME) {
+    private fun handleShippingInforSuccess(type: DeliveryType) {
+        if (type == DeliveryType.HOME) {
             createBookingHomeDelivery(paymentMethods)
             return
         }
 
-        cartId?.let {
-            CartUtils(this).viewCartTotal(it, object : ApiResponseCallback<PaymentCartTotal> {
-                override fun success(response: PaymentCartTotal?) {
-                    runOnUiThread {
-                        this@PaymentActivity.mCartTotal = response
-                        displayEorderingPayment(paymentMethods)
-                    }
-                }
+        retrievePaymentInformation()
+    }
 
-                override fun failure(error: APIError) {
-                    runOnUiThread {
-                        showCommonAPIErrorDialog(error)
+    /**
+     * Region Get Payment information
+     * Note: if have payment methods from response api shipping info still can display payment options
+     * */
+    private fun retrievePaymentInformation() {
+        cartId ?: return
+        showProgressDialog()
+        PaymentApi().retrievePaymentInformation(this, cartId!!,
+                object : ApiResponseCallback<PaymentInformationResponse> {
+                    override fun success(response: PaymentInformationResponse?) {
+                        if (response != null) {
+                            this@PaymentActivity.paymentMethods = response.paymentMethods
+                            this@PaymentActivity.mCartTotal = response.cartTotal
+                            this@PaymentActivity.paymentAgents = response.extension?.paymentAgents
+                                    ?: listOf()
+                            this@PaymentActivity.paymentPromotions = response.extension?.paymentPromotions
+                                    ?: listOf()
+                        }
+                        dismissProgressDialog()
                         displayEorderingPayment(paymentMethods)
                     }
-                }
-            })
+
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                        displayEorderingPayment(paymentMethods)
+                    }
+                })
+    }
+
+    fun onSelectPaymentMethod(paymentMethod: PaymentMethod) {
+        this.paymentMethod = paymentMethod
+        if (paymentMethod.isBankAndCounterServiceType()) {
+            // open bank/counter service options
+            startFragment(PaymentTransfersFragment())
+        } else {
+            showAlertConfirmPayment(paymentMethod)
         }
     }
+    // endregion
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
         showProgressDialog()
@@ -1181,6 +1197,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getPaymentAgents(): List<PaymentAgent> = this.paymentAgents
 
+    override fun getPaymentPromotions(): List<PaymentCreditCardPromotion> = this.paymentPromotions
+
     override fun getConsentInfo(): ConsentInfoResponse? = this.consentInfo
     // endregion
 
@@ -1287,7 +1305,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             val storePickup = StorePickup(this.branch!!.storeId)
             val subscribeCheckOut = AddressInfoExtensionBody(storePickup = storePickup)
-            createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
+            createShippingInforWithClickAndCollect(DeliveryType.STORE_PICK_UP_ISPU, subscribeCheckOut)
         }
     }
 
@@ -1295,26 +1313,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         return this.specialSKUList
                 ?: ReadFileHelper<List<Long>>().parseRawJson(this@PaymentActivity, R.raw.special_sku,
                         object : TypeToken<List<Long>>() {}.type, null)
-    }
-
-    // Get Bank Channels and Counter
-    private fun retrievePaymentInformation() {
-        cartId ?: return
-        showProgressDialog()
-        PaymentApi().retrievePaymentInformation(this, cartId!!,
-                object : ApiResponseCallback<List<PaymentAgent>> {
-                    override fun success(response: List<PaymentAgent>?) {
-                        if (response != null) {
-                            this@PaymentActivity.paymentAgents = response
-                        }
-                        startFragment(PaymentTransfersFragment())
-                        dismissProgressDialog()
-                    }
-
-                    override fun failure(error: APIError) {
-                        dismissProgressDialog()
-                    }
-                })
     }
 
     private fun backPressed() {

@@ -28,7 +28,7 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartResponse
-import cenergy.central.com.pwb_store.model.response.PaymentCartTotal
+import cenergy.central.com.pwb_store.model.response.CartTotal
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
@@ -318,8 +318,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun getCartTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
-                override fun success(response: PaymentCartTotal?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotal> {
+                override fun success(response: CartTotal?) {
                     runOnUiThread {
                         mProgressDialog?.dismiss()
                         if (response != null) {
@@ -340,7 +340,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun updateViewShoppingCart(shoppingCartResponse: PaymentCartTotal) {
+    private fun updateViewShoppingCart(shoppingCartResponse: CartTotal) {
         if (cartResponse != null) {
             cartItemList = cartResponse!!.items
 
@@ -351,14 +351,14 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             var discountPriceValue = 0.0
             val discount = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
             if (discount != null) {
-                discountPriceValue = discount.value.toStringDiscount()
+                discountPriceValue = discount.value.toString().toStringDiscount()
             }
 
             val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
             if (isSupportCouponOn) { // support coupon?
                 val coupon = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
                 if (coupon != null) {
-                    val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+                    val couponDiscount = TotalSegment.getCouponDiscount(coupon.value.toString())
                     val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
                     val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
                     discountPriceValue -= couponDiscountAmount

@@ -416,4 +416,9 @@
     <string name="reset_filter">Reset</string>
     <string name="format_add_filter">Apply (%d items)</string>
 
+    <!--  Credit Card Promotion  -->
+    <string name="select_credit_card_promotion">Select Credit Card</string>
+    <string name="default_credit_card_promotion">Other Banks</string>
+    <string name="format_credit_card_promotion">Enjoy additional %d%% off!</string>
+
 </resources>

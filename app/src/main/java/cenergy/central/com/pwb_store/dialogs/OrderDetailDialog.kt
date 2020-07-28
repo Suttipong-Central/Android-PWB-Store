@@ -59,11 +59,11 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
             var promotionDiscount = 0.0
             val discount = it.totalSegment?.firstOrNull { it2 -> it2.code == TotalSegment.DISCOUNT_KEY }
             if (discount != null) {
-                discountPrice = discount.value.toStringDiscount()
+                discountPrice = discount.value.toString().toStringDiscount()
             }
             val coupon = it.totalSegment?.firstOrNull { it2 -> it2.code == TotalSegment.COUPON_KEY }
             if (coupon != null) {
-                val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+                val couponDiscount = TotalSegment.getCouponDiscount(coupon.value.toString())
                 promotionDiscount = couponDiscount?.couponAmount.toStringDiscount()
                 discountPrice -= promotionDiscount
                 totalPrice -= promotionDiscount

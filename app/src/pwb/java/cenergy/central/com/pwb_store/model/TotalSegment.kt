@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
 import com.google.gson.Gson
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import org.json.JSONArray
 
@@ -8,7 +9,7 @@ import org.json.JSONArray
 class TotalSegment(
         var code: String? = "",
         var title: String? = "",
-        var value: String? = ""
+        var value: Any? = "" // Note: it can be "", "[{}]", "["", ""]"
 ) {
     companion object {
         const val COUPON_KEY = "coupon"
