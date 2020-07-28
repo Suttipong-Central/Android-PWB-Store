@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatSpinner
@@ -14,6 +15,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.PaymentMethodViewHolder
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.extensions.setImageUrl
+import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.model.PaymentMethodView
 import kotlinx.android.synthetic.main.item_creditcard_promotion.view.*
 import kotlinx.android.synthetic.main.item_select_promotion.view.*
@@ -24,6 +26,20 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
     private val radioPayment: RadioButton = itemView.radioPayment
     private val expandLayout: ConstraintLayout = itemView.expandLayout
     private val promotionOptions: AppCompatSpinner = itemView.promotionSpinner
+    private val onPromotionItemSelectedCallback = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(adapter: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(adapter: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            val item = adapter?.getItemAtPosition(position)
+            if (item != null && item is PaymentPromotionView.PromotionView) {
+                listener.onSelectedPromotion(PaymentMethod.FULL_PAYMENT, item.promotionId)
+            } else if (item != null && item is PaymentPromotionView.PromotionDefaultView) {
+                listener.onSelectedDefaultPromotion(PaymentMethod.FULL_PAYMENT)
+            }
+        }
+    }
 
     override fun bindView(item: PaymentMethodView.PaymentItemView) {
         radioPayment.text = itemView.context.getString(R.string.fullpayment)
@@ -32,21 +48,23 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
         // setup credit card promotions
         if (item.promotions != null && item.promotions.isNotEmpty()) {
             promotionOptions.visibility = View.VISIBLE
-            val items = arrayListOf<CreditCardPromotionView>()
-            items.add(CreditCardPromotionView.HeaderView(
+            val items = arrayListOf<PaymentPromotionView>()
+            items.add(PaymentPromotionView.HeaderView(
                     itemView.context.getString(R.string.select_credit_card_promotion)))
 
             items.addAll(item.promotions.map {
-                CreditCardPromotionView.PromotionView(
+                PaymentPromotionView.PromotionView(
+                        promotionId = it.promotionId,
                         title = itemView.context.getString(R.string.format_credit_card_promotion, it.discountAmount),
                         bankImageUrl = it.getBankImageUrl(),
                         bankColor = it.bankColor
                 )
             })
 
-            items.add(CreditCardPromotionView.PromotionDefaultView(
-                    itemView.context.getString(R.string.default_credit_card_promotion)))
+            items.add(PaymentPromotionView.PromotionDefaultView(
+                    title = itemView.context.getString(R.string.default_credit_card_promotion)))
             promotionOptions.adapter = CreditCardPromotionAdapter(itemView.context, items)
+            promotionOptions.onItemSelectedListener = onPromotionItemSelectedCallback
         } else {
             promotionOptions.visibility = View.GONE
         }
@@ -56,23 +74,23 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
         // setup onClick
         itemView.setOnClickListener {
             if (!item.selected) {
-                listener.onClickedItem(item.paymentMethod)
+                listener.onClickedPaymentItem(item.paymentMethod)
             }
         }
     }
 }
 
-sealed class CreditCardPromotionView {
-    data class HeaderView(val title: String) : CreditCardPromotionView()
+sealed class PaymentPromotionView {
+    data class HeaderView(val title: String) : PaymentPromotionView()
 
-    data class PromotionView(val title: String, val bankImageUrl: String,
-                             val bankColor: String) : CreditCardPromotionView()
+    data class PromotionView(val promotionId: Int, val title: String, val bankImageUrl: String,
+                             val bankColor: String) : PaymentPromotionView()
 
-    data class PromotionDefaultView(val title: String) : CreditCardPromotionView()
+    data class PromotionDefaultView(val promotionId: Int = -1, val title: String) : PaymentPromotionView()
 }
 
-class CreditCardPromotionAdapter(context: Context, items: MutableList<CreditCardPromotionView>) :
-        ArrayAdapter<CreditCardPromotionView>(context, 0, items) {
+class CreditCardPromotionAdapter(context: Context, items: MutableList<PaymentPromotionView>) :
+        ArrayAdapter<PaymentPromotionView>(context, 0, items) {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -86,13 +104,13 @@ class CreditCardPromotionAdapter(context: Context, items: MutableList<CreditCard
 
     private fun getCustomView(position: Int, parent: ViewGroup): View {
         return when (val item = getItem(position)) {
-            is CreditCardPromotionView.HeaderView -> {
+            is PaymentPromotionView.HeaderView -> {
                 val view = layoutInflater.inflate(R.layout.item_select_promotion,
                         parent, false)
                 setItemHeaderSelect(view, item)
                 view
             }
-            is CreditCardPromotionView.PromotionDefaultView -> {
+            is PaymentPromotionView.PromotionDefaultView -> {
                 val view = layoutInflater.inflate(R.layout.item_creditcard_promotion,
                         parent, false)
                 setItemPromotionDefault(view, item)
@@ -101,13 +119,13 @@ class CreditCardPromotionAdapter(context: Context, items: MutableList<CreditCard
             else -> {
                 val view = layoutInflater.inflate(R.layout.item_creditcard_promotion,
                         parent, false)
-                setItemPromotion(view, item as CreditCardPromotionView.PromotionView)
+                setItemPromotion(view, item as PaymentPromotionView.PromotionView)
                 view
             }
         }
     }
 
-    private fun setItemPromotion(view: View, item: CreditCardPromotionView.PromotionView) {
+    private fun setItemPromotion(view: View, item: PaymentPromotionView.PromotionView) {
         val color: Int = Color.parseColor(item.bankColor)
         // set border color
         view.groupLayout.setBackgroundColor(color)
@@ -116,7 +134,7 @@ class CreditCardPromotionAdapter(context: Context, items: MutableList<CreditCard
         view.tvPromotion.setTextColor(color)
     }
 
-    private fun setItemPromotionDefault(view: View, item: CreditCardPromotionView.PromotionDefaultView) {
+    private fun setItemPromotionDefault(view: View, item: PaymentPromotionView.PromotionDefaultView) {
         // set border color
         view.groupLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
         view.ivBankImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_credit_card_24dp))
@@ -124,7 +142,7 @@ class CreditCardPromotionAdapter(context: Context, items: MutableList<CreditCard
         view.tvPromotion.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
     }
 
-    private fun setItemHeaderSelect(view: View, item: CreditCardPromotionView.HeaderView) {
+    private fun setItemHeaderSelect(view: View, item: PaymentPromotionView.HeaderView) {
         view.tvPromotionHeader.text = item.title
     }
 

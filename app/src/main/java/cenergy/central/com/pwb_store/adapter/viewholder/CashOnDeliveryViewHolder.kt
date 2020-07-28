@@ -23,6 +23,6 @@ class CashOnDeliveryViewHolder(itemView: View, private val listener: PaymentItem
         description.text = context.getString(R.string.cod_description)
         radioPayment.isChecked = item.selected
         expandLayout.visibility = if (item.selected) View.VISIBLE else View.GONE
-        itemView.setOnClickListener { listener.onClickedItem(item.paymentMethod) }
+        itemView.setOnClickListener { listener.onClickedPaymentItem(item.paymentMethod) }
     }
 }

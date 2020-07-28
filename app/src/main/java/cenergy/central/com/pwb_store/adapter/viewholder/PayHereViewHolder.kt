@@ -21,6 +21,6 @@ class PayHereViewHolder(itemView: View, private val listener: PaymentItemClickLi
         radioPayment.isChecked = item.selected
         expandLayout.visibility = if (item.selected) View.VISIBLE else View.GONE
         description.text = itemView.context.getString(R.string.pay_here_description)
-        itemView.setOnClickListener { listener.onClickedItem(item.paymentMethod) }
+        itemView.setOnClickListener { listener.onClickedPaymentItem(item.paymentMethod) }
     }
 }

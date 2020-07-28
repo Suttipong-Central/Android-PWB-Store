@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.*
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.model.PaymentMethodView
+import kotlinx.android.synthetic.main.list_item_pay_button.view.*
 
 abstract class PaymentMethodViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
     abstract fun bindView(item: T)
@@ -70,6 +72,10 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) :
                 PaymentEmptyViewHolder(inflater.inflate(R.layout.list_item_pay_by_other,
                         parent, false), listener)
             }
+            PAY_BUTTON_VIEW -> {
+                PayButtonViewHolder(inflater.inflate(R.layout.list_item_pay_button, parent,
+                        false), listener)
+            }
             else -> {
                 PaymentListEmpty(inflater.inflate(R.layout.item_empty, parent, false))
             }
@@ -87,6 +93,7 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) :
             is BankAndCounterServiceViewHolder -> holder.bindView(item as PaymentMethodView.PaymentItemView)
             is CashOnDeliveryViewHolder -> holder.bindView(item as PaymentMethodView.PaymentItemView)
             is PaymentEmptyViewHolder -> holder.bindView(item as PaymentMethodView.PaymentItemView)
+            is PayButtonViewHolder -> holder.bindView(item as PaymentMethodView.PayButtonItemView)
         }
     }
 
@@ -102,6 +109,19 @@ class PaymentMethodAdapter(private var listener: PaymentItemClickListener) :
         const val CASH_ON_DELIVERY = 6
         const val OTHER = 7
         const val EMPTY_VIEW = 8
+        const val PAY_BUTTON_VIEW = 8
+    }
+
+    inner class PayButtonViewHolder(itemView: View, listener: PaymentItemClickListener) : RecyclerView.ViewHolder(itemView) {
+        private val payButton = itemView.btnPayButton
+        fun bindView(item: PaymentMethodView.PayButtonItemView) {
+            payButton.isEnabled = item.enable
+            payButton.setBackgroundResource(if (item.enable) R.drawable.button_primary else R.color.disableButton)
+            payButton.setTextColor(ContextCompat.getColor(itemView.context,
+                    if (item.enable) R.color.white else R.color.grayTextColor))
+
+            payButton.setOnClickListener { listener.onClickedPayButton() }
+        }
     }
 
     inner class PaymentListEmpty(itemView: View) : RecyclerView.ViewHolder(itemView)

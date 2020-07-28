@@ -16,36 +16,38 @@ import com.google.gson.annotations.SerializedName
  * */
 data class ExtensionMethodBody(
         @SerializedName("t1c_earn_card_number")
-        var theOneCardNo: String = "",
+        val theOneCardNo: String = "",
         @SerializedName("quote_staff")
-        var quoteStaffBody: QuoteStaffBody? = null,
+        val quoteStaffBody: QuoteStaffBody? = null,
         @SerializedName("customer_email")
-        var customerEmail: String? = null,
+        val customerEmail: String? = null,
         @SerializedName("customer_name")
-        var customerName: String? = null,
+        val customerName: String? = null,
         @SerializedName("customer_phone")
-        var customerPhone: String? = null,
+        val customerPhone: String? = null,
         @SerializedName("apm_agent_code")
-        var agentCode: String? = null,
+        val agentCode: String? = null,
         @SerializedName("apm_channel_code")
-        var agentChannelCode: String? = null)
+        val agentChannelCode: String? = null,
+        @SerializedName("promotion_id")
+        val promotionId: Int? = null)
 
 data class QuoteStaffBody(
         @SerializedName("staff_id")
-        var staffId: String = "",
+        val staffId: String = "",
         @SerializedName("retailer_id")
-        var retailerId: String = ""
+        val retailerId: String = ""
 )
 
-data class MethodBody(var method: String,
+data class MethodBody(val method: String,
                       @SerializedName("extension_attributes")
-                      var extensionMethodBody: ExtensionMethodBody)
+                      val extensionMethodBody: ExtensionMethodBody)
 
 data class PaymentInfoBody(
-        var cartId: String = "",
-        var email: String = "",
-        var paymentMethod: MethodBody,
-        var billingAddress: AddressInformation?) {
+        val cartId: String = "",
+        val email: String = "",
+        val paymentMethod: MethodBody,
+        val billingAddress: AddressInformation?) {
 
     companion object {
         fun createPaymentInfoBody(cartId: String, email: String, paymentMethod: PaymentMethod,
@@ -59,7 +61,7 @@ data class PaymentInfoBody(
 
         // payment body for full_payment, installment
         fun createPaymentInfoBody(cartId: String, email: String, customerEmail: String, paymentMethod: PaymentMethod,
-                                  billingAddress: AddressInformation, staffId: String,
+                                  promotionId: Int? = null, billingAddress: AddressInformation, staffId: String,
                                   retailerId: String, theOneCardNo: String = ""): PaymentInfoBody {
             val staffBody = QuoteStaffBody(staffId, retailerId)
             val extMethodBody = ExtensionMethodBody(
@@ -67,7 +69,9 @@ data class PaymentInfoBody(
                     quoteStaffBody = staffBody,
                     customerEmail = customerEmail,
                     customerName = billingAddress.getDisplayName(),
-                    customerPhone = billingAddress.telephone)
+                    customerPhone = billingAddress.telephone,
+                    promotionId = promotionId
+            )
             val methodBody = MethodBody(method = paymentMethod.code, extensionMethodBody = extMethodBody)
             return PaymentInfoBody(cartId = cartId, email = email, billingAddress = billingAddress, paymentMethod = methodBody)
         }

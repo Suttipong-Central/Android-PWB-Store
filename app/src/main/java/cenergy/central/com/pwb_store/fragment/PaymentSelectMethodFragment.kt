@@ -2,10 +2,10 @@ package cenergy.central.com.pwb_store.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,9 +30,12 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     private var paymentPromotions: List<PaymentCreditCardPromotion> = listOf()
     private var deliveryCode: String = ""
     private var items = arrayListOf<PaymentMethodView>()
+    private var selectedPaymentMethod: PaymentMethod? = null
+    private var promotionId: Int? = null
 
     companion object {
-        private const val ARG_DELIVERY_CODE = "arg_delivery_code"
+        private const val ARG_DELIVERY_CODE = "ARG_DELIVERY_CODE"
+
         fun newInstance(methodCode: String): PaymentSelectMethodFragment {
             val fragment = PaymentSelectMethodFragment()
             val args = Bundle()
@@ -72,16 +75,40 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         analytics?.trackScreen(Screen.SELECT_PAYMENT)
     }
 
-    // region {@link PaymentTypesClickListener.onClickedItem}
-    override fun onClickedItem(paymentMethod: PaymentMethod) {
+    // region {@link PaymentTypesClickListener.onClickedPaymentItem}
+    override fun onClickedPayButton() {
+        Toast.makeText(context, "Selected payment: ${selectedPaymentMethod?.code}", Toast.LENGTH_SHORT).show()
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentMethod(it, promotionId) }
+    }
+
+    override fun onClickedPaymentItem(paymentMethod: PaymentMethod) {
         val newItems = items.map {
             if (it is PaymentMethodView.PaymentItemView) {
-                it.selected = it.paymentMethod.code == paymentMethod.code
+                if (it.paymentMethod.code == paymentMethod.code) {
+                    this.selectedPaymentMethod = it.paymentMethod
+                    it.selected = true
+                } else {
+                    it.selected = false
+                }
+            }
+
+            // if have checked
+            if (it is PaymentMethodView.PayButtonItemView) {
+                it.enable = true
             }
             it
         }
         this.items = ArrayList(newItems)
         selectMethodAdapter.submitList(this.items)
+    }
+
+    override fun onSelectedPromotion(paymentMethod: String, promotionId: Int) {
+        this.promotionId = promotionId
+        Toast.makeText(context, "Selected payment: $paymentMethod, promotionId: $promotionId", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onSelectedDefaultPromotion(paymentMethod: String) {
+        Toast.makeText(context, "Selected promotion default", Toast.LENGTH_SHORT).show()
     }
     // endregion
 
@@ -128,6 +155,9 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                     }
                 }
             }))
+
+            // add pay button
+            items.add(PaymentMethodView.PayButtonItemView())
         } else {
             items.add(PaymentMethodView.EmptyItemView())
         }

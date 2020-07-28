@@ -17,6 +17,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.interfaces.ConfirmPaymentListener
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.OrderDetailDialog
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
@@ -199,6 +200,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
 
+    override fun updatePaymentMethod(paymentMethod: PaymentMethod, promotionId: Int?) {
+        this.paymentMethod = paymentMethod
+        if (paymentMethod.isBankAndCounterServiceType()) {
+            // open bank/counter service options
+            startFragment(PaymentTransfersFragment())
+        } else {
+            updatePaymentInformation(paymentMethod, promotionId)
+        }
+    }
+
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {
         // skip?
@@ -304,7 +315,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun startPayNow(payerName: String, payerEmail: String, agentCode: String,
                              agentChannelCode: String, mobileNumber: String) {
 
-        showAlertConfirmPayment(paymentMethod, payerName, payerEmail, agentCode, agentChannelCode, mobileNumber)
+        showAlertConfirmPayment(object : ConfirmPaymentListener {
+            override fun onConfirmed() {
+                // tracking payment method
+                analytics.trackSelectPayment(paymentMethod.code)
+                val bodyRequest = createPaymentBodyRequest(paymentMethod = paymentMethod,
+                        payerName = payerName, payerEmail = payerEmail, agentCode = agentCode,
+                        agentChannelCode = agentChannelCode, mobileNumber = mobileNumber)
+                updateOrder(bodyRequest)
+            }
+
+            override fun onCanceled() {
+                dismissProgressDialog()
+            }
+        })
     }
     // endregion
 
@@ -346,10 +370,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    /*
-    * If no have provinces data must force download province data
-    * because in Branch detail page have to display about address
-    * */
+    /**
+     * If no have provinces data must force download province data
+     * because in Branch detail page have to display about address
+     * */
     private fun loadProvinceData() {
         showProgressDialog()
 
@@ -616,25 +640,34 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertConfirmPayment(paymentMethod: PaymentMethod, payerName: String = "",
-                                        payerEmail: String = "", agentCode: String = "",
-                                        agentChannelCode: String = "", mobileNumber: String = "") {
-
+    private fun showAlertConfirmPayment(listener: ConfirmPaymentListener) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(getString(R.string.confirm_oder))
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
-                    // tracking payment method
-                    analytics.trackSelectPayment(paymentMethod.code)
-                    val bodyRequest = createPaymentBodyRequest(paymentMethod, payerName, payerEmail,
-                            agentCode, agentChannelCode, mobileNumber)
-                    updateOrder(bodyRequest)
+                    listener.onConfirmed()
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
-                    mProgressDialog?.dismiss()
+                    listener.onCanceled()
                 }
                 .setCancelable(false)
         builder.show()
+    }
+
+    private fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+        showAlertConfirmPayment(object : ConfirmPaymentListener {
+            override fun onConfirmed() {
+                // tracking payment method
+                analytics.trackSelectPayment(paymentMethod.code)
+                val bodyRequest = createPaymentBodyRequest(
+                        paymentMethod = paymentMethod, promotionId = promotionId)
+                updateOrder(bodyRequest)
+            }
+
+            override fun onCanceled() {
+                dismissProgressDialog()
+            }
+        })
     }
 
     private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody?) {
@@ -734,15 +767,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 })
     }
 
-    fun onSelectPaymentMethod(paymentMethod: PaymentMethod) {
-        this.paymentMethod = paymentMethod
-        if (paymentMethod.isBankAndCounterServiceType()) {
-            // open bank/counter service options
-            startFragment(PaymentTransfersFragment())
-        } else {
-            showAlertConfirmPayment(paymentMethod)
-        }
-    }
+//    fun onSelectPaymentMethod(paymentMethod: PaymentMethod) {
+//        this.paymentMethod = paymentMethod
+//        if (paymentMethod.isBankAndCounterServiceType()) {
+//            // open bank/counter service options
+//            startFragment(PaymentTransfersFragment())
+//        } else {
+//            showAlertConfirmPayment(paymentMethod)
+//        }
+//    }
     // endregion
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
@@ -765,7 +798,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
             selectPaymentTypes(paymentMethods)
         } else {
-            showAlertConfirmPayment(paymentMethod)
+            updatePaymentInformation(paymentMethod)
         }
 
         mProgressDialog?.dismiss()
@@ -1064,6 +1097,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
      * Must set if payment type p2c2p_123(bank transfer and counter service)
      * */
     private fun createPaymentBodyRequest(paymentMethod: PaymentMethod,
+                                         promotionId: Int? = null,
                                          payerName: String = "",
                                          payerEmail: String = "",
                                          agentCode: String = "",
@@ -1087,7 +1121,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 PaymentInfoBody.createPaymentInfoBody(cartId = cartId!!,
                         staffId = staffId, retailerId = retailerId, email = email,
                         customerEmail = email, billingAddress = addressInfo!!,
-                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo)
+                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo,
+                        promotionId = promotionId)
             }
             else -> {
                 // Standard
