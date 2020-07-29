@@ -200,14 +200,18 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
 
-    override fun updatePaymentMethod(paymentMethod: PaymentMethod, promotionId: Int?) {
+    override fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
         this.paymentMethod = paymentMethod
         if (paymentMethod.isBankAndCounterServiceType()) {
             // open bank/counter service options
             startFragment(PaymentTransfersFragment())
         } else {
-            updatePaymentInformation(paymentMethod, promotionId)
+            setOrderPaymentInformation(paymentMethod, promotionId)
         }
+    }
+
+    override fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
+        updateOrderPaymentInformation(paymentMethod, promotionId)
     }
 
     // region {@link CheckOutClickListener}
@@ -322,7 +326,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 val bodyRequest = createPaymentBodyRequest(paymentMethod = paymentMethod,
                         payerName = payerName, payerEmail = payerEmail, agentCode = agentCode,
                         agentChannelCode = agentChannelCode, mobileNumber = mobileNumber)
-                updateOrder(bodyRequest)
+                requestSetOrderPaymentInformation(bodyRequest)
             }
 
             override fun onCanceled() {
@@ -654,20 +658,65 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+    private fun setOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
         showAlertConfirmPayment(object : ConfirmPaymentListener {
             override fun onConfirmed() {
                 // tracking payment method
                 analytics.trackSelectPayment(paymentMethod.code)
                 val bodyRequest = createPaymentBodyRequest(
                         paymentMethod = paymentMethod, promotionId = promotionId)
-                updateOrder(bodyRequest)
+                requestSetOrderPaymentInformation(bodyRequest)
             }
 
             override fun onCanceled() {
                 dismissProgressDialog()
             }
         })
+    }
+
+    private fun updateOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+        cartId ?: return
+
+        showProgressDialog()
+        val paymentInfoBody = createPaymentBodyRequest(paymentMethod = paymentMethod,
+                promotionId = promotionId)
+        PaymentApi().updatePaymentInformation(this, cartId!!, paymentInfoBody, object : ApiResponseCallback<Boolean> {
+            override fun success(response: Boolean?) {
+                if (response == true) {
+                    refreshPaymentInformation()
+                } else {
+                    dismissProgressDialog()
+                }
+            }
+
+            override fun failure(error: APIError) {
+                dismissProgressDialog()
+                showCommonAPIErrorDialog(error)
+            }
+        })
+    }
+
+    private fun refreshPaymentInformation() {
+        showProgressDialog()
+        PaymentApi().retrievePaymentInformation(this, cartId!!,
+                object : ApiResponseCallback<PaymentInformationResponse> {
+                    override fun success(response: PaymentInformationResponse?) {
+                        if (response != null) {
+                            this@PaymentActivity.paymentMethods = response.paymentMethods
+                            this@PaymentActivity.mCartTotal = response.cartTotal
+                            this@PaymentActivity.paymentAgents = response.extension?.paymentAgents
+                                    ?: listOf()
+                            this@PaymentActivity.paymentPromotions = response.extension?.paymentPromotions
+                                    ?: listOf()
+                        }
+                        mCartTotal?.let { updateOrderDetailView(it) }
+                        dismissProgressDialog()
+                    }
+
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                    }
+                })
     }
 
     private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody?) {
@@ -739,8 +788,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     /**
-     * Region Get Payment information
-     * Note: if have payment methods from response api shipping info still can display payment options
+     * Get Payment information
+     * Note: if have payment methods from response api shipping info still can display
+     * payment options from cache payment method from products
      * */
     private fun retrievePaymentInformation() {
         cartId ?: return
@@ -766,16 +816,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     }
                 })
     }
-
-//    fun onSelectPaymentMethod(paymentMethod: PaymentMethod) {
-//        this.paymentMethod = paymentMethod
-//        if (paymentMethod.isBankAndCounterServiceType()) {
-//            // open bank/counter service options
-//            startFragment(PaymentTransfersFragment())
-//        } else {
-//            showAlertConfirmPayment(paymentMethod)
-//        }
-//    }
     // endregion
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
@@ -798,7 +838,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
             selectPaymentTypes(paymentMethods)
         } else {
-            updatePaymentInformation(paymentMethod)
+            setOrderPaymentInformation(paymentMethod)
         }
 
         mProgressDialog?.dismiss()
@@ -1088,7 +1128,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-
     /**
      * @param payerName
      * @param agentCode
@@ -1134,14 +1173,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun updateOrder(bodyRequest: PaymentInfoBody) {
-        if (cartId == null) {
-            return
-        }
+    private fun requestSetOrderPaymentInformation(bodyRequest: PaymentInfoBody) {
+        cartId ?: return
+
         showProgressDialog()
         val retailerId = userInformation?.store?.retailerId ?: ""
 
-        OrderApi().updateOrder(this, cartId!!, bodyRequest, object : OrderApi.CreateOderCallback {
+        OrderApi().setPaymentInformation(this, cartId!!, bodyRequest, object : OrderApi.CreateOderCallback {
             override fun onSuccess(oderId: String?) {
                 analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {

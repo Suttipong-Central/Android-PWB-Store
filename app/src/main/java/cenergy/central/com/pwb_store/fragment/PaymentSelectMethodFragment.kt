@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -77,11 +76,12 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
 
     // region {@link PaymentTypesClickListener.onClickedPaymentItem}
     override fun onClickedPayButton() {
-        Toast.makeText(context, "Selected payment: ${selectedPaymentMethod?.code}", Toast.LENGTH_SHORT).show()
-        selectedPaymentMethod?.let { paymentProtocol.updatePaymentMethod(it, promotionId) }
+        selectedPaymentMethod?.let { paymentProtocol.setPaymentInformation(it, promotionId) }
     }
 
     override fun onClickedPaymentItem(paymentMethod: PaymentMethod) {
+        // clear promotion
+        this.promotionId = null
         val newItems = items.map {
             if (it is PaymentMethodView.PaymentItemView) {
                 if (it.paymentMethod.code == paymentMethod.code) {
@@ -92,7 +92,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                 }
             }
 
-            // if have checked
+            // checked?
             if (it is PaymentMethodView.PayButtonItemView) {
                 it.enable = true
             }
@@ -103,12 +103,12 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     }
 
     override fun onSelectedPromotion(paymentMethod: String, promotionId: Int) {
+        // updated
         this.promotionId = promotionId
-        Toast.makeText(context, "Selected payment: $paymentMethod, promotionId: $promotionId", Toast.LENGTH_SHORT).show()
     }
 
     override fun onSelectedDefaultPromotion(paymentMethod: String) {
-        Toast.makeText(context, "Selected promotion default", Toast.LENGTH_SHORT).show()
+
     }
     // endregion
 

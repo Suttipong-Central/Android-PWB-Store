@@ -29,5 +29,7 @@ interface PaymentProtocol {
     fun getConsentInfo(): ConsentInfoResponse?
     fun getCartTotal(): CartTotal?
     fun getCacheItems(): List<CacheCartItem>
-    fun updatePaymentMethod(paymentMethod: PaymentMethod, promotionId: Int?)
+
+    fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?)
+    fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?)
 }
