@@ -49,8 +49,8 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
             cacheItems.sortedBy { c -> c.itemId }.mapTo(items, { cacheItem ->
                 val cartItem = it.items?.firstOrNull { cItem -> cacheItem.sku == cItem.sku }
                 OrderDetailView.OrderProduct(cacheItem.name ?: "",
-                        cacheItem.imageUrl, (cartItem?.price ?: 0.0).toPriceDisplay(),
-                        cacheItem.qty ?: 1)
+                        cacheItem.imageUrl, (cartItem?.price ?: 0.0).toPriceDisplay(), cacheItem.qty
+                        ?: 1)
             })
 
             // setup detail

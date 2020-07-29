@@ -87,7 +87,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = arrayListOf<PaymentMethod>()
-    private var paymentMethod = PaymentMethod("e_ordering", "Pay Here")
+    private var paymentMethod = PaymentMethod(PaymentMethod.E_ORDERING, "Pay Here")
+    private var promotionId: Int? = null
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
     private var discountPrice = 0.0
@@ -200,8 +201,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
 
+    override fun getSelectedPaymentMethod(): PaymentMethod = this.paymentMethod
+
+    override fun getSelectedPromotionId(): Int? = this.promotionId
+
     override fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
         this.paymentMethod = paymentMethod
+        this.promotionId = promotionId
         if (paymentMethod.isBankAndCounterServiceType()) {
             // open bank/counter service options
             startFragment(PaymentTransfersFragment())
@@ -211,6 +217,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     override fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
+        this.paymentMethod = paymentMethod
+        this.promotionId = promotionId
         updateOrderPaymentInformation(paymentMethod, promotionId)
     }
 

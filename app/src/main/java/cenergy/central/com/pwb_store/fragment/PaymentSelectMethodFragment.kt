@@ -49,6 +49,8 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         paymentProtocol = context as PaymentProtocol
         paymentMethods = paymentProtocol.getPaymentMethods()
         paymentPromotions = paymentProtocol.getPaymentPromotions()
+        selectedPaymentMethod = paymentProtocol.getSelectedPaymentMethod()
+        promotionId = paymentProtocol.getSelectedPromotionId()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,9 +136,12 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                         val creditCardPromotions = paymentPromotions.filter { p ->
                             p.paymentMethod == PaymentMethod.FULL_PAYMENT
                         }
+                        val selected = (this.selectedPaymentMethod != null
+                                && this.selectedPaymentMethod!!.code == PaymentMethod.FULL_PAYMENT)
                         PaymentMethodView.PaymentItemView(paymentMethod = it,
                                 promotions = creditCardPromotions,
-                                viewType = PaymentMethodAdapter.FULL_PAYMENT)
+                                viewType = PaymentMethodAdapter.FULL_PAYMENT,
+                                selected = selected)
                     }
                     PaymentMethod.INSTALLMENT -> {
                         PaymentMethodView.PaymentItemView(paymentMethod = it,
