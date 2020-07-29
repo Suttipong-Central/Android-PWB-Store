@@ -86,7 +86,7 @@ class Rules(
         @SerializedName("discount_tax")
         var tax: Double? = 0.0,
         @SerializedName("calculation_base_price")
-        var basePrice: Int? = 0,
+        var basePrice: Double? = 0.0,
         @SerializedName("address_id")
         var addressId: Long? = 0
 )

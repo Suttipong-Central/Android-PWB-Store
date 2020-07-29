@@ -105,10 +105,12 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     override fun onSelectedPromotion(paymentMethod: String, promotionId: Int) {
         // updated
         this.promotionId = promotionId
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId) }
     }
 
     override fun onSelectedDefaultPromotion(paymentMethod: String) {
-
+        this.promotionId = null
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, null) }
     }
     // endregion
 

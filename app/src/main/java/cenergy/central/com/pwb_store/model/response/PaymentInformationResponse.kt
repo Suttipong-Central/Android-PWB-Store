@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName
 data class PaymentInformationResponse(
         @SerializedName("payment_methods")
         var paymentMethods: ArrayList<PaymentMethod> = arrayListOf(),
+        @SerializedName("totals")
         var cartTotal: CartTotal? = null,
         @SerializedName("extension_attributes")
         val extension: PaymentInformationExtension? = null)
