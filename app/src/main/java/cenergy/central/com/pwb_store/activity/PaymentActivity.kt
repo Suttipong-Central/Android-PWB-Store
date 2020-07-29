@@ -702,7 +702,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 object : ApiResponseCallback<PaymentInformationResponse> {
                     override fun success(response: PaymentInformationResponse?) {
                         if (response != null) {
-                            this@PaymentActivity.paymentMethods = response.paymentMethods
+                            this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
                             this@PaymentActivity.mCartTotal = response.cartTotal
                             this@PaymentActivity.paymentAgents = response.extension?.paymentAgents
                                     ?: listOf()
@@ -736,7 +736,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             override fun success(response: ShippingInformationResponse?) {
                 if (response != null) {
                     // set payment methods
-                    this@PaymentActivity.paymentMethods = response.paymentMethods
+                    this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
                     handleShippingInforSuccess(type)
                 } else {
                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
@@ -763,7 +763,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
                                     // set payment methods
-                                    this@PaymentActivity.paymentMethods = response.paymentMethods
+                                    this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
                                     handleShippingInforSuccess(type)
                                 } else {
                                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
@@ -781,10 +781,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private fun handleShippingInforSuccess(type: DeliveryType) {
         if (type == DeliveryType.HOME) {
             createBookingHomeDelivery(paymentMethods)
-            return
+        } else {
+            retrievePaymentInformation()
         }
-
-        retrievePaymentInformation()
     }
 
     /**
@@ -799,7 +798,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 object : ApiResponseCallback<PaymentInformationResponse> {
                     override fun success(response: PaymentInformationResponse?) {
                         if (response != null) {
-                            this@PaymentActivity.paymentMethods = response.paymentMethods
+                            this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
                             this@PaymentActivity.mCartTotal = response.cartTotal
                             this@PaymentActivity.paymentAgents = response.extension?.paymentAgents
                                     ?: listOf()
@@ -807,12 +806,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                     ?: listOf()
                         }
                         dismissProgressDialog()
-                        displayEorderingPayment(paymentMethods)
+                        showPaymentOptions(paymentMethods)
                     }
 
                     override fun failure(error: APIError) {
                         dismissProgressDialog()
-                        displayEorderingPayment(paymentMethods)
+                        showPaymentOptions(paymentMethods)
                     }
                 })
     }
@@ -823,7 +822,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         shippingSlot?.let {
             HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
                 override fun success(response: ShippingSlot?) {
-                    displayEorderingPayment(paymentMethods)
+                    showPaymentOptions(paymentMethods)
                 }
 
                 override fun failure(error: APIError) {
@@ -834,7 +833,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun displayEorderingPayment(paymentMethods: ArrayList<PaymentMethod>) {
+    private fun showPaymentOptions(paymentMethods: ArrayList<PaymentMethod>) {
         if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
             selectPaymentTypes(paymentMethods)
         } else {
