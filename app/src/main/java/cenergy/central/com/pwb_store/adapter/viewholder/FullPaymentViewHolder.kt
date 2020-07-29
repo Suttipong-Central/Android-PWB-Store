@@ -17,6 +17,7 @@ import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.model.PaymentMethodView
+import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import kotlinx.android.synthetic.main.item_creditcard_promotion.view.*
 import kotlinx.android.synthetic.main.item_select_promotion.view.*
 import kotlinx.android.synthetic.main.list_item_pay_by_credite_card.view.*
@@ -25,6 +26,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
     : PaymentMethodViewHolder<PaymentMethodView.PaymentItemView>(itemView) {
     private val radioPayment: RadioButton = itemView.radioPayment
     private val expandLayout: ConstraintLayout = itemView.expandLayout
+    private val tvSelectPromotions: PowerBuyTextView = itemView.tvSelectPromotions
     private val promotionOptions: AppCompatSpinner = itemView.promotionSpinner
     private val onPromotionItemSelectedCallback = object : AdapterView.OnItemSelectedListener {
         override fun onNothingSelected(adapter: AdapterView<*>?) {
@@ -46,7 +48,8 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
         radioPayment.isChecked = item.selected
 
         // setup credit card promotions
-        if (item.promotions != null && item.promotions.isNotEmpty()) {
+        if (!item.promotions.isNullOrEmpty()) {
+            tvSelectPromotions.visibility = View.VISIBLE
             promotionOptions.visibility = View.VISIBLE
             val items = arrayListOf<PaymentPromotionView>()
             items.add(PaymentPromotionView.HeaderView(
@@ -66,6 +69,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
             promotionOptions.adapter = CreditCardPromotionAdapter(itemView.context, items)
             promotionOptions.onItemSelectedListener = onPromotionItemSelectedCallback
         } else {
+            tvSelectPromotions.visibility = View.GONE
             promotionOptions.visibility = View.GONE
         }
 
