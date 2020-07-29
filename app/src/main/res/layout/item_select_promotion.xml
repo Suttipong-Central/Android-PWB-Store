@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_padding_small"
     android:background="@color/white">
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
@@ -12,7 +11,7 @@
         style="@style/textSize18Sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin_padding_small"
+        android:padding="@dimen/margin_padding_normal"
         android:textColor="@color/blackText"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/select_credit_card_promotion" />

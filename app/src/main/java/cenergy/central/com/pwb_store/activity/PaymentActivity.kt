@@ -586,11 +586,16 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun handleGetCartItemsSuccess(cartTotal: CartTotal) {
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
+        calculateTotalPrice(cartTotal)
+        updateOrderDetailView(cartTotal)
+        retrieveConsentInfo()
+    }
+
+    private fun calculateTotalPrice(cartTotal: CartTotal) {
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
-        if (discount != null) {
-            this.discountPrice = discount.value.toString().toStringDiscount()
-        }
+        this.discountPrice = discount?.value?.toString().toStringDiscount()
+
         val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
         if (coupon != null) {
             val couponDiscount = TotalSegment.getCouponDiscount(coupon.value.toString())
@@ -601,12 +606,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (discountPrice > 0) {
             this.totalPrice -= discountPrice
         }
-        updateOrderDetailView(cartTotal)
-        retrieveConsentInfo()
     }
 
     private fun updateOrderDetailView(cartTotal: CartTotal) {
         this.mCartTotal = cartTotal
+        calculateTotalPrice(cartTotal)
         tvTotal.text = this.totalPrice.toPriceDisplay()
         showOrderDetailBar()
     }

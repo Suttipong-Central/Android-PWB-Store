@@ -12,6 +12,7 @@ sealed class PaymentMethodView {
     data class PaymentItemView(val paymentMethod: PaymentMethod,
                                val promotions: List<PaymentCreditCardPromotion>? = null,
                                var selected: Boolean = false,
+                               var promotionId: Int? = null, // first time - for view set selected
                                override val viewType: Int) : PaymentMethodView()
 
     data class PayButtonItemView(var enable: Boolean = false,

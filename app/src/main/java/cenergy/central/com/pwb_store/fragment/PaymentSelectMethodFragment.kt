@@ -86,6 +86,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         this.promotionId = null
         val newItems = items.map {
             if (it is PaymentMethodView.PaymentItemView) {
+                it.promotionId = null // clear! (only use for first time)
                 if (it.paymentMethod.code == paymentMethod.code) {
                     this.selectedPaymentMethod = it.paymentMethod
                     it.selected = true
@@ -136,11 +137,11 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                         val creditCardPromotions = paymentPromotions.filter { p ->
                             p.paymentMethod == PaymentMethod.FULL_PAYMENT
                         }
-                        val selected = (this.selectedPaymentMethod != null
-                                && this.selectedPaymentMethod!!.code == PaymentMethod.FULL_PAYMENT)
+                        val selected = isFullPaymentOption()
                         PaymentMethodView.PaymentItemView(paymentMethod = it,
                                 promotions = creditCardPromotions,
                                 viewType = PaymentMethodAdapter.FULL_PAYMENT,
+                                promotionId = promotionId,
                                 selected = selected)
                     }
                     PaymentMethod.INSTALLMENT -> {
@@ -167,13 +168,18 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
             }))
 
             // add pay button
-            items.add(PaymentMethodView.PayButtonItemView())
+            items.add(PaymentMethodView.PayButtonItemView(isFullPaymentOption()))
         } else {
             items.add(PaymentMethodView.EmptyItemView())
         }
 
         // set to adapter
         selectMethodAdapter.submitList(items)
+    }
+
+    fun isFullPaymentOption(): Boolean {
+        return (this.selectedPaymentMethod != null
+                && this.selectedPaymentMethod!!.code == PaymentMethod.FULL_PAYMENT)
     }
 
     private fun setupView(rootView: View) {

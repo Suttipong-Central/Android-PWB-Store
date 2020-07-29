@@ -67,6 +67,12 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
             items.add(PaymentPromotionView.PromotionDefaultView(
                     title = itemView.context.getString(R.string.default_credit_card_promotion)))
             promotionOptions.adapter = CreditCardPromotionAdapter(itemView.context, items)
+            val selectPromotion = items.firstOrNull { pp -> pp is PaymentPromotionView.PromotionView && pp.promotionId == item.promotionId }
+            if (selectPromotion != null) {
+                val selectedPromotion = selectPromotion as PaymentPromotionView.PromotionView
+                val index = items.indexOf(selectedPromotion)
+                promotionOptions.setSelection(index)
+            }
             promotionOptions.onItemSelectedListener = onPromotionItemSelectedCallback
         } else {
             tvSelectPromotions.visibility = View.GONE
