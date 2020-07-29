@@ -100,6 +100,9 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         }
         this.items = ArrayList(newItems)
         selectMethodAdapter.submitList(this.items)
+
+        // update
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId) }
     }
 
     override fun onSelectedPromotion(paymentMethod: String, promotionId: Int) {
