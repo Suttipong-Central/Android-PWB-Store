@@ -101,6 +101,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     private boolean isScanBarcode = false;
     private ArrayList<String> specialCategoryIds = new ArrayList<>();
 
+    private boolean clicked = true;
+
     @Subscribe
     public void onEvent(DrawItemBus drawItemBus) {
         DrawerItem drawerItem = drawItemBus.getDrawerItem();
@@ -393,10 +395,8 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
                 mDrawerItemList.add(new DrawerItem(category.getDepartmentName(), category.getId(), category));
                 Log.i(TAG, "Menu : " + mDrawerItemList.toString());
             }
-            mAdapter.setDrawItem(mDrawerDao);
-        } else {
-            mAdapter.setDrawItem(mDrawerDao);
         }
+        mAdapter.setDrawItem(mDrawerDao);
     }
 
     private void showAlertDialog(String message) {
@@ -420,10 +420,14 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     public void onMenuClickedItem(@NotNull DrawerAdapter.DrawerAction action) {
         switch (action) {
             case ACTION_CART: {
-                if (database.getCacheCartItems().size() > 0) {
-                    ShoppingCartActivity.Companion.startActivity(this);
-                } else {
-                    showAlertDialog(getResources().getString(R.string.not_have_products_in_cart));
+                if(clicked){
+                    clicked = false;
+                    if (database.getCacheCartItems().size() > 0) {
+                        ShoppingCartActivity.Companion.startActivity(this);
+                    } else {
+                        showAlertDialog(getResources().getString(R.string.not_have_products_in_cart));
+                    }
+                    new Handler().postDelayed(() -> clicked = true,500);
                 }
             }
             break;
@@ -578,10 +582,14 @@ public class MainActivity extends BaseActivity implements MenuDrawerClickListene
     // region {@link PowerBuyShoppingCartView.OnClickListener}
     @Override
     public void onShoppingCartClick(View view) {
-        if (database.getCartItemCount() > 0) {
-            ShoppingCartActivity.startActivity(this, view);
-        } else {
-            showAlertDialog(getString(R.string.not_have_products_in_cart));
+        if(clicked){
+            clicked = false;
+            if (database.getCacheCartItems().size() > 0) {
+                ShoppingCartActivity.Companion.startActivity(this);
+            } else {
+                showAlertDialog(getResources().getString(R.string.not_have_products_in_cart));
+            }
+            new Handler().postDelayed(() -> clicked = true,500);
         }
     }
     // endregion
