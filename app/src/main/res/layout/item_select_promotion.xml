@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="@dimen/padding_select_payment_size"
     android:background="@color/white">
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView

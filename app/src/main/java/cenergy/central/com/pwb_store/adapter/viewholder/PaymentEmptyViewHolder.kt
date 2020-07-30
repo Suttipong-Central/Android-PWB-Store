@@ -14,6 +14,10 @@ class PaymentEmptyViewHolder(itemView: View, private val listener: PaymentItemCl
     override fun bindView(item: PaymentMethodView.PaymentItemView) {
         radioPayment.text = item.paymentMethod.title
         radioPayment.isChecked = item.selected
-        itemView.setOnClickListener { listener.onClickedPaymentItem(item.paymentMethod) }
+        itemView.setOnClickListener {
+            if (!item.selected) {
+                listener.onClickedPaymentItem(item.paymentMethod)
+            }
+        }
     }
 }

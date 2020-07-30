@@ -14,7 +14,7 @@
         android:layout_margin="@dimen/margin_padding_normal"
         android:text="@string/pay_now"
         android:textAllCaps="true"
-        android:textSize="@dimen/raised_button_text_size"
+        android:textSize="@dimen/text_button_pay_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
