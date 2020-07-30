@@ -419,4 +419,9 @@
     <!-- Credit card on top -->
     <string name="credit_card_on_top">Credit Card On-Top</string>
     <string name="warning_credit_care_on_top">You combine products with different credit card promotions. Please split order to get each promotion separately.</string>
+
+    <!--  Credit Card Promotion  -->
+    <string name="select_credit_card_promotion">Select Credit Card</string>
+    <string name="default_credit_card_promotion">Other Banks</string>
+    <string name="format_credit_card_promotion">Enjoy additional %d%% off!</string>
 </resources>

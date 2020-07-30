@@ -39,7 +39,7 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
         val cacheCartItem = database.getCacheCartItem(item.id) // get cacheCartItem
 
         if (item.price != null && item.price!! > 0.0) {
-            val promotion = promotions.first { it.sku == cacheCartItem.sku }.extension
+            val promotion = promotions.firstOrNull { it.sku == cacheCartItem.sku }?.extension
             holder.bindProductView(item, listener, cacheCartItem, promotion)
         } else {
             holder.bindFreebieView(item, listener, cacheCartItem)

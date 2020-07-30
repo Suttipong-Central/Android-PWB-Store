@@ -33,4 +33,8 @@
     <dimen name="ic_payment_agent_size">36dp</dimen>
     <dimen name="app_bottom_bar_size">84dp</dimen>
     <dimen name="minimum_side_product_extension">200dp</dimen>
+    <dimen name="size_bank_image">48dp</dimen>
+
+    <dimen name="text_button_pay_size">22sp</dimen>
+    <dimen name="padding_select_payment_size">4.5dp</dimen>
 </resources>

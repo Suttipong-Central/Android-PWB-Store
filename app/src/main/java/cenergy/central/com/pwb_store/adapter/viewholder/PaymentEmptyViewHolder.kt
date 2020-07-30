@@ -1,20 +1,23 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
+import android.widget.RadioButton
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
+import cenergy.central.com.pwb_store.adapter.PaymentMethodViewHolder
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
-import cenergy.central.com.pwb_store.model.PaymentMethod
+import cenergy.central.com.pwb_store.model.PaymentMethodView
 
-class PaymentEmptyViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
-    val title: TextView = itemView.findViewById(R.id.tv_title)
-    val button: Button = itemView.findViewById(R.id.choose_payment_method)
+class PaymentEmptyViewHolder(itemView: View, private val listener: PaymentItemClickListener)
+    : PaymentMethodViewHolder<PaymentMethodView.PaymentItemView>(itemView) {
+    private val radioPayment: RadioButton = itemView.findViewById(R.id.radioPayment)
 
-    override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
-        title.text = paymentMethod.title
-        itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
-        button.setOnClickListener { listener.onClickedItem(paymentMethod) }
+    override fun bindView(item: PaymentMethodView.PaymentItemView) {
+        radioPayment.text = item.paymentMethod.title
+        radioPayment.isChecked = item.selected
+        itemView.setOnClickListener {
+            if (!item.selected) {
+                listener.onClickedPaymentItem(item.paymentMethod)
+            }
+        }
     }
 }

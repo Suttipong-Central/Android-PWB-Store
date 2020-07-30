@@ -1,13 +1,15 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.view.View;
+import android.widget.ImageView;
+
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.View;
-import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
 import cenergy.central.com.pwb_store.R;
-import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.Category;
 import cenergy.central.com.pwb_store.model.ProductFilterHeader;
 import cenergy.central.com.pwb_store.model.ProductFilterSubHeader;
@@ -33,8 +35,8 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
             Glide.with(itemView.getContext())
                     .load(category.getImageURL())
                     .error(R.drawable.ic_category_placeholder)
-                    .crossFade()
                     .fitCenter()
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(mImageView);
         } else {
             mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));
@@ -46,11 +48,11 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
     public void setViewHolder(ProductFilterHeader categoryHeader) {
         if (!categoryHeader.getImageURL().isEmpty()) {
-            Glide.with(Contextor.getInstance().getContext())
+            Glide.with(itemView.getContext())
                     .load(categoryHeader.getImageURL())
                     .error(R.drawable.ic_category_placeholder)
-                    .crossFade()
                     .fitCenter()
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(mImageView);
         } else {
             mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));
@@ -62,11 +64,11 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
     public void setViewHolder(ProductFilterSubHeader categorySubHeader) {
         if (!categorySubHeader.getUrlName().isEmpty()) {
-            Glide.with(Contextor.getInstance().getContext())
+            Glide.with(itemView.getContext())
                     .load(categorySubHeader.getUrlName())
                     .error(R.drawable.ic_category_placeholder)
-                    .crossFade()
                     .fitCenter()
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(mImageView);
         } else {
             mImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_category_placeholder));

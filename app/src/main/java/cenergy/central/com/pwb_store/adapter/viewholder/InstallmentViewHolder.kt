@@ -1,21 +1,33 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
+import android.widget.RadioButton
+import androidx.appcompat.widget.AppCompatSpinner
+import androidx.constraintlayout.widget.ConstraintLayout
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
+import cenergy.central.com.pwb_store.adapter.PaymentMethodViewHolder
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
-import cenergy.central.com.pwb_store.model.PaymentMethod
+import cenergy.central.com.pwb_store.model.PaymentMethodView
+import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import kotlinx.android.synthetic.main.list_item_pay_by_credite_card.view.*
 
-class InstallmentViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
+class InstallmentViewHolder(itemView: View, private val listener: PaymentItemClickListener)
+    : PaymentMethodViewHolder<PaymentMethodView.PaymentItemView>(itemView) {
+    private val radioPayment: RadioButton = itemView.radioPayment
+    private val expandLayout: ConstraintLayout = itemView.expandLayout
+    private val tvSelectPromotions: PowerBuyTextView = itemView.tvSelectPromotions
+    private val promotionOptions: AppCompatSpinner = itemView.promotionSpinner
 
-    val title: TextView = itemView.findViewById(R.id.tv_title)
-    val button: Button = itemView.findViewById(R.id.choose_payment_method)
-
-    override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
-        title.text = itemView.context.getString(R.string.installment)
-        itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
-        button.setOnClickListener { listener.onClickedItem(paymentMethod) }
+    override fun bindView(item: PaymentMethodView.PaymentItemView) {
+        radioPayment.text = itemView.context.getString(R.string.installment)
+        radioPayment.isChecked = item.selected
+        expandLayout.visibility = if (item.selected) View.VISIBLE else View.GONE
+        itemView.setOnClickListener {
+            if (!item.selected) {
+                listener.onClickedPaymentItem(item.paymentMethod)
+            }
+        }
+        tvSelectPromotions.visibility = View.GONE
+        promotionOptions.visibility = View.GONE
     }
 }

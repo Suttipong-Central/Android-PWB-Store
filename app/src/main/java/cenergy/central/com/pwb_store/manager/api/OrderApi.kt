@@ -3,8 +3,6 @@ package cenergy.central.com.pwb_store.manager.api
 import android.content.Context
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.AddressInformation
-import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
@@ -19,11 +17,11 @@ class OrderApi {
         private const val HEADER_LOCATION = "Location"
     }
 
-    fun updateOrder(context: Context, cartId: String, paymentMethodBody: PaymentInfoBody,
-                    callback: CreateOderCallback) {
+    fun setPaymentInformation(context: Context, cartId: String, paymentMethodBody: PaymentInfoBody,
+                              callback: CreateOderCallback) {
         val apiManager = HttpManagerMagento.getInstance(context)
 
-        apiManager.cartService.updateOrder(apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
+        apiManager.cartService.setPaymentInformation(apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     callback.onSuccess(response.body())

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
-
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
@@ -12,6 +11,7 @@ import android.widget.TextView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
+import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.CacheCartItem
 import cenergy.central.com.pwb_store.model.response.PromotionExtension
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
@@ -67,12 +67,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             }
 
             // get image from cache
-            Glide.with(context)
-                    .load(cacheCartItem.imageUrl)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
-                    .fitCenter()
-                    .into(productImage)
+            productImage.setImageUrl(cacheCartItem.imageUrl, R.drawable.ic_placeholder)
 
             deleteItemTextView.visibility = View.VISIBLE
             deleteItemTextView.setOnClickListener {
@@ -107,7 +102,8 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
                     return false
                 }
             })
-            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price ?: 0.0))
+            totalPrice.text = getDisplayPrice(unit, getToTalPrice(productQty.getText().toInt(), item.price
+                    ?: 0.0))
         }
     }
 
@@ -125,7 +121,6 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             Glide.with(context)
                     .load(cacheCartItem.imageUrl)
                     .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
                     .fitCenter()
                     .into(productImage)
 
@@ -145,7 +140,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
     // endregion
 
-    private fun isChatAndShop(): Boolean{
+    private fun isChatAndShop(): Boolean {
         val database = RealmController.getInstance()
         return database.userInformation.user?.userLevel == 3L
     }

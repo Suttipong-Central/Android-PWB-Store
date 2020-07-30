@@ -3,9 +3,11 @@ package cenergy.central.com.pwb_store.manager.service
 import cenergy.central.com.pwb_store.model.CartItem
 import cenergy.central.com.pwb_store.model.DeliveryOption
 import cenergy.central.com.pwb_store.model.body.*
-import cenergy.central.com.pwb_store.model.response.*
+import cenergy.central.com.pwb_store.model.response.CartResponse
+import cenergy.central.com.pwb_store.model.response.OrderResponse
+import cenergy.central.com.pwb_store.model.response.PaymentInformationResponse
+import cenergy.central.com.pwb_store.model.response.ShippingInformationResponse
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.http.*
 
 interface CartService {
@@ -52,16 +54,21 @@ interface CartService {
 
     @GET("/rest/{lang}/V1/guest-carts/{cartId}/payment-information")
     fun retrievePaymentInformation(@Path("lang") language: String,
-                    @Path("cartId") cartId: String): Call<PaymentInformationResponse>
+                                   @Path("cartId") cartId: String): Call<PaymentInformationResponse>
 
     // @PUT("/rest/V1/guest-carts/{cartId}/order")
     @POST("/rest/{lang}/V1/guest-carts/{cartId}/payment-information")
-    fun updateOrder(@Path("lang") language: String,
-                    @Path("cartId") cartId: String,
-                    @Body paymentInformation: PaymentInfoBody): Call<String>
+    fun setPaymentInformation(@Path("lang") language: String,
+                              @Path("cartId") cartId: String,
+                              @Body paymentInformation: PaymentInfoBody): Call<String>
+
+    @POST("/rest/{lang}/V1/guest-carts/{cartId}/set-payment-information")
+    fun updatePaymentInformation(@Path("lang") language: String,
+                              @Path("cartId") cartId: String,
+                              @Body paymentInformation: PaymentInfoBody): Call<Boolean>
 
     @GET("/rest/{lang}/V1/orders/{orderId}")
     fun getOrder(@Header("Authorization") token: String,
-                @Path("lang") language: String,
-                @Path("orderId") orderId: String): Call<OrderResponse>
+                 @Path("lang") language: String,
+                 @Path("orderId") orderId: String): Call<OrderResponse>
 }

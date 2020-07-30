@@ -2,16 +2,15 @@ package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.is1HourProduct
 import cenergy.central.com.pwb_store.extensions.isSpecialPrice
 import cenergy.central.com.pwb_store.extensions.set1HourBadge
+import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.manager.Contextor
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import com.bumptech.glide.Glide
 
 class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -28,13 +27,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     fun setViewHolder(product: Product) {
 
         val unit = Contextor.getInstance().context.getString(R.string.baht)
-
-        Glide.with(Contextor.getInstance().context)
-                .load(product.getImageUrl())
-                .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
-                .fitCenter()
-                .into(mImageView)
+        mImageView.setImageUrl(product.getImageUrl(), R.drawable.ic_placeholder)
 
         oldPrice.text = product.getDisplayOldPrice(unit)
         newPrice.text = product.getDisplaySpecialPrice(unit)

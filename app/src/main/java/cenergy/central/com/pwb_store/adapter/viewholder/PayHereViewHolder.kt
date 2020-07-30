@@ -1,23 +1,30 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.view.View
-import android.widget.Button
+import android.widget.RadioButton
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.adapter.PaymentMethodAdapter
+import cenergy.central.com.pwb_store.adapter.PaymentMethodViewHolder
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
-import cenergy.central.com.pwb_store.model.PaymentMethod
+import cenergy.central.com.pwb_store.model.PaymentMethodView
+import kotlinx.android.synthetic.main.list_item_pay_common.view.*
 
-class PayHereViewHolder(itemView: View) : PaymentMethodAdapter.PaymentMethodViewHolder(itemView) {
+class PayHereViewHolder(itemView: View, private val listener: PaymentItemClickListener)
+    : PaymentMethodViewHolder<PaymentMethodView.PaymentItemView>(itemView) {
+    private val radioPayment: RadioButton = itemView.radioPayment
+    private val description: TextView = itemView.tvDescription
+    private val expandLayout: ConstraintLayout = itemView.expandLayout
 
-    val title: TextView = itemView.findViewById(R.id.tv_title)
-    val description: TextView = itemView.findViewById(R.id.tv_description)
-    val button: Button = itemView.findViewById(R.id.choose_payment_method)
-
-    override fun bindView(paymentMethod: PaymentMethod, listener: PaymentItemClickListener) {
-        title.text = itemView.context.getString(R.string.pay_here)
+    override fun bindView(item: PaymentMethodView.PaymentItemView) {
+        radioPayment.text = itemView.context.getString(R.string.pay_here)
+        radioPayment.isChecked = item.selected
+        expandLayout.visibility = if (item.selected) View.VISIBLE else View.GONE
         description.text = itemView.context.getString(R.string.pay_here_description)
-        itemView.setOnClickListener { listener.onClickedItem(paymentMethod) }
-        button.setOnClickListener { listener.onClickedItem(paymentMethod) }
+        itemView.setOnClickListener {
+            if (!item.selected) {
+                listener.onClickedPaymentItem(item.paymentMethod)
+            }
+        }
     }
 }

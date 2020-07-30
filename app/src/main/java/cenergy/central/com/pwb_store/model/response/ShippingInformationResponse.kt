@@ -1,6 +1,5 @@
 package cenergy.central.com.pwb_store.model.response
 
-import cenergy.central.com.pwb_store.model.CartTotal
 import cenergy.central.com.pwb_store.model.PaymentMethod
 import com.google.gson.annotations.SerializedName
 

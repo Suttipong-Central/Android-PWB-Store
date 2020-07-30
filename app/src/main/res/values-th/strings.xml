@@ -401,4 +401,9 @@
     <!-- Credit card on top -->
     <string name="credit_card_on_top">รูดบัตรลดเพิ่ม</string>
     <string name="warning_credit_care_on_top">ในรถเข็นมีสินค้าที่ร่วมโปรโมชั่นบัตรเครดิตที่ต่างกันอยู่ กรุณาแยกทำรายการเพื่อรับโปรโมชั่นดังกล่าว</string>
+
+    <!--  Credit Card Promotion  -->
+    <string name="select_credit_card_promotion">เลือกบัตรเครดิต</string>
+    <string name="default_credit_card_promotion">ธนาคารอื่นๆ</string>
+    <string name="format_credit_card_promotion">รับส่วนลดทันที %d%%</string>
 </resources>

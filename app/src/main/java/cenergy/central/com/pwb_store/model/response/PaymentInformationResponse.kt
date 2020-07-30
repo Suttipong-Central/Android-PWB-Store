@@ -1,20 +1,56 @@
 package cenergy.central.com.pwb_store.model.response
 
 import cenergy.central.com.pwb_store.Constants
-import cenergy.central.com.pwb_store.model.CartTotal
 import cenergy.central.com.pwb_store.model.PaymentMethod
 import com.google.gson.annotations.SerializedName
 
 data class PaymentInformationResponse(
         @SerializedName("payment_methods")
         var paymentMethods: ArrayList<PaymentMethod> = arrayListOf(),
-        var totals: CartTotal? = null,
+        @SerializedName("totals")
+        var cartTotal: CartTotal? = null,
         @SerializedName("extension_attributes")
         val extension: PaymentInformationExtension? = null)
 
 data class PaymentInformationExtension(
         @SerializedName("p2c2p_payment_agents")
-        val paymentAgents: List<PaymentAgent> = listOf())
+        val paymentAgents: List<PaymentAgent> = listOf(),
+        @SerializedName("p2c2p_credit_card_promotions")
+        val paymentPromotions: List<PaymentCreditCardPromotion> = listOf()
+)
+
+data class PaymentCreditCardPromotion(
+        @SerializedName("promotion_id")
+        val promotionId: Int,
+        val bank: Int,
+        val description: String,
+        @SerializedName("card_image")
+        val cardImage: String,
+        @SerializedName("card_type")
+        val cardType: String,
+        @SerializedName("card_name")
+        val cardName: String,
+        val banner: String,
+        @SerializedName("promotion_code")
+        val promotionCode: String,
+        @SerializedName("payment_method")
+        val paymentMethod: String,
+        @SerializedName("ipp_plan")
+        val ippPlan: String,
+        @SerializedName("bank_color")
+        val bankColor: String,
+        @SerializedName("bank_icon")
+        val bankIcon: String,
+        @SerializedName("simple_action")
+        val simpleAction: String,
+        @SerializedName("discount_amount")
+        val discountAmount: Int
+) {
+    fun getBankImageUrl(): String {
+        // example -> /media/banks/ktc22x22.jpg
+        return "${Constants.BASE_URL_MAGENTO}/media/$bankIcon"
+    }
+}
 
 data class PaymentAgent(
         @SerializedName("agent_id")
@@ -30,11 +66,11 @@ data class PaymentAgent(
         return "${Constants.BASE_URL_MAGENTO}/media/central_p2c2p123/$image"
     }
 
-    fun isBankAgent() : Boolean {
+    fun isBankAgent(): Boolean {
         return PaymentAgentType.fromString(type) == PaymentAgentType.BANK
     }
 
-    fun getChannels() : List<String> {
+    fun getChannels(): List<String> {
         return channel.split(",")
     }
 }

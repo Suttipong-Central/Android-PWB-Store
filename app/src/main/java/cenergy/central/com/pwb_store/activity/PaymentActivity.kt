@@ -17,10 +17,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.interfaces.ConfirmPaymentListener
 import cenergy.central.com.pwb_store.activity.interfaces.PaymentProtocol
 import cenergy.central.com.pwb_store.dialogs.OrderDetailDialog
 import cenergy.central.com.pwb_store.dialogs.T1MemberDialogFragment
-import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentT1Listener
 import cenergy.central.com.pwb_store.extensions.*
 import cenergy.central.com.pwb_store.fragment.*
@@ -39,7 +39,6 @@ import cenergy.central.com.pwb_store.manager.listeners.MemberClickListener
 import cenergy.central.com.pwb_store.manager.listeners.PaymentBillingListener
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
-import cenergy.central.com.pwb_store.model.DeliveryType.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.body.ConsentBody
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
@@ -57,7 +56,7 @@ import kotlinx.android.synthetic.main.layout_order_detail_bar.*
 
 class PaymentActivity : BaseActivity(), CheckoutListener,
         MemberClickListener, PaymentBillingListener, DeliveryOptionsListener,
-        PaymentProtocol, StorePickUpListener, DeliveryHomeListener, PaymentItemClickListener,
+        PaymentProtocol, StorePickUpListener, DeliveryHomeListener,
         PaymentT1Listener, PaymentTransferListener {
 
     var mToolbar: Toolbar? = null
@@ -88,15 +87,17 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var specialSKUList: List<Long>? = null
     private var cacheCartItems = listOf<CacheCartItem>()
     private var paymentMethods = arrayListOf<PaymentMethod>()
-    private var paymentMethod = PaymentMethod("e_ordering", "Pay Here")
+    private var paymentMethod = PaymentMethod(PaymentMethod.E_ORDERING, "Pay Here")
+    private var promotionId: Int? = null
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
     private var discountPrice = 0.0
     private var promotionDiscount = 0.0
     private var totalPrice = 0.0
     private var paymentAgents = listOf<PaymentAgent>()
+    private var paymentPromotions = listOf<PaymentCreditCardPromotion>()
     private var consentInfo: ConsentInfoResponse? = null
-    private var mCartTotal: PaymentCartTotal? = null
+    private var mCartTotal: CartTotal? = null
     private var shownOrderDetail = false
 
     // data product 2h
@@ -196,9 +197,30 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getStateView(): NetworkStateView? = networkStateView
 
-    override fun getCartTotal(): PaymentCartTotal? = this.mCartTotal
+    override fun getCartTotal(): CartTotal? = this.mCartTotal
 
     override fun getCacheItems(): List<CacheCartItem> = this.cacheCartItems
+
+    override fun getSelectedPaymentMethod(): PaymentMethod = this.paymentMethod
+
+    override fun getSelectedPromotionId(): Int? = this.promotionId
+
+    override fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
+        this.paymentMethod = paymentMethod
+        this.promotionId = promotionId
+        if (paymentMethod.isBankAndCounterServiceType()) {
+            // open bank/counter service options
+            startFragment(PaymentTransfersFragment())
+        } else {
+            setOrderPaymentInformation(paymentMethod, promotionId)
+        }
+    }
+
+    override fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
+        this.paymentMethod = paymentMethod
+        this.promotionId = promotionId
+        updateOrderPaymentInformation(paymentMethod, promotionId)
+    }
 
     // region {@link CheckOutClickListener}
     override fun startCheckout(contactNo: String?) {
@@ -282,15 +304,15 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         deliveryType = DeliveryType.fromString(deliveryOption.methodCode)
         analytics.trackSelectDelivery(deliveryOption.methodCode)
         when (deliveryType) {
-            EXPRESS, STANDARD -> {
+            DeliveryType.EXPRESS, DeliveryType.STANDARD -> {
                 showProgressDialog()
                 handleCreateShippingInformation(deliveryOption, null)
             }
-            STORE_PICK_UP -> {
+            DeliveryType.STORE_PICK_UP -> {
                 showProgressDialog()
                 getStoresDelivery(deliveryOption) // default page
             }
-            HOME -> {
+            DeliveryType.HOME -> {
                 this.enableShippingSlot = deliveryOption.extension.shippingSlots
                 startDeliveryHomeFragment()
             }
@@ -305,7 +327,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun startPayNow(payerName: String, payerEmail: String, agentCode: String,
                              agentChannelCode: String, mobileNumber: String) {
 
-        showAlertConfirmPayment(paymentMethod, payerName, payerEmail, agentCode, agentChannelCode, mobileNumber)
+        showAlertConfirmPayment(object : ConfirmPaymentListener {
+            override fun onConfirmed() {
+                // tracking payment method
+                analytics.trackSelectPayment(paymentMethod.code)
+                val bodyRequest = createPaymentBodyRequest(paymentMethod = paymentMethod,
+                        payerName = payerName, payerEmail = payerEmail, agentCode = agentCode,
+                        agentChannelCode = agentChannelCode, mobileNumber = mobileNumber)
+                requestSetOrderPaymentInformation(bodyRequest)
+            }
+
+            override fun onCanceled() {
+                dismissProgressDialog()
+            }
+        })
     }
     // endregion
 
@@ -347,10 +382,10 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    /*
-    * If no have provinces data must force download province data
-    * because in Branch detail page have to display about address
-    * */
+    /**
+     * If no have provinces data must force download province data
+     * because in Branch detail page have to display about address
+     * */
     private fun loadProvinceData() {
         showProgressDialog()
 
@@ -371,18 +406,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     }
                 })
     }
-
-    // region {@link PaymentTypesClickListener}
-    override fun onClickedItem(paymentMethod: PaymentMethod) {
-        this.paymentMethod = paymentMethod
-        if (paymentMethod.isBankAndCounterServiceType()) {
-            // open bank/counter service options
-            retrievePaymentInformation()
-        } else {
-            showAlertConfirmPayment(paymentMethod)
-        }
-    }
-    // endregion
 
     // region {@link HomeDeliveryListener}
     override fun onPaymentClickListener(shippingSlot: ShippingSlot, date: Int, month: Int, year: Int, shippingDate: String) {
@@ -539,8 +562,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun retrieveCartTotal() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<PaymentCartTotal> {
-                override fun success(response: PaymentCartTotal?) {
+            CartUtils(this).viewCartTotal(cartId, object : ApiResponseCallback<CartTotal> {
+                override fun success(response: CartTotal?) {
                     runOnUiThread {
                         if (response != null) {
                             handleGetCartItemsSuccess(response)
@@ -561,16 +584,21 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun handleGetCartItemsSuccess(cartTotal: PaymentCartTotal) {
+    private fun handleGetCartItemsSuccess(cartTotal: CartTotal) {
         this.shoppingCartItem = (cartTotal.items ?: arrayListOf()).checkItemsBy(cacheCartItems)
+        calculateTotalPrice(cartTotal)
+        updateOrderDetailView(cartTotal)
+        retrieveConsentInfo()
+    }
+
+    private fun calculateTotalPrice(cartTotal: CartTotal) {
         this.totalPrice = cartTotal.totalPrice
         val discount = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
-        if (discount != null) {
-            this.discountPrice = discount.value.toStringDiscount()
-        }
+        this.discountPrice = discount?.value?.toString().toStringDiscount()
+
         val coupon = cartTotal.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
         if (coupon != null) {
-            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value)
+            val couponDiscount = TotalSegment.getCouponDiscount(coupon.value.toString())
             this.promotionDiscount = couponDiscount?.couponAmount.toStringDiscount()
             this.discountPrice -= promotionDiscount
             this.totalPrice -= promotionDiscount
@@ -578,12 +606,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (discountPrice > 0) {
             this.totalPrice -= discountPrice
         }
-        updateOrderDetailView(cartTotal)
-        retrieveConsentInfo()
     }
 
-    private fun updateOrderDetailView(cartTotal: PaymentCartTotal) {
+    private fun updateOrderDetailView(cartTotal: CartTotal) {
         this.mCartTotal = cartTotal
+        calculateTotalPrice(cartTotal)
         tvTotal.text = this.totalPrice.toPriceDisplay()
         showOrderDetailBar()
     }
@@ -629,31 +656,85 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun showAlertConfirmPayment(paymentMethod: PaymentMethod, payerName: String = "",
-                                        payerEmail: String = "", agentCode: String = "",
-                                        agentChannelCode: String = "", mobileNumber: String = "") {
-
+    private fun showAlertConfirmPayment(listener: ConfirmPaymentListener) {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setMessage(getString(R.string.confirm_oder))
                 .setPositiveButton(resources.getString(R.string.ok_alert)) { _, _ ->
-                    // tracking payment method
-                    analytics.trackSelectPayment(paymentMethod.code)
-                    val bodyRequest = createPaymentBodyRequest(paymentMethod, payerName, payerEmail,
-                            agentCode, agentChannelCode, mobileNumber)
-                    updateOrder(bodyRequest)
+                    listener.onConfirmed()
                 }
                 .setNegativeButton(resources.getString(R.string.cancel_alert)) { dialog, _ ->
                     dialog.dismiss()
-                    mProgressDialog?.dismiss()
+                    listener.onCanceled()
                 }
                 .setCancelable(false)
         builder.show()
     }
 
+    private fun setOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+        showAlertConfirmPayment(object : ConfirmPaymentListener {
+            override fun onConfirmed() {
+                // tracking payment method
+                analytics.trackSelectPayment(paymentMethod.code)
+                val bodyRequest = createPaymentBodyRequest(
+                        paymentMethod = paymentMethod, promotionId = promotionId)
+                requestSetOrderPaymentInformation(bodyRequest)
+            }
+
+            override fun onCanceled() {
+                dismissProgressDialog()
+            }
+        })
+    }
+
+    private fun updateOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+        cartId ?: return
+
+        showProgressDialog()
+        val paymentInfoBody = createPaymentBodyRequest(paymentMethod = paymentMethod,
+                promotionId = promotionId)
+        PaymentApi().updatePaymentInformation(this, cartId!!, paymentInfoBody, object : ApiResponseCallback<Boolean> {
+            override fun success(response: Boolean?) {
+                if (response == true) {
+                    refreshPaymentInformation()
+                } else {
+                    dismissProgressDialog()
+                }
+            }
+
+            override fun failure(error: APIError) {
+                dismissProgressDialog()
+                showCommonAPIErrorDialog(error)
+            }
+        })
+    }
+
+    private fun refreshPaymentInformation() {
+        showProgressDialog()
+        PaymentApi().retrievePaymentInformation(this, cartId!!,
+                object : ApiResponseCallback<PaymentInformationResponse> {
+                    override fun success(response: PaymentInformationResponse?) {
+                        if (response != null) {
+                            this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
+                            this@PaymentActivity.mCartTotal = response.cartTotal
+                            this@PaymentActivity.paymentAgents = response.extension?.paymentAgents
+                                    ?: listOf()
+                            this@PaymentActivity.paymentPromotions = response.extension?.paymentPromotions
+                                    ?: listOf()
+                        }
+                        mCartTotal?.let { updateOrderDetailView(it) }
+                        dismissProgressDialog()
+                    }
+
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                    }
+                })
+    }
+
     private fun handleCreateShippingInformation(deliveryOption: DeliveryOption, addressInfoExtensionBody: AddressInfoExtensionBody?) {
         if (cartId != null && shippingAddress != null) {
             when (val type = DeliveryType.fromString(deliveryOption.methodCode)) {
-                STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
+                DeliveryType.STORE_PICK_UP -> createShippingInforWithClickAndCollect(type, addressInfoExtensionBody)
                 else -> createShippingInfor(type, addressInfoExtensionBody)
             }
         }
@@ -666,7 +747,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 deliveryOption, object : ApiResponseCallback<ShippingInformationResponse> {
             override fun success(response: ShippingInformationResponse?) {
                 if (response != null) {
-                    handleShippingInforSuccess(type, response.paymentMethods)
+                    // set payment methods
+                    this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
+                    handleShippingInforSuccess(type)
                 } else {
                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
                     mProgressDialog?.dismiss()
@@ -691,7 +774,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         object : ApiResponseCallback<ShippingInformationResponse> {
                             override fun success(response: ShippingInformationResponse?) {
                                 if (response != null) {
-                                    handleShippingInforSuccess(type, response.paymentMethods)
+                                    // set payment methods
+                                    this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
+                                    handleShippingInforSuccess(type)
                                 } else {
                                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
                                     mProgressDialog?.dismiss()
@@ -705,37 +790,51 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         })
     }
 
-    private fun handleShippingInforSuccess(type: DeliveryType, paymentMethods: ArrayList<PaymentMethod>) {
-        if (type == HOME) {
+    private fun handleShippingInforSuccess(type: DeliveryType) {
+        if (type == DeliveryType.HOME) {
             createBookingHomeDelivery(paymentMethods)
-            return
-        }
-
-        cartId?.let {
-            CartUtils(this).viewCartTotal(it, object : ApiResponseCallback<PaymentCartTotal> {
-                override fun success(response: PaymentCartTotal?) {
-                    runOnUiThread {
-                        this@PaymentActivity.mCartTotal = response
-                        displayEorderingPayment(paymentMethods)
-                    }
-                }
-
-                override fun failure(error: APIError) {
-                    runOnUiThread {
-                        showCommonAPIErrorDialog(error)
-                        displayEorderingPayment(paymentMethods)
-                    }
-                }
-            })
+        } else {
+            retrievePaymentInformation()
         }
     }
+
+    /**
+     * Get Payment information
+     * Note: if have payment methods from response api shipping info still can display
+     * payment options from cache payment method from products
+     * */
+    private fun retrievePaymentInformation() {
+        cartId ?: return
+        showProgressDialog()
+        PaymentApi().retrievePaymentInformation(this, cartId!!,
+                object : ApiResponseCallback<PaymentInformationResponse> {
+                    override fun success(response: PaymentInformationResponse?) {
+                        if (response != null) {
+                            this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
+                            this@PaymentActivity.mCartTotal = response.cartTotal
+                            this@PaymentActivity.paymentAgents = response.extension?.paymentAgents
+                                    ?: listOf()
+                            this@PaymentActivity.paymentPromotions = response.extension?.paymentPromotions
+                                    ?: listOf()
+                        }
+                        dismissProgressDialog()
+                        showPaymentOptions(paymentMethods)
+                    }
+
+                    override fun failure(error: APIError) {
+                        dismissProgressDialog()
+                        showPaymentOptions(paymentMethods)
+                    }
+                })
+    }
+    // endregion
 
     private fun createBookingHomeDelivery(paymentMethods: ArrayList<PaymentMethod>) {
         showProgressDialog()
         shippingSlot?.let {
             HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
                 override fun success(response: ShippingSlot?) {
-                    displayEorderingPayment(paymentMethods)
+                    showPaymentOptions(paymentMethods)
                 }
 
                 override fun failure(error: APIError) {
@@ -746,11 +845,11 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun displayEorderingPayment(paymentMethods: ArrayList<PaymentMethod>) {
+    private fun showPaymentOptions(paymentMethods: ArrayList<PaymentMethod>) {
         if (fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_PAYMENT_OPTIONS_ON)) { // payment on?
             selectPaymentTypes(paymentMethods)
         } else {
-            showAlertConfirmPayment(paymentMethod)
+            setOrderPaymentInformation(paymentMethod)
         }
 
         mProgressDialog?.dismiss()
@@ -1040,7 +1139,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-
     /**
      * @param payerName
      * @param agentCode
@@ -1049,6 +1147,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
      * Must set if payment type p2c2p_123(bank transfer and counter service)
      * */
     private fun createPaymentBodyRequest(paymentMethod: PaymentMethod,
+                                         promotionId: Int? = null,
                                          payerName: String = "",
                                          payerEmail: String = "",
                                          agentCode: String = "",
@@ -1072,7 +1171,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 PaymentInfoBody.createPaymentInfoBody(cartId = cartId!!,
                         staffId = staffId, retailerId = retailerId, email = email,
                         customerEmail = email, billingAddress = addressInfo!!,
-                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo)
+                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo,
+                        promotionId = promotionId)
             }
             else -> {
                 // Standard
@@ -1084,14 +1184,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
     }
 
-    private fun updateOrder(bodyRequest: PaymentInfoBody) {
-        if (cartId == null) {
-            return
-        }
+    private fun requestSetOrderPaymentInformation(bodyRequest: PaymentInfoBody) {
+        cartId ?: return
+
         showProgressDialog()
         val retailerId = userInformation?.store?.retailerId ?: ""
 
-        OrderApi().updateOrder(this, cartId!!, bodyRequest, object : OrderApi.CreateOderCallback {
+        OrderApi().setPaymentInformation(this, cartId!!, bodyRequest, object : OrderApi.CreateOderCallback {
             override fun onSuccess(oderId: String?) {
                 analytics.trackOrderSuccess(paymentMethod.code, deliveryOption.methodCode, retailerId)
                 runOnUiThread {
@@ -1181,6 +1280,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun getCheckType(): CheckoutType = this.checkoutType
 
     override fun getPaymentAgents(): List<PaymentAgent> = this.paymentAgents
+
+    override fun getPaymentPromotions(): List<PaymentCreditCardPromotion> = this.paymentPromotions
 
     override fun getConsentInfo(): ConsentInfoResponse? = this.consentInfo
     // endregion
@@ -1288,7 +1389,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
             val storePickup = StorePickup(this.branch!!.storeId)
             val subscribeCheckOut = AddressInfoExtensionBody(storePickup = storePickup)
-            createShippingInforWithClickAndCollect(STORE_PICK_UP_ISPU, subscribeCheckOut)
+            createShippingInforWithClickAndCollect(DeliveryType.STORE_PICK_UP_ISPU, subscribeCheckOut)
         }
     }
 
@@ -1296,26 +1397,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         return this.specialSKUList
                 ?: ReadFileHelper<List<Long>>().parseRawJson(this@PaymentActivity, R.raw.special_sku,
                         object : TypeToken<List<Long>>() {}.type, null)
-    }
-
-    // Get Bank Channels and Counter
-    private fun retrievePaymentInformation() {
-        cartId ?: return
-        showProgressDialog()
-        PaymentApi().retrievePaymentInformation(this, cartId!!,
-                object : ApiResponseCallback<List<PaymentAgent>> {
-                    override fun success(response: List<PaymentAgent>?) {
-                        if (response != null) {
-                            this@PaymentActivity.paymentAgents = response
-                        }
-                        startFragment(PaymentTransfersFragment())
-                        dismissProgressDialog()
-                    }
-
-                    override fun failure(error: APIError) {
-                        dismissProgressDialog()
-                    }
-                })
     }
 
     private fun backPressed() {

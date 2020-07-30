@@ -5,11 +5,6 @@ import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.response.*
 import java.util.*
 
-/**
- * Created by Anuphap Suwannamas on 12/9/2018 AD.
- * Email: Anupharpae@gmail.com
- */
-
 interface PaymentProtocol {
     fun getItems(): List<ShoppingCartItem>
     fun getTotalPrice(): Double
@@ -30,7 +25,13 @@ interface PaymentProtocol {
     fun getT1CardNumber(): String
     fun getCheckType(): CheckoutType
     fun getPaymentAgents(): List<PaymentAgent>
+    fun getPaymentPromotions(): List<PaymentCreditCardPromotion>
     fun getConsentInfo(): ConsentInfoResponse?
-    fun getCartTotal(): PaymentCartTotal?
+    fun getCartTotal(): CartTotal?
     fun getCacheItems(): List<CacheCartItem>
+    fun getSelectedPaymentMethod(): PaymentMethod
+    fun getSelectedPromotionId(): Int?
+
+    fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?)
+    fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?)
 }
