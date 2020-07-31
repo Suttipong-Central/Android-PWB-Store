@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,6 +17,7 @@ class InstallmentViewHolder(itemView: View, private val listener: PaymentItemCli
     private val radioPayment: RadioButton = itemView.radioPayment
     private val expandLayout: ConstraintLayout = itemView.expandLayout
     private val tvSelectPromotions: PowerBuyTextView = itemView.tvSelectPromotions
+    private val layoutSpinner: FrameLayout = itemView.layoutSpinner
     private val promotionOptions: AppCompatSpinner = itemView.promotionSpinner
 
     override fun bindView(item: PaymentMethodView.PaymentItemView) {
@@ -27,6 +29,7 @@ class InstallmentViewHolder(itemView: View, private val listener: PaymentItemCli
                 listener.onClickedPaymentItem(item.paymentMethod)
             }
         }
+        layoutSpinner.visibility = View.GONE
         tvSelectPromotions.visibility = View.GONE
         promotionOptions.visibility = View.GONE
     }

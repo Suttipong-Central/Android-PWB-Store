@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -27,6 +28,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
     private val radioPayment: RadioButton = itemView.radioPayment
     private val expandLayout: ConstraintLayout = itemView.expandLayout
     private val tvSelectPromotions: PowerBuyTextView = itemView.tvSelectPromotions
+    private val layoutSpinner: FrameLayout = itemView.layoutSpinner
     private val promotionOptions: AppCompatSpinner = itemView.promotionSpinner
     private val onPromotionItemSelectedCallback = object : AdapterView.OnItemSelectedListener {
         override fun onNothingSelected(adapter: AdapterView<*>?) {
@@ -49,6 +51,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
 
         // setup credit card promotions
         if (!item.promotions.isNullOrEmpty()) {
+            layoutSpinner.visibility = View.VISIBLE
             tvSelectPromotions.visibility = View.VISIBLE
             promotionOptions.visibility = View.VISIBLE
             val items = arrayListOf<PaymentPromotionView>()
@@ -75,6 +78,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
             }
             promotionOptions.onItemSelectedListener = onPromotionItemSelectedCallback
         } else {
+            layoutSpinner.visibility = View.GONE
             tvSelectPromotions.visibility = View.GONE
             promotionOptions.visibility = View.GONE
         }

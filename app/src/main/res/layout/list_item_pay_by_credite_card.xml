@@ -80,6 +80,7 @@
             app:layout_constraintTop_toBottomOf="@+id/ic_master_card" />
 
         <FrameLayout
+            android:id="@+id/layoutSpinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_padding_small"
