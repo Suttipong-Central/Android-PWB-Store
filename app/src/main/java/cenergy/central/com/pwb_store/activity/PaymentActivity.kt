@@ -838,7 +838,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         shippingSlot?.let {
             HomeDeliveryApi().createBookingSlot(this, cartId!!, it, object : ApiResponseCallback<ShippingSlot> {
                 override fun success(response: ShippingSlot?) {
-                    showPaymentOptions(paymentMethods)
+                    retrievePaymentInformation()
                 }
 
                 override fun failure(error: APIError) {
