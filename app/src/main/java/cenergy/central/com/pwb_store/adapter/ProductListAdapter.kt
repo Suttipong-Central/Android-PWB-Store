@@ -97,6 +97,7 @@ class ProductListAdapter(private val mContext: Context) : RecyclerView.Adapter<R
         val startPosition = mListViewType.size
         val products = productResponse.products
         for (product in products) {
+            // Verify have no sku in list then add new product
             if (skuList.indexOf(product.sku) == -1) {
                 skuList.add(product.sku)
                 product.attributeID = VIEW_TYPE_ID_GRID_VIEW

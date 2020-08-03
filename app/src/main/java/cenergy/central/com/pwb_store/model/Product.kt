@@ -37,7 +37,7 @@ class Product(
         var rating: Int? = 0,
         var shippingMethods: String = "",
         var paymentMethod: String = "",
-        var isHDL: Boolean = false,
+        var hasPromotions: Boolean = false,
         @SerializedName("extension_attributes")
         var extension: ProductExtension? = null,
         private var productImageList: ProductDetailImage? = null,

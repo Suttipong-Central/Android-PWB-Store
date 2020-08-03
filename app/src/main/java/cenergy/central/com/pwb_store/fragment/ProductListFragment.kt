@@ -28,6 +28,7 @@ import cenergy.central.com.pwb_store.dialogs.ProductFilterListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.retrieveProducts
+import cenergy.central.com.pwb_store.manager.api.PromotionAPI
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus
@@ -38,11 +39,9 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFil
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
 import cenergy.central.com.pwb_store.model.response.ProductResponse
+import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.realm.RealmController
-import cenergy.central.com.pwb_store.utils.Analytics
-import cenergy.central.com.pwb_store.utils.DialogUtils
-import cenergy.central.com.pwb_store.utils.ProductListSorting
-import cenergy.central.com.pwb_store.utils.Screen
+import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -61,8 +60,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     //Data Member
-    private var mProductListAdapter: ProductListAdapter? = null
-    private var mLayoutManger: GridLayoutManager? = null
+    private lateinit var mProductListAdapter: ProductListAdapter
+    private lateinit var mLayoutManger: GridLayoutManager
     private var categoriesLv3: ArrayList<Category>? = null
     private var mSortingList: SortingList? = null
     private var title: String? = null
@@ -248,7 +247,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     private fun initInstances(rootView: View, savedInstanceState: Bundle?) { // Init 'View' instance(s) with rootView.findViewById here
         mProductListAdapter = ProductListAdapter(rootView.context)
-        mProductListAdapter!!.showLoading()
+        mProductListAdapter.showLoading()
         // setup widget view
         val productTitle: PowerBuyTextView = rootView.findViewById(R.id.txt_title_product)
         val layoutFilter: ConstraintLayout = rootView.findViewById(R.id.layout_filter)
@@ -270,7 +269,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
         popUpShow()
         mLayoutManger = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
-        mLayoutManger!!.spanSizeLookup = mProductListAdapter!!.spanSize
+        mLayoutManger.spanSizeLookup = mProductListAdapter.spanSize
         mRecyclerView.layoutManager = mLayoutManger
         mRecyclerView.addItemDecoration(SpacesItemDecoration(0, LinearLayoutManager.VERTICAL))
         mRecyclerView.adapter = mProductListAdapter
@@ -435,14 +434,46 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
     }
 
+    private fun fetchSuggestionPromotions(skuList: String) {
+        context?.let {
+            PromotionAPI.retrievePromotionBySKUs(it, skuList, object : ApiResponseCallback<List<PromotionResponse>> {
+                override fun success(response: List<PromotionResponse>?) {
+                    if (response != null) {
+                        // find sku have promotions
+                        val skuOfPromotionList = response.filter { pr ->
+                            !pr.extension?.creditCardPromotions.isNullOrEmpty()
+                        }.map { p -> p.sku }
+                        // Update product hasPromotion
+                        this@ProductListFragment.productResponse?.products?.forEach { product ->
+                            product.hasPromotions = skuOfPromotionList.contains(product.sku)
+                        }
+                        this@ProductListFragment.productResponse?.let { it1 -> updateProductList(it1) }
+                    } else {
+                        this@ProductListFragment.productResponse?.let { it1 -> updateProductList(it1) }
+                    }
+                }
+
+                override fun failure(error: APIError) {
+                    activity?.showCommonDialog(error.errorMessage)
+                    this@ProductListFragment.productResponse?.let { it1 -> updateProductList(it1) }
+                    layoutProgress!!.visibility = View.GONE
+                    mProgressDialog!!.dismiss()
+                }
+            })
+        }
+    }
+
     private fun handleProductsResponse(response: ProductResponse?) {
         if (response != null) {
             this.productResponse = response
-            updateProductList(response)
-            // Fetch promotion-suggestion
+            val productSKUs = response.products.map { it.sku }
+            if (productSKUs.isNullOrEmpty())
+                updateProductList(response)
+            else
+                fetchSuggestionPromotions(productSKUs.joinToString(","))
         } else {
-            if (mProductListAdapter!!.itemCount == 0) {
-                mProductListAdapter!!.setError()
+            if (mProductListAdapter.itemCount == 0) {
+                mProductListAdapter.setError()
             }
             setTextHeader(totalItem, title)
             layoutProgress!!.visibility = View.GONE
@@ -485,9 +516,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                     }
                 }
             }
-            mProductListAdapter!!.setProduct(response)
+            mProductListAdapter.setProduct(response)
         } else {
-            mProductListAdapter!!.setError()
+            mProductListAdapter.setError()
         }
         setTextHeader(totalItem, title)
         // however must be update filter option

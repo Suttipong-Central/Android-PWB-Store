@@ -20,5 +20,5 @@ interface PromotionService {
             @Query("searchCriteria[filterGroups][0][filters][0][field]") fieldSKU: String,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") valueSKUs: String,
             @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") conditionType: String
-    ): Call<ArrayList<PromotionResponse>>
+    ): Call<List<PromotionResponse>>
 }
