@@ -103,7 +103,7 @@ android {
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
             buildConfigField 'boolean', 'ENABLE_VERIFY_PRODUCT_SALABEL', 'true'
             buildConfigField 'boolean', 'ENABLE_2H_PICKUP', 'true'
-            versionCode 127
+            versionCode 129
             versionName "1.2.2"
         }
 
