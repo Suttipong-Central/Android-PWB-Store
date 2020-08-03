@@ -606,6 +606,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (discountPrice > 0) {
             this.totalPrice -= discountPrice
         }
+        if (cartTotal.shippingAmount > 0){
+            this.totalPrice += cartTotal.shippingAmount
+        }
     }
 
     private fun updateOrderDetailView(cartTotal: CartTotal) {
@@ -749,7 +752,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                 if (response != null) {
                     // set payment methods
                     this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
-                    handleShippingInforSuccess(type)
+                    handleShippingInforSuccess(response.totals, type)
                 } else {
                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
                     mProgressDialog?.dismiss()
@@ -776,7 +779,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                                 if (response != null) {
                                     // set payment methods
                                     this@PaymentActivity.paymentMethods = filterPaymentMethods(response.paymentMethods)
-                                    handleShippingInforSuccess(type)
+                                    handleShippingInforSuccess(response.totals, type)
                                 } else {
                                     showCommonDialog(resources.getString(R.string.some_thing_wrong))
                                     mProgressDialog?.dismiss()
@@ -790,7 +793,8 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         })
     }
 
-    private fun handleShippingInforSuccess(type: DeliveryType) {
+    private fun handleShippingInforSuccess(cartTotal: CartTotal?, type: DeliveryType) {
+        cartTotal?.let { updateOrderDetailView(it) }
         if (type == DeliveryType.HOME) {
             createBookingHomeDelivery(paymentMethods)
         } else {

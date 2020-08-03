@@ -44,6 +44,7 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
     private fun updateOrderDetail() {
         cacheItems = RealmController.getInstance().cacheCartItems
         val cartTotal = paymentProtocol?.getCartTotal()
+        val deliveryOption = paymentProtocol?.getSelectedDeliveryType()
         cartTotal?.let {
             // setup product item
             val items = arrayListOf<OrderDetailView>()
@@ -74,11 +75,11 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
             }
 
             val detailItem = OrderDetailView.OrderDetail(
-                    orderTotal = totalPrice,
+                    orderTotal = (totalPrice + it.shippingAmount),
                     discount = discountPrice,
                     promotionCode = promotionDiscount,
-                    shippingFee = if (it.shippingAmount == 0.0) getString(R.string.not_found_shipping_amount) else it.shippingAmount.toPriceDisplay(),
-                    total = (it.totalPrice - it.shippingAmount)
+                    shippingFee = if (deliveryOption == null && it.shippingAmount == 0.0) getString(R.string.not_found_shipping_amount) else it.shippingAmount.toPriceDisplay(),
+                    total = it.totalPrice
             )
             items.add(detailItem)
             orderDetailAdapter.items = items
