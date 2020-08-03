@@ -18,13 +18,13 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 class ProductListAPI {
-    companion object{
+    companion object {
         @JvmStatic
         fun retrieveProducts(context: Context, pageSize: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
-                             sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
+                             sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>) {
             val apiManager = HttpManagerMagento.getInstance(context)
             val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
             val httpUrl = HttpUrl.Builder()

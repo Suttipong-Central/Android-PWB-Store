@@ -193,10 +193,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             categoryId = arguments!!.getString(ARG_DEPARTMENT_ID)
             categoryLv2 = arguments!!.getParcelable(ARG_CATEGORY)
             keyWord = arguments!!.getString(ARG_KEY_WORD)
-//            // no search
-//            if (!isSearch) { // setup product filter list
-//                loadCategoryLv3(categoryLv2)
-//            }
         }
         resetPage()
         setupSorting()
@@ -271,11 +267,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         if (isSearch) {
             layoutFilter.visibility = View.GONE
         }
-//        if (categoriesLv3 == null) {
-//            mProductLayout?.visibility = View.GONE
-//        } else {
-//            mProductLayout?.visibility = View.VISIBLE
-//        }
+
         popUpShow()
         mLayoutManger = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
         mLayoutManger!!.spanSizeLookup = mProductListAdapter!!.spanSize
@@ -420,81 +412,86 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 val sortOrder = createSortOrder(sortName!!, sortType!!)
                 sortOrders.add(sortOrder)
             }
-            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders, object : ApiResponseCallback<ProductResponse> {
-                override fun success(response: ProductResponse?) {
-                    if (activity != null) {
-                        activity!!.runOnUiThread {
-                            updateProductList(response)
-                        }
-                    }
-                }
 
-                override fun failure(error: APIError) {
-                    if (activity != null) {
-                        activity!!.runOnUiThread {
-                            layoutProgress!!.visibility = View.GONE
-                            mProgressDialog!!.dismiss()
-                            // show error dialog
-                            if (context != null) {
-                                DialogHelper(context!!).showErrorDialog(error)
+            retrieveProducts(context!!, PER_PAGE, nextPage, filterGroupsList, sortOrders,
+                    object : ApiResponseCallback<ProductResponse> {
+                        override fun success(response: ProductResponse?) {
+                            activity?.runOnUiThread {
+                                handleProductsResponse(response)
                             }
                         }
-                    }
-                }
-            })
+
+                        override fun failure(error: APIError) {
+                            activity?.runOnUiThread {
+                                layoutProgress!!.visibility = View.GONE
+                                mProgressDialog!!.dismiss()
+                                // show error dialog
+                                if (context != null) {
+                                    DialogHelper(context!!).showErrorDialog(error)
+                                }
+                            }
+                        }
+                    })
         }
     }
 
-    private fun updateProductList(response: ProductResponse?) {
+    private fun handleProductsResponse(response: ProductResponse?) {
         if (response != null) {
             this.productResponse = response
-            if (response.products.isNotEmpty()) {
-                totalItem = response.totalCount
-                totalPage = totalPageCal(totalItem)
-                currentPage = nextPage
-                response.currentPage = currentPage
-                // implement price per store if staff not chat and shop
-                if (!isChatAndShop()) {
-                    response.products.forEach { product ->
-                        val offlinePriceItem = product.getPricePerStore()
-                        if (offlinePriceItem != null) {
-                            product.price = offlinePriceItem.price
-                            if (offlinePriceItem.specialPrice > 0) {
-                                product.specialPrice = offlinePriceItem.specialPrice
-                                product.specialFromDate = null
-                                product.specialToDate = null
-                                if (offlinePriceItem.specialFromDate != null) {
-                                    product.specialFromDate = offlinePriceItem.specialFromDate
-                                }
-                                if (offlinePriceItem.specialToDate != null) {
-                                    product.specialToDate = offlinePriceItem.specialToDate
-                                }
-                            } else {
-                                product.specialPrice = 0.0
-                                product.specialFromDate = null
-                                product.specialToDate = null
-                            }
-                        } else {
-                            // this case is don't have offline price will display online normal price only
-                            product.specialPrice = 0.0
-                            product.specialFromDate = null
-                            product.specialToDate = null
-                        }
-                    }
-                }
-                mProductListAdapter!!.setProduct(response)
-            } else {
-                mProductListAdapter!!.setError()
-            }
-            setTextHeader(totalItem, title)
-            // however must be update filter option
-            (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet?)?.updateProductFilters()
+            updateProductList(response)
+            // Fetch promotion-suggestion
         } else {
             if (mProductListAdapter!!.itemCount == 0) {
                 mProductListAdapter!!.setError()
             }
             setTextHeader(totalItem, title)
+            layoutProgress!!.visibility = View.GONE
+            mProgressDialog!!.dismiss()
         }
+    }
+
+    private fun updateProductList(response: ProductResponse) {
+        if (response.products.isNotEmpty()) {
+            totalItem = response.totalCount
+            totalPage = totalPageCal(totalItem)
+            currentPage = nextPage
+            response.currentPage = currentPage
+            // implement price per store if staff not chat and shop
+            if (!isChatAndShop()) {
+                response.products.forEach { product ->
+                    val offlinePriceItem = product.getPricePerStore()
+                    if (offlinePriceItem != null) {
+                        product.price = offlinePriceItem.price
+                        if (offlinePriceItem.specialPrice > 0) {
+                            product.specialPrice = offlinePriceItem.specialPrice
+                            product.specialFromDate = null
+                            product.specialToDate = null
+                            if (offlinePriceItem.specialFromDate != null) {
+                                product.specialFromDate = offlinePriceItem.specialFromDate
+                            }
+                            if (offlinePriceItem.specialToDate != null) {
+                                product.specialToDate = offlinePriceItem.specialToDate
+                            }
+                        } else {
+                            product.specialPrice = 0.0
+                            product.specialFromDate = null
+                            product.specialToDate = null
+                        }
+                    } else {
+                        // this case is don't have offline price will display online normal price only
+                        product.specialPrice = 0.0
+                        product.specialFromDate = null
+                        product.specialToDate = null
+                    }
+                }
+            }
+            mProductListAdapter!!.setProduct(response)
+        } else {
+            mProductListAdapter!!.setError()
+        }
+        setTextHeader(totalItem, title)
+        // however must be update filter option
+        (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet?)?.updateProductFilters()
         layoutProgress!!.visibility = View.GONE
         mProgressDialog!!.dismiss()
     }
@@ -551,7 +548,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     override fun onSelectFilter(filter: FilterView.FilterCheckBoxView) {
-        if (moreFilter.firstOrNull{ it.first == filter.code} == null){
+        if (moreFilter.firstOrNull { it.first == filter.code } == null) {
             moreFilter.add(Pair(first = filter.code, second = arrayListOf(filter.filterItem.value)))
         } else {
             moreFilter.first { it.first == filter.code }.second.add(filter.filterItem.value)
@@ -562,8 +559,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     override fun onUnSelectFilter(filter: FilterView.FilterCheckBoxView) {
-        if (moreFilter.firstOrNull{ it.first == filter.code} != null) {
-            if (moreFilter.first { it.first == filter.code }.second.size > 1){
+        if (moreFilter.firstOrNull { it.first == filter.code } != null) {
+            if (moreFilter.first { it.first == filter.code }.second.size > 1) {
                 moreFilter.first { it.first == filter.code }.second.remove(filter.filterItem.value)
             } else {
                 moreFilter.remove(moreFilter.first { it.first == filter.code })
@@ -575,7 +572,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     override fun onResetFilter() {
-        if (categoryIdLv4 != null){
+        if (categoryIdLv4 != null) {
             categoryId = categoryIdLv4
         }
         moreFilter = arrayListOf()
