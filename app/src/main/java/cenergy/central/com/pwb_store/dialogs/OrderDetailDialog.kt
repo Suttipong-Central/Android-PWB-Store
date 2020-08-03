@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.dialogs
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,7 +48,7 @@ class OrderDetailDialog : BottomSheetDialogFragment() {
             // setup product item
             val items = arrayListOf<OrderDetailView>()
             cacheItems.sortedBy { c -> c.itemId }.mapTo(items, { cacheItem ->
-                val cartItem = it.items?.firstOrNull { cItem -> cacheItem.sku == cItem.sku }
+                val cartItem = it.items?.firstOrNull { cItem -> cacheItem.itemId == cItem.id }
                 OrderDetailView.OrderProduct(cacheItem.name ?: "",
                         cacheItem.imageUrl, (cartItem?.price ?: 0.0).toPriceDisplay(), cacheItem.qty
                         ?: 1)
