@@ -31,8 +31,8 @@ import cenergy.central.com.pwb_store.manager.api.PromotionAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartResponse
-import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.model.response.CartTotal
+import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.view.*
@@ -40,7 +40,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
@@ -347,15 +346,17 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         }
     }
 
-    private fun retrievePromotion(shoppingCartResponse: CartTotal){
-        if (cartResponse != null && cartResponse!!.items.isNotEmpty()){
+    private fun retrievePromotion(shoppingCartResponse: CartTotal) {
+        if (cartResponse != null && cartResponse!!.items.isNotEmpty()) {
             val skuList = cartResponse!!.items.map { it.sku }
             val result = TextUtils.join(",", skuList)
-            PromotionAPI.retrievePromotionBySKUs(this, result, object : ApiResponseCallback<ArrayList<PromotionResponse>>{
-                override fun success(response: ArrayList<PromotionResponse>?) {
-                    if (response != null)
-                    promotions = response
-                    updateViewShoppingCart(shoppingCartResponse)
+            PromotionAPI.retrievePromotionBySKUs(this, result, object : ApiResponseCallback<List<PromotionResponse>> {
+                override fun success(response: List<PromotionResponse>?) {
+                    if (response != null) {
+                        promotions.clear()
+                        promotions.addAll(response)
+                        updateViewShoppingCart(shoppingCartResponse)
+                    }
                 }
 
                 override fun failure(error: APIError) {
@@ -408,7 +409,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 promotionCode = shoppingCartResponse.couponCode
                 couponCodeEdt.setText(promotionCode)
             }
-            if (promotions.size > 1){
+            if (promotions.size > 1) {
                 var isPromotionEmpty = true
                 var isPromotionAllHave = true
                 val listDiscount: ArrayList<Int> = arrayListOf()
@@ -416,18 +417,18 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                  * List<SKU, List<DiscountAmount>>
                  */
                 promotions.toProductPromotions().forEach {
-                    if (it.second.isNotEmpty()){
+                    if (it.second.isNotEmpty()) {
                         isPromotionEmpty = false
                     } else {
                         isPromotionAllHave = false
                     }
                     listDiscount.addAll(it.second)
                 }
-                if (isPromotionEmpty){
+                if (isPromotionEmpty) {
                     // all empty not show
                     warningCreditCardTv.visibility = View.GONE
                 } else {
-                    if (isPromotionAllHave && listDiscount.distinct().size == 1){
+                    if (isPromotionAllHave && listDiscount.distinct().size == 1) {
                         // all have promotion and equal will show
                         warningCreditCardTv.visibility = View.GONE
                     } else {

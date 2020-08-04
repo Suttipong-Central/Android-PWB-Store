@@ -33,11 +33,11 @@ class PromotionAPI {
             })
         }
 
-        fun retrievePromotionBySKUs(context: Context, productSKUs: String, callback: ApiResponseCallback<ArrayList<PromotionResponse>>){
+        fun retrievePromotionBySKUs(context: Context, productSKUs: String, callback: ApiResponseCallback<List<PromotionResponse>>){
             val apiManager = HttpManagerMagento.getInstance(context)
             apiManager.promotionService.getPromotionSuggestionBySKUs(Constants.CLIENT_MAGENTO, apiManager.getLanguage(),"sku", productSKUs, "in")
-                    .enqueue(object : Callback<ArrayList<PromotionResponse>>{
-                        override fun onResponse(call: Call<ArrayList<PromotionResponse>>, response: Response<ArrayList<PromotionResponse>>) {
+                    .enqueue(object : Callback<List<PromotionResponse>>{
+                        override fun onResponse(call: Call<List<PromotionResponse>>, response: Response<List<PromotionResponse>>) {
                             if (response.isSuccessful) {
                                 callback.success(response.body())
                             } else {
@@ -45,7 +45,7 @@ class PromotionAPI {
                             }
                         }
 
-                        override fun onFailure(call: Call<ArrayList<PromotionResponse>>, t: Throwable) {
+                        override fun onFailure(call: Call<List<PromotionResponse>>, t: Throwable) {
                             callback.failure(APIError(t))
                         }
                     })

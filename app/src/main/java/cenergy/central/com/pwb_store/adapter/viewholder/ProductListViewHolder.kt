@@ -16,6 +16,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
     private val mImageView: ImageView = itemView.findViewById(R.id.img_product)
     private val productName: PowerBuyTextView = itemView.findViewById(R.id.txt_product_name)
+    private val promotionBadgeTextView: PowerBuyTextView = itemView.findViewById(R.id.promotionBadgeTextView)
     private val oldPrice: PowerBuyTextView = itemView.findViewById(R.id.txt_product_old_price)
     private val newPrice: PowerBuyTextView = itemView.findViewById(R.id.txt_product_new_price)
     private val productBrand: PowerBuyTextView = itemView.findViewById(R.id.txt_product_brand)
@@ -25,13 +26,13 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private val context = itemView.context
 
     fun setViewHolder(product: Product) {
-
         val unit = Contextor.getInstance().context.getString(R.string.baht)
         mImageView.setImageUrl(product.getImageUrl(), R.drawable.ic_placeholder)
-
         oldPrice.text = product.getDisplayOldPrice(unit)
         newPrice.text = product.getDisplaySpecialPrice(unit)
         saleText.text = context.getString(R.string.format_product_sale, product.getDiscountPercentage())
+        promotionBadgeTextView.text = context.getString(R.string.credit_card_on_top)
+        promotionBadgeTextView.visibility = if (product.hasPromotions) View.VISIBLE else View.INVISIBLE
 
         if (product.isSpecialPrice()) {
             showSpecialPrice()
