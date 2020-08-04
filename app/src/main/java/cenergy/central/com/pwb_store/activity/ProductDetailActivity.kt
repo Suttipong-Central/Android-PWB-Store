@@ -29,6 +29,7 @@ import cenergy.central.com.pwb_store.fragment.*
 import cenergy.central.com.pwb_store.fragment.ProductExtensionFragment.Companion.TAB_PROMOTION_FREEBIE
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.APIError
@@ -143,19 +144,16 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
     }
 
     private fun retrieveProductDetail() {
-        if (productSku != null) {
-            retrieveProduct(productSku!!)
-            return
-        }
-
-        if (productId != null) { // is barcode?
-            retrieveProductByBarcode(productId!!)
-            return
-        }
-
-        if (productJdaSku != null) { // is from offline store cds/rbs?
-            retrieveProductByProductJda(productJdaSku!!)
-            return
+        when {
+            productSku != null -> {
+                retrieveProduct(productSku!!)
+            }
+            productId != null -> { // is barcode?
+                retrieveProductByBarcode(productId!!)
+            }
+            productJdaSku != null -> { // is from offline store cds/rbs?
+                retrieveProductByProductJda(productJdaSku!!)
+            }
         }
     }
 
@@ -359,40 +357,40 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
     // region retrieve product
     private fun retrieveProductByBarcode(barcode: String) {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getProductByBarcode(barcode,
-                object : ApiResponseCallback<Product?> {
-                    override fun success(response: Product?) {
-                        runOnUiThread {
-                            handleGetProductSuccess(response)
-                        }
-                    }
+        ProductDetailApi().getProductByBarcode(this, barcode, object : ApiResponseCallback<Product?>{
+            override fun success(response: Product?) {
+                runOnUiThread {
+                    offlinePriceItem = response?.getPricePerStore()
+                    handleGetProductSuccess(response)
+                }
+            }
 
-                    override fun failure(error: APIError) {
-                        runOnUiThread {
-                            dismissProgressDialog()
-                            showCommonAPIErrorDialog(error)
-                        }
-                    }
-                })
+            override fun failure(error: APIError) {
+                runOnUiThread {
+                    dismissProgressDialog()
+                    showCommonAPIErrorDialog(error)
+                }
+            }
+        })
     }
 
     private fun retrieveProductByProductJda(jdaSku: String) {
         showProgressDialog()
-        HttpManagerMagento.getInstance(this).getProductByProductJda(jdaSku,
-                object : ApiResponseCallback<Product?> {
-                    override fun success(response: Product?) {
-                        runOnUiThread {
-                            handleGetProductSuccess(response)
-                        }
-                    }
+        ProductDetailApi().getProductByProductJda(this, jdaSku, object : ApiResponseCallback<Product?>{
+            override fun success(response: Product?) {
+                runOnUiThread {
+                    offlinePriceItem = response?.getPricePerStore()
+                    handleGetProductSuccess(response)
+                }
+            }
 
-                    override fun failure(error: APIError) {
-                        runOnUiThread {
-                            dismissProgressDialog()
-                            showCommonAPIErrorDialog(error)
-                        }
-                    }
-                })
+            override fun failure(error: APIError) {
+                runOnUiThread {
+                    dismissProgressDialog()
+                    showCommonAPIErrorDialog(error)
+                }
+            }
+        })
     }
 
     private fun retrieveProduct(sku: String) {

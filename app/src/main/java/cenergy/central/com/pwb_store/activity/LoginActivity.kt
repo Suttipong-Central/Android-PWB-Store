@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import cenergy.central.com.pwb_store.R
@@ -17,6 +18,7 @@ import cenergy.central.com.pwb_store.utils.Screen
 import cenergy.central.com.pwb_store.utils.showCommonDialog
 import cenergy.central.com.pwb_store.view.LanguageButton
 import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
 import cenergy.central.com.pwb_store.view.ProductCompareView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -26,6 +28,7 @@ class LoginActivity : BaseActivity(), UserLoginListener {
     // widget view
     private lateinit var networkStateView: NetworkStateView
     private lateinit var languageButton: LanguageButton
+    private lateinit var shoppingCart: PowerBuyShoppingCartView
 
     private val analytics by lazy { Analytics(this) }
 
@@ -57,6 +60,8 @@ class LoginActivity : BaseActivity(), UserLoginListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         languageButton = findViewById(R.id.switch_language_button)
+        shoppingCart = findViewById(R.id.shopping_cart)
+        shoppingCart.visibility = View.GONE
         handleChangeLanguage()
         if (intent != null) {
             if (intent.hasExtra(DeepLink.DEEP_LINK_EXTRA_PATH_SEGMENTS)) {

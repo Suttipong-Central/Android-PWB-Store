@@ -9,6 +9,7 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.asPostcode
 import cenergy.central.com.pwb_store.extensions.modifyToCdsType
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
+import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.service.*
@@ -652,52 +653,6 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 callback.failure(e.getResultError())
             }
         })
-    }
-
-    fun getProductByBarcode(barcode: String, callback: ApiResponseCallback<Product?>) {
-        val productService = retrofit.create(ProductService::class.java)
-        productService.getProductByBarcode(Constants.CLIENT_MAGENTO, getLanguage(), "barcode", barcode, "eq")
-                .enqueue(object : Callback<ProductSearchResponse> {
-                    override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
-                        if (response != null) {
-                            val productResponse = response.body()
-                            if (productResponse != null && productResponse.products.size > 0) {
-                                getProductDetail(productResponse.products[0].sku, callback)
-                            } else {
-                                callback.success(null)
-                            }
-                        } else {
-                            callback.failure(APIErrorUtils.parseError(response))
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable) {
-                        callback.failure(t.getResultError())
-                    }
-                })
-    }
-
-    fun getProductByProductJda(jda: String, callback: ApiResponseCallback<Product?>) {
-        val productService = retrofit.create(ProductService::class.java)
-        productService.getProductByBarcode(Constants.CLIENT_MAGENTO, getLanguage(), "jda_sku", jda, "eq")
-                .enqueue(object : Callback<ProductSearchResponse> {
-                    override fun onResponse(call: Call<ProductSearchResponse>?, response: Response<ProductSearchResponse>?) {
-                        if (response != null) {
-                            val productResponse = response.body()
-                            if (productResponse != null && productResponse.products.size > 0) {
-                                getProductDetail(productResponse.products[0].sku, callback)
-                            } else {
-                                callback.success(null)
-                            }
-                        } else {
-                            callback.failure(APIErrorUtils.parseError(response))
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ProductSearchResponse>?, t: Throwable) {
-                        callback.failure(t.getResultError())
-                    }
-                })
     }
     // end product
 
