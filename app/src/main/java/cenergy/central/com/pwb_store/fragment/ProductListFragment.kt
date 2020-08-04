@@ -520,8 +520,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             mProductListAdapter.setError()
         }
         setTextHeader(totalItem, title)
-        // however must be update filter option
-        (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet?)?.updateProductFilters()
+        // Update filter option
+        if (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null){
+            (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet).updateProductFilters()
+        }
         layoutProgress!!.visibility = View.GONE
         mProgressDialog!!.dismiss()
     }
