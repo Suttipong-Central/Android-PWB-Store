@@ -19,6 +19,17 @@ class FilterGroups(
         var filters: ArrayList<Filter> = arrayListOf()
 ){
     companion object{
+        // field
+        const val FIELD_STATUS = "status"
+        const val FIELD_VISIBILITY = "visibility"
+        const val FIELD_PRICE = "price"
+        const val FIELD_MARKETPLACE_SELLER = "marketplace_seller"
+
+        // condition type
+        const val CONDITION_EQUAL = "eq"
+        const val CONDITION_GET_THAN = "gt"
+        const val CONDITION_NULL = "null"
+
         fun createFilterGroups(field: String, value: String, conditionType: String): FilterGroups{
             val filter = Filter.createFilter(field = field,value =  value,conditionType =  conditionType)
             val filterList = arrayListOf<Filter>()
@@ -31,6 +42,17 @@ class FilterGroups(
             val filterList = arrayListOf<Filter>()
             filterList.add(filter)
             return FilterGroups(filterList)
+        }
+
+        fun getDefaultFilterGroup(): ArrayList<FilterGroups>{
+            val filterGroupsList: ArrayList<FilterGroups> = arrayListOf()
+            filterGroupsList.add(createFilterGroups(FIELD_STATUS, "1", CONDITION_EQUAL))
+            filterGroupsList.add(createFilterGroups(FIELD_VISIBILITY, "4", CONDITION_EQUAL))
+            filterGroupsList.add(createFilterGroups(FIELD_PRICE, "0", CONDITION_GET_THAN))
+
+            // TODO We have to do not display market place product
+            filterGroupsList.add(createFilterGroups(FIELD_MARKETPLACE_SELLER, CONDITION_NULL))
+            return  filterGroupsList
         }
     }
 }

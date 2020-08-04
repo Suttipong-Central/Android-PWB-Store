@@ -401,12 +401,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             if (BuildConfig.FLAVOR !== "cds") {
                 filterGroupsList.add(createFilterGroups(PRODUCT_2H_FIELD, PRODUCT_2H_VALUE, "eq"))
             }
-            filterGroupsList.add(createFilterGroups("status", "1", "eq"))
-            filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
-            filterGroupsList.add(createFilterGroups("price", "0", "gt"))
-
-            // TODO We have to do not display market place product
-            filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
 
             if (moreFilter.isNotEmpty()) {
                 moreFilter.forEach {
@@ -414,6 +408,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                     filterGroupsList.add(createFilterGroups(it.first, filterValues, "in"))
                 }
             }
+
+            /**
+             * must be add default filter group
+             */
+            filterGroupsList.addAll(FilterGroups.getDefaultFilterGroup())
 
             val sortOrders = ArrayList<SortOrder>()
             if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
