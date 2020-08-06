@@ -2,19 +2,22 @@ package cenergy.central.com.pwb_store.activity.interfaces
 
 import cenergy.central.com.pwb_store.model.DeliveryInfo
 import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.response.CreditCardPromotion
 
 interface ProductDetailListener {
     fun getProduct(): Product?
     fun getChildProduct(): ArrayList<Product>
     fun getDeliveryInfoList():  List<DeliveryInfo>
-    fun getBadgeSelects(): ArrayList<String>
+    fun getBadgeSelects(): ArrayList<Int>
     fun getFreebieSKUs(): ArrayList<String>
     fun getFreeItems(): ArrayList<Product>
+    fun getCreditCardPromotionList(): ArrayList<CreditCardPromotion>
 
     fun setDeliveryInfoList(deliveryInfos: List<DeliveryInfo>)
-    fun setBadgeSelects(badgeSelects: ArrayList<String>)
+    fun setBadgeSelects(badgeSelects: ArrayList<Int>)
     fun setFreebieSKUs(freebieSKUs: ArrayList<String>)
     fun setFreeItems(freeItems: ArrayList<Product>)
+    fun setCreditCardPromotionList(creditCardPromotionList: ArrayList<CreditCardPromotion>)
 
     fun addProductToCompare(product: Product?, isCompare: Boolean)
     fun addProductToCart(product: Product?)

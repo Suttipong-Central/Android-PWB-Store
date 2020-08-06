@@ -33,7 +33,7 @@
                 android:layout_height="@dimen/size_bank_image"
                 android:layout_marginStart="@dimen/margin_padding_xsmall"
                 android:contentDescription="@string/payment_bank_transfer"
-                tools:src="@drawable/ic_credit_card_24dp" />
+                tools:src="@drawable/ic_credit_card" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/tvPromotion"

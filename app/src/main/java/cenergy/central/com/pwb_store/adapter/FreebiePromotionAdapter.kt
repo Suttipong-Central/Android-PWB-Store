@@ -13,26 +13,26 @@ import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.utils.Analytics
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
-class DisplayPromotionAdapter : RecyclerView.Adapter<DisplayPromotionViewHolder>() {
+class FreebiePromotionAdapter : RecyclerView.Adapter<FreebiePromotionViewHolder>() {
     var items: ArrayList<Product> = arrayListOf()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DisplayPromotionViewHolder {
-        return DisplayPromotionViewHolder(LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FreebiePromotionViewHolder {
+        return FreebiePromotionViewHolder(LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item_freebie, parent, false))
     }
 
     override fun getItemCount(): Int = items.size
 
-    override fun onBindViewHolder(holder: DisplayPromotionViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: FreebiePromotionViewHolder, position: Int) {
         holder.bind(items[position])
     }
 }
 
-class DisplayPromotionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class FreebiePromotionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val productImg = itemView.findViewById<ImageView>(R.id.imgProduct)
     private val productName = itemView.findViewById<PowerBuyTextView>(R.id.freebieNameTv)
     private val outOfStockTv = itemView.findViewById<PowerBuyTextView>(R.id.tvOutOfStock)

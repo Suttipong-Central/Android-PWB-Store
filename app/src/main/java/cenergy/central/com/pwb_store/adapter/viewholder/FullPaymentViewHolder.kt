@@ -151,7 +151,7 @@ class CreditCardPromotionAdapter(context: Context, items: MutableList<PaymentPro
     private fun setItemPromotionDefault(view: View, item: PaymentPromotionView.PromotionDefaultView) {
         // set border color
         view.groupLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
-        view.ivBankImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_credit_card_24dp))
+        view.ivBankImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_credit_card))
         view.tvPromotion.text = item.title
         view.tvPromotion.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
     }

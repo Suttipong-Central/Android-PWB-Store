@@ -60,7 +60,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
 
             if (promotion != null && !promotion.creditCardPromotions.isNullOrEmpty()){
-                badgeCreditCard.text = context.getString(R.string.credit_card_on_top)
+                badgeCreditCard.text = context.getString(R.string.badge_credit_card_on_top)
                 badgeCreditCard.visibility = View.VISIBLE
             } else {
                 badgeCreditCard.visibility = View.GONE

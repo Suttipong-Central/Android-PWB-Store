@@ -385,25 +385,28 @@
     <string name="not_found_shipping_amount">ยังไม่ได้คำนวณ</string>
     <string name="label_your_order_detail">รายละเอียดการสั่งสินค้า</string>
 
-    <!--  Promotion freebie  -->
-    <string name="get_free_item">รับฟรีของแถม:</string>
-    <string name="free">ฟรี</string>
-    <string name="freebie_promotion_not_found">ไม่มีโปรโมชั่นสำหรับสินค้าชิ้นนี้</string>
-    <string name="freebie_out_of_stock">สินค้าหมด</string>
-
-
     <!--  Filter  -->
     <string name="filter_cancel">X</string>
     <string name="filter_by">ตัวกรอง</string>
     <string name="reset_filter">รีเซต</string>
     <string name="format_add_filter">ตกลง (%d สินค้า)</string>
 
+    <!--  Promotion freebie  -->
+    <string name="badge_free_item">ฟรีของแถม</string>
+    <string name="get_free_item">รับฟรีของแถม:</string>
+    <string name="free">ฟรี</string>
+    <string name="freebie_promotion_not_found">ไม่มีโปรโมชั่นสำหรับสินค้าชิ้นนี้</string>
+    <string name="freebie_out_of_stock">สินค้าหมด</string>
+
     <!-- Credit card on top -->
-    <string name="credit_card_on_top">รูดบัตรลดเพิ่ม</string>
+    <string name="badge_credit_card_on_top">รูดบัตรลดเพิ่ม</string>
     <string name="warning_credit_care_on_top">ในรถเข็นมีสินค้าที่ร่วมโปรโมชั่นบัตรเครดิตที่ต่างกันอยู่ กรุณาแยกทำรายการเพื่อรับโปรโมชั่นดังกล่าว</string>
 
     <!--  Credit Card Promotion  -->
     <string name="select_credit_card_promotion">เลือกบัตรเครดิต</string>
     <string name="default_credit_card_promotion">ธนาคารอื่นๆ</string>
     <string name="format_credit_card_promotion">รับส่วนลดทันที %d%%</string>
+    <string name="format_percent">%d%%</string>
+    <string name="format_get_more_percent">ลดเพิ่ม %d%%</string>
+    <string name="title_credit_card_on_top">ส่วนลดเพิ่มบัตรเครดิตเมื่อจ่ายเต็มจำนวน</string>
 </resources>

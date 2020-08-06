@@ -404,24 +404,28 @@
     <string name="label_your_order_detail">Your Order Details</string>
     <string name="format_product_sale" translatable="false">%d%%</string>
 
-    <!--  Promotion freebie  -->
-    <string name="get_free_item">Free items with this product:</string>
-    <string name="free">FREE</string>
-    <string name="freebie_promotion_not_found">No promotion for this product</string>
-    <string name="freebie_out_of_stock">OUT OF STOCK</string>
-
     <!--  Filter  -->
     <string name="filter_cancel">X</string>
     <string name="filter_by">Filter by</string>
     <string name="reset_filter">Reset</string>
     <string name="format_add_filter">Apply (%d items)</string>
 
+    <!--  Promotion freebie  -->
+    <string name="badge_free_item">Free Item</string>
+    <string name="get_free_item">Free items with this product:</string>
+    <string name="free">FREE</string>
+    <string name="freebie_promotion_not_found">No promotion for this product</string>
+    <string name="freebie_out_of_stock">OUT OF STOCK</string>
+
     <!-- Credit card on top -->
-    <string name="credit_card_on_top">Credit Card On-Top</string>
+    <string name="badge_credit_card_on_top">Credit Card On-Top</string>
     <string name="warning_credit_care_on_top">You combine products with different credit card promotions. Please split order to get each promotion separately.</string>
 
     <!--  Credit Card Promotion  -->
     <string name="select_credit_card_promotion">Select Credit Card</string>
     <string name="default_credit_card_promotion">Other Banks</string>
     <string name="format_credit_card_promotion">Enjoy additional %d%% off!</string>
+    <string name="format_percent">%d%%</string>
+    <string name="format_get_more_percent">Extra %d%% Off</string>
+    <string name="title_credit_card_on_top">Credit card on-top promotion discount when create full payment</string>
 </resources>

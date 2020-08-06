@@ -38,6 +38,7 @@ import cenergy.central.com.pwb_store.model.OfflinePriceItem
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
+import cenergy.central.com.pwb_store.model.response.CreditCardPromotion
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -73,9 +74,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
     private var deliveryInfoList = arrayListOf<DeliveryInfo>()
 
     // promotion tab
-    private var badgesSelects: ArrayList<String> = arrayListOf()
+    private var badgesSelects: ArrayList<Int> = arrayListOf()
     private var freebieSKUs: ArrayList<String> = arrayListOf()
     private var freeItems: ArrayList<Product> = arrayListOf()
+    private var creditCardPromotionList: ArrayList<CreditCardPromotion> = arrayListOf()
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
@@ -327,7 +329,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
         this.freebieSKUs = freebieSKUs
     }
 
-    override fun setBadgeSelects(badgeSelects: ArrayList<String>) {
+    override fun setBadgeSelects(badgeSelects: ArrayList<Int>) {
         this.badgesSelects = badgeSelects
     }
 
@@ -335,13 +337,19 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
         this.freeItems = freeItems
     }
 
-    override fun getBadgeSelects(): ArrayList<String> = this.badgesSelects
+    override fun setCreditCardPromotionList(creditCardPromotionList: ArrayList<CreditCardPromotion>) {
+        this.creditCardPromotionList = creditCardPromotionList
+    }
+
+    override fun getBadgeSelects(): ArrayList<Int> = this.badgesSelects
 
     override fun getFreeItems(): ArrayList<Product> = this.freeItems
 
     override fun getFreebieSKUs(): ArrayList<String> = this.freebieSKUs
 
+    override fun getCreditCardPromotionList(): ArrayList<CreditCardPromotion> = this.creditCardPromotionList
     // region badgeListener
+
     override fun onBadgeSelectedListener(position: Int) {
         val fragment = supportFragmentManager.findFragmentByTag(TAG_EXTENSION_FRAGMENT)
         val childFragment = (fragment as ProductExtensionFragment).childFragmentManager.findFragmentByTag(TAB_PROMOTION_FREEBIE)

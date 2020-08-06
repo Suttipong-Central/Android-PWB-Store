@@ -9,12 +9,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.BadgeSelectAdapter
-import cenergy.central.com.pwb_store.adapter.DisplayPromotionAdapter
+import cenergy.central.com.pwb_store.adapter.CreditCardPromotionAdapter
+import cenergy.central.com.pwb_store.adapter.FreebiePromotionAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.api.PromotionAPI
@@ -22,6 +24,7 @@ import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
+import cenergy.central.com.pwb_store.model.response.CreditCardPromotion
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.utils.DialogUtils
@@ -31,12 +34,14 @@ class ProductPromotionFragment : Fragment() {
 
     private var progressDialog: ProgressDialog? = null
     private var product: Product? = null
-    private var badgesSelects: ArrayList<String> = arrayListOf()
+    private var badgesSelects: ArrayList<Int> = arrayListOf()
     private var freebieSKUs: ArrayList<String> = arrayListOf()
     private var freeItems: ArrayList<Product> = arrayListOf()
+    private var creditCardOnTopList: ArrayList<CreditCardPromotion> = arrayListOf()
     private var productDetailListener: ProductDetailListener? = null
     private val badgeSelectAdapter: BadgeSelectAdapter by lazy { BadgeSelectAdapter() }
-    private val displayPromotionAdapter: DisplayPromotionAdapter by lazy { DisplayPromotionAdapter() }
+    private val freebiePromotionAdapter: FreebiePromotionAdapter by lazy { FreebiePromotionAdapter() }
+    private val creditCardPromotionAdapter: CreditCardPromotionAdapter by lazy { CreditCardPromotionAdapter() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -53,13 +58,14 @@ class ProductPromotionFragment : Fragment() {
         badgesSelects = productDetailListener?.getBadgeSelects() ?: arrayListOf()
         freebieSKUs = productDetailListener?.getFreebieSKUs() ?: arrayListOf()
         freeItems = productDetailListener?.getFreeItems() ?: arrayListOf()
+        creditCardOnTopList = productDetailListener?.getCreditCardPromotionList() ?: arrayListOf()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isAdded) {
             setupView()
-            if (badgesSelects.isEmpty() || freebieSKUs.isEmpty()) {
+            if (badgesSelects.isEmpty()) {
                 product?.let { retrievePromotion(it) }
             } else {
                 badgeSelectAdapter.badgesSelect = badgesSelects
@@ -73,17 +79,33 @@ class ProductPromotionFragment : Fragment() {
         when (badgesSelects[position]) {
             FREEBIE_ITEM -> {
                 if (freebieSKUs.isNotEmpty()) {
+                    titleDisplayPromotion.text = getString(R.string.get_free_item)
+                    icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_freebie))
                     if (freeItems.isNotEmpty()) {
-                        displayPromotionAdapter.items = freeItems
+                        freebiePromotionAdapter.items = freeItems
                         tvPromotionNotFound.visibility = View.GONE
-                        groupDisplayPromotion.visibility = View.VISIBLE
+                        groupFreeItemPromotion.visibility = View.VISIBLE
                     } else {
                         retrieveProductFreebies(freebieSKUs)
                     }
+                    displayPromotionRecycler.adapter = freebiePromotionAdapter
+                    tvPromotionNotFound.visibility = View.GONE
+                    groupFreeItemPromotion.visibility = View.VISIBLE
                 } else {
-                    Log.d(TAG_LOG_PROMOTION, "freebieSKUs is Empty")
-                    tvPromotionNotFound.visibility = View.VISIBLE
-                    groupDisplayPromotion.visibility = View.GONE
+                    displayNotHavePromotion()
+                }
+            }
+
+            CREDIT_CARD_ON_TOP -> {
+                if (creditCardOnTopList.isNotEmpty()){
+                    titleDisplayPromotion.text = getString(R.string.title_credit_card_on_top)
+                    icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_credit_card_white))
+                    creditCardPromotionAdapter.items = creditCardOnTopList
+                    displayPromotionRecycler.adapter = creditCardPromotionAdapter
+                    tvPromotionNotFound.visibility = View.GONE
+                    groupFreeItemPromotion.visibility = View.VISIBLE
+                } else {
+                    displayNotHavePromotion()
                 }
             }
         }
@@ -95,7 +117,6 @@ class ProductPromotionFragment : Fragment() {
             displayPromotionRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             badgeSelectAdapter.setListener(context)
             badgeRecycler.adapter = badgeSelectAdapter
-            displayPromotionRecycler.adapter = displayPromotionAdapter
             displayPromotionRecycler.setHasFixedSize(true)
         }
     }
@@ -105,36 +126,47 @@ class ProductPromotionFragment : Fragment() {
             showProgressDialog()
             PromotionAPI.retrievePromotion(context, product, object : ApiResponseCallback<PromotionResponse> {
                 override fun success(response: PromotionResponse?) {
-                    if (response?.extension != null && response.extension!!.freeItems.isNotEmpty()) {
-                        response.extension!!.freeItems[0].freebies.forEach {
-                            freebieSKUs.add(it.sku)
+                    if (response?.extension != null) {
+                        // Free item
+                        if (response.extension!!.freeItems.isNotEmpty()){
+                            response.extension!!.freeItems[0].freebies.forEach {
+                                freebieSKUs.add(it.sku)
+                            }
+                            badgesSelects.add(FREEBIE_ITEM)
+                            productDetailListener?.setFreebieSKUs(freebieSKUs)
                         }
-                        badgesSelects.add(FREEBIE_ITEM)
-                        productDetailListener?.setBadgeSelects(badgesSelects)
-                        productDetailListener?.setFreebieSKUs(freebieSKUs)
-                        //TODO next implement installment
-                        badgeSelectAdapter.badgesSelect = badgesSelects
-                        // Set default select is 0
-                        badgeSelected(0)
-                        dismissProgressDialog()
-                        tvPromotionNotFound.visibility = View.GONE
-                        groupDisplayPromotion.visibility = View.VISIBLE
+                        // CC on top
+                        if (response.extension!!.creditCardPromotions.isNotEmpty()){
+                            badgesSelects.add(CREDIT_CARD_ON_TOP)
+                            creditCardOnTopList.addAll(response.extension!!.creditCardPromotions)
+                            productDetailListener?.setCreditCardPromotionList(creditCardOnTopList)
+                        }
+                        if (badgesSelects.isNotEmpty()){
+                            productDetailListener?.setBadgeSelects(badgesSelects)
+                            badgeSelectAdapter.badgesSelect = badgesSelects
+                            // Set default select is
+                            badgeSelected(0)
+                        } else {
+                            displayNotHavePromotion()
+                        }
                     } else {
-                        Log.d(TAG_LOG_PROMOTION, "PromotionResponse is Null")
-                        dismissProgressDialog()
-                        tvPromotionNotFound.visibility = View.VISIBLE
-                        groupDisplayPromotion.visibility = View.GONE
+                        displayNotHavePromotion()
                     }
+                    dismissProgressDialog()
                 }
 
                 override fun failure(error: APIError) {
                     Log.d(TAG_LOG_PROMOTION, "${error.errorCode} ${error.errorMessage}")
                     dismissProgressDialog()
-                    tvPromotionNotFound.visibility = View.VISIBLE
-                    groupDisplayPromotion.visibility = View.GONE
+                    displayNotHavePromotion()
                 }
             })
         }
+    }
+
+    private fun displayNotHavePromotion(){
+        tvPromotionNotFound.visibility = View.VISIBLE
+        groupFreeItemPromotion.visibility = View.GONE
     }
 
     private fun retrieveProductFreebies(freebieSKUs: ArrayList<String>) {
@@ -151,12 +183,9 @@ class ProductPromotionFragment : Fragment() {
                         dismissProgressDialog()
                         if (response != null) {
                             productDetailListener?.setFreeItems(response.products)
-                            displayPromotionAdapter.items = response.products
-                            groupDisplayPromotion.visibility = View.VISIBLE
+                            freebiePromotionAdapter.items = response.products
                         } else {
-                            Log.d(TAG_LOG_PROMOTION, "ProductResponse is Null")
-                            tvPromotionNotFound.visibility = View.VISIBLE
-                            groupDisplayPromotion.visibility = View.GONE
+                            displayNotHavePromotion()
                         }
                     }
                 }
@@ -165,8 +194,7 @@ class ProductPromotionFragment : Fragment() {
                     (context as Activity).runOnUiThread {
                         Log.d(TAG_LOG_PROMOTION, "${error.errorCode} ${error.errorMessage}")
                         dismissProgressDialog()
-                        tvPromotionNotFound.visibility = View.VISIBLE
-                        groupDisplayPromotion.visibility = View.GONE
+                        displayNotHavePromotion()
                     }
                 }
             })
@@ -187,8 +215,8 @@ class ProductPromotionFragment : Fragment() {
     }
 
     companion object {
-        const val FREEBIE_ITEM = "Free Item"
-        const val INSTALLMENT_0_PERCENT = "0% Installment"
+        val FREEBIE_ITEM = 0
+        val CREDIT_CARD_ON_TOP = 1
         const val TAG_LOG_PROMOTION = "Product Promotion Tab"
     }
 }

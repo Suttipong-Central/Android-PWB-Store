@@ -1,5 +1,6 @@
 package cenergy.central.com.pwb_store.model.response
 
+import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
 
 open class PromotionResponse(
@@ -43,7 +44,12 @@ open class CreditCardPromotion(
         var discountQty: Int = 0,
         @SerializedName("discount_step")
         var discountStep: Int = 0
-)
+){
+        fun getBankImageUrl(): String {
+                // example -> /media/banks/ktc22x22.jpg
+                return "${Constants.BASE_URL_MAGENTO}/media/$bankIcon"
+        }
+}
 
 open class FreeItems(
         var freebies: ArrayList<Freebie> = arrayListOf(),
