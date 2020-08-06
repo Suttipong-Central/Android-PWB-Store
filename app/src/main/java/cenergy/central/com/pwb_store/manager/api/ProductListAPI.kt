@@ -3,6 +3,7 @@ package cenergy.central.com.pwb_store.manager.api
 import android.content.Context
 import android.util.Log
 import cenergy.central.com.pwb_store.Constants
+import cenergy.central.com.pwb_store.extensions.isChatAndShop
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.body.FilterGroups
@@ -29,7 +30,7 @@ class ProductListAPI {
             val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
             val httpUrl = HttpUrl.Builder()
                     .scheme("https")
-                    .host(Constants.PWB_HOST_NAME)
+                    .host(Constants.MDC_HOST_NAME)
                     .addPathSegments("rest/catalog-service/${apiManager.getLanguage()}/V1/products/search")
                     .build()
 

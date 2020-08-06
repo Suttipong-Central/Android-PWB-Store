@@ -7,11 +7,12 @@ import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.CategoryUtils
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.asPostcode
+import cenergy.central.com.pwb_store.extensions.isChatAndShop
 import cenergy.central.com.pwb_store.extensions.modifyToCdsType
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
-import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.api.PwbMemberApi
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.*
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.*
@@ -35,12 +36,11 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
-class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
-
+class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false) {
     private var retrofit: Retrofit
     var defaultHttpClient: OkHttpClient
     private var database = RealmController.getInstance()
-    private val preferenceManager by lazy { cenergy.central.com.pwb_store.manager.preferences.PreferenceManager(context) }
+    private val preferenceManager by lazy { PreferenceManager(context) }
 
     var cartService: CartService
     var hdlService: HDLService
@@ -58,7 +58,10 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                 .followSslRedirects(false)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
-                    val request = chain.request().newBuilder().build()
+                    val request = chain.request().newBuilder()
+                            .addHeader(CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+//                            .addHeader(CLIENT_TYPE, ) 
+                            .build()
                     chain.proceed(request)
                 }
                 .addInterceptor(interceptor)
@@ -82,6 +85,11 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         const val HEADER_AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"
         const val OPEN_ORDER_CREATED_PAGE = "OpenOrderCreatedPage"
+        const val CLIENT_NAME = "client" // only e-ordering
+        const val CLIENT_TYPE = "client_type" // staff or chat & shop
+        const val CLIENT_NAME_E_ORDERING = "e-ordering"
+        const val CLIENT_TYPE_STAFF = "staff"
+        const val CLIENT_TYPE_CHAT_AND_SHOP = "chat & shop"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
@@ -231,7 +239,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         val httpUrl = if (includeInMenu) {
             HttpUrl.Builder()
                     .scheme("https")
-                    .host(Constants.PWB_HOST_NAME)
+                    .host(Constants.MDC_HOST_NAME)
                     .addPathSegments("rest/${getLanguage()}/V1/categories/list")
                     .addQueryParameter("searchCriteria[filterGroups][0][filters][0][field]", "include_in_menu")
                     .addQueryParameter("searchCriteria[filterGroups][0][filters][0][value]", "1")
@@ -243,7 +251,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         } else {
             HttpUrl.Builder()
                     .scheme("https")
-                    .host(Constants.PWB_HOST_NAME)
+                    .host(Constants.MDC_HOST_NAME)
                     .addPathSegments("rest/${getLanguage()}/V1/categories/list")
                     .addQueryParameter("searchCriteria[filterGroups][1][filters][0][field]", "parent_id")
                     .addQueryParameter("searchCriteria[filterGroups][1][filters][0][value]", categoryId)
@@ -332,7 +340,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
+                .host(Constants.MDC_HOST_NAME)
                 .addPathSegments(ProductDetailApi().getPath(getLanguage(), sku))
                 .build()
 
@@ -592,7 +600,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     fun getAvailableStore(sku: String, callback: ApiResponseCallback<List<StoreAvailable>>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
+                .host(Constants.MDC_HOST_NAME)
                 .addPathSegments("${getLanguage()}/rest/V1/storepickup/stores/active/$sku")
                 .build()
 
@@ -715,7 +723,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
                    callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
         // is chat and shop user?
-        val retailerId = if (isChatAndShop){
+        val retailerId = if (isChatAndShop) {
             null // is chat and shop must be null
         } else {
             database?.userInformation?.store?.storeId?.toInt()
@@ -869,7 +877,7 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     fun getPWBCustomer(telephone: String, callback: ApiResponseCallback<List<EOrderingMember>>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
+                .host(Constants.MDC_HOST_NAME)
                 .addPathSegments(PwbMemberApi().getPath(getLanguage()))
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][field]", "telephone")
                 .addQueryParameter("searchCriteria[filter_groups][0][filters][0][value]", telephone)
@@ -1150,13 +1158,15 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
     fun createRequestHttps(path: String): Request {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
+                .host(Constants.MDC_HOST_NAME)
                 .addPathSegments(path)
                 .build()
 
         return Request.Builder()
                 .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .addHeader(CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                .addHeader(CLIENT_TYPE, if (context.isChatAndShop()) CLIENT_TYPE_CHAT_AND_SHOP else CLIENT_TYPE_STAFF)
                 .build()
     }
 }

@@ -8,6 +8,7 @@ import android.widget.Toast
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.extensions.isChatAndShop
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -318,7 +319,7 @@ class CartUtils(private val context: Context) {
     fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotal>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
+                .host(Constants.MDC_HOST_NAME)
                 .addPathSegments("rest/${requestLanguage(context)}/V1/guest-carts/$cartId/totals")
                 .build()
 

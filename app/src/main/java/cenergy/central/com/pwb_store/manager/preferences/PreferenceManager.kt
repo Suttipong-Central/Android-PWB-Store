@@ -17,6 +17,11 @@ class PreferenceManager(private var context: Context) {
         editor.apply()
     }
 
+    //TODO: Store userInfo in sharepreference
+    fun setUserToken(token: String) {
+
+    }
+
     val isAddressLoaded: Boolean
         get() = pref.getBoolean(PREF_ADDRESS_LOADED, false)
 
@@ -108,6 +113,11 @@ class PreferenceManager(private var context: Context) {
         const val PREF_X_API_KEY = "pref_x_api_key"
         const val PREF_SERVICE_NAME = "pref_service_name"
         const val PREF_X_API_KEY_CONSENT = "pref_x_api_key_consent"
+
+        const val PREF_USER_TOKEN ="pref_user_token"
+        const val PREF_USER_ID ="pref_user_id"
+        const val PREF_USER_STAFF_ID ="pref_user_staff_id"
+        const val PREF_USER_LEVEL_ID ="pref_user_level_id"
     }
 }
 
