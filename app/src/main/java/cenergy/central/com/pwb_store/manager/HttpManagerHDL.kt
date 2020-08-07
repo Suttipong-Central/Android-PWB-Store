@@ -83,46 +83,6 @@ class HttpManagerHDL(var context: Context) {
         }
     }
 
-    fun getShippingSlot(shippingSlotBody: ShippingSlotBody, callback: ApiResponseCallback<ShippingSlotResponse>) {
-        if (isSecretKeyNotNull()) {
-            val mHDLService = retrofit.create(HDLService::class.java)
-            mHDLService.getShippingSlot("application/json", shippingSlotBody).enqueue(object : Callback<ShippingSlotResponse> {
-                override fun onResponse(call: Call<ShippingSlotResponse>?, response: Response<ShippingSlotResponse>?) {
-                    if (response != null && response.isSuccessful) {
-                        val orderResponse = response.body()
-                        callback.success(orderResponse)
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
-                    }
-                }
-
-                override fun onFailure(call: Call<ShippingSlotResponse>?, t: Throwable) {
-                    callback.failure(t.getResultError())
-                }
-            })
-        } else {
-            userLogout(context)
-        }
-    }
-
-    fun createBooking(bookingShippingSlotBody: BookingShippingSlotBody, callback: ApiResponseCallback<BookingNumberResponse>) {
-        val mHDLService = retrofit.create(HDLService::class.java)
-        mHDLService.createBooking("application/json", bookingShippingSlotBody).enqueue(object : Callback<BookingNumberResponse> {
-            override fun onResponse(call: Call<BookingNumberResponse>?, response: Response<BookingNumberResponse>?) {
-                if (response != null && response.isSuccessful) {
-                    val orderResponse = response.body()
-                    callback.success(orderResponse)
-                } else {
-                    callback.failure(APIErrorUtils.parseError(response))
-                }
-            }
-
-            override fun onFailure(call: Call<BookingNumberResponse>?, t: Throwable) {
-                callback.failure(t.getResultError())
-            }
-        })
-    }
-
     private class PwbAWSCredentialsProvider internal constructor(private val session: Session) : AWSCredentialsProvider {
         override fun getCredentials(): AWSCredentials {
             return BasicAWSCredentials(session.accessKey!!, session.secretKey!!)

@@ -4,7 +4,6 @@ import android.content.Context
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
-import cenergy.central.com.pwb_store.model.response.PaymentAgent
 import cenergy.central.com.pwb_store.model.response.PaymentInformationResponse
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
@@ -16,8 +15,8 @@ class PaymentApi {
     fun retrievePaymentInformation(context: Context, cartId: String,
                                    callback: ApiResponseCallback<PaymentInformationResponse>) {
         val apiManager = HttpManagerMagento.getInstance(context)
-        apiManager.cartService.retrievePaymentInformation(apiManager.getLanguage(),
-                cartId).enqueue(object : Callback<PaymentInformationResponse> {
+        apiManager.cartService.retrievePaymentInformation(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                apiManager.getUserClientType(), apiManager.getLanguage(), cartId).enqueue(object : Callback<PaymentInformationResponse> {
             override fun onResponse(call: Call<PaymentInformationResponse>,
                                     response: Response<PaymentInformationResponse>) {
                 if (response.isSuccessful) {
@@ -39,7 +38,8 @@ class PaymentApi {
         val apiManager = HttpManagerMagento.getInstance(context)
         val cartService = apiManager.cartService
         val languageCode = apiManager.getLanguage()
-        cartService.updatePaymentInformation(languageCode, cartId, paymentMethodBody).enqueue(object : Callback<Boolean> {
+        cartService.updatePaymentInformation(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                languageCode, cartId, paymentMethodBody).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.isSuccessful && response.body() == true) {
                     callback.success(true)

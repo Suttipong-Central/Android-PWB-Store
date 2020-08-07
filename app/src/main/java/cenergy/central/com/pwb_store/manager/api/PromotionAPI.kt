@@ -17,8 +17,9 @@ class PromotionAPI {
     companion object {
         fun retrievePromotion(context: Context, product: Product, callback: ApiResponseCallback<PromotionResponse>) {
             val apiManager = HttpManagerMagento.getInstance(context)
-            apiManager.promotionService.getPromotionSuggestion(Constants.CLIENT_MAGENTO, apiManager.getLanguage(),
-                    product.sku).enqueue(object : Callback<PromotionResponse> {
+            apiManager.promotionService.getPromotionSuggestion(Constants.CLIENT_MAGENTO,
+                    HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                    apiManager.getLanguage(), product.sku).enqueue(object : Callback<PromotionResponse> {
                 override fun onResponse(call: Call<PromotionResponse>, response: Response<PromotionResponse>) {
                     if (response.isSuccessful) {
                         callback.success(response.body())
@@ -33,10 +34,12 @@ class PromotionAPI {
             })
         }
 
-        fun retrievePromotionBySKUs(context: Context, productSKUs: String, callback: ApiResponseCallback<List<PromotionResponse>>){
+        fun retrievePromotionBySKUs(context: Context, productSKUs: String, callback: ApiResponseCallback<List<PromotionResponse>>) {
             val apiManager = HttpManagerMagento.getInstance(context)
-            apiManager.promotionService.getPromotionSuggestionBySKUs(Constants.CLIENT_MAGENTO, apiManager.getLanguage(),"sku", productSKUs, "in")
-                    .enqueue(object : Callback<List<PromotionResponse>>{
+            apiManager.promotionService.getPromotionSuggestionBySKUs(Constants.CLIENT_MAGENTO,
+                    HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                    apiManager.getLanguage(), "sku", productSKUs, "in")
+                    .enqueue(object : Callback<List<PromotionResponse>> {
                         override fun onResponse(call: Call<List<PromotionResponse>>, response: Response<List<PromotionResponse>>) {
                             if (response.isSuccessful) {
                                 callback.success(response.body())

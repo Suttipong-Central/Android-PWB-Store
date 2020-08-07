@@ -18,18 +18,42 @@ class PreferenceManager(private var context: Context) {
     }
 
     //TODO: Store userInfo in sharepreference
+    // region user
     fun setUserToken(token: String) {
-
-    }
-
-    val isAddressLoaded: Boolean
-        get() = pref.getBoolean(PREF_ADDRESS_LOADED, false)
-
-    fun setAddressLoaded(loaded: Boolean) {
         val editor = pref.edit()
-        editor.putBoolean(PREF_ADDRESS_LOADED, loaded)
+        editor.putString(PREF_USER_TOKEN, token)
         editor.apply()
     }
+
+    val userToken: String?
+        get() = pref.getString(PREF_USER_TOKEN, null)
+
+    fun setUserId(id: Long) {
+        val editor = pref.edit()
+        editor.putLong(PREF_USER_ID, id)
+        editor.apply()
+    }
+
+    val userId: Long
+        get() = pref.getLong(PREF_USER_ID, 0)
+
+    fun setUserStaffId(staffId: String) {
+        val editor = pref.edit()
+        editor.putString(PREF_USER_STAFF_ID, staffId)
+        editor.apply()
+    }
+
+    val userStaffId: String?
+        get() = pref.getString(PREF_USER_STAFF_ID, null)
+
+    fun setUserLevelId(level: Int) {
+        val editor = pref.edit()
+        editor.putInt(PREF_USER_LEVEL_ID, level)
+        editor.apply()
+    }
+
+    val userLevel = pref.getInt(PREF_USER_LEVEL_ID, 0)
+    // endregion
 
     fun setSpecialCategoryIds(specialIds: String) {
         val editor = pref.edit()
@@ -104,7 +128,6 @@ class PreferenceManager(private var context: Context) {
 
     companion object {
         const val PREF_CART_ID = "cart_id"
-        const val PREF_ADDRESS_LOADED = "address_loaded"
         const val PREF_LANGUAGE = "pref_language"
         const val PREF_SPECIAL_CATEGORY_IDS = "pref_special_category_ids"
         const val PREF_SECRET_KEY = "pref_secret_key"
@@ -114,10 +137,10 @@ class PreferenceManager(private var context: Context) {
         const val PREF_SERVICE_NAME = "pref_service_name"
         const val PREF_X_API_KEY_CONSENT = "pref_x_api_key_consent"
 
-        const val PREF_USER_TOKEN ="pref_user_token"
-        const val PREF_USER_ID ="pref_user_id"
-        const val PREF_USER_STAFF_ID ="pref_user_staff_id"
-        const val PREF_USER_LEVEL_ID ="pref_user_level_id"
+        const val PREF_USER_TOKEN = "pref_user_token"
+        const val PREF_USER_ID = "pref_user_id"
+        const val PREF_USER_STAFF_ID = "pref_user_staff_id"
+        const val PREF_USER_LEVEL_ID = "pref_user_level_id"
     }
 }
 

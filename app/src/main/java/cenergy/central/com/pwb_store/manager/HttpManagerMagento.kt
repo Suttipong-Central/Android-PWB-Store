@@ -59,8 +59,6 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain ->
                     val request = chain.request().newBuilder()
-                            .addHeader(CLIENT_NAME, CLIENT_NAME_E_ORDERING)
-//                            .addHeader(CLIENT_TYPE, ) 
                             .build()
                     chain.proceed(request)
                 }
@@ -83,10 +81,9 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
     companion object {
         //Specific Header
         const val HEADER_AUTHORIZATION = "Authorization"
-        private const val BEARER = "Bearer"
         const val OPEN_ORDER_CREATED_PAGE = "OpenOrderCreatedPage"
-        const val CLIENT_NAME = "client" // only e-ordering
-        const val CLIENT_TYPE = "client_type" // staff or chat & shop
+        const val HEADER_CLIENT_NAME = "client" // only e-ordering
+        const val HEADER_CLIENT_TYPE = "client_type" // staff or chat & shop
         const val CLIENT_NAME_E_ORDERING = "e-ordering"
         const val CLIENT_TYPE_STAFF = "staff"
         const val CLIENT_TYPE_CHAT_AND_SHOP = "chat & shop"
@@ -110,6 +107,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
     // region user
     fun setUserToken(token: String) {
         this.userToken = token
+        preferenceManager.setUserToken(token)
     }
 
     fun userLogin(username: String, password: String, callback: ApiResponseCallback<UserInformation>) {
@@ -139,10 +137,16 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     fun getUserId(username: String, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveUserId("$BEARER $userToken").enqueue(object : Callback<LoginUserResponse> {
+        userService.retrieveUserId("Bearer $userToken").enqueue(object : Callback<LoginUserResponse> {
             override fun onResponse(call: Call<LoginUserResponse>, response: Response<LoginUserResponse>?) {
                 if (response?.body() != null) {
-                    getBranchUser(username, response.body()!!, callback)
+                    val userLoginResponse = response.body()!!
+                    // store user info
+                    preferenceManager.setUserId(userLoginResponse.userId)
+                    preferenceManager.setUserStaffId(userLoginResponse.staffId)
+                    preferenceManager.setUserLevelId(userLoginResponse.levelId.toInt())
+
+                    getBranchUser(username, userLoginResponse, callback)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
                 }
@@ -156,7 +160,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     private fun getBranchUser(username: String, userResponse: LoginUserResponse, callback: ApiResponseCallback<UserInformation>) {
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveStoreUser("$BEARER $userToken").enqueue(object : Callback<UserBranch> {
+        userService.retrieveStoreUser("Bearer $userToken").enqueue(object : Callback<UserBranch> {
             override fun onResponse(call: Call<UserBranch>, response: Response<UserBranch>?) {
                 if (response?.body() != null) {
                     val userBranch = response.body()
@@ -261,6 +265,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         val request = Request.Builder()
                 .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .addHeader(HEADER_CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                .addHeader(HEADER_CLIENT_TYPE, getUserClientType())
                 .build()
 
         defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
@@ -347,6 +353,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         val request = Request.Builder()
                 .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .addHeader(HEADER_CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                .addHeader(HEADER_CLIENT_TYPE, getUserClientType())
                 .build()
 
         defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
@@ -375,7 +383,6 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
                         val extensionObj = productObject.getJSONObject("extension_attributes")
                         val stockObject = extensionObj.getJSONObject("stock_item")
-//                        stockItem.itemId = stockObject.getLong("item_id")
                         stockItem.productId = stockObject.getLong("product_id")
                         stockItem.stockId = stockObject.getLong("stock_id")
                         if (!stockObject.isNull("qty")) {
@@ -582,7 +589,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     fun getDeliveryInformation(sku: String, callback: ApiResponseCallback<List<DeliveryInfo>>) {
         val productService = retrofit.create(ProductService::class.java)
-        productService.getDeliveryInfo(getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>> {
+        productService.getDeliveryInfo(CLIENT_NAME_E_ORDERING, getUserClientType(),
+                getLanguage(), sku).enqueue(object : Callback<List<DeliveryInfo>> {
             override fun onResponse(call: Call<List<DeliveryInfo>>, response: Response<List<DeliveryInfo>>) {
                 if (response.body() != null) {
                     callback.success(response.body())
@@ -607,6 +615,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         val request = Request.Builder()
                 .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .addHeader(HEADER_CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                .addHeader(HEADER_CLIENT_TYPE, getUserClientType())
                 .build()
 
         defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
@@ -667,8 +677,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
     // region Cart
     fun getCart(callback: ApiResponseCallback<String?>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.createCart(getLanguage()).enqueue(object : Callback<String> {
-
+        cartService.createCart(CLIENT_NAME_E_ORDERING, getUserClientType(), getLanguage()).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null && response.isSuccessful) {
                     val cartId = response.body()
@@ -686,7 +695,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     fun addProductToCart(cartId: String, cartItemBody: CartItemBody, callback: ApiResponseCallback<CartItem>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.addProduct(getLanguage(), cartId, cartItemBody).enqueue(object : Callback<CartItem> {
+        cartService.addProduct(CLIENT_NAME_E_ORDERING, getUserClientType(),
+                getLanguage(), cartId, cartItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -704,7 +714,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     fun deleteItem(cartId: String, itemId: Long, callback: ApiResponseCallback<Boolean>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.deleteItem(cartId, itemId).enqueue(object : Callback<Boolean> {
+        cartService.deleteItem(CLIENT_NAME_E_ORDERING, getUserClientType(), cartId, itemId).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>?, response: Response<Boolean>?) {
                 if (response != null && response.isSuccessful) {
                     callback.success(response.body() ?: false)
@@ -735,7 +745,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
             UpdateItemBody.create(cartId, itemId, qty, retailerId)
         }
 
-        cartService.updateItem(getLanguage(), cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
+        cartService.updateItem(CLIENT_NAME_E_ORDERING, getUserClientType(), getLanguage(),
+                cartId, itemId, updateItemBody).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>?, response: Response<CartItem>?) {
                 if (response != null && response.isSuccessful) {
                     val cartItem = response.body()
@@ -755,7 +766,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                                 callback: ApiResponseCallback<List<DeliveryOption>>) {
         val cartService = retrofit.create(CartService::class.java)
         val deliveryBody = DeliveryOptionsBody(shippingAddress)
-        cartService.getOrderDeliveryOptions(getLanguage(), cartId, deliveryBody).enqueue(object : Callback<List<DeliveryOption>> {
+        cartService.getOrderDeliveryOptions(CLIENT_NAME_E_ORDERING, getUserClientType(),
+                getLanguage(), cartId, deliveryBody).enqueue(object : Callback<List<DeliveryOption>> {
             override fun onResponse(call: Call<List<DeliveryOption>>, response: Response<List<DeliveryOption>>?) {
                 if (response != null && response.isSuccessful) {
                     val shippingInformation = response.body()
@@ -809,22 +821,22 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         }
 
         val shippingBody = ShippingBody(addressInformationBody)
-        cartService.createShippingInformation(getLanguage(), cartId, shippingBody)
-                .enqueue(object : Callback<ShippingInformationResponse> {
-                    override fun onResponse(call: Call<ShippingInformationResponse>?,
-                                            response: Response<ShippingInformationResponse>?) {
-                        if (response != null && response.isSuccessful) {
-                            val shippingInformation = response.body()
-                            callback.success(shippingInformation)
-                        } else {
-                            callback.failure(APIErrorUtils.parseError(response))
-                        }
-                    }
+        cartService.createShippingInformation(CLIENT_NAME_E_ORDERING, getUserClientType(), getLanguage(),
+                cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
+            override fun onResponse(call: Call<ShippingInformationResponse>?,
+                                    response: Response<ShippingInformationResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val shippingInformation = response.body()
+                    callback.success(shippingInformation)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
 
-                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable) {
-                        callback.failure(t.getResultError())
-                    }
-                })
+            override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable) {
+                callback.failure(t.getResultError())
+            }
+        })
     }
 
     fun setProduct2hShippingInformation(cartId: String, storeAddress: AddressInformation,
@@ -836,27 +848,27 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                 deliveryOption.methodCode, deliveryOption.carrierCode, addressInfoExtensionBody)
         val shippingBody = ShippingBody(addressInformationBody)
 
-        cartService.createShippingInformation(getLanguage(), cartId, shippingBody)
-                .enqueue(object : Callback<ShippingInformationResponse> {
-                    override fun onResponse(call: Call<ShippingInformationResponse>?,
-                                            response: Response<ShippingInformationResponse>?) {
-                        if (response != null && response.isSuccessful) {
-                            val shippingInformation = response.body()
-                            callback.success(shippingInformation)
-                        } else {
-                            callback.failure(APIErrorUtils.parseError(response))
-                        }
-                    }
+        cartService.createShippingInformation(CLIENT_NAME_E_ORDERING, getUserClientType(),
+                getLanguage(), cartId, shippingBody).enqueue(object : Callback<ShippingInformationResponse> {
+            override fun onResponse(call: Call<ShippingInformationResponse>?,
+                                    response: Response<ShippingInformationResponse>?) {
+                if (response != null && response.isSuccessful) {
+                    val shippingInformation = response.body()
+                    callback.success(shippingInformation)
+                } else {
+                    callback.failure(APIErrorUtils.parseError(response))
+                }
+            }
 
-                    override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable) {
-                        callback.failure(t.getResultError())
-                    }
-                })
+            override fun onFailure(call: Call<ShippingInformationResponse>?, t: Throwable) {
+                callback.failure(t.getResultError())
+            }
+        })
     }
 
     fun getOrder(orderId: String, callback: ApiResponseCallback<OrderResponse>) {
         val cartService = retrofit.create(CartService::class.java)
-        cartService.getOrder(Constants.CLIENT_MAGENTO, getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
+        cartService.getOrder(Constants.CLIENT_MAGENTO, CLIENT_NAME_E_ORDERING, getUserClientType(), getLanguage(), orderId).enqueue(object : Callback<OrderResponse> {
             override fun onResponse(call: Call<OrderResponse>?, response: Response<OrderResponse>?) {
                 if (response != null && response.isSuccessful) {
                     val orderResponse = response.body()
@@ -887,6 +899,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         val request = Request.Builder()
                 .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
+                .addHeader(HEADER_CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                .addHeader(HEADER_CLIENT_TYPE, getUserClientType())
                 .build()
 
         defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
@@ -1054,7 +1068,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         }
 
         Log.i("ApiManager", "getProvinces: calling endpoint")
-        memberService.getProvinces(Constants.CLIENT_MAGENTO, getLanguage()).enqueue(object : Callback<List<Province>> {
+        memberService.getProvinces(Constants.CLIENT_MAGENTO, CLIENT_NAME_E_ORDERING, getUserClientType(),
+                getLanguage()).enqueue(object : Callback<List<Province>> {
             override fun onResponse(call: Call<List<Province>>, response: Response<List<Province>>) {
                 if (response.isSuccessful) {
                     val provinces = response.body()
@@ -1092,7 +1107,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     fun getDistricts(provinceId: String, callback: ApiResponseCallback<List<District>>) {
         val memberService = retrofit.create(MemberService::class.java)
-        memberService.getDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId).enqueue(object : Callback<List<District>> {
+        memberService.getDistricts(Constants.CLIENT_MAGENTO, CLIENT_NAME_E_ORDERING, getUserClientType(),
+                getLanguage(), provinceId).enqueue(object : Callback<List<District>> {
             override fun onResponse(call: Call<List<District>>, response: Response<List<District>>) {
                 if (response.isSuccessful) {
                     val districts = response.body()
@@ -1116,7 +1132,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     fun getSubDistricts(provinceId: String, districtId: String, callback: ApiResponseCallback<List<SubDistrict>>) {
         val memberService = retrofit.create(MemberService::class.java)
-        memberService.getSubDistricts(Constants.CLIENT_MAGENTO, getLanguage(), provinceId, districtId).enqueue(object : Callback<List<SubDistrict>> {
+        memberService.getSubDistricts(Constants.CLIENT_MAGENTO, CLIENT_NAME_E_ORDERING, getUserClientType(), getLanguage(), provinceId, districtId).enqueue(object : Callback<List<SubDistrict>> {
             override fun onResponse(call: Call<List<SubDistrict>>, response: Response<List<SubDistrict>>) {
                 if (response.isSuccessful) {
                     val subDistricts = response.body()
@@ -1143,6 +1159,15 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
     // endregion
 
     /**
+     * Return User Client Type "staff" \\ "chat & shop"
+     * level 3 = chat & shop
+     * */
+    fun getUserClientType(): String {
+        val userLevel = preferenceManager.userLevel
+        return if (userLevel == 3) CLIENT_TYPE_CHAT_AND_SHOP else CLIENT_TYPE_STAFF
+    }
+
+    /**
      * param language
      * in PWB is th
      * in CDS is cds_th
@@ -1165,8 +1190,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         return Request.Builder()
                 .url(httpUrl)
                 .addHeader(HEADER_AUTHORIZATION, Constants.CLIENT_MAGENTO)
-                .addHeader(CLIENT_NAME, CLIENT_NAME_E_ORDERING)
-                .addHeader(CLIENT_TYPE, if (context.isChatAndShop()) CLIENT_TYPE_CHAT_AND_SHOP else CLIENT_TYPE_STAFF)
+                .addHeader(HEADER_CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                .addHeader(HEADER_CLIENT_TYPE, if (context.isChatAndShop()) CLIENT_TYPE_CHAT_AND_SHOP else CLIENT_TYPE_STAFF)
                 .build()
     }
 }

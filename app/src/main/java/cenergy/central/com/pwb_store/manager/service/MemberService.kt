@@ -21,33 +21,29 @@ interface MemberService {
     @GET("/v2/customer/{customerId}/extended")
     fun getT1CMember(@Path("customerId") customerId: String): Call<Member>
 
-
-    // get PWB customer
-    @GET("rest/V1/headless/customers/{telephone}")
-    fun getCustomer(@Path("telephone") telephone: String): Call<PwbMemberResponse>
-
+    // region MDC
     // get Provinces
     @GET("rest/{lang}/V1/region/province")
     fun getProvinces(@Header("Authorization") token: String,
+                     @Header("client") client: String,
+                     @Header("client_type") clientType: String,
                      @Path("lang") language: String) : Call<List<Province>>
 
     // get Districts
     @GET("rest/{lang}/V1/region/province/{provinceId}/district")
     fun getDistricts(@Header("Authorization") token: String,
+                     @Header("client") client: String,
+                     @Header("client_type") clientType: String,
                      @Path("lang") language: String,
                      @Path("provinceId") provinceId: String) : Call<List<District>>
-
-    // get District
-    @GET("rest/{lang}/V1/region/province/{provinceId}/district/{districtId}")
-    fun getDistrict(@Header("Authorization") token: String,
-                    @Path("lang") language: String,
-                    @Path("provinceId") provinceId: String,
-                    @Path("districtId") districtId: String) : Call<List<District>>
 
     // get SubDistricts
     @GET("rest/{lang}/V1/region/province/{provinceId}/district/{districtId}/subdistrict")
     fun getSubDistricts(@Header("Authorization") token: String,
+                        @Header("client") client: String,
+                        @Header("client_type") clientType: String,
                         @Path("lang") language: String,
                         @Path("provinceId") provinceId: String,
                         @Path("districtId") districtId: String) : Call<List<SubDistrict>>
+    // endregion
 }

@@ -9,24 +9,11 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ProductService {
-    @GET("/rest/{lang}/V1/products")
-    fun getProductByBarcode(
-            @Header("Authorization") token: String,
-            @Path("lang") language: String,
-            @Query("searchCriteria[filterGroups][0][filters][0][field]") barCodeName: String,
-            @Query("searchCriteria[filterGroups][0][filters][0][value]") barCode: String,
-            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") eq: String): Call<ProductSearchResponse>
-
-    @GET("/rest/{lang}/V1/products")
-    fun getProductByProductJda(
-            @Header("Authorization") token: String,
-            @Path("lang") language: String,
-            @Query("searchCriteria[filterGroups][0][filters][0][field]") jdaName: String,
-            @Query("searchCriteria[filterGroups][0][filters][0][value]") jda: String,
-            @Query("searchCriteria[filterGroups][0][filters][0][conditionType]") eq: String): Call<ProductSearchResponse>
 
     @GET("/rest/{lang}/V1/delivery-info/products/{sku}")
     fun getDeliveryInfo(
+            @Header("client") client: String,
+            @Header("client_type") clientType: String,
             @Path("lang") language: String,
             @Path("sku") sku: String): Call<List<DeliveryInfo>>
 }

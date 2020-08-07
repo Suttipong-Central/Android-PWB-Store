@@ -2,6 +2,7 @@ package cenergy.central.com.pwb_store.extensions
 
 import android.app.Activity
 import android.content.Context
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.realm.RealmController
 
@@ -25,6 +26,6 @@ fun Activity?.getCompareProducts(): Int {
 
 // isChat&Shop?
 fun Context.isChatAndShop(): Boolean {
-    val database = RealmController.getInstance()
-    return database.userInformation.user?.userLevel == 3L
+    val pref = PreferenceManager(this)
+    return pref.userLevel == 3
 }
