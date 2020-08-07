@@ -40,8 +40,6 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
     private var retrofit: Retrofit
     var defaultHttpClient: OkHttpClient
     private var database = RealmController.getInstance()
-    private val preferenceManager by lazy { PreferenceManager(context) }
-
     var cartService: CartService
     var hdlService: HDLService
     var compareService: CompareService
@@ -86,7 +84,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         const val HEADER_CLIENT_TYPE = "client_type" // staff or chat & shop
         const val CLIENT_NAME_E_ORDERING = "e-ordering"
         const val CLIENT_TYPE_STAFF = "staff"
-        const val CLIENT_TYPE_CHAT_AND_SHOP = "chat & shop"
+        const val CLIENT_TYPE_CHAT_AND_SHOP = "chat&shop"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: HttpManagerMagento? = null
@@ -107,7 +105,6 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
     // region user
     fun setUserToken(token: String) {
         this.userToken = token
-        preferenceManager.setUserToken(token)
     }
 
     fun userLogin(username: String, password: String, callback: ApiResponseCallback<UserInformation>) {
@@ -142,9 +139,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                 if (response?.body() != null) {
                     val userLoginResponse = response.body()!!
                     // store user info
-                    preferenceManager.setUserId(userLoginResponse.userId)
-                    preferenceManager.setUserStaffId(userLoginResponse.staffId)
-                    preferenceManager.setUserLevelId(userLoginResponse.levelId.toInt())
+                    PreferenceManager(context).setUserInfo(userToken, userLoginResponse)
 
                     getBranchUser(username, userLoginResponse, callback)
                 } else {
@@ -1163,7 +1158,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
      * level 3 = chat & shop
      * */
     fun getUserClientType(): String {
-        val userLevel = preferenceManager.userLevel
+        val userLevel = PreferenceManager(context).userLevel
         return if (userLevel == 3) CLIENT_TYPE_CHAT_AND_SHOP else CLIENT_TYPE_STAFF
     }
 
@@ -1173,7 +1168,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
      * in CDS is cds_th
      * */
     fun getLanguage(): String {
-        val language = preferenceManager.getDefaultLanguage()
+        val language = PreferenceManager(context).getDefaultLanguage()
         return when (BuildConfig.FLAVOR) {
             "cds" -> "cds_$language"
             else -> language

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.model.SecretKey
+import cenergy.central.com.pwb_store.model.response.LoginUserResponse
 
 class PreferenceManager(private var context: Context) {
     private var pref: SharedPreferences = context.getSharedPreferences(this.context.getString(R.string.preference_file_name), Context.MODE_PRIVATE)
@@ -19,40 +20,34 @@ class PreferenceManager(private var context: Context) {
 
     //TODO: Store userInfo in sharepreference
     // region user
-    fun setUserToken(token: String) {
-        val editor = pref.edit()
-        editor.putString(PREF_USER_TOKEN, token)
-        editor.apply()
-    }
-
     val userToken: String?
         get() = pref.getString(PREF_USER_TOKEN, null)
-
-    fun setUserId(id: Long) {
-        val editor = pref.edit()
-        editor.putLong(PREF_USER_ID, id)
-        editor.apply()
-    }
 
     val userId: Long
         get() = pref.getLong(PREF_USER_ID, 0)
 
-    fun setUserStaffId(staffId: String) {
-        val editor = pref.edit()
-        editor.putString(PREF_USER_STAFF_ID, staffId)
-        editor.apply()
-    }
-
     val userStaffId: String?
         get() = pref.getString(PREF_USER_STAFF_ID, null)
 
-    fun setUserLevelId(level: Int) {
+    val userLevel = pref.getInt(PREF_USER_LEVEL_ID, 0)
+
+    fun setUserInfo(userToken: String, userLoginResponse: LoginUserResponse) {
         val editor = pref.edit()
-        editor.putInt(PREF_USER_LEVEL_ID, level)
+        editor.putString(PREF_USER_TOKEN, userToken)
+        editor.putLong(PREF_USER_ID, userLoginResponse.userId)
+        editor.putString(PREF_USER_STAFF_ID, userLoginResponse.staffId)
+        editor.putInt(PREF_USER_LEVEL_ID, userLoginResponse.levelId.toInt())
         editor.apply()
     }
 
-    val userLevel = pref.getInt(PREF_USER_LEVEL_ID, 0)
+    private fun clearUserInfo() {
+        val editor = pref.edit()
+        editor.remove(PREF_USER_TOKEN)
+        editor.remove(PREF_USER_ID)
+        editor.remove(PREF_USER_STAFF_ID)
+        editor.remove(PREF_USER_LEVEL_ID)
+        editor.apply()
+    }
     // endregion
 
     fun setSpecialCategoryIds(specialIds: String) {
@@ -111,6 +106,7 @@ class PreferenceManager(private var context: Context) {
 //        pref.edit().clear().apply()
         clearCartId()
         clearSecretKey()
+        clearUserInfo()
     }
 
     private fun clearDefaultLanguage() {
