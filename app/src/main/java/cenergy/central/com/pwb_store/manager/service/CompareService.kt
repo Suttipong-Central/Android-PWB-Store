@@ -12,7 +12,7 @@ interface CompareService {
     @GET("/rest/{lang}/V1/products/compare")
     fun getCompareProduct(@Header("Authorization") token: String,
                           @Header("client") client: String,
-                          @Header("client_type") clientType: String,
+                          @Header("client-type") clientType: String,
                           @Path("lang") language: String,
                           @Query("sku") sku: String): Call<List<CompareProductResponse>>
 }

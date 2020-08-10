@@ -13,7 +13,7 @@ interface ProductService {
     @GET("/rest/{lang}/V1/delivery-info/products/{sku}")
     fun getDeliveryInfo(
             @Header("client") client: String,
-            @Header("client_type") clientType: String,
+            @Header("client-type") clientType: String,
             @Path("lang") language: String,
             @Path("sku") sku: String): Call<List<DeliveryInfo>>
 }

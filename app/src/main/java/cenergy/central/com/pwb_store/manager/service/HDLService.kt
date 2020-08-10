@@ -14,7 +14,7 @@ interface HDLService {
     // mdc
     @PUT("/rest/V1/guest-carts/{cartId}/shipping-slot-hdl/book")
     fun createBooking(@Header("client") client: String,
-                      @Header("client_type") clientType: String,
+                      @Header("client-type") clientType: String,
                       @Path("cartId") cartId: String,
                       @Body bookingSlotBody: BookingSlotBody): Call<ShippingSlot>
 }

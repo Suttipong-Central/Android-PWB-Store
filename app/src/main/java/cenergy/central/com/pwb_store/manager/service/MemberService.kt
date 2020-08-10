@@ -26,14 +26,14 @@ interface MemberService {
     @GET("rest/{lang}/V1/region/province")
     fun getProvinces(@Header("Authorization") token: String,
                      @Header("client") client: String,
-                     @Header("client_type") clientType: String,
+                     @Header("client-type") clientType: String,
                      @Path("lang") language: String) : Call<List<Province>>
 
     // get Districts
     @GET("rest/{lang}/V1/region/province/{provinceId}/district")
     fun getDistricts(@Header("Authorization") token: String,
                      @Header("client") client: String,
-                     @Header("client_type") clientType: String,
+                     @Header("client-type") clientType: String,
                      @Path("lang") language: String,
                      @Path("provinceId") provinceId: String) : Call<List<District>>
 
@@ -41,7 +41,7 @@ interface MemberService {
     @GET("rest/{lang}/V1/region/province/{provinceId}/district/{districtId}/subdistrict")
     fun getSubDistricts(@Header("Authorization") token: String,
                         @Header("client") client: String,
-                        @Header("client_type") clientType: String,
+                        @Header("client-type") clientType: String,
                         @Path("lang") language: String,
                         @Path("provinceId") provinceId: String,
                         @Path("districtId") districtId: String) : Call<List<SubDistrict>>
