@@ -242,7 +242,9 @@ class CartUtils(private val context: Context) {
     }
 
     fun addCoupon(cartId: String, couponCode: String, callback: ApiResponseCallback<Boolean>) {
-        HttpManagerMagento(context).cartService.addCoupon(cartId, couponCode).enqueue(object : Callback<Boolean> {
+        val apiManager = HttpManagerMagento.getInstance(context)
+        apiManager.cartService.addCoupon(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                apiManager.getUserClientType(), cartId, couponCode).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
@@ -258,7 +260,9 @@ class CartUtils(private val context: Context) {
     }
 
     fun deleteCoupon(cartId: String, callback: ApiResponseCallback<Boolean>) {
-        HttpManagerMagento(context).cartService.deleteCoupon(cartId).enqueue(object : Callback<Boolean> {
+        val apiManager = HttpManagerMagento.getInstance(context)
+        apiManager.cartService.deleteCoupon(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                apiManager.getUserClientType(), cartId).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
@@ -274,7 +278,9 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCart(cartId: String, callback: ApiResponseCallback<Pair<CartResponse?, List<Product>>>) {
-        HttpManagerMagento(context).cartService.viewCart(requestLanguage(context), cartId).enqueue(object : Callback<CartResponse> {
+        val apiManager = HttpManagerMagento.getInstance(context)
+        apiManager.cartService.viewCart(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                apiManager.getLanguage(), cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
                 if (response.body() != null && response.isSuccessful) {
 
@@ -318,7 +324,7 @@ class CartUtils(private val context: Context) {
     fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotal>) {
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
-                .host(Constants.PWB_HOST_NAME)
+                .host(Constants.MDC_HOST_NAME)
                 .addPathSegments("rest/${requestLanguage(context)}/V1/guest-carts/$cartId/totals")
                 .build()
 
@@ -482,11 +488,11 @@ class CartUtils(private val context: Context) {
     }
 
     private fun List<CacheCartItem>.hasProduct2h(): Boolean {
-        if (cacheCartItems == null || cacheCartItems.isEmpty()) {
+        if (this.isNullOrEmpty()) {
             return false
         }
 
-        val item = cacheCartItems.find { it.branch != null }
+        val item = this.find { it.branch != null }
         return item != null
     }
 

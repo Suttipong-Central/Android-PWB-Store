@@ -8,7 +8,7 @@ class Constants {
 
         // region magento
         const val BASE_URL_MAGENTO = "https://staging-mdc.powerbuy.co.th"
-        const val PWB_HOST_NAME = "staging-mdc.powerbuy.co.th"
+        const val MDC_HOST_NAME = "staging-mdc.powerbuy.co.th"
         const val CLIENT_MAGENTO = "Bearer ngvids7tnggs94sm81k8a3oxjgl9cd16"
         // endregion
 

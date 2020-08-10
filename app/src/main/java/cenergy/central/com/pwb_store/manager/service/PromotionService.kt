@@ -10,12 +10,16 @@ import retrofit2.http.Query
 interface PromotionService {
     @GET("/rest/{lang}/V1/promotion-suggestion/product/{sku}")
     fun getPromotionSuggestion(@Header("Authorization") token: String,
+                               @Header("client") client: String,
+                               @Header("client-type") clientType: String,
                                @Path("lang") language: String,
                                @Path("sku") sku: String): Call<PromotionResponse>
 
     @GET("/rest/{lang}/V1/promotion-suggestion/product/")
     fun getPromotionSuggestionBySKUs(
             @Header("Authorization") token: String,
+            @Header("client") client: String,
+            @Header("client-type") clientType: String,
             @Path("lang") language: String,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") fieldSKU: String,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") valueSKUs: String,

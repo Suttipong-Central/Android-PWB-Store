@@ -1,8 +1,6 @@
 package cenergy.central.com.pwb_store.manager.api
 
 import android.content.Context
-import android.provider.SyncStateContract
-import android.util.Log
 import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
@@ -14,11 +12,13 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class CompareAPI {
-    fun retrieveCompareProduct(context: Context, productSKUs: String, callback: ApiResponseCallback<List<CompareProductResponse>>){
+    fun retrieveCompareProduct(context: Context, productSKUs: String, callback: ApiResponseCallback<List<CompareProductResponse>>) {
         val apiManager = HttpManagerMagento.getInstance(context)
-        apiManager.compareService.getCompareProduct(Constants.CLIENT_MAGENTO, apiManager.getLanguage(), productSKUs).enqueue( object : Callback<List<CompareProductResponse>>{
+        apiManager.compareService.getCompareProduct(Constants.CLIENT_MAGENTO,
+                HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                apiManager.getLanguage(), productSKUs).enqueue(object : Callback<List<CompareProductResponse>> {
             override fun onResponse(call: Call<List<CompareProductResponse>>, response: Response<List<CompareProductResponse>>) {
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     callback.success(response.body())
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
