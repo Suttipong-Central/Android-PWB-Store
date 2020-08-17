@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
+import cenergy.central.com.pwb_store.activity.MainActivity
+import cenergy.central.com.pwb_store.activity.PaymentActivity
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener
@@ -42,9 +44,13 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
+import cenergy.central.com.pwb_store.utils.RemoteConfigUtils.initFirebaseRemoteConfig
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -90,17 +96,19 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
 
-    // Realm
-    private val db = RealmController.getInstance()
+    private lateinit var fbRemoteConfig: FirebaseRemoteConfig
 
-    private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
+    // Realm
+    private val database = RealmController.getInstance()
+
+    private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
 
     private val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
-            val totalItemCount = mLayoutManger!!.itemCount
-            val visibleItemCount = mLayoutManger!!.childCount
-            val firstVisibleItem = mLayoutManger!!.findFirstVisibleItemPosition()
+            val totalItemCount = mLayoutManger.itemCount
+            val visibleItemCount = mLayoutManger.childCount
+            val firstVisibleItem = mLayoutManger.findFirstVisibleItemPosition()
             if (isLoadingMore && totalItemCount > mPreviousTotal) {
                 isLoadingMore = false
                 mPreviousTotal = totalItemCount
@@ -192,6 +200,16 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             categoryId = arguments!!.getString(ARG_DEPARTMENT_ID)
             categoryLv2 = arguments!!.getParcelable(ARG_CATEGORY)
             keyWord = arguments!!.getString(ARG_KEY_WORD)
+        }
+        fbRemoteConfig = initFirebaseRemoteConfig()
+
+        // fetch remote config for special category
+        fbRemoteConfig.fetchAndActivate().addOnCompleteListener{ task ->
+            if (task.isSuccessful) {
+                Log.i(TAG, "remote config -> fetch Successful")
+            } else {
+                Log.i(TAG, "remote config -> fetch Fail")
+            }
         }
         resetPage()
         setupSorting()
@@ -364,7 +382,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         if (context != null) {
             val layoutInflater = (context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
             mPowerBuyPopupWindow = PowerBuyPopupWindow(activity, layoutInflater)
-            mPowerBuyPopupWindow!!.setOnDismissListener(ON_POPUP_DISMISS_LISTENER)
+            mPowerBuyPopupWindow!!.setOnDismissListener(onPopupDismissListener)
         }
     }
 
@@ -434,14 +452,26 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     private fun fetchSuggestionPromotions(skuList: String) {
-        context?.let {
+        context?.let { it ->
             PromotionAPI.retrievePromotionBySKUs(it, skuList, object : ApiResponseCallback<List<PromotionResponse>> {
                 override fun success(response: List<PromotionResponse>?) {
                     if (response != null) {
-                        // find sku have promotions
-                        val skuOfPromotionList = response.filter { pr ->
+                        val skuOfPromotionList = arrayListOf<String>()
+                        // find sku have credit card promotions
+                        val skuOfCreditCardList = response.filter { pr ->
                             !pr.extension?.creditCardPromotions.isNullOrEmpty()
                         }.map { p -> p.sku }
+                        // find sku have freebies
+                        val skuOfFreebiesList = response.filter { pr ->
+                            !pr.extension?.freeItems.isNullOrEmpty()
+                        }.map { p -> p.sku }
+                        // find sku have installment plan and have payment method is c2c2p_ipp
+                        val skuOfInstallmentList = this@ProductListFragment.productResponse?.products?.filter { product ->
+                            product.extension!!.installmentPlans.isNotEmpty() && product.paymentMethod.contains(PaymentMethod.INSTALLMENT, true)
+                        }?.map { p -> p.sku }
+                        skuOfPromotionList.addAll(skuOfCreditCardList)
+                        skuOfPromotionList.addAll(skuOfFreebiesList)
+                        skuOfInstallmentList?.let { skuList -> skuOfPromotionList.addAll(skuList) }
                         // Update product hasPromotion
                         this@ProductListFragment.productResponse?.products?.forEach { product ->
                             product.hasPromotions = skuOfPromotionList.contains(product.sku)
@@ -636,7 +666,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     private fun isChatAndShop(): Boolean {
         // level 3 is chat and shop
-        return db.userInformation.user?.userLevel == 3L
+        return database.userInformation.user?.userLevel == 3L
     }
 
     private fun hideFilterOptions() {
