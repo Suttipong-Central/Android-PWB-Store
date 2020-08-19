@@ -17,10 +17,13 @@ import cenergy.central.com.pwb_store.activity.interfaces.ProductDetailListener
 import cenergy.central.com.pwb_store.adapter.BadgeSelectAdapter
 import cenergy.central.com.pwb_store.adapter.CreditCardPromotionAdapter
 import cenergy.central.com.pwb_store.adapter.FreebiePromotionAdapter
+import cenergy.central.com.pwb_store.adapter.InstallmentPlanAdapter
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.api.PromotionAPI
 import cenergy.central.com.pwb_store.model.APIError
+import cenergy.central.com.pwb_store.model.InstallmentPlan
+import cenergy.central.com.pwb_store.model.InstallmentPlanView
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
@@ -38,10 +41,12 @@ class ProductPromotionFragment : Fragment() {
     private var freebieSKUs: ArrayList<String> = arrayListOf()
     private var freeItems: ArrayList<Product> = arrayListOf()
     private var creditCardOnTopList: ArrayList<CreditCardPromotion> = arrayListOf()
+    private var installmentPlanList: ArrayList<InstallmentPlanView> = arrayListOf()
     private var productDetailListener: ProductDetailListener? = null
     private val badgeSelectAdapter: BadgeSelectAdapter by lazy { BadgeSelectAdapter() }
     private val freebiePromotionAdapter: FreebiePromotionAdapter by lazy { FreebiePromotionAdapter() }
     private val creditCardPromotionAdapter: CreditCardPromotionAdapter by lazy { CreditCardPromotionAdapter() }
+    private val installmentPlanAdapter: InstallmentPlanAdapter by lazy { InstallmentPlanAdapter() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -59,6 +64,7 @@ class ProductPromotionFragment : Fragment() {
         freebieSKUs = productDetailListener?.getFreebieSKUs() ?: arrayListOf()
         freeItems = productDetailListener?.getFreeItems() ?: arrayListOf()
         creditCardOnTopList = productDetailListener?.getCreditCardPromotionList() ?: arrayListOf()
+        installmentPlanList = productDetailListener?.getInstallmentPlanList() ?: arrayListOf()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,13 +90,13 @@ class ProductPromotionFragment : Fragment() {
                     if (freeItems.isNotEmpty()) {
                         freebiePromotionAdapter.items = freeItems
                         tvPromotionNotFound.visibility = View.GONE
-                        groupFreeItemPromotion.visibility = View.VISIBLE
+                        groupPromotion.visibility = View.VISIBLE
                     } else {
                         retrieveProductFreebies(freebieSKUs)
                     }
                     displayPromotionRecycler.adapter = freebiePromotionAdapter
                     tvPromotionNotFound.visibility = View.GONE
-                    groupFreeItemPromotion.visibility = View.VISIBLE
+                    groupPromotion.visibility = View.VISIBLE
                 } else {
                     displayNotHavePromotion()
                 }
@@ -103,7 +109,19 @@ class ProductPromotionFragment : Fragment() {
                     creditCardPromotionAdapter.items = creditCardOnTopList
                     displayPromotionRecycler.adapter = creditCardPromotionAdapter
                     tvPromotionNotFound.visibility = View.GONE
-                    groupFreeItemPromotion.visibility = View.VISIBLE
+                    groupPromotion.visibility = View.VISIBLE
+                } else {
+                    displayNotHavePromotion()
+                }
+            }
+            INSTALLMENT_PLANS -> {
+                if (installmentPlanList.isNotEmpty()){
+                    titleDisplayPromotion.text = getString(R.string.title_installment_plans)
+                    icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_credit_card_white))
+                    installmentPlanAdapter.items = installmentPlanList
+                    displayPromotionRecycler.adapter = installmentPlanAdapter
+                    tvPromotionNotFound.visibility = View.GONE
+                    groupPromotion.visibility = View.VISIBLE
                 } else {
                     displayNotHavePromotion()
                 }
@@ -141,6 +159,15 @@ class ProductPromotionFragment : Fragment() {
                             creditCardOnTopList.addAll(response.extension!!.creditCardPromotions)
                             productDetailListener?.setCreditCardPromotionList(creditCardOnTopList)
                         }
+                        // Installment plans
+                        if (product.extension != null && product.extension!!.installmentPlans.isNotEmpty()){
+                            badgesSelects.add(INSTALLMENT_PLANS)
+                            product.extension!!.installmentPlans.groupBy { it.bankId}.forEach {
+                                val installment = InstallmentPlanView.Installment(it.key, it.value.sortedBy { installment -> installment.period })
+                                installmentPlanList.add(installment)
+                            }
+                            productDetailListener?.setInstallmentPlanList(installmentPlanList)
+                        }
                         if (badgesSelects.isNotEmpty()){
                             productDetailListener?.setBadgeSelects(badgesSelects)
                             badgeSelectAdapter.badgesSelect = badgesSelects
@@ -166,7 +193,7 @@ class ProductPromotionFragment : Fragment() {
 
     private fun displayNotHavePromotion(){
         tvPromotionNotFound.visibility = View.VISIBLE
-        groupFreeItemPromotion.visibility = View.GONE
+        groupPromotion.visibility = View.GONE
     }
 
     private fun retrieveProductFreebies(freebieSKUs: ArrayList<String>) {
@@ -215,8 +242,9 @@ class ProductPromotionFragment : Fragment() {
     }
 
     companion object {
-        val FREEBIE_ITEM = 0
-        val CREDIT_CARD_ON_TOP = 1
+        const val FREEBIE_ITEM = 0
+        const val CREDIT_CARD_ON_TOP = 1
+        const val INSTALLMENT_PLANS = 2
         const val TAG_LOG_PROMOTION = "Product Promotion Tab"
     }
 }

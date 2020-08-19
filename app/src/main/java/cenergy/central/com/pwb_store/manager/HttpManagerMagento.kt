@@ -363,6 +363,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                     val productOptions = arrayListOf<ProductOption>()
                     val productIdChildren = arrayListOf<String>()
                     val specifications = arrayListOf<Specification>()
+                    val installmentPlans = arrayListOf<InstallmentPlan>()
 
                     try {
                         val productObject = JSONObject(data?.string())
@@ -393,6 +394,93 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                             stockItem.isSalable = extensionObj.getBoolean("salable")
                         }
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
+
+                        // installment plan
+                        if (extensionObj.has("installment_plans")){
+                            val attrArray = extensionObj.getJSONArray("installment_plans")
+                            for (index in 0 until attrArray.length()) {
+                                val installmentPlanObj = attrArray.getJSONObject(index)
+                                val installmentPlan = InstallmentPlan()
+                                if (installmentPlanObj.has("period")){
+                                    installmentPlan.period = installmentPlanObj.getInt("period")
+                                }
+                                if (installmentPlanObj.has("interest_type")){
+                                    installmentPlan.interestType = installmentPlanObj.getString("interest_type")
+                                }
+                                if (installmentPlanObj.has("min_amount")){
+                                    installmentPlan.minAmount = installmentPlanObj.getInt("min_amount")
+                                }
+                                if (installmentPlanObj.has("valid_from")){
+                                    installmentPlan.validFrom = installmentPlanObj.getString("valid_from")
+                                }
+                                if (installmentPlanObj.has("active")){
+                                    val active = installmentPlanObj.getString("active").trim()
+                                    installmentPlan.active = active.toInt() == 1
+                                }
+                                if (installmentPlanObj.has("update")){
+                                    installmentPlan.update = installmentPlanObj.getString("update")
+                                }
+                                if (installmentPlanObj.has("bank")){
+                                    val bankObj = installmentPlanObj.getJSONObject("bank")
+                                    val bank = BankInstallment()
+                                    if (bankObj.has("id")){
+                                        bank.id = bankObj.getInt("bank_id")
+                                    }
+                                    if (bankObj.has("bank_image")){
+                                        bank.image = bankObj.getString("bank_image")
+                                    }
+                                    if (bankObj.has("name")){
+                                        bank.name = bankObj.getString("name")
+                                    }
+                                    if (bankObj.has("icon")){
+                                        bank.icon = bankObj.getString("icon")
+                                    }
+                                    if (bankObj.has("active")) {
+                                        val active = bankObj.getString("active").trim()
+                                        installmentPlan.active = active.toInt() == 1
+                                    }
+                                    if (bankObj.has("create")){
+                                        bank.create = bankObj.getString("create")
+                                    }
+                                    if (bankObj.has("update")){
+                                        bank.update = bankObj.getString("update")
+                                    }
+                                    if (bankObj.has("color")){
+                                        bank.bankColor = bankObj.getString("color")
+                                    }
+                                    installmentPlan.bank = bank
+                                }
+                                if (installmentPlanObj.has("valid_until")){
+                                    installmentPlan.validUntil = installmentPlanObj.getString("valid_until")
+                                }
+                                if (installmentPlanObj.has("bank_id")){
+                                    installmentPlan.bankId = installmentPlanObj.getInt("bank_id")
+                                }
+                                if (installmentPlanObj.has("name")){
+                                    installmentPlan.name = installmentPlanObj.getString("name")
+                                }
+                                if (installmentPlanObj.has("customer_rate")){
+                                    installmentPlan.customerRate = installmentPlanObj.getDouble("customer_rate")
+                                }
+                                if (installmentPlanObj.has("installmentplan_id")){
+                                    installmentPlan.id = installmentPlanObj.getInt("installmentplan_id")
+                                }
+                                if (installmentPlanObj.has("max_amount")){
+                                    installmentPlan.maxAmount = installmentPlanObj.getLong("max_amount")
+                                }
+                                if (installmentPlanObj.has("create")){
+                                    installmentPlan.create = installmentPlanObj.getString("create")
+                                }
+                                if (installmentPlanObj.has("currency")){
+                                    installmentPlan.currency = installmentPlanObj.getString("currency")
+                                }
+                                if (installmentPlanObj.has("merchant_rate")){
+                                    installmentPlan.merchantRate = installmentPlanObj.getDouble("merchant_rate")
+                                }
+                                installmentPlans.add(installmentPlan)
+                            }
+                        }
+                        productExtension.installmentPlans = installmentPlans // add installment plans
 
                         // get rating
                         if (extensionObj.has("overall_rating")) {

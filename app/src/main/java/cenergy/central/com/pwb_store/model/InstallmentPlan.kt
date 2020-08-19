@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.model
 
 import android.os.Parcelable
+import cenergy.central.com.pwb_store.Constants
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
@@ -31,7 +32,15 @@ class InstallmentPlan(
         var currency: String = "",
         @SerializedName("merchant_rate")
         var merchantRate: Double = 0.0
-) : Parcelable
+) : Parcelable {
+        fun getBankImageUrl(): String {
+                // example -> /media/banks/ktc22x22.jpg
+                return if (bank != null) "${Constants.BASE_URL_MAGENTO}/media/${bank!!.image}" else ""
+        }
+        fun getBankColor(): String {
+                return if (bank != null) bank!!.bankColor else ""
+        }
+}
 
 @Parcelize
 class BankInstallment(
