@@ -8,7 +8,7 @@ import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.BadgeSelectViewHolder
 
 class BadgeSelectAdapter: RecyclerView.Adapter<BadgeSelectViewHolder>(){
-    var badgeListener: BadgeListener? = null
+    private var badgeListener: BadgeListener? = null
     var badgesSelect: ArrayList<Int> = arrayListOf()
     set(value) {
         field = value
