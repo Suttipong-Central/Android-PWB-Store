@@ -21,4 +21,7 @@ class ProductExtension(
         @SerializedName("pricing_per_store")
         var pricingPerStore: List<OfflinePriceItem> = arrayListOf(),
         @SerializedName("default_retailer_id")
-        var defaultRetailerId: String? = "") : Parcelable
+        var defaultRetailerId: String? = "",
+        @SerializedName("installment_plans")
+        var installmentPlans: List<InstallmentPlan> = arrayListOf()
+) : Parcelable

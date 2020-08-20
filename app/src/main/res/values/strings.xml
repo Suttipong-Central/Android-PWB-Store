@@ -428,4 +428,10 @@
     <string name="format_percent">%d%%</string>
     <string name="format_get_more_percent">Extra %d%% Off</string>
     <string name="title_credit_card_on_top">Credit card on-top promotion discount when create full payment</string>
+    <string name="badge_promotion">Promotion</string>
+
+    <!--  Installment  -->
+    <string name="zero_percent">0%</string>
+    <string name="title_installment_plans">Installment plans</string>
+    <string name="badge_installment_plan">Installment</string>
 </resources>

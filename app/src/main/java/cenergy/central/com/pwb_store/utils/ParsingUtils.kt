@@ -26,6 +26,7 @@ class ParsingUtils {
                 val productOptions = arrayListOf<ProductOption>()
                 val specifications = arrayListOf<Specification>()
                 val pricingPerStore = arrayListOf<OfflinePriceItem>()
+                val installmentPlans = arrayListOf<InstallmentPlan>()
 
                 product.id = productObj.getLong("id")
                 product.sku = productObj.getString("sku")
@@ -106,8 +107,92 @@ class ParsingUtils {
                 if (extensionObj.has("default_retailer_id")) {
                     productExtension.defaultRetailerId = extensionObj.getString("default_retailer_id")
                 }
-
-                productExtension.pricingPerStore = pricingPerStore
+                if (extensionObj.has("installment_plans")){
+                    val attrArray = extensionObj.getJSONArray("installment_plans")
+                    for (index in 0 until attrArray.length()) {
+                        val installmentPlanObj = attrArray.getJSONObject(index)
+                        val installmentPlan = InstallmentPlan()
+                        if (installmentPlanObj.has("period")){
+                            installmentPlan.period = installmentPlanObj.getInt("period")
+                        }
+                        if (installmentPlanObj.has("interest_type")){
+                            installmentPlan.interestType = installmentPlanObj.getString("interest_type")
+                        }
+                        if (installmentPlanObj.has("min_amount")){
+                            installmentPlan.minAmount = installmentPlanObj.getInt("min_amount")
+                        }
+                        if (installmentPlanObj.has("valid_from")){
+                            installmentPlan.validFrom = installmentPlanObj.getString("valid_from")
+                        }
+                        if (installmentPlanObj.has("active")){
+                            val active = installmentPlanObj.getString("active").trim()
+                            installmentPlan.active = active.toInt() == 1
+                        }
+                        if (installmentPlanObj.has("update")){
+                            installmentPlan.update = installmentPlanObj.getString("update")
+                        }
+                        if (installmentPlanObj.has("bank")){
+                            val bankObj = installmentPlanObj.getJSONObject("bank")
+                            val bank = BankInstallment()
+                            if (bankObj.has("id")){
+                                bank.id = bankObj.getInt("bank_id")
+                            }
+                            if (bankObj.has("bank_image")){
+                                bank.image = bankObj.getString("bank_image")
+                            }
+                            if (bankObj.has("name")){
+                                bank.name = bankObj.getString("name")
+                            }
+                            if (bankObj.has("bank_icon")){
+                                bank.icon = bankObj.getString("bank_icon")
+                            }
+                            if (bankObj.has("active")) {
+                                val active = bankObj.getString("active").trim()
+                                installmentPlan.active = active.toInt() == 1
+                            }
+                            if (bankObj.has("create")){
+                                bank.create = bankObj.getString("create")
+                            }
+                            if (bankObj.has("update")){
+                                bank.update = bankObj.getString("update")
+                            }
+                            if (bankObj.has("bank_color")){
+                                bank.bankColor = bankObj.getString("bank_color")
+                            }
+                            installmentPlan.bank = bank
+                        }
+                        if (installmentPlanObj.has("valid_until")){
+                            installmentPlan.validUntil = installmentPlanObj.getString("valid_until")
+                        }
+                        if (installmentPlanObj.has("bank_id")){
+                            installmentPlan.bankId = installmentPlanObj.getInt("bank_id")
+                        }
+                        if (installmentPlanObj.has("name")){
+                            installmentPlan.name = installmentPlanObj.getString("name")
+                        }
+                        if (installmentPlanObj.has("customer_rate")){
+                            installmentPlan.customerRate = installmentPlanObj.getDouble("customer_rate")
+                        }
+                        if (installmentPlanObj.has("installmentplan_id")){
+                            installmentPlan.id = installmentPlanObj.getInt("installmentplan_id")
+                        }
+                        if (installmentPlanObj.has("max_amount")){
+                            installmentPlan.maxAmount = installmentPlanObj.getLong("max_amount")
+                        }
+                        if (installmentPlanObj.has("create")){
+                            installmentPlan.create = installmentPlanObj.getString("create")
+                        }
+                        if (installmentPlanObj.has("currency")){
+                            installmentPlan.currency = installmentPlanObj.getString("currency")
+                        }
+                        if (installmentPlanObj.has("merchant_rate")){
+                            installmentPlan.merchantRate = installmentPlanObj.getDouble("merchant_rate")
+                        }
+                        installmentPlans.add(installmentPlan)
+                    }
+                }
+                productExtension.pricingPerStore = pricingPerStore // add pricingPerStore to productExtension
+                productExtension.installmentPlans = installmentPlans // add installmentPlans to productExtension
                 productExtension.stokeItem = stockItem // add stockItem to productExtension
                 product.extension = productExtension // set productExtension to product
 

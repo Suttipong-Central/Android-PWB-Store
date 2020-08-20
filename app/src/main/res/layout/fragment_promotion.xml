@@ -20,7 +20,7 @@
         tools:text="@string/freebie_promotion_not_found"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/groupFreeItemPromotion"
+        android:id="@+id/groupPromotion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"

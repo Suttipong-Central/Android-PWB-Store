@@ -32,10 +32,7 @@ import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductDetailApi
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
-import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.DeliveryInfo
-import cenergy.central.com.pwb_store.model.OfflinePriceItem
-import cenergy.central.com.pwb_store.model.Product
+import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.response.CreditCardPromotion
@@ -78,6 +75,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
     private var freebieSKUs: ArrayList<String> = arrayListOf()
     private var freeItems: ArrayList<Product> = arrayListOf()
     private var creditCardPromotionList: ArrayList<CreditCardPromotion> = arrayListOf()
+    private var installmentPlanList: ArrayList<InstallmentPlanView> = arrayListOf()
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
@@ -341,6 +339,10 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
         this.creditCardPromotionList = creditCardPromotionList
     }
 
+    override fun setInstallmentPlanList(installmentPlanList: ArrayList<InstallmentPlanView>) {
+        this.installmentPlanList = installmentPlanList
+    }
+
     override fun getBadgeSelects(): ArrayList<Int> = this.badgesSelects
 
     override fun getFreeItems(): ArrayList<Product> = this.freeItems
@@ -348,6 +350,8 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
     override fun getFreebieSKUs(): ArrayList<String> = this.freebieSKUs
 
     override fun getCreditCardPromotionList(): ArrayList<CreditCardPromotion> = this.creditCardPromotionList
+
+    override fun getInstallmentPlanList(): ArrayList<InstallmentPlanView> = this.installmentPlanList
     // region badgeListener
 
     override fun onBadgeSelectedListener(position: Int) {

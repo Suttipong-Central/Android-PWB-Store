@@ -409,4 +409,10 @@
     <string name="format_percent">%d%%</string>
     <string name="format_get_more_percent">ลดเพิ่ม %d%%</string>
     <string name="title_credit_card_on_top">ส่วนลดเพิ่มบัตรเครดิตเมื่อจ่ายเต็มจำนวน</string>
+    <string name="badge_promotion">โปรโมชั่น</string>
+
+    <!--  Installment  -->
+    <string name="zero_percent">0%</string>
+    <string name="title_installment_plans">รายการผ่อนชำระ</string>
+    <string name="badge_installment_plan">ผ่อนชำระ</string>
 </resources>

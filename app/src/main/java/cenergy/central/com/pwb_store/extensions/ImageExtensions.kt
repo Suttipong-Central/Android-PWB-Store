@@ -14,6 +14,13 @@ fun ImageView.setImage(@DrawableRes res: Int) {
     this.setImageResource(res)
 }
 
+fun ImageView.setImage(url: String) {
+    Glide.with(context)
+            .load(url)
+            .fitCenter()
+            .into(this)
+}
+
 fun ImageView.setImageUrl(url: String) {
     Glide.with(context)
             .load(url)

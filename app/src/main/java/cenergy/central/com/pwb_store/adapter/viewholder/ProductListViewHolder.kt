@@ -31,7 +31,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         oldPrice.text = product.getDisplayOldPrice(unit)
         newPrice.text = product.getDisplaySpecialPrice(unit)
         saleText.text = context.getString(R.string.format_product_sale, product.getDiscountPercentage())
-        promotionBadgeTextView.text = context.getString(R.string.badge_credit_card_on_top)
+        promotionBadgeTextView.text = context.getString(R.string.badge_promotion)
         promotionBadgeTextView.visibility = if (product.hasPromotions) View.VISIBLE else View.INVISIBLE
 
         if (product.isSpecialPrice()) {
