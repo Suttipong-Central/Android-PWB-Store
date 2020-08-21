@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
+import cenergy.central.com.pwb_store.extensions.getInstallments
 import cenergy.central.com.pwb_store.extensions.toProductPromotions
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
@@ -32,6 +33,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.response.CartResponse
 import cenergy.central.com.pwb_store.model.response.CartTotal
+import cenergy.central.com.pwb_store.model.response.CreditCardPromotion
 import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
@@ -40,6 +42,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
@@ -77,6 +80,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var isCouponAdded = false
     private var promotionCode = ""
     private var promotions: ArrayList<PromotionResponse> = arrayListOf()
+    private var products: List<Product> = arrayListOf()
 
     // Firebase remote config
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
@@ -290,6 +294,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                     runOnUiThread {
                         if (response?.first != null) {
                             cartResponse = response.first
+                            products = response.second
                             getCartTotal()
                             updateCacheCartItem(cartResponse, response.second)
                         } else {
@@ -348,7 +353,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun retrievePromotion(shoppingCartResponse: CartTotal) {
         if (cartResponse != null && cartResponse!!.items.isNotEmpty()) {
-            val skuList = cartResponse!!.items.map { it.sku }
+            // not retrieve promotion of freebie items
+            val skuList = cartResponse!!.items.filter { it.price != null && it.price!! > 0.0 }.map { it.sku }
             val result = TextUtils.join(",", skuList)
             PromotionAPI.retrievePromotionBySKUs(this, result, object : ApiResponseCallback<List<PromotionResponse>> {
                 override fun success(response: List<PromotionResponse>?) {
@@ -409,26 +415,40 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 promotionCode = shoppingCartResponse.couponCode
                 couponCodeEdt.setText(promotionCode)
             }
-            if (promotions.size > 1) {
-                var isPromotionEmpty = true
-                var isPromotionAllHave = true
-                val listDiscount: ArrayList<Int> = arrayListOf()
-                /**
-                 * List<SKU, List<DiscountAmount>>
-                 */
-                promotions.toProductPromotions().forEach {
-                    if (it.second.isNotEmpty()) {
-                        isPromotionEmpty = false
-                    } else {
-                        isPromotionAllHave = false
+            // check for display warning message
+            if (promotions.size > 1 && products.size > 1){
+                val productPromotionList: ArrayList<ProductPromotion> = arrayListOf()
+                promotions.forEach { promotion ->
+                    val product = products.firstOrNull { it.sku == promotion.sku}
+                    if (promotion.extension != null && product != null){
+                        productPromotionList.add(ProductPromotion(product, promotion.extension!!.creditCardPromotions))
                     }
-                    listDiscount.addAll(it.second)
+                }
+                var isPromotionEmpty = true
+                var isAllHaveCredit = true
+                var isAllHaveInstallment = true
+                val listCreditDiscount = arrayListOf<CreditCardPromotion>()
+                val listInstallment = arrayListOf<Installment>()
+                productPromotionList.forEach {
+                    if (it.product.getInstallments().isEmpty()){
+                        isAllHaveInstallment = false
+                    } else {
+                        listInstallment.addAll(it.product.getInstallments())
+                        isPromotionEmpty = false
+                    }
+                    if (it.promotions.isEmpty()){
+                        isAllHaveCredit = false
+                    } else {
+                        listCreditDiscount.addAll(it.promotions)
+                        isPromotionEmpty = false
+                    }
                 }
                 if (isPromotionEmpty) {
                     // all empty not show
                     warningCreditCardTv.visibility = View.GONE
                 } else {
-                    if (isPromotionAllHave && listDiscount.distinct().size == 1) {
+                    if (isAllHaveCredit && isAllHaveInstallment && listCreditDiscount.distinctBy { it.discountAmount }.size == 1) {
+                        val max = Collections.max(listInstallment.map { it.installments.size })
                         // all have promotion and equal will show
                         warningCreditCardTv.visibility = View.GONE
                     } else {

@@ -75,7 +75,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
     private var freebieSKUs: ArrayList<String> = arrayListOf()
     private var freeItems: ArrayList<Product> = arrayListOf()
     private var creditCardPromotionList: ArrayList<CreditCardPromotion> = arrayListOf()
-    private var installmentPlanList: ArrayList<InstallmentPlanView> = arrayListOf()
+    private var installmentPlanList: ArrayList<Installment> = arrayListOf()
 
     companion object {
         const val ARG_PRODUCT_ID = "ARG_PRODUCT_ID" // barcode
@@ -339,7 +339,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
         this.creditCardPromotionList = creditCardPromotionList
     }
 
-    override fun setInstallmentPlanList(installmentPlanList: ArrayList<InstallmentPlanView>) {
+    override fun setInstallmentPlanList(installmentPlanList: ArrayList<Installment>) {
         this.installmentPlanList = installmentPlanList
     }
 
@@ -351,7 +351,7 @@ class ProductDetailActivity : BaseActivity(), ProductDetailListener, BadgeListen
 
     override fun getCreditCardPromotionList(): ArrayList<CreditCardPromotion> = this.creditCardPromotionList
 
-    override fun getInstallmentPlanList(): ArrayList<InstallmentPlanView> = this.installmentPlanList
+    override fun getInstallmentPlanList(): ArrayList<Installment> = this.installmentPlanList
     // region badgeListener
 
     override fun onBadgeSelectedListener(position: Int) {

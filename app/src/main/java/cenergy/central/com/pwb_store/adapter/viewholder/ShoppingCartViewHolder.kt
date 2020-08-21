@@ -1,18 +1,19 @@
 package cenergy.central.com.pwb_store.adapter.viewholder
 
 import android.annotation.SuppressLint
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.RecyclerView
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.QtyAdapter
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.CacheCartItem
+import cenergy.central.com.pwb_store.model.Installment
 import cenergy.central.com.pwb_store.model.response.PromotionExtension
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -45,7 +46,7 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private var cacheCartItem: CacheCartItem? = null
 
     @SuppressLint("SetTextI18n")
-    fun bindProductView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem, promotion: PromotionExtension?) {
+    fun bindProductView(item: ShoppingCartItem, listener: ShoppingCartAdapter.ShoppingCartListener?, cacheCartItem: CacheCartItem, promotion: PromotionExtension?, installments: List<Installment>?) {
         itemView.context?.let { context ->
             qtyTextTitle.text = context.resources.getString(R.string.qty)
             deleteItemTextView.text = context.resources.getString(R.string.shopping_delete)
@@ -59,8 +60,9 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             productCode.text = "${context.resources.getString(R.string.product_code)} ${item.sku}"
             productPrice.text = "${context.resources.getString(R.string.product_price)} ${getDisplayPrice(unit, item.price ?: 0.0)}"
 
-            if (promotion != null && !promotion.creditCardPromotions.isNullOrEmpty()){
-                badgeCreditCard.text = context.getString(R.string.badge_credit_card_on_top)
+            if (!promotion?.creditCardPromotions.isNullOrEmpty()
+                    || !promotion?.freeItems.isNullOrEmpty() || !installments.isNullOrEmpty()){
+                badgeCreditCard.text = context.getString(R.string.badge_promotion)
                 badgeCreditCard.visibility = View.VISIBLE
             } else {
                 badgeCreditCard.visibility = View.GONE

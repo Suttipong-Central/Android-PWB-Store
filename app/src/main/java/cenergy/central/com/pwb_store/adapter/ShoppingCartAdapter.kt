@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.ShoppingCartViewHolder
+import cenergy.central.com.pwb_store.extensions.getInstallments
+import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.response.PromotionResponse
 import cenergy.central.com.pwb_store.model.response.ShoppingCartItem
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -13,12 +15,16 @@ import java.util.ArrayList
 class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
     private val database = RealmController.getInstance()
 
+    var products: ArrayList<Product> = arrayListOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
     var promotions: ArrayList<PromotionResponse> = arrayListOf()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
-
     var shoppingCartItem = listOf<ShoppingCartItem>()
         set(value) {
             field = value
@@ -40,7 +46,8 @@ class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDes
 
         if (item.price != null && item.price!! > 0.0) {
             val promotion = promotions.firstOrNull { it.sku == cacheCartItem.sku }?.extension
-            holder.bindProductView(item, listener, cacheCartItem, promotion)
+            val installments = products.firstOrNull { it.sku == cacheCartItem.sku }?.getInstallments()
+            holder.bindProductView(item, listener, cacheCartItem, promotion, installments)
         } else {
             holder.bindFreebieView(item, listener, cacheCartItem)
         }
