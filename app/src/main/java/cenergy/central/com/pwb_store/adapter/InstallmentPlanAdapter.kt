@@ -39,6 +39,28 @@ class InstallmentPlanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
     @SuppressLint("Range")
     fun bind(installment: Installment){
         badgeIcon.setImage(installment.installments[0].getBankImageUrl())
-        planTv.text = TextUtils.join(", ", installment.installments.map { it.name })
+        planTv.text = getDisplayMonths(installment.installments.map { it.period })
+    }
+
+    private fun getDisplayMonths(months: List<Int>): String{
+        var result = ""
+        if (months.size > 1){
+            for (i in months.indices){
+                result += when (i) {
+                    months.size -1 -> {
+                        " ${months[i]} months"
+                    }
+                    0 -> {
+                        "${months[i]} months,"
+                    }
+                    else -> {
+                        " ${months[i]} months,"
+                    }
+                }
+            }
+        } else {
+            result += "${months[0]} months"
+        }
+        return result
     }
 }

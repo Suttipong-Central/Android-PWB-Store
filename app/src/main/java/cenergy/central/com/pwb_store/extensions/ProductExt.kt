@@ -20,7 +20,7 @@ fun Product.is1HourProduct(): Boolean {
 fun Product.getInstallments(): ArrayList<Installment> {
     return if (this.paymentMethod.contains(PaymentMethod.INSTALLMENT, true) && this.extension!!.installmentPlans.isNotEmpty()) {
         val installments: ArrayList<Installment> = arrayListOf()
-        this.extension!!.installmentPlans.groupBy { it.bankId}.forEach {
+        this.extension!!.installmentPlans.groupBy { it.bankId }.forEach {
             val installment = Installment(it.key, it.value.sortedBy { installment -> installment.period })
             installments.add(installment)
         }
