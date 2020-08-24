@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.ShoppingCartAdapter
 import cenergy.central.com.pwb_store.extensions.checkItems
-import cenergy.central.com.pwb_store.extensions.toProductPromotions
+import cenergy.central.com.pwb_store.extensions.getInstallments
 import cenergy.central.com.pwb_store.extensions.toStringDiscount
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.Contextor
@@ -77,6 +77,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private var isCouponAdded = false
     private var promotionCode = ""
     private var promotions: ArrayList<PromotionResponse> = arrayListOf()
+    private var products: List<Product> = arrayListOf()
 
     // Firebase remote config
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
@@ -290,6 +291,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                     runOnUiThread {
                         if (response?.first != null) {
                             cartResponse = response.first
+                            products = response.second
                             getCartTotal()
                             updateCacheCartItem(cartResponse, response.second)
                         } else {
@@ -348,7 +350,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun retrievePromotion(shoppingCartResponse: CartTotal) {
         if (cartResponse != null && cartResponse!!.items.isNotEmpty()) {
-            val skuList = cartResponse!!.items.map { it.sku }
+            // not retrieve promotion of freebie items
+            val skuList = cartResponse!!.items.filter { it.price != null && it.price!! > 0.0 }.map { it.sku }
             val result = TextUtils.join(",", skuList)
             PromotionAPI.retrievePromotionBySKUs(this, result, object : ApiResponseCallback<List<PromotionResponse>> {
                 override fun success(response: List<PromotionResponse>?) {
@@ -409,37 +412,9 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 promotionCode = shoppingCartResponse.couponCode
                 couponCodeEdt.setText(promotionCode)
             }
-            if (promotions.size > 1) {
-                var isPromotionEmpty = true
-                var isPromotionAllHave = true
-                val listDiscount: ArrayList<Int> = arrayListOf()
-                /**
-                 * List<SKU, List<DiscountAmount>>
-                 */
-                promotions.toProductPromotions().forEach {
-                    if (it.second.isNotEmpty()) {
-                        isPromotionEmpty = false
-                    } else {
-                        isPromotionAllHave = false
-                    }
-                    listDiscount.addAll(it.second)
-                }
-                if (isPromotionEmpty) {
-                    // all empty not show
-                    warningCreditCardTv.visibility = View.GONE
-                } else {
-                    if (isPromotionAllHave && listDiscount.distinct().size == 1) {
-                        // all have promotion and equal will show
-                        warningCreditCardTv.visibility = View.GONE
-                    } else {
-                        // all have promotion but not equal && some product have promotion will show
-                        warningCreditCardTv.visibility = View.VISIBLE
-                    }
-                }
-            } else {
-                // product size 1 not show
-                warningCreditCardTv.visibility = View.GONE
-            }
+
+            warningCreditCardTv.visibility = if (isErrorPromotion() && isErrorInstallmentPlans()) View.VISIBLE else View.GONE
+
             shoppingCartAdapter.promotions = promotions
             shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
 
@@ -456,6 +431,37 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             tvT1.text = resources.getString(R.string.t1_points, t1Points.toInt())
             checkCanClickPayment()
         }
+    }
+
+    private fun isErrorPromotion(): Boolean {
+        if (promotions.isNullOrEmpty()) return false
+
+        val promotionsPerSku = hashMapOf<String, ArrayList<Long>>()
+        promotions.map {
+            val promotionIds = it.extension?.creditCardPromotions?.mapTo(arrayListOf(), { ccp ->
+                ccp.id
+            })
+            promotionsPerSku.put(it.sku, promotionIds ?: arrayListOf())
+        }
+        val groupIds = promotionsPerSku.values.groupBy { it }
+
+        return promotionsPerSku.filter { it.value.size != groupIds.keys.size }.isNotEmpty()
+    }
+
+    private fun isErrorInstallmentPlans(): Boolean {
+        val installmentPerSku = hashMapOf<String, ArrayList<Int>>()
+        val periodPerSku = hashMapOf<String, ArrayList<List<Int>>>()
+        promotions.forEach { item ->
+            products.firstOrNull { it.sku == item.sku }?.let {
+                val bankIds = it.getInstallments().mapTo(arrayListOf(), { ism -> ism.bankId })
+                installmentPerSku[it.sku] = bankIds
+                val ismList = it.getInstallments().mapTo(arrayListOf(), { ism -> ism.installments.map { ismp -> ismp.period }})
+                periodPerSku[it.sku] = ismList
+            }
+        }
+        val groupBankIds = installmentPerSku.values.groupBy { it }
+        val groupPeriod = periodPerSku.values.groupBy { it }
+        return installmentPerSku.filter { it.value.size != groupBankIds.keys.size }.isNotEmpty() && periodPerSku.filter { it.value.size != groupPeriod.keys.size }.isNotEmpty()
     }
 
     private fun checkCanClickPayment() {

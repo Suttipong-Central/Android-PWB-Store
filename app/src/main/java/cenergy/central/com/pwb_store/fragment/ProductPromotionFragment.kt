@@ -18,12 +18,12 @@ import cenergy.central.com.pwb_store.adapter.BadgeSelectAdapter
 import cenergy.central.com.pwb_store.adapter.CreditCardPromotionAdapter
 import cenergy.central.com.pwb_store.adapter.FreebiePromotionAdapter
 import cenergy.central.com.pwb_store.adapter.InstallmentPlanAdapter
+import cenergy.central.com.pwb_store.extensions.getInstallments
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI
 import cenergy.central.com.pwb_store.manager.api.PromotionAPI
 import cenergy.central.com.pwb_store.model.APIError
-import cenergy.central.com.pwb_store.model.InstallmentPlan
-import cenergy.central.com.pwb_store.model.InstallmentPlanView
+import cenergy.central.com.pwb_store.model.Installment
 import cenergy.central.com.pwb_store.model.Product
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
@@ -41,7 +41,7 @@ class ProductPromotionFragment : Fragment() {
     private var freebieSKUs: ArrayList<String> = arrayListOf()
     private var freeItems: ArrayList<Product> = arrayListOf()
     private var creditCardOnTopList: ArrayList<CreditCardPromotion> = arrayListOf()
-    private var installmentPlanList: ArrayList<InstallmentPlanView> = arrayListOf()
+    private var installmentPlanList: ArrayList<Installment> = arrayListOf()
     private var productDetailListener: ProductDetailListener? = null
     private val badgeSelectAdapter: BadgeSelectAdapter by lazy { BadgeSelectAdapter() }
     private val freebiePromotionAdapter: FreebiePromotionAdapter by lazy { FreebiePromotionAdapter() }
@@ -160,12 +160,9 @@ class ProductPromotionFragment : Fragment() {
                             productDetailListener?.setCreditCardPromotionList(creditCardOnTopList)
                         }
                         // Installment plans
-                        if (product.extension != null && product.extension!!.installmentPlans.isNotEmpty()){
+                        if (product.getInstallments().isNotEmpty()){
                             badgesSelects.add(INSTALLMENT_PLANS)
-                            product.extension!!.installmentPlans.groupBy { it.bankId}.forEach {
-                                val installment = InstallmentPlanView.Installment(it.key, it.value.sortedBy { installment -> installment.period })
-                                installmentPlanList.add(installment)
-                            }
+                            installmentPlanList.addAll(product.getInstallments())
                             productDetailListener?.setInstallmentPlanList(installmentPlanList)
                         }
                         if (badgesSelects.isNotEmpty()){
