@@ -46,6 +46,11 @@ data class PaymentCreditCardPromotion(
         @SerializedName("discount_amount")
         val discountAmount: Int
 ) {
+    companion object{
+        const val DISCOUNT_BY_PERCENT = "by_percent"
+        const val DISCOUNT_BY_FIXED = "by_fixed"
+    }
+
     fun getBankImageUrl(): String {
         // example -> /media/banks/ktc22x22.jpg
         return "${Constants.BASE_URL_MAGENTO}/media/$bankIcon"

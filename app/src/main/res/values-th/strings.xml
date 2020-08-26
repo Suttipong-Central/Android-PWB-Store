@@ -405,7 +405,8 @@
     <!--  Credit Card Promotion  -->
     <string name="select_credit_card_promotion">เลือกบัตรเครดิต</string>
     <string name="default_credit_card_promotion">ธนาคารอื่นๆ</string>
-    <string name="format_credit_card_promotion">รับส่วนลดทันที %d%%</string>
+    <string name="format_credit_card_promotion_percent">รับส่วนลดทันที %d%%</string>
+    <string name="format_credit_card_promotion">รับส่วนลดทันที %d฿</string>
     <string name="format_percent">%d%%</string>
     <string name="format_get_more_percent">ลดเพิ่ม %d%%</string>
     <string name="title_credit_card_on_top">ส่วนลดเพิ่มบัตรเครดิตเมื่อจ่ายเต็มจำนวน</string>

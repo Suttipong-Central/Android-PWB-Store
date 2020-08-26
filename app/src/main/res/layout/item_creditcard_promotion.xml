@@ -31,9 +31,10 @@
                 android:id="@+id/ivBankImage"
                 android:layout_width="@dimen/size_bank_image"
                 android:layout_height="@dimen/size_bank_image"
-                android:layout_marginStart="@dimen/margin_padding_xsmall"
+                android:padding="1dp"
                 android:contentDescription="@string/payment_bank_transfer"
-                tools:src="@drawable/ic_credit_card" />
+                android:background="@color/colorPrimary"
+                tools:src="@drawable/ic_credit_card_white" />
 
             <cenergy.central.com.pwb_store.view.PowerBuyTextView
                 android:id="@+id/tvPromotion"

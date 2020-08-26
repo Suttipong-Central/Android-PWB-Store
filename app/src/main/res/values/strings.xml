@@ -424,7 +424,8 @@
     <!--  Credit Card Promotion  -->
     <string name="select_credit_card_promotion">Select Credit Card</string>
     <string name="default_credit_card_promotion">Other Banks</string>
-    <string name="format_credit_card_promotion">Enjoy additional %d%% off!</string>
+    <string name="format_credit_card_promotion_percent">Enjoy additional %d%% off!</string>
+    <string name="format_credit_card_promotion">Enjoy additional %d฿ off!</string>
     <string name="format_percent">%d%%</string>
     <string name="format_get_more_percent">Extra %d%% Off</string>
     <string name="title_credit_card_on_top">Credit card on-top promotion discount when create full payment</string>

@@ -145,8 +145,15 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                                 selected = selected)
                     }
                     PaymentMethod.INSTALLMENT -> {
+                        val installmentsPromotion = paymentPromotions.filter { p ->
+                            p.paymentMethod == PaymentMethod.INSTALLMENT
+                        }
+                        val selected = isInstallmentPaymentOption()
                         PaymentMethodView.PaymentItemView(paymentMethod = it,
-                                viewType = PaymentMethodAdapter.INSTALLMENT)
+                                promotions = installmentsPromotion,
+                                viewType = PaymentMethodAdapter.INSTALLMENT,
+                                promotionId = promotionId,
+                                selected = selected)
                     }
                     PaymentMethod.E_ORDERING -> {
                         PaymentMethodView.PaymentItemView(paymentMethod = it,
@@ -177,9 +184,14 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         selectMethodAdapter.submitList(items)
     }
 
-    fun isFullPaymentOption(): Boolean {
+    private fun isFullPaymentOption(): Boolean {
         return (this.selectedPaymentMethod != null
                 && this.selectedPaymentMethod!!.code == PaymentMethod.FULL_PAYMENT)
+    }
+
+    private fun isInstallmentPaymentOption(): Boolean {
+        return (this.selectedPaymentMethod != null
+                && this.selectedPaymentMethod!!.code == PaymentMethod.INSTALLMENT)
     }
 
     private fun setupView(rootView: View) {
