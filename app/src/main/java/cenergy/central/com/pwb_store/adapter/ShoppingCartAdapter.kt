@@ -15,21 +15,16 @@ import java.util.ArrayList
 class ShoppingCartAdapter(val listener: ShoppingCartListener?, private val isDescription: Boolean) : RecyclerView.Adapter<ShoppingCartViewHolder>() {
     private val database = RealmController.getInstance()
 
-    var products: ArrayList<Product> = arrayListOf()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-    var promotions: ArrayList<PromotionResponse> = arrayListOf()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    var products = listOf<Product>()
+    var promotions= listOf<PromotionResponse>()
     var shoppingCartItem = listOf<ShoppingCartItem>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+
+    fun setAdapter(products: List<Product>, promotions: ArrayList<PromotionResponse>, shoppingCartItem: List<ShoppingCartItem>){
+        this.products = products
+        this.promotions = promotions
+        this.shoppingCartItem = shoppingCartItem
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingCartViewHolder {
         return ShoppingCartViewHolder(LayoutInflater.from(parent.context)

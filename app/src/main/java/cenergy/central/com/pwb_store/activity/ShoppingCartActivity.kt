@@ -40,6 +40,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartListener {
 
@@ -363,12 +364,10 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 }
 
                 override fun failure(error: APIError) {
-                    Log.d("ShoppingCart", "Call promotions fail")
                     updateViewShoppingCart(shoppingCartResponse)
                 }
             })
         } else {
-            Log.d("ShoppingCart", "CartResponse items is empty")
             updateViewShoppingCart(shoppingCartResponse)
         }
     }
@@ -413,10 +412,13 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                 couponCodeEdt.setText(promotionCode)
             }
 
-            warningCreditCardTv.visibility = if (isErrorPromotion() && isErrorInstallmentPlans()) View.VISIBLE else View.GONE
+            if (promotions.size > 1) {
+                warningCreditCardTv.visibility = if (isErrorPromotion() || isErrorInstallmentPlans()) View.VISIBLE else View.GONE
+            } else {
+                warningCreditCardTv.visibility = View.GONE
+            }
 
-            shoppingCartAdapter.promotions = promotions
-            shoppingCartAdapter.shoppingCartItem = items.checkItems(cartItemList) // update items in shopping cart
+            shoppingCartAdapter.setAdapter(products, promotions, items.checkItems(cartItemList)) // update items in shopping cart
 
             updateTitle(shoppingCartResponse.qty)
             val t1Points = (total - (total % 50)) / 50
@@ -435,33 +437,57 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun isErrorPromotion(): Boolean {
         if (promotions.isNullOrEmpty()) return false
-
         val promotionsPerSku = hashMapOf<String, ArrayList<Long>>()
         promotions.map {
             val promotionIds = it.extension?.creditCardPromotions?.mapTo(arrayListOf(), { ccp ->
                 ccp.id
             })
-            promotionsPerSku.put(it.sku, promotionIds ?: arrayListOf())
+            promotionsPerSku[it.sku] = promotionIds ?: arrayListOf()
         }
-        val groupIds = promotionsPerSku.values.groupBy { it }
-
-        return promotionsPerSku.filter { it.value.size != groupIds.keys.size }.isNotEmpty()
+        val promotionIds = arrayListOf<Long>()
+        promotionsPerSku.values.forEach {
+            promotionIds.addAll(it)
+        }
+        val groupIds = promotionIds.groupBy { it }
+        val sum = promotionsPerSku.values.map { it.size }.sumBy { it }
+        return if (sum > 0) {
+            promotionsPerSku.filter { it.value.size != groupIds.keys.size }.isNotEmpty()
+        } else {
+            false // all product not have cc-on-top
+        }
     }
 
     private fun isErrorInstallmentPlans(): Boolean {
         val installmentPerSku = hashMapOf<String, ArrayList<Int>>()
-        val periodPerSku = hashMapOf<String, ArrayList<List<Int>>>()
-        promotions.forEach { item ->
+        val periodPerSku = hashMapOf<String, ArrayList<Int>>()
+        promotions.map { item ->
             products.firstOrNull { it.sku == item.sku }?.let {
                 val bankIds = it.getInstallments().mapTo(arrayListOf(), { ism -> ism.bankId })
                 installmentPerSku[it.sku] = bankIds
-                val ismList = it.getInstallments().mapTo(arrayListOf(), { ism -> ism.installments.map { ismp -> ismp.period }})
-                periodPerSku[it.sku] = ismList
+                val plans = arrayListOf<Int>()
+                it.getInstallments().forEach { i ->
+                    plans.addAll(i.installments.map { plan -> plan.period })
+                }
+                periodPerSku[it.sku] = plans
             }
         }
-        val groupBankIds = installmentPerSku.values.groupBy { it }
-        val groupPeriod = periodPerSku.values.groupBy { it }
-        return installmentPerSku.filter { it.value.size != groupBankIds.keys.size }.isNotEmpty() && periodPerSku.filter { it.value.size != groupPeriod.keys.size }.isNotEmpty()
+        val installmentIds = arrayListOf<Int>()
+        installmentPerSku.values.forEach {
+            installmentIds.addAll(it)
+        }
+        val period = arrayListOf<Int>()
+        periodPerSku.values.forEach {
+            period.addAll(it)
+        }
+        val groupBankIds = installmentIds.groupBy { it }
+        val groupPeriod = period.groupBy { it }
+        val sum = installmentPerSku.values.map { it.size }.sumBy { it }
+        return if (sum > 0) {
+            installmentPerSku.filter { it.value.size != groupBankIds.keys.size }.isNotEmpty()
+                    && periodPerSku.filter { it.value.size != groupPeriod.keys.size }.isNotEmpty()
+        } else {
+            false // all product not have installment plan
+        }
     }
 
     private fun checkCanClickPayment() {
