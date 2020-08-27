@@ -43,7 +43,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         flavorDimensions "version"
         multiDexEnabled true
-        versionCode 138
+        versionCode 139
         versionName "1.2.2"
     }
     buildTypes {
