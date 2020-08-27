@@ -82,5 +82,22 @@ open class CacheCartItem(
                     imageUrl = product.getImageUrl(),
                     branch = branchResponse.branch)
         }
+
+        @JvmStatic
+        fun updateCartItem(cacheCartItem: CacheCartItem, product: Product): CacheCartItem {
+            return CacheCartItem(
+                    itemId = cacheCartItem.itemId,
+                    sku = cacheCartItem.sku,
+                    qty = cacheCartItem.qty,
+                    name = product.name,
+                    price = cacheCartItem.price,
+                    type = cacheCartItem.type,
+                    cartId = cacheCartItem.cartId,
+                    maxQTY = product.extension?.stokeItem?.maxQTY ?: 1,
+                    qtyInStock = product.extension?.stokeItem?.qty,
+                    imageUrl = product.getImageUrl(),
+                    paymentMethod = product.paymentMethod,
+                    branch= cacheCartItem.branch)
+        }
     }
 }

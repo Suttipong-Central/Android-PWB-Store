@@ -314,14 +314,14 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun updateCacheCartItem(cartResponse: CartResponse?, products: List<Product>) {
         cartResponse?.let {
-            val cacheCartItems = arrayListOf<CacheCartItem>()
             it.items.forEach { item ->
                 val product = products.firstOrNull { p -> item.sku == p.sku }
                 product?.let {
-                    cacheCartItems.add(CacheCartItem.asCartItem(item, product))
+                    database.getCacheCartItem(product.id)?.let { cacheItem ->
+                        database.saveCartItem(CacheCartItem.updateCartItem(cacheItem, product))
+                    }
                 }
             }
-            database.saveCartItems(cacheCartItems)
         }
     }
 
