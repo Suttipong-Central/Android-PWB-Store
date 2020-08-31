@@ -18,8 +18,6 @@ class PreferenceManager(private var context: Context) {
         editor.apply()
     }
 
-    //TODO: Store userInfo in sharepreference
-    // region user
     val userToken: String?
         get() = pref.getString(PREF_USER_TOKEN, null)
 
@@ -30,6 +28,19 @@ class PreferenceManager(private var context: Context) {
         get() = pref.getString(PREF_USER_STAFF_ID, null)
 
     val userLevel = pref.getInt(PREF_USER_LEVEL_ID, 0)
+
+    val hasSpecificSKU: Boolean
+            get() = pref.getBoolean(PREF_HAS_SPECIFIC_SKU, false)
+
+    fun setHasSpecificSKU(isHas: Boolean){
+        val editor = pref.edit()
+        editor.putBoolean(PREF_HAS_SPECIFIC_SKU, isHas)
+        editor.apply()
+    }
+
+    private fun clearHasSpecificSKU() {
+        pref.edit().remove(PREF_HAS_SPECIFIC_SKU).apply()
+    }
 
     fun setUserInfo(userToken: String, userLoginResponse: LoginUserResponse) {
         val editor = pref.edit()
@@ -107,6 +118,7 @@ class PreferenceManager(private var context: Context) {
         clearCartId()
         clearSecretKey()
         clearUserInfo()
+        clearHasSpecificSKU()
     }
 
     private fun clearDefaultLanguage() {
@@ -137,6 +149,7 @@ class PreferenceManager(private var context: Context) {
         const val PREF_USER_ID = "pref_user_id"
         const val PREF_USER_STAFF_ID = "pref_user_staff_id"
         const val PREF_USER_LEVEL_ID = "pref_user_level_id"
+        const val PREF_HAS_SPECIFIC_SKU = "PREF_HAS_SPECIFIC_SKU"
     }
 }
 

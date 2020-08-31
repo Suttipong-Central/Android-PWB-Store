@@ -29,12 +29,14 @@ import cenergy.central.com.pwb_store.dialogs.ProductFilterBottomSheet
 import cenergy.central.com.pwb_store.dialogs.ProductFilterListener
 import cenergy.central.com.pwb_store.helpers.DialogHelper
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento
 import cenergy.central.com.pwb_store.manager.api.ProductListAPI.Companion.retrieveProducts
 import cenergy.central.com.pwb_store.manager.api.PromotionAPI
 import cenergy.central.com.pwb_store.manager.bus.event.CategoryTwoBus
 import cenergy.central.com.pwb_store.manager.bus.event.ProductFilterItemBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingHeaderBus
 import cenergy.central.com.pwb_store.manager.bus.event.SortingItemBus
+import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFilterGroups
@@ -100,6 +102,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     // Realm
     private val database = RealmController.getInstance()
+    private val userInfo: UserInformation = database.userInformation
+
+    private val pref by lazy { context?.let { PreferenceManager(it) } }
 
     private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -204,7 +209,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         fbRemoteConfig = initFirebaseRemoteConfig()
 
         // fetch remote config for special category
-        fbRemoteConfig.fetchAndActivate().addOnCompleteListener{ task ->
+        fbRemoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.i(TAG, "remote config -> fetch Successful")
             } else {
@@ -293,7 +298,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         mRecyclerView.adapter = mProductListAdapter
         if (savedInstanceState == null) {
             showProgressDialog()
-            retrieveProductList()
+            getStoreLocation()
         }
         var scrollPosition = 0
         // If a layout manager has already been set, get current scroll position.
@@ -302,6 +307,29 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
         mRecyclerView.scrollToPosition(scrollPosition)
         mRecyclerView.addOnScrollListener(scrollListener)
+    }
+
+    /**
+     * call for check status has specific sku of staff
+     * have cache API 1 hour
+     */
+    private fun getStoreLocation() {
+        context?.let {
+            if (userInfo.store != null && userInfo.user != null) {
+                HttpManagerMagento.getInstance(context!!).getStoreLocation(false, userInfo.user!!,
+                        userInfo.store!!.retailerId, object : ApiResponseCallback<UserInformation> {
+                    override fun success(response: UserInformation?) {
+                        retrieveProductList()
+                    }
+
+                    override fun failure(error: APIError) {
+                        Log.d("Store Location",  "Error -> ${error.errorMessage}")
+                        retrieveProductList()
+                    }
+                })
+            }
+
+        }
     }
 
     private fun resetPage() {
@@ -422,6 +450,14 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
              * must be add default filter group
              */
             filterGroupsList.addAll(FilterGroups.getDefaultFilterGroup())
+
+            // check has specific sku
+            pref?.let {
+                if (pref!!.hasSpecificSKU) {
+                    // storeId is retailerId
+                    filterGroupsList.add(createFilterGroups("retailer_id", userInfo.store?.storeId.toString(), "eq"))
+                }
+            }
 
             val sortOrders = ArrayList<SortOrder>()
             if (sortName!!.isNotEmpty() && sortType!!.isNotEmpty()) {
@@ -551,7 +587,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
         setTextHeader(totalItem, title)
         // Update filter option
-        if (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null){
+        if (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null) {
             (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet).updateProductFilters()
         }
         layoutProgress!!.visibility = View.GONE

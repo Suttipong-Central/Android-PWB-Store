@@ -142,34 +142,32 @@ class LoginFragment : Fragment(), TextWatcher, View.OnClickListener {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         val secretKey = document.toObject(SecretKey::class.java)
-                        if (checkSecretKey(secretKey)){
+                        if (checkSecretKey(secretKey)) {
                             preferenceManager.setSecretKey(secretKey!!)
                             dismissDialog()
                             EventBus.getDefault().post(LoginSuccessBus(true, userInformation))
                         } else {
-                            Log.d("Firestore", "secretKey is null!")
                             dismissDialog()
                             listener.userLogOut()
                         }
                     } else {
-                        Log.d("Firestore", "document is null!")
                         dismissDialog()
                         listener.userLogOut()
                     }
                 }
                 .addOnFailureListener { exception ->
-                    Log.d("Firestore", "error -> ${exception.message}")
                     dismissDialog()
                     listener.userLogOut()
                 }
     }
 
-    private fun checkSecretKey(secretKey: SecretKey?): Boolean{
+    private fun checkSecretKey(secretKey: SecretKey?): Boolean {
         return secretKey?.accessKey != null && secretKey.secretKey != null && secretKey.region != null &&
                 secretKey.xApiKey != null && secretKey.serviceName != null && secretKey.xApiKeyConsent != null
     }
 
     private fun checkUserLogin(userInformation: UserInformation): Boolean {
+        Log.d("LLLL", "-> ${userInformation.store?.retailerId}")
         return userInformation.store != null && userInformation.user != null &&
                 userInformation.user!!.staffId != null && userInformation.user!!.staffId != "" &&
                 userInformation.user!!.staffId != "0" && userInformation.store!!.retailerId != ""

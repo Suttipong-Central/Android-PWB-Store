@@ -27,4 +27,8 @@ open class Store(
         @SerializedName("updated_at")
         var updateAt: String? = "",
         @SerializedName("retailer_id")
-        var retailerId: String = ""):RealmObject()
+        var retailerId: String = ""):RealmObject(){
+        companion object {
+                const val SELLER_CODE = "seller_code"
+        }
+}

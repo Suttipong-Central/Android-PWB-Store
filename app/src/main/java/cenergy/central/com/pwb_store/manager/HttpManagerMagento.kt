@@ -15,6 +15,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.*
 import cenergy.central.com.pwb_store.model.*
+import cenergy.central.com.pwb_store.model.Store.Companion.SELLER_CODE
 import cenergy.central.com.pwb_store.model.body.*
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -140,7 +141,8 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                     val userLoginResponse = response.body()!!
                     // store user info
                     PreferenceManager(context).setUserInfo(userToken, userLoginResponse)
-
+                    // save user token
+                    database.saveUserToken(UserToken(token = userToken))
                     getBranchUser(username, userLoginResponse, callback)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -168,15 +170,12 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                         val sellerCode = userBranch.items[0].code
                         if (BuildConfig.FLAVOR == "cds") {
                             val store = Store()
-                            store.retailerId = sellerCode
-                            // save user token
-                            database.saveUserToken(UserToken(token = userToken))
-                            // save user information
+                            store.retailerId = sellerCode                            // save user information
                             val userInformation = UserInformation(userId = user.userId, user = user, store = store)
                             database.saveUserInformation(userInformation)
                             callback.success(userInformation)
                         } else {
-                            getStoreLocation(user, sellerCode, callback)
+                            getStoreLocation(true, user, sellerCode, callback)
                         }
                     }
                 } else {
@@ -190,9 +189,20 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
         })
     }
 
-    private fun getStoreLocation(user: User, sellerCode: String, callback: ApiResponseCallback<UserInformation>) {
+    fun getStoreLocation(force: Boolean = false, user: User, sellerCode: String, callback: ApiResponseCallback<UserInformation>) {
+        val endpointName = "rest/${getLanguage()}/V1/storelocator"
         val userService = retrofit.create(UserService::class.java)
-        userService.retrieveStoreLocation(getLanguage(), sellerCode, "seller_code").enqueue(object : Callback<StoreLocationResponse> {
+
+        // If already cached then do nothing
+        if (!force && database.hasFreshlyCachedEndpoint(endpointName, 1)) {
+            Log.i("ApiManager", "getStore: using cached")
+            callback.success(database.userInformation)
+            return
+        }
+
+        Log.i("ApiManager", "getStore: calling endpoint")
+        val preferenceManager = PreferenceManager(context)
+        userService.retrieveStoreLocation(getLanguage(), sellerCode, SELLER_CODE).enqueue(object : Callback<StoreLocationResponse> {
             override fun onResponse(call: Call<StoreLocationResponse>, response: Response<StoreLocationResponse>?) {
                 if (response?.body() != null) {
                     val storeLocation = response.body()?.items?.firstOrNull()
@@ -204,13 +214,25 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                         store.province = storeLocation.extension?.address?.region ?: ""
                         store.district = storeLocation.extension?.address?.city ?: ""
                         store.postalCode = storeLocation.extension?.address?.postcode ?: ""
+                        preferenceManager.setHasSpecificSKU(storeLocation.extension?.hasSpecificSku ?: false)
                     }
 
-                    // save user token
-                    database.saveUserToken(UserToken(token = userToken))
                     // save user information
                     val userInformation = UserInformation(userId = user.userId, user = user, store = store)
                     database.saveUserInformation(userInformation)
+                    // cached endpoint
+                    database.updateCachedEndpoint(endpointName)
+                    when (getLanguage()) {
+                        "th" -> {
+                            database.clearCachedEndpoint("rest/${AppLanguage.EN}/V1/storelocator")
+                            Log.i("ApiManager", "getStore: clear endpoint ${AppLanguage.EN}")
+                        }
+                        "en" -> {
+                            database.clearCachedEndpoint("rest/${AppLanguage.TH}/V1/storelocator")
+                            Log.i("ApiManager", "getStore: clear endpoint ${AppLanguage.TH}")
+                        }
+                    }
+
                     callback.success(userInformation)
                 } else {
                     callback.failure(APIErrorUtils.parseError(response))
@@ -396,85 +418,85 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                         productExtension.stokeItem = stockItem // add stockItem to productExtension
 
                         // installment plan
-                        if (extensionObj.has("installment_plans")){
+                        if (extensionObj.has("installment_plans")) {
                             val attrArray = extensionObj.getJSONArray("installment_plans")
                             for (index in 0 until attrArray.length()) {
                                 val installmentPlanObj = attrArray.getJSONObject(index)
                                 val installmentPlan = InstallmentPlan()
-                                if (installmentPlanObj.has("period")){
+                                if (installmentPlanObj.has("period")) {
                                     installmentPlan.period = installmentPlanObj.getInt("period")
                                 }
-                                if (installmentPlanObj.has("interest_type")){
+                                if (installmentPlanObj.has("interest_type")) {
                                     installmentPlan.interestType = installmentPlanObj.getString("interest_type")
                                 }
-                                if (installmentPlanObj.has("min_amount")){
+                                if (installmentPlanObj.has("min_amount")) {
                                     installmentPlan.minAmount = installmentPlanObj.getInt("min_amount")
                                 }
-                                if (installmentPlanObj.has("valid_from")){
+                                if (installmentPlanObj.has("valid_from")) {
                                     installmentPlan.validFrom = installmentPlanObj.getString("valid_from")
                                 }
-                                if (installmentPlanObj.has("active")){
+                                if (installmentPlanObj.has("active")) {
                                     val active = installmentPlanObj.getString("active").trim()
                                     installmentPlan.active = active.toInt() == 1
                                 }
-                                if (installmentPlanObj.has("update")){
+                                if (installmentPlanObj.has("update")) {
                                     installmentPlan.update = installmentPlanObj.getString("update")
                                 }
-                                if (installmentPlanObj.has("bank")){
+                                if (installmentPlanObj.has("bank")) {
                                     val bankObj = installmentPlanObj.getJSONObject("bank")
                                     val bank = BankInstallment()
-                                    if (bankObj.has("id")){
+                                    if (bankObj.has("id")) {
                                         bank.id = bankObj.getInt("bank_id")
                                     }
-                                    if (bankObj.has("bank_image")){
+                                    if (bankObj.has("bank_image")) {
                                         bank.image = bankObj.getString("bank_image")
                                     }
-                                    if (bankObj.has("name")){
+                                    if (bankObj.has("name")) {
                                         bank.name = bankObj.getString("name")
                                     }
-                                    if (bankObj.has("icon")){
+                                    if (bankObj.has("icon")) {
                                         bank.icon = bankObj.getString("icon")
                                     }
                                     if (bankObj.has("active")) {
                                         val active = bankObj.getString("active").trim()
                                         installmentPlan.active = active.toInt() == 1
                                     }
-                                    if (bankObj.has("create")){
+                                    if (bankObj.has("create")) {
                                         bank.create = bankObj.getString("create")
                                     }
-                                    if (bankObj.has("update")){
+                                    if (bankObj.has("update")) {
                                         bank.update = bankObj.getString("update")
                                     }
-                                    if (bankObj.has("color")){
+                                    if (bankObj.has("color")) {
                                         bank.bankColor = bankObj.getString("color")
                                     }
                                     installmentPlan.bank = bank
                                 }
-                                if (installmentPlanObj.has("valid_until")){
+                                if (installmentPlanObj.has("valid_until")) {
                                     installmentPlan.validUntil = installmentPlanObj.getString("valid_until")
                                 }
-                                if (installmentPlanObj.has("bank_id")){
+                                if (installmentPlanObj.has("bank_id")) {
                                     installmentPlan.bankId = installmentPlanObj.getInt("bank_id")
                                 }
-                                if (installmentPlanObj.has("name")){
+                                if (installmentPlanObj.has("name")) {
                                     installmentPlan.name = installmentPlanObj.getString("name")
                                 }
-                                if (installmentPlanObj.has("customer_rate")){
+                                if (installmentPlanObj.has("customer_rate")) {
                                     installmentPlan.customerRate = installmentPlanObj.getDouble("customer_rate")
                                 }
-                                if (installmentPlanObj.has("installmentplan_id")){
+                                if (installmentPlanObj.has("installmentplan_id")) {
                                     installmentPlan.id = installmentPlanObj.getInt("installmentplan_id")
                                 }
-                                if (installmentPlanObj.has("max_amount")){
+                                if (installmentPlanObj.has("max_amount")) {
                                     installmentPlan.maxAmount = installmentPlanObj.getLong("max_amount")
                                 }
-                                if (installmentPlanObj.has("create")){
+                                if (installmentPlanObj.has("create")) {
                                     installmentPlan.create = installmentPlanObj.getString("create")
                                 }
-                                if (installmentPlanObj.has("currency")){
+                                if (installmentPlanObj.has("currency")) {
                                     installmentPlan.currency = installmentPlanObj.getString("currency")
                                 }
-                                if (installmentPlanObj.has("merchant_rate")){
+                                if (installmentPlanObj.has("merchant_rate")) {
                                     installmentPlan.merchantRate = installmentPlanObj.getDouble("merchant_rate")
                                 }
                                 installmentPlans.add(installmentPlan)
