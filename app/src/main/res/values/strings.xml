@@ -316,7 +316,7 @@
     <string name="a_to_z">Brand : Name(A-Z)</string>
     <string name="z_to_a">Brand : Name(Z-A)</string>
     <string name="sorting_view_count">Most View</string>
-    <string name="sorting_best_sellers">Bast Sellers</string>
+    <string name="sorting_best_sellers">Best Sellers</string>
     <string name="sorting_biggest_saving">Biggest saving</string>
     <string name="sorting_new">New</string>
     <string name="sorting_price_asc">Price (low to high)</string>
@@ -435,4 +435,5 @@
     <string name="zero_percent">0%</string>
     <string name="title_installment_plans">Installment plans</string>
     <string name="badge_installment_plan">Installment</string>
+    <string name="filters">Filters</string>
 </resources>

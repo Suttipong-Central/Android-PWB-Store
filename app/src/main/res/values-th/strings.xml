@@ -297,15 +297,15 @@
     <string name="high_to_low">ราคา : มากไปน้อย</string>
     <string name="a_to_z">แบรนด์ : ชื่อเริ่มต้นจาก A ไป Z</string>
     <string name="z_to_a">แบรนด์ : ชื่อเริ่มต้นจาก Z ไป A</string>
-    <string name="sorting_view_count">ยอดเข้าดู</string>
-    <string name="sorting_best_sellers">ยอดขาย</string>
-    <string name="sorting_biggest_saving">ส่วนลด</string>
+    <string name="sorting_view_count">สินค้ายอดเข้าดูเยอะ</string>
+    <string name="sorting_best_sellers">สินค้ายอดนิยม</string>
+    <string name="sorting_biggest_saving">สินค้าราคาพิเศษ</string>
     <string name="sorting_new">สินค้าใหม่</string>
     <string name="sorting_price_asc">ราคา (น้อย ไป มาก)</string>
     <string name="sorting_price_desc">ราคา (มาก ไป น้อย)</string>
     <string name="sorting_brands_asc">แบรนด์ (A-Z)</string>
     <string name="sorting_brands_desc">แบรนด์ (Z-A)</string>
-    <string name="sorting_most_favorites">รายการโปรด</string>
+    <string name="sorting_most_favorites">สินค้าชื่นชอบ</string>
     <string name="sorting_top_rated">คะแนนรีวิว</string>
     <string name="sorting_most_reviews">ยอดรีวิว</string>
 
@@ -416,4 +416,5 @@
     <string name="zero_percent">0%</string>
     <string name="title_installment_plans">รายการผ่อนชำระ</string>
     <string name="badge_installment_plan">ผ่อนชำระ</string>
+    <string name="filters">ตัวกรอง</string>
 </resources>

@@ -24,6 +24,7 @@ interface ProductFilterListener {
     fun onUnSelectFilter(filter: FilterView.FilterCheckBoxView)
     fun onResetFilter()
     fun onCloseListener()
+    fun onUpdateFilterCount(count: Int)
 }
 
 sealed class FilterView {
@@ -97,8 +98,10 @@ class ProductFilterBottomSheet : BottomSheetDialogFragment() {
                     items.add(FilterView.FilterTileView(it.name))
                     items.add(FilterView.FilterCheckBoxView(it.code, childItem,
                             // check selected
-                            moreFilter.firstOrNull { moreFilter -> moreFilter.first == it.code &&
-                                        moreFilter.second.firstOrNull { s -> s == childItem.value } != null } != null
+                            moreFilter.firstOrNull { moreFilter ->
+                                moreFilter.first == it.code &&
+                                        moreFilter.second.firstOrNull { s -> s == childItem.value } != null
+                            } != null
                     ))
                 }
             } else {
@@ -107,23 +110,31 @@ class ProductFilterBottomSheet : BottomSheetDialogFragment() {
                 // handle add child filter items
                 it.items.forEach { t ->
                     if (it.code == "category_id") {
-                         if (listener?.getCategoryIdLv4() != null){
-                             if (childCategory.contains(t.value) && listener?.getCategoryIdLv4()!!.contains(t.value))
-                                 items.add(FilterView.FilterTopicView(t))
-                         } else {
-                             if (childCategory.contains(t.value))
-                                 items.add(FilterView.FilterTopicView(t))
-                         }
+                        if (listener?.getCategoryIdLv4() != null) {
+                            if (childCategory.contains(t.value) && listener?.getCategoryIdLv4()!!.contains(t.value))
+                                items.add(FilterView.FilterTopicView(t))
+                        } else {
+                            if (childCategory.contains(t.value))
+                                items.add(FilterView.FilterTopicView(t))
+                        }
                     } else {
                         items.add(FilterView.FilterCheckBoxView(it.code, t,
                                 // check selected
-                                moreFilter.firstOrNull { moreFilter -> moreFilter.first == it.code &&
-                                moreFilter.second.firstOrNull { s -> s == t.value } != null } != null
+                                moreFilter.firstOrNull { moreFilter ->
+                                    moreFilter.first == it.code &&
+                                            moreFilter.second.firstOrNull { s -> s == t.value } != null
+                                } != null
                         ))
                     }
                 }
             }
-
+        }
+        val itemCheckBox = items.filter { (it is FilterView.FilterCheckBoxView) }
+        val itemSelected = itemCheckBox.filter { (it as FilterView.FilterCheckBoxView).selected }
+        if (itemSelected.isNotEmpty()){
+            listener?.onUpdateFilterCount( itemSelected.size )
+        } else {
+            listener?.onUpdateFilterCount( 0 )
         }
         productFilterAdapter.submitList(items)
         applyBtn?.text = String.format(getString(R.string.format_add_filter), totalProducts)

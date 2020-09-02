@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.BuildConfig
 import cenergy.central.com.pwb_store.R
-import cenergy.central.com.pwb_store.activity.MainActivity
-import cenergy.central.com.pwb_store.activity.PaymentActivity
 import cenergy.central.com.pwb_store.adapter.ProductListAdapter
 import cenergy.central.com.pwb_store.adapter.decoration.SpacesItemDecoration
 import cenergy.central.com.pwb_store.adapter.interfaces.OnBrandFilterClickListener
@@ -49,8 +47,6 @@ import cenergy.central.com.pwb_store.utils.*
 import cenergy.central.com.pwb_store.utils.RemoteConfigUtils.initFirebaseRemoteConfig
 import cenergy.central.com.pwb_store.view.PowerBuyPopupWindow
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.fragment_product_list.*
@@ -58,12 +54,14 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import kotlin.math.ceil
 
+@SuppressLint("SetTextI18n")
 class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener, ProductFilterListener {
     // Analytic
     private var analytics: Analytics? = null
 
     // View
     private var productCount: PowerBuyTextView? = null
+    private var filterCountTv: PowerBuyTextView? = null
     private var layoutProgress: LinearLayout? = null
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
@@ -97,6 +95,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var mContext: Context? = null
     private var keyWord: String? = null
     private var productResponse: ProductResponse? = null
+
+    // Filter
+    private var filterCount = 0
 
     private lateinit var fbRemoteConfig: FirebaseRemoteConfig
 
@@ -259,7 +260,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         when (v.id) {
             R.id.layout_title -> EventBus.getDefault().post(CategoryTwoBus())
             R.id.layout_sort ->  // Create productResponse for check because we mock up sort items
-                if (mSortingList == null || productResponse == null || productResponse!!.products.isEmpty()) {
+                if (mSortingList == null || productResponse == null || productResponse!!.products.isEmpty()
+                        || childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null) {
                     mPowerBuyPopupWindow!!.dismiss()
                 } else {
                     mPowerBuyPopupWindow!!.setRecyclerViewSorting(mSortingList)
@@ -286,6 +288,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         titleLayout.setOnClickListener(this)
         sortLayout.setOnClickListener(this)
 
+        filterCountTv = rootView.findViewById(R.id.txt_filter)
+        updateFilterCount()
         if (isSearch) {
             layoutFilter.visibility = View.GONE
         }
@@ -414,7 +418,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setTextHeader(total: Int, name: String?) {
         productCount!!.text = name + " " + mContext!!.getString(R.string.filter_count, total.toString())
     }
@@ -683,6 +686,19 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         hideFilterOptions()
     }
     // endregion
+
+    override fun onUpdateFilterCount(count: Int) {
+        filterCount = count
+        updateFilterCount()
+    }
+
+    private fun updateFilterCount(){
+        if (filterCount > 0){
+            filterCountTv?.text = "${getText(R.string.filters)} ($filterCount)"
+        } else {
+            filterCountTv?.text = getText(R.string.filters)
+        }
+    }
 
     private fun showFilterOptions() {
         val productFilterFragment = childFragmentManager.findFragmentByTag(
