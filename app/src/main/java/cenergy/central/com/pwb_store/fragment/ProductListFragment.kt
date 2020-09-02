@@ -53,12 +53,14 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import kotlin.math.ceil
 
+@SuppressLint("SetTextI18n")
 class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClickListener, ProductFilterListener {
     // Analytic
     private var analytics: Analytics? = null
 
     // View
     private var productCount: PowerBuyTextView? = null
+    private var filterCountTv: PowerBuyTextView? = null
     private var layoutProgress: LinearLayout? = null
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
@@ -91,12 +93,15 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var totalItem = 0
     private var mContext: Context? = null
     private var keyWord: String? = null
+    private var productResponse: ProductResponse? = null
+
+    // Filter
+    private var filterCount = 0
 
     // Database
     private val database by lazy { RealmController.getInstance() }
-    private var productResponse: ProductResponse? = null
 
-    private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
+    private val onPopupDismissListener = PopupWindow.OnDismissListener { isDoneFilter = false }
 
     private val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -218,10 +223,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             categoryId = arguments!!.getString(ARG_DEPARTMENT_ID)
             categoryLv2 = arguments!!.getParcelable(ARG_CATEGORY)
             keyWord = arguments!!.getString(ARG_KEY_WORD)
-//            // no search
-//            if (!isSearch) { // setup product filter list
-//                loadCategoryLv3(categoryLv2)
-//            }
         }
         resetPage()
         setupSorting()
@@ -265,7 +266,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         when (v.id) {
             R.id.layout_title -> EventBus.getDefault().post(CategoryTwoBus())
             R.id.layout_sort ->  // Create productResponse for check because we mock up sort items
-                if (mSortingList == null) {
+                if (mSortingList == null || productResponse == null || productResponse!!.products.isEmpty()
+                        || childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null) {
                     mPowerBuyPopupWindow!!.dismiss()
                 } else {
                     mPowerBuyPopupWindow!!.setRecyclerViewSorting(mSortingList)
@@ -293,14 +295,11 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         titleLayout.setOnClickListener(this)
         sortLayout.setOnClickListener(this)
 
+        filterCountTv = rootView.findViewById(R.id.txt_filter)
+        updateFilterCount()
         if (isSearch) {
             layoutFilter.visibility = View.GONE
         }
-//        if (categoriesLv3 == null) {
-//            mProductLayout?.visibility = View.GONE
-//        } else {
-//            mProductLayout?.visibility = View.VISIBLE
-//        }
         popUpShow()
         mLayoutManger = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
         mLayoutManger!!.spanSizeLookup = mProductListAdapter!!.spanSize
@@ -397,11 +396,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         if (context != null) {
             val layoutInflater = (context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
             mPowerBuyPopupWindow = PowerBuyPopupWindow(activity, layoutInflater)
-            mPowerBuyPopupWindow!!.setOnDismissListener(ON_POPUP_DISMISS_LISTENER)
+            mPowerBuyPopupWindow!!.setOnDismissListener(onPopupDismissListener)
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setTextHeader(total: Int, name: String?) {
         productCount!!.text = name + " " + mContext!!.getString(R.string.filter_count, total.toString())
     }
@@ -471,10 +469,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
 
     private fun handleProductAvailable(productResponse: ProductResponse?) {
         context?.let {
-            if (productResponse != null){
+            if (productResponse != null) {
                 val retailerId = database?.userInformation?.store?.storeId?.toString() ?: ""
                 val resultSKUs = TextUtils.join(",", productResponse.products.map { it.sku })
-                HttpManagerMagento.getInstance(context!!).retrieveProductAvailable(retailerId, resultSKUs, object : ApiResponseCallback<List<ProductAvailableResponse>>{
+                HttpManagerMagento.getInstance(context!!).retrieveProductAvailable(retailerId, resultSKUs, object : ApiResponseCallback<List<ProductAvailableResponse>> {
                     override fun success(response: List<ProductAvailableResponse>?) {
                         productResponse.products.forEach { product ->
                             val productAvailable = response?.find { it.sku == product.sku }
@@ -581,7 +579,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     override fun onSelectFilter(filter: FilterView.FilterCheckBoxView) {
-        if (moreFilter.firstOrNull{ it.first == filter.code} == null){
+        if (moreFilter.firstOrNull { it.first == filter.code } == null) {
             moreFilter.add(Pair(first = filter.code, second = arrayListOf(filter.filterItem.value)))
         } else {
             moreFilter.first { it.first == filter.code }.second.add(filter.filterItem.value)
@@ -592,8 +590,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     override fun onUnSelectFilter(filter: FilterView.FilterCheckBoxView) {
-        if (moreFilter.firstOrNull{ it.first == filter.code} != null) {
-            if (moreFilter.first { it.first == filter.code }.second.size > 1){
+        if (moreFilter.firstOrNull { it.first == filter.code } != null) {
+            if (moreFilter.first { it.first == filter.code }.second.size > 1) {
                 moreFilter.first { it.first == filter.code }.second.remove(filter.filterItem.value)
             } else {
                 moreFilter.remove(moreFilter.first { it.first == filter.code })
@@ -605,7 +603,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     }
 
     override fun onResetFilter() {
-        if (categoryIdLv4 != null){
+        if (categoryIdLv4 != null) {
             categoryId = categoryIdLv4
         }
         moreFilter = arrayListOf()
@@ -618,6 +616,19 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         hideFilterOptions()
     }
     // endregion
+
+    override fun onUpdateFilterCount(count: Int) {
+        filterCount = count
+        updateFilterCount()
+    }
+
+    private fun updateFilterCount() {
+        if (filterCount > 0) {
+            filterCountTv?.text = "${getText(R.string.filters)} ($filterCount)"
+        } else {
+            filterCountTv?.text = getText(R.string.filters)
+        }
+    }
 
     private fun showFilterOptions() {
         val productFilterFragment = childFragmentManager.findFragmentByTag(
@@ -659,7 +670,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_CATEGORY = "ARG_CATEGORY"
         private const val ARG_KEY_WORD = "ARG_KEY_WORD"
         private const val ARG_IS_SORTING = "ARG_IS_SORTING"
-        private const val ARG_FILTER_ITEMS = "ARG_FILTER_ITEMS"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
 
