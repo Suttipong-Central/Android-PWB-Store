@@ -418,4 +418,5 @@
     <string name="zero_percent">0%</string>
     <string name="title_installment_plans">รายการผ่อนชำระ</string>
     <string name="badge_installment_plan">ผ่อนชำระ</string>
+    <string name="month">เดือน</string>
 </resources>
