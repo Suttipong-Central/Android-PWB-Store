@@ -58,7 +58,7 @@
     </FrameLayout>
 
     <cenergy.central.com.pwb_store.view.PowerBuyTextView
-        android:id="@+id/tvPercent"
+        android:id="@+id/tvDiscount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="14sp"

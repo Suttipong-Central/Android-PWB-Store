@@ -408,7 +408,9 @@
     <string name="format_credit_card_promotion_percent">รับส่วนลดทันที %d%%</string>
     <string name="format_credit_card_promotion">รับส่วนลดทันที %d฿</string>
     <string name="format_percent">%d%%</string>
+    <string name="format_bath">%d฿</string>
     <string name="format_get_more_percent">ลดเพิ่ม %d%%</string>
+    <string name="format_get_more_bath">ลดเพิ่ม %d฿</string>
     <string name="title_credit_card_on_top">ส่วนลดเพิ่มบัตรเครดิตเมื่อจ่ายเต็มจำนวน</string>
     <string name="badge_promotion">โปรโมชั่น</string>
 
