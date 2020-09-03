@@ -551,9 +551,10 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         }
         setTextHeader(totalItem, title)
         // Update filter option
-        if (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null){
+        if (isAdded && childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) != null){
             (childFragmentManager.findFragmentByTag(TAG_FILTERS_FRAGMENT) as ProductFilterBottomSheet).updateProductFilters()
         }
+
         layoutProgress!!.visibility = View.GONE
         mProgressDialog!!.dismiss()
     }
