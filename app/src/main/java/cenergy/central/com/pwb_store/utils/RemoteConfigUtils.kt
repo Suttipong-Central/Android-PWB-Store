@@ -16,7 +16,7 @@ object RemoteConfigUtils {
     const val CONFIG_KEY_SUPPORT_COUPON_ON = "is_support_coupon_on"
     const val CONFIG_KEY_EORDERING_PAYMENT_ON = "is_eodering_payment_on"
 
-    private var cacheExpiration: Long = 3600 // 1 hour in seconds.
+    private var cacheExpiration: Long = 0 // 1 hour in seconds.
     fun initFirebaseRemoteConfig(): FirebaseRemoteConfig {
        val fbRemoteConfig = FirebaseRemoteConfig.getInstance()
 

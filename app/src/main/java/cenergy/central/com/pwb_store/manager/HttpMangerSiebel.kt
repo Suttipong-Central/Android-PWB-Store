@@ -8,7 +8,6 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.activity.LoginActivity
 import cenergy.central.com.pwb_store.manager.preferences.PreferenceManager
 import cenergy.central.com.pwb_store.manager.service.MemberService
-import cenergy.central.com.pwb_store.model.APIError
 import cenergy.central.com.pwb_store.model.Member
 import cenergy.central.com.pwb_store.model.response.MemberResponse
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -80,8 +79,8 @@ class HttpMangerSiebel(var context: Context) {
             memberService.geT1CtMemberFromMobile(mobile, mobileCountryCode).enqueue(object : Callback<List<MemberResponse>> {
                 override fun onResponse(call: Call<List<MemberResponse>>?, response: Response<List<MemberResponse>>?) {
                     if (response != null && response.isSuccessful) {
-                        val orderResponse = response.body()
-                        callback.success(orderResponse)
+                        val t1MemberResponse = response.body()
+                        callback.success(t1MemberResponse)
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
                     }

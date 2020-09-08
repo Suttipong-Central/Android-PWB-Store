@@ -72,9 +72,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private val database = RealmController.getInstance()
     private var cartId: String? = null
     private var shoppingCartItem: List<ShoppingCartItem> = listOf()
-    private var membersList: List<MemberResponse> = listOf()
-    private var eOrderingMembers: List<EOrderingMember> = listOf()
-    private var membersHDL: List<HDLCustomerInfos> = listOf()
+    private var membersList: List<MemberResponse> = listOf() // T1
+    private var eOrderingMembers: List<EOrderingMember> = listOf() // PWB
+    private var membersHDL: List<HDLCustomerInfos> = listOf() // HDL
     private var deliveryOptionsList: List<DeliveryOption> = listOf()
     private var mProgressDialog: ProgressDialog? = null
     private var currentFragment: Fragment? = null
@@ -227,7 +227,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         // skip?
         if (contactNo == null) {
             if (currentState == NetworkInfo.State.CONNECTED) {
-                membersList = listOf() // clear membersList
+                clearMemberList()
                 analytics.trackCustomerSource(CustomerSource.NEW_USER)
                 startBilling()
             } else {
@@ -459,6 +459,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     }
 
     private fun startCheckOut() {
+        clearMemberList()
         val fragment = PaymentCheckOutFragment.newInstance()
         startFragment(fragment)
     }
@@ -936,13 +937,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                     startMembersFragment()
                 } else {
                     getMembersT1C(number)
-                    Log.d("Payment", "not found HDL customer")
+                    Log.d(TAG, "not found HDL customer")
                 }
             }
 
             override fun failure(error: APIError) {
                 getMembersT1C(number)
-                Log.d("Payment", error.errorCode ?: "")
+                Log.d(TAG, error.errorCode ?: "")
             }
         })
     }
@@ -994,7 +995,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         mProgressDialog?.dismiss()
                         if (response != null && response.isNotEmpty()) {
                             this@PaymentActivity.membersList = response
-                            Log.d(TAG, "${response.size}")
                             T1MemberDialogFragment.newInstance().show(supportFragmentManager,
                                     T1MemberDialogFragment.TAG_FRAGMENT)
                         } else {
@@ -1453,8 +1453,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         }
 
         if (currentFragment is PaymentMembersFragment) {
-            this.membersList = listOf()
-            this.eOrderingMembers = listOf()
             startCheckOut()
             return
         }
@@ -1464,6 +1462,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             finish()
             return
         }
+    }
+
+    private fun clearMemberList() {
+        this.membersList = listOf() // clear members T1
+        this.membersHDL = listOf() // clear members HDL
+        this.eOrderingMembers = listOf() // clear member PWB
     }
 
     private fun resetData() {
