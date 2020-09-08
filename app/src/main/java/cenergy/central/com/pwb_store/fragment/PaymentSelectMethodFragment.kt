@@ -174,8 +174,8 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
                 }
             }))
 
-            // add pay button
-            items.add(PaymentMethodView.PayButtonItemView(isFullPaymentOption()))
+            // add pay button && check selected payment method
+            items.add(PaymentMethodView.PayButtonItemView(isFullPaymentOption() || isInstallmentPaymentOption()))
         } else {
             items.add(PaymentMethodView.EmptyItemView())
         }
