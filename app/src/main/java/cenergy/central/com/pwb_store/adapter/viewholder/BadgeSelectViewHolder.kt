@@ -15,9 +15,9 @@ class BadgeSelectViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private val badgeTv: PowerBuyTextView = itemView.findViewById(R.id.badgeTv)
     private val layout: ConstraintLayout = itemView.findViewById(R.id.badgeLayout)
 
-    fun bind(badge: Int, selectedPosition: Int, badgeListener: BadgeListener?) {
+    fun bind(badge: Int, selectedPosition: Int?, badgeListener: BadgeListener?) {
         itemView.context?.let { context ->
-            badgeTv.text = when(badge){
+            badgeTv.text = when (badge) {
                 FREEBIE_ITEM -> {
                     context.getString(R.string.badge_free_item)
                 }
@@ -29,7 +29,7 @@ class BadgeSelectViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                 }
             }
             layout.setOnClickListener { badgeListener?.onBadgeSelectedListener(adapterPosition) }
-            if (adapterPosition == selectedPosition){
+            if (selectedPosition != null && adapterPosition == selectedPosition) {
                 badgeTv.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
                 badgeTv.background = ContextCompat.getDrawable(itemView.context, R.drawable.bg_badge_selected)
             } else {

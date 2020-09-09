@@ -7,21 +7,20 @@ import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.adapter.viewholder.BadgeSelectViewHolder
 
-class BadgeSelectAdapter: RecyclerView.Adapter<BadgeSelectViewHolder>(){
+class BadgeSelectAdapter : RecyclerView.Adapter<BadgeSelectViewHolder>() {
     private var badgeListener: BadgeListener? = null
     var badgesSelect: ArrayList<Int> = arrayListOf()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+    var selectedPosition: Int? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
-    var selectedPosition: Int = 0
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
-
-    fun setListener(context: Context){
+    fun setListener(context: Context) {
         this.badgeListener = context as BadgeListener
     }
 
@@ -39,6 +38,6 @@ class BadgeSelectAdapter: RecyclerView.Adapter<BadgeSelectViewHolder>(){
     }
 }
 
-interface BadgeListener{
+interface BadgeListener {
     fun onBadgeSelectedListener(position: Int)
 }

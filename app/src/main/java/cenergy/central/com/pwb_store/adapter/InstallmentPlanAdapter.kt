@@ -62,7 +62,7 @@ class InstallmentPlanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
                 }
             }
         } else {
-            result += "${months[0]} months"
+            result += "${months[0]} ${context.getString(R.string.month)}"
         }
         return result
     }

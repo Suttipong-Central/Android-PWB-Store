@@ -393,7 +393,7 @@
 
     <!--  Promotion freebie  -->
     <string name="badge_free_item">ฟรีของแถม</string>
-    <string name="get_free_item">รับฟรีของแถม:</string>
+    <string name="get_free_item">รับฟรีของแถม</string>
     <string name="free">ฟรี</string>
     <string name="freebie_promotion_not_found">ไม่มีโปรโมชั่นสำหรับสินค้าชิ้นนี้</string>
     <string name="freebie_out_of_stock">สินค้าหมด</string>
