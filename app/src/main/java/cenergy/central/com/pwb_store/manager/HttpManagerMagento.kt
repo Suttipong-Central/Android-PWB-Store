@@ -1080,6 +1080,13 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                                 pwbMember.defaultShipping = memberDetail.getBoolean("default_billing")
                             }
 
+                            if (memberDetail.has("extension_attributes")) {
+                                val memberEtsObject = memberDetail.getJSONObject("extension_attributes")
+                                if (memberEtsObject.has("customer_email")){
+                                    pwbMember.email = memberEtsObject.getString("customer_email")
+                                }
+                            }
+
                             if (memberDetail.has("custom_attributes")) {
                                 val memberSubAddress = MemberSubAddress()
                                 val customAttributes = memberDetail.getJSONArray("custom_attributes")
