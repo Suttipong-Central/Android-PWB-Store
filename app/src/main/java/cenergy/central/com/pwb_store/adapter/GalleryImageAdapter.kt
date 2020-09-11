@@ -36,7 +36,6 @@ class GalleryImageViewHolder(override val containerView: View): RecyclerView.Vie
         Glide.with(Contextor.getInstance().context)
                 .load(productDetailImageItem.imgUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
                 .fitCenter()
                 .into(itemImage)
     }

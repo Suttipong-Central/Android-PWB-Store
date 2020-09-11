@@ -87,7 +87,6 @@ class DetailFragment : Fragment(), View.OnClickListener, ProductImageListener {
             Glide.with(Contextor.getInstance().context)
                     .load(productImageList.productDetailImageItems[0].imgUrl)
                     .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
                     .fitCenter()
                     .into(ivProductImage)
         } else {

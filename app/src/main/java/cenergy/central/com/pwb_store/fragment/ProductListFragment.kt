@@ -396,9 +396,6 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
 
-            // TODO We have to do not display market place product
-            filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
-
             if (brandName != null && brandName!!.isNotEmpty()) {
                 filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
             }

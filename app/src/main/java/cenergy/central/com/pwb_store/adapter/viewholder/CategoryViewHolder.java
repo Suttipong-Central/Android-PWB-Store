@@ -1,11 +1,13 @@
 package cenergy.central.com.pwb_store.adapter.viewholder;
 
+import android.view.View;
+import android.widget.ImageView;
+
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.View;
-import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+
 import cenergy.central.com.pwb_store.R;
 import cenergy.central.com.pwb_store.manager.Contextor;
 import cenergy.central.com.pwb_store.model.Category;
@@ -33,7 +35,6 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
             Glide.with(itemView.getContext())
                     .load(category.getImageURL())
                     .error(R.drawable.ic_category_placeholder)
-                    .crossFade()
                     .fitCenter()
                     .into(mImageView);
         } else {
@@ -49,7 +50,6 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
             Glide.with(Contextor.getInstance().getContext())
                     .load(categoryHeader.getImageURL())
                     .error(R.drawable.ic_category_placeholder)
-                    .crossFade()
                     .fitCenter()
                     .into(mImageView);
         } else {
@@ -65,7 +65,6 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
             Glide.with(Contextor.getInstance().getContext())
                     .load(categorySubHeader.getUrlName())
                     .error(R.drawable.ic_category_placeholder)
-                    .crossFade()
                     .fitCenter()
                     .into(mImageView);
         } else {

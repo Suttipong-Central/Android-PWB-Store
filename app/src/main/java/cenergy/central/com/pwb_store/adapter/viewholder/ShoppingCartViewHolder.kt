@@ -64,7 +64,6 @@ class ShoppingCartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
             Glide.with(context)
                     .load(cacheCartItem.imageUrl)
                     .placeholder(R.drawable.ic_placeholder)
-                    .crossFade()
                     .fitCenter()
                     .into(productImage)
 

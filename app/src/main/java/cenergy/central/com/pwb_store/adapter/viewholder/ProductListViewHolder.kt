@@ -34,7 +34,6 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         Glide.with(Contextor.getInstance().context)
                 .load(product.getImageUrl())
                 .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
                 .fitCenter()
                 .into(mImageView)
 

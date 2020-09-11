@@ -45,7 +45,6 @@ class GalleryIndicatorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemV
         Glide.with(Contextor.getInstance().context)
                 .load(productDetailImageItem.imgUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .crossFade()
                 .fitCenter()
                 .into(itemImage)
         itemImage.setOnClickListener { listener?.onClickImageListener(adapterPosition) }

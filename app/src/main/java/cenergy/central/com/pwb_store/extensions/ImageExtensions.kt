@@ -24,7 +24,6 @@ fun ImageView.setImageUrl(context: Context, url: String) {
     Glide.with(context)
             .load(url)
             .placeholder(R.drawable.ic_placeholder)
-            .crossFade()
             .fitCenter()
             .into(this)
 }
@@ -33,7 +32,6 @@ fun ImageView.setImageUrl(url: String, @DrawableRes placeHolder: Int) {
     Glide.with(context)
             .load(url)
             .placeholder(placeHolder)
-            .crossFade()
             .fitCenter()
             .into(this)
 }
