@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.manager.service
 
 import cenergy.central.com.pwb_store.model.DeliveryInfo
+import cenergy.central.com.pwb_store.model.response.ProductAvailableResponse
 import cenergy.central.com.pwb_store.model.response.ProductSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -29,4 +30,11 @@ interface ProductService {
     fun getDeliveryInfo(
             @Path("lang") language: String,
             @Path("sku") sku: String): Call<List<DeliveryInfo>>
+
+    @GET("/rest/V1/storepickup/product-availability/{retailer}")
+    fun getProductAvailable(
+            @Path("retailer") retailerId: Int,
+            @Query("searchCriteria[filter_groups][0][filters][0][field]") sku: String,
+            @Query("searchCriteria[filter_groups][0][filters][0][value]") skus: String
+    ): Call<List<ProductAvailableResponse>>
 }

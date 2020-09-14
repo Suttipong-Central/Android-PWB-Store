@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,7 @@ import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.FilterGroups.Companion.createFilterGroups
 import cenergy.central.com.pwb_store.model.body.SortOrder
 import cenergy.central.com.pwb_store.model.body.SortOrder.Companion.createSortOrder
+import cenergy.central.com.pwb_store.model.response.ProductAvailableResponse
 import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.Analytics
@@ -50,7 +52,8 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var productCount: PowerBuyTextView? = null
     private var layoutProgress: LinearLayout? = null
     private var mProductLayout: LinearLayout? = null
-    //Data Member
+
+    // Data Member
     private var mProductListAdapter: ProductListAdapter? = null
     private var mLayoutManger: GridLayoutManager? = null
     private var categoriesLv3: ArrayList<Category>? = null
@@ -63,10 +66,12 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var isSearch = false
     private var categoryId: String? = null
     private var brandName: String? = null
-    //Sort
+
+    // Sort
     private var sortName: String? = ""
     private var sortType: String? = ""
     private var categoryLv2: Category? = null
+
     // Page
     private var isLoadingMore = false
     private var isSorting = false
@@ -76,6 +81,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
     private var totalItem = 0
     private var mContext: Context? = null
     private var keyWord: String? = null
+
+    // Database
+    private val database by lazy { RealmController.getInstance() }
 
     private val ON_POPUP_DISMISS_LISTENER = PopupWindow.OnDismissListener { isDoneFilter = false }
 
@@ -396,6 +404,9 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             filterGroupsList.add(createFilterGroups("visibility", "4", "eq"))
             filterGroupsList.add(createFilterGroups("price", "0", "gt"))
 
+            // TODO We have to do not display market place product
+            filterGroupsList.add(createFilterGroups("marketplace_seller", "null"))
+
             if (brandName != null && brandName!!.isNotEmpty()) {
                 filterGroupsList.add(createFilterGroups("brand", brandName!!, "eq"))
             }
@@ -409,7 +420,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                 override fun success(response: ProductResponse?) {
                     if (activity != null) {
                         activity!!.runOnUiThread {
-                            updateProductList(response)
+                            handleProductAvailable(response)
                         }
                     }
                 }
@@ -427,6 +438,33 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
                     }
                 }
             })
+        }
+    }
+
+    private fun handleProductAvailable(productResponse: ProductResponse?) {
+        context?.let {
+            if (productResponse != null){
+                val retailerId = database?.userInformation?.store?.storeId?.toString() ?: ""
+                val resultSKUs = TextUtils.join(",", productResponse.products.map { it.sku })
+                getInstance(context!!).retrieveProductAvailable(retailerId, resultSKUs, object : ApiResponseCallback<List<ProductAvailableResponse>>{
+                    override fun success(response: List<ProductAvailableResponse>?) {
+                        productResponse.products.forEach { product ->
+                            val productAvailable = response?.find { it.sku == product.sku }
+                            if (productAvailable != null) {
+                                product.availableThisStore = productAvailable.quantity > 0
+                            }
+                        }
+                        updateProductList(productResponse)
+                    }
+
+                    override fun failure(error: APIError) {
+                        Log.d("ProductListAPI", "API product available fail")
+                        updateProductList(productResponse)
+                    }
+                })
+            } else {
+                updateProductList(productResponse)
+            }
         }
     }
 
@@ -504,7 +542,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
             override fun success(response: List<Category>?) {
                 if (activity != null) {
                     activity!!.runOnUiThread {
-                        if (response != null){
+                        if (response != null) {
                             categoriesLv3 = ArrayList() // clear category lv3 list
                             categoriesLv3!!.addAll(response)
                             mProductLayout!!.visibility = View.VISIBLE // show product layout
@@ -525,7 +563,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         })
     }
 
-    private fun isChatAndShop(): Boolean{
+    private fun isChatAndShop(): Boolean {
         val db = RealmController.getInstance()
         return db.userInformation.user?.userLevel == 3L
     }
@@ -547,6 +585,7 @@ class ProductListFragment : Fragment(), View.OnClickListener, OnBrandFilterClick
         private const val ARG_FILTER_ITEMS = "ARG_FILTER_ITEMS"
         private const val PRODUCT_2H_FIELD = "expr-p"
         private const val PRODUCT_2H_VALUE = "(stock.salable=1 OR (stock.ispu_salable=1 AND shipping_methods='storepickup_ispu'))"
+
         //Pagination
         private const val PER_PAGE = 20
 

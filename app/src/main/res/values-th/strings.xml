@@ -382,5 +382,6 @@
     <string name="acknowledged">และรับทราบ</string>
     <string name="privacy">นโยบายความเป็นส่วนตัว</string>
     <string name="available_here">มีขายที่สาขานี้</string>
+    <string name="available_here_badge">มีขายที่สาขานี้</string>
 
 </resources>

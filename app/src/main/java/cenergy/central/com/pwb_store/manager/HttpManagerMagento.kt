@@ -325,6 +325,24 @@ class HttpManagerMagento(context: Context, isSerializeNull: Boolean = false) {
         })
     }
 
+    fun retrieveProductAvailable(retailerId: String, resultSKUs: String, callback: ApiResponseCallback<List<ProductAvailableResponse>>) {
+        val productService = retrofit.create(ProductService::class.java)
+        productService.getProductAvailable(retailerId.toInt(), "sku", resultSKUs)
+                .enqueue(object : Callback<List<ProductAvailableResponse>> {
+                    override fun onResponse(call: Call<List<ProductAvailableResponse>>, response: Response<List<ProductAvailableResponse>>) {
+                        if(response.isSuccessful){
+                            callback.success(response.body())
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<ProductAvailableResponse>>, t: Throwable) {
+                        callback.failure(t.getResultError())
+                    }
+                })
+    }
+
     // region product
     fun getProductDetail(sku: String, callback: ApiResponseCallback<Product?>) {
         val httpUrl = HttpUrl.Builder()

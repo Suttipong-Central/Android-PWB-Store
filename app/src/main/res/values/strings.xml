@@ -381,4 +381,5 @@
     <string name="acknowledged">and acknowledged the</string>
     <string name="privacy">Privacy Policy.</string>
     <string name="available_here">Available in this store</string>
+    <string name="available_here_badge">Available Here</string>
 </resources>

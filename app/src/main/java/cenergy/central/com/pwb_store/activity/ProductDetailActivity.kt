@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -40,7 +39,10 @@ import cenergy.central.com.pwb_store.model.response.ProductResponse
 import cenergy.central.com.pwb_store.realm.DatabaseListener
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.*
-import cenergy.central.com.pwb_store.view.*
+import cenergy.central.com.pwb_store.view.LanguageButton
+import cenergy.central.com.pwb_store.view.NetworkStateView
+import cenergy.central.com.pwb_store.view.PowerBuyShoppingCartView
+import cenergy.central.com.pwb_store.view.ProductCompareView
 import kotlinx.android.synthetic.main.activity_product_detail.*
 
 class ProductDetailActivity : BaseActivity(), ProductDetailListener,

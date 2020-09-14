@@ -23,10 +23,10 @@ import java.io.IOException
 import java.util.*
 
 class ProductListAPI {
-    companion object{
+    companion object {
         @JvmStatic
         fun retrieveProducts(context: Context, pageSize: Int, currentPage: Int, filterGroups: ArrayList<FilterGroups>,
-                             sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>){
+                             sortOrders: ArrayList<SortOrder>, callback: ApiResponseCallback<ProductResponse>) {
             val apiManager = HttpManagerMagento.getInstance(context)
             val body = ProductListBody.createBody(pageSize, currentPage, filterGroups, sortOrders)
             val httpUrl = HttpUrl.Builder()
@@ -56,7 +56,6 @@ class ProductListAPI {
                     } else {
                         callback.failure(APIErrorUtils.parseError(response))
                     }
-                    response?.close()
                 }
 
                 override fun onFailure(call: okhttp3.Call, e: IOException) {
@@ -65,7 +64,7 @@ class ProductListAPI {
             })
         }
 
-        fun handleAvailableHere(listStoreAvailable: List<StoreAvailable>?) : Boolean{
+        fun handleAvailableHere(listStoreAvailable: List<StoreAvailable>?): Boolean {
             val userInformation = RealmController.getInstance().userInformation
             val retailerId = userInformation?.store?.retailerId
             var stockCurrentStore = false
