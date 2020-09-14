@@ -41,6 +41,7 @@ import cenergy.central.com.pwb_store.manager.preferences.AppLanguage
 import cenergy.central.com.pwb_store.model.*
 import cenergy.central.com.pwb_store.model.ShippingSlot
 import cenergy.central.com.pwb_store.model.body.ConsentBody
+import cenergy.central.com.pwb_store.model.body.ExtensionMethodBody
 import cenergy.central.com.pwb_store.model.body.PaymentInfoBody
 import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
@@ -89,6 +90,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     private var paymentMethods = arrayListOf<PaymentMethod>()
     private var paymentMethod = PaymentMethod(PaymentMethod.E_ORDERING, "Pay Here")
     private var promotionId: Int? = null
+    private var promotionCode: String? = null
     private var theOneCardNo: String = ""
     private var shippingSlot: ShippingSlot? = null
     private var discountPrice = 0.0
@@ -205,21 +207,24 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     override fun getSelectedPromotionId(): Int? = this.promotionId
 
-    override fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
+    override fun getSelectedPromotionCode(): String? = this.promotionCode
+
+    override fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?, promotionCode: String?) {
         this.paymentMethod = paymentMethod
         this.promotionId = promotionId
         if (paymentMethod.isBankAndCounterServiceType()) {
             // open bank/counter service options
             startFragment(PaymentTransfersFragment())
         } else {
-            setOrderPaymentInformation(paymentMethod, promotionId)
+            setOrderPaymentInformation(paymentMethod, promotionId, promotionCode)
         }
     }
 
-    override fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?) {
+    override fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?, promotionCode: String?) {
         this.paymentMethod = paymentMethod
         this.promotionId = promotionId
-        updateOrderPaymentInformation(paymentMethod, promotionId)
+        this.promotionCode = promotionCode
+        updateOrderPaymentInformation(paymentMethod, promotionId, promotionCode)
     }
 
     // region {@link CheckOutClickListener}
@@ -606,7 +611,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         if (discountPrice > 0) {
             this.totalPrice -= discountPrice
         }
-        if (cartTotal.shippingAmount > 0){
+        if (cartTotal.shippingAmount > 0) {
             this.totalPrice += cartTotal.shippingAmount
         }
     }
@@ -673,13 +678,13 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         builder.show()
     }
 
-    private fun setOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+    private fun setOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null, promotionCode: String? = null) {
         showAlertConfirmPayment(object : ConfirmPaymentListener {
             override fun onConfirmed() {
                 // tracking payment method
                 analytics.trackSelectPayment(paymentMethod.code)
                 val bodyRequest = createPaymentBodyRequest(
-                        paymentMethod = paymentMethod, promotionId = promotionId)
+                        paymentMethod = paymentMethod, promotionId = promotionId, promotionCode = promotionCode)
                 requestSetOrderPaymentInformation(bodyRequest)
             }
 
@@ -689,12 +694,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    private fun updateOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null) {
+    private fun updateOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null, promotionCode: String?) {
         cartId ?: return
 
         showProgressDialog()
         val paymentInfoBody = createPaymentBodyRequest(paymentMethod = paymentMethod,
-                promotionId = promotionId)
+                promotionId = promotionId, promotionCode = promotionCode)
         PaymentApi().updatePaymentInformation(this, cartId!!, paymentInfoBody, object : ApiResponseCallback<Boolean> {
             override fun success(response: Boolean?) {
                 if (response == true) {
@@ -1152,6 +1157,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
      * */
     private fun createPaymentBodyRequest(paymentMethod: PaymentMethod,
                                          promotionId: Int? = null,
+                                         promotionCode: String? = null,
                                          payerName: String = "",
                                          payerEmail: String = "",
                                          agentCode: String = "",
@@ -1171,12 +1177,20 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
                         billingAddress = addressInfo!!, paymentMethod = paymentMethod,
                         theOneCardNo = theOneCardNo)
             }
-            PaymentMethod.FULL_PAYMENT, PaymentMethod.INSTALLMENT -> {
-                PaymentInfoBody.createPaymentInfoBody(cartId = cartId!!,
+            PaymentMethod.FULL_PAYMENT -> {
+                PaymentInfoBody.createPaymentInfoFullPaymentBody(cartId = cartId!!,
                         staffId = staffId, retailerId = retailerId, email = email,
                         customerEmail = email, billingAddress = addressInfo!!,
                         paymentMethod = paymentMethod, theOneCardNo = theOneCardNo,
-                        promotionId = promotionId)
+                        promotionId = promotionId, promotionCode = promotionCode)
+            }
+            PaymentMethod.INSTALLMENT -> {
+                PaymentInfoBody.createPaymentInfoInstallmentBody(cartId = cartId!!,
+                        staffId = staffId, retailerId = retailerId, email = email,
+                        customerEmail = email, billingAddress = addressInfo!!,
+                        paymentMethod = paymentMethod, theOneCardNo = theOneCardNo,
+                        promotionId = promotionId, promotionCode = promotionCode,
+                        paymentOption = ExtensionMethodBody.INSTALLMENT_C)
             }
             else -> {
                 // Standard

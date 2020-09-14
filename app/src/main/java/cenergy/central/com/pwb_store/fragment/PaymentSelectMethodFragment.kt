@@ -31,6 +31,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     private var items = arrayListOf<PaymentMethodView>()
     private var selectedPaymentMethod: PaymentMethod? = null
     private var promotionId: Int? = null
+    private var promotionCode: String? = null
 
     companion object {
         private const val ARG_DELIVERY_CODE = "ARG_DELIVERY_CODE"
@@ -51,6 +52,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         paymentPromotions = paymentProtocol.getPaymentPromotions()
         selectedPaymentMethod = paymentProtocol.getSelectedPaymentMethod()
         promotionId = paymentProtocol.getSelectedPromotionId()
+        promotionCode = paymentProtocol.getSelectedPromotionCode()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,12 +80,13 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
 
     // region {@link PaymentTypesClickListener.onClickedPaymentItem}
     override fun onClickedPayButton() {
-        selectedPaymentMethod?.let { paymentProtocol.setPaymentInformation(it, promotionId) }
+        selectedPaymentMethod?.let { paymentProtocol.setPaymentInformation(it, promotionId, promotionCode) }
     }
 
     override fun onClickedPaymentItem(paymentMethod: PaymentMethod) {
         // clear promotion
         this.promotionId = null
+        this.promotionCode = null
         val newItems = items.map {
             if (it is PaymentMethodView.PaymentItemView) {
                 it.promotionId = null // clear! (only use for first time)
@@ -105,18 +108,18 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
         selectMethodAdapter.submitList(this.items)
 
         // update
-        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId) }
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId, promotionCode) }
     }
 
-    override fun onSelectedPromotion(paymentMethod: String, promotionId: Int) {
+    override fun onSelectedPromotion(paymentMethod: String, promotionId: Int, promotionCode: String) {
         // updated
         this.promotionId = promotionId
-        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId) }
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId, promotionCode) }
     }
 
     override fun onSelectedDefaultPromotion(paymentMethod: String) {
         this.promotionId = null
-        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, null) }
+        selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, null, null) }
     }
     // endregion
 

@@ -31,7 +31,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
         override fun onItemSelected(adapter: AdapterView<*>?, view: View?, position: Int, id: Long) {
             val item = adapter?.getItemAtPosition(position)
             if (item != null && item is PaymentPromotionView.PromotionView) {
-                listener.onSelectedPromotion(PaymentMethod.FULL_PAYMENT, item.promotionId)
+                listener.onSelectedPromotion(PaymentMethod.FULL_PAYMENT, item.promotionId, item.promotionCode)
             } else if (item != null && item is PaymentPromotionView.PromotionDefaultView) {
                 listener.onSelectedDefaultPromotion(PaymentMethod.FULL_PAYMENT)
             }
@@ -52,7 +52,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
                     itemView.context.getString(R.string.select_credit_card_promotion)))
 
             items.addAll(item.promotions.map {
-                val title = when(it.simpleAction){
+                val title = when (it.simpleAction) {
                     PaymentCreditCardPromotion.DISCOUNT_BY_PERCENT -> {
                         itemView.context.getString(R.string.format_credit_card_promotion_percent, it.discountAmount)
                     }
@@ -62,6 +62,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
                 }
                 PaymentPromotionView.PromotionView(
                         promotionId = it.promotionId,
+                        promotionCode = it.promotionCode,
                         title = title,
                         bankImageUrl = it.getBankImageUrl(),
                         bankColor = it.bankColor
@@ -98,7 +99,7 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
 sealed class PaymentPromotionView {
     data class HeaderView(val title: String) : PaymentPromotionView()
 
-    data class PromotionView(val promotionId: Int, val title: String, val bankImageUrl: String,
+    data class PromotionView(val promotionId: Int, val promotionCode: String, val title: String, val bankImageUrl: String,
                              val bankColor: String) : PaymentPromotionView()
 
     data class PromotionDefaultView(val promotionId: Int = -1, val title: String) : PaymentPromotionView()

@@ -31,7 +31,8 @@ interface PaymentProtocol {
     fun getCacheItems(): List<CacheCartItem>
     fun getSelectedPaymentMethod(): PaymentMethod
     fun getSelectedPromotionId(): Int?
+    fun getSelectedPromotionCode(): String?
 
-    fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?)
-    fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?)
+    fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?, promotionCode: String?)
+    fun updatePaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?, promotionCode: String?)
 }

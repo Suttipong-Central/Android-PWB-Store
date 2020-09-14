@@ -30,7 +30,16 @@ data class ExtensionMethodBody(
         @SerializedName("apm_channel_code")
         val agentChannelCode: String? = null,
         @SerializedName("promotion_id")
-        val promotionId: Int? = null)
+        val promotionId: Int? = null,
+        @SerializedName("promotion_code")
+        val promotionCode: String? = null,
+        @SerializedName("payment_option")
+        val paymentOption: String? = null
+) {
+    companion object {
+        const val INSTALLMENT_C = "C"
+    }
+}
 
 data class QuoteStaffBody(
         @SerializedName("staff_id")
@@ -59,10 +68,10 @@ data class PaymentInfoBody(
             return PaymentInfoBody(cartId = cartId, email = email, billingAddress = billingAddress, paymentMethod = methodBody)
         }
 
-        // payment body for full_payment, installment
-        fun createPaymentInfoBody(cartId: String, email: String, customerEmail: String, paymentMethod: PaymentMethod,
-                                  promotionId: Int? = null, billingAddress: AddressInformation, staffId: String,
-                                  retailerId: String, theOneCardNo: String = ""): PaymentInfoBody {
+        // payment body for full_payment
+        fun createPaymentInfoFullPaymentBody(cartId: String, email: String, customerEmail: String, paymentMethod: PaymentMethod,
+                                             promotionId: Int? = null, promotionCode: String? = null, billingAddress: AddressInformation, staffId: String,
+                                             retailerId: String, theOneCardNo: String = ""): PaymentInfoBody {
             val staffBody = QuoteStaffBody(staffId, retailerId)
             val extMethodBody = ExtensionMethodBody(
                     theOneCardNo = theOneCardNo,
@@ -70,7 +79,27 @@ data class PaymentInfoBody(
                     customerEmail = customerEmail,
                     customerName = billingAddress.getDisplayName(),
                     customerPhone = billingAddress.telephone,
-                    promotionId = promotionId
+                    promotionId = promotionId,
+                    promotionCode = promotionCode
+            )
+            val methodBody = MethodBody(method = paymentMethod.code, extensionMethodBody = extMethodBody)
+            return PaymentInfoBody(cartId = cartId, email = email, billingAddress = billingAddress, paymentMethod = methodBody)
+        }
+
+        // payment body for installment
+        fun createPaymentInfoInstallmentBody(cartId: String, email: String, customerEmail: String, paymentMethod: PaymentMethod,
+                                             promotionId: Int? = null, promotionCode: String? = null, paymentOption: String?, billingAddress: AddressInformation, staffId: String,
+                                             retailerId: String, theOneCardNo: String = ""): PaymentInfoBody {
+            val staffBody = QuoteStaffBody(staffId, retailerId)
+            val extMethodBody = ExtensionMethodBody(
+                    theOneCardNo = theOneCardNo,
+                    quoteStaffBody = staffBody,
+                    customerEmail = customerEmail,
+                    customerName = billingAddress.getDisplayName(),
+                    customerPhone = billingAddress.telephone,
+                    promotionId = promotionId,
+                    promotionCode = promotionCode,
+                    paymentOption = paymentOption
             )
             val methodBody = MethodBody(method = paymentMethod.code, extensionMethodBody = extMethodBody)
             return PaymentInfoBody(cartId = cartId, email = email, billingAddress = billingAddress, paymentMethod = methodBody)
