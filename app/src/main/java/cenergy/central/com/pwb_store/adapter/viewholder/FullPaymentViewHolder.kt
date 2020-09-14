@@ -12,6 +12,7 @@ import cenergy.central.com.pwb_store.adapter.PaymentMethodViewHolder
 import cenergy.central.com.pwb_store.dialogs.interfaces.PaymentItemClickListener
 import cenergy.central.com.pwb_store.model.PaymentMethod
 import cenergy.central.com.pwb_store.model.PaymentMethodView
+import cenergy.central.com.pwb_store.model.response.PaymentCreditCardPromotion
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 import kotlinx.android.synthetic.main.list_item_pay_by_credite_card.view.*
 
@@ -51,9 +52,17 @@ class FullPaymentViewHolder(itemView: View, private val listener: PaymentItemCli
                     itemView.context.getString(R.string.select_credit_card_promotion)))
 
             items.addAll(item.promotions.map {
+                val title = when(it.simpleAction){
+                    PaymentCreditCardPromotion.DISCOUNT_BY_PERCENT -> {
+                        itemView.context.getString(R.string.format_credit_card_promotion_percent, it.discountAmount)
+                    }
+                    else -> {
+                        itemView.context.getString(R.string.format_credit_card_promotion, it.discountAmount)
+                    }
+                }
                 PaymentPromotionView.PromotionView(
                         promotionId = it.promotionId,
-                        title = itemView.context.getString(R.string.format_credit_card_promotion, it.discountAmount),
+                        title = title,
                         bankImageUrl = it.getBankImageUrl(),
                         bankColor = it.bankColor
                 )
