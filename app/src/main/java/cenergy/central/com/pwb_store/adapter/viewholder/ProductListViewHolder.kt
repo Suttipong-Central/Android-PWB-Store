@@ -42,6 +42,7 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         } else {
             hideSpecialPrice()
         }
+        available.text = itemView.context.getString(R.string.available_here_badge)
         available.visibility = if (product.availableThisStore) View.VISIBLE else View.GONE
     }
 
