@@ -96,8 +96,7 @@ public class SortingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void addSortLevel2(List<SortingItem> sortingItemList) {
 
-        for (SortingItem sortingItem :
-                sortingItemList) {
+        for (SortingItem sortingItem : sortingItemList) {
             sortingItem.setParentId("0");
             sortingItem.setViewTypeId(VIEW_TYPE_ID_FILTER_ITEM);
             mListViewType.add(sortingItem);
