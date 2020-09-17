@@ -212,6 +212,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     override fun setPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?, promotionCode: String?) {
         this.paymentMethod = paymentMethod
         this.promotionId = promotionId
+        this.promotionCode = promotionCode
         if (paymentMethod.isBankAndCounterServiceType()) {
             // open bank/counter service options
             startFragment(PaymentTransfersFragment())
@@ -694,7 +695,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         })
     }
 
-    private fun updateOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int? = null, promotionCode: String?) {
+    private fun updateOrderPaymentInformation(paymentMethod: PaymentMethod, promotionId: Int?, promotionCode: String?) {
         cartId ?: return
 
         showProgressDialog()
