@@ -114,6 +114,7 @@ class PaymentSelectMethodFragment : Fragment(), PaymentItemClickListener {
     override fun onSelectedPromotion(paymentMethod: String, promotionId: Int, promotionCode: String) {
         // updated
         this.promotionId = promotionId
+        this.promotionCode = promotionCode
         selectedPaymentMethod?.let { paymentProtocol.updatePaymentInformation(it, promotionId, promotionCode) }
     }
 
