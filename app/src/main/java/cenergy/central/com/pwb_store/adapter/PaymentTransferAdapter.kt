@@ -22,7 +22,7 @@ class PaymentTransferAdapter(val clickListener: (PaymentAgent) -> Unit) : ListAd
         }
 
     fun getItemSelected(): AgentItem? {
-        return source.firstOrNull() { it.isSelect }
+        return source.firstOrNull { it.isSelect }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentTransferViewHolder {
@@ -58,7 +58,7 @@ class PaymentTransferAdapter(val clickListener: (PaymentAgent) -> Unit) : ListAd
             } else {
                 null
             }
-            agentImageView.setImageUrl(agent.getImageUrl(), R.drawable.ic_power_buy)
+            agentImageView.setImageUrl(agent.getImageUrl())
             itemView.setOnClickListener {
                 clickListener(agent)
             }

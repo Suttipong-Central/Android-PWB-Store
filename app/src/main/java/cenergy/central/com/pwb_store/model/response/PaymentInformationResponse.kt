@@ -75,6 +75,10 @@ data class PaymentAgent(
         return PaymentAgentType.fromString(type) == PaymentAgentType.BANK
     }
 
+    fun isCounterService(): Boolean {
+        return PaymentAgentType.fromString(type) == PaymentAgentType.COUNTER_SERVICE
+    }
+
     fun getChannels(): List<String> {
         return channel.split(",")
     }

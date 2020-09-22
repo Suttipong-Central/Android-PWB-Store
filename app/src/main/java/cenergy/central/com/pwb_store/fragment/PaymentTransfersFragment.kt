@@ -23,7 +23,9 @@ import java.util.*
 class PaymentTransfersFragment : Fragment() {
     private lateinit var paymentProtocol: PaymentProtocol
     private lateinit var paymentTransferListener: PaymentTransferListener
+    private var tabSelected = 0
     private var bankAgentItems = arrayListOf<PaymentTransferAdapter.AgentItem>()
+    private var counterServiceItems = arrayListOf<PaymentTransferAdapter.AgentItem>()
     private var bankChannels = listOf<String>()
     private val bankChannelAdapter by lazy { PwbArrayAdapter(context!!, R.layout.layout_text_item, arrayListOf()) }
     private val paymentTransferAdapter by lazy {
@@ -39,6 +41,12 @@ class PaymentTransfersFragment : Fragment() {
                 // update bank channel
                 this.bankChannels = it.getChannels()
                 updateBankChannels(this.bankChannels)
+            }
+            if (it.isCounterService()){
+                this.counterServiceItems.forEach { item ->
+                    item.isSelect = item.agent.agentId == it.agentId
+                }
+                updateAgentItems(this.counterServiceItems)
             }
         }
     }
@@ -59,9 +67,16 @@ class PaymentTransfersFragment : Fragment() {
         val bankAgents = paymentProtocol.getPaymentAgents().filter {
             it.isBankAgent()
         }
-
         this.bankAgentItems.clear()
         bankAgents.mapTo(bankAgentItems, {
+            PaymentTransferAdapter.AgentItem(it)
+        })
+
+        val counterService = paymentProtocol.getPaymentAgents().filter {
+            it.isCounterService()
+        }
+        this.counterServiceItems.clear()
+        counterService.mapTo(counterServiceItems, {
             PaymentTransferAdapter.AgentItem(it)
         })
     }
@@ -102,10 +117,12 @@ class PaymentTransfersFragment : Fragment() {
             paymentPayerInput.setError(getString(R.string.error_form_input_required))
         }
 
-        if (paymentChannelOptions.getText().isNotEmpty()) {
-            paymentChannelOptions.setError(validator.validText(paymentChannelOptions.getText()))
-        } else {
-            paymentChannelOptions.setError(getString(R.string.error_form_input_required))
+        if (tabSelected != TAB_COUNTER_SERVICE) {
+            if (paymentChannelOptions.getText().isNotEmpty()) {
+                paymentChannelOptions.setError(validator.validText(paymentChannelOptions.getText()))
+            } else {
+                paymentChannelOptions.setError(getString(R.string.error_form_input_required))
+            }
         }
 
         if (paymentEmailInput.getText().isNotEmpty()) {
@@ -132,7 +149,11 @@ class PaymentTransfersFragment : Fragment() {
             val payerName = paymentPayerInput.getText()
             val payerEmail = paymentEmailInput.getText()
             val agentCode = item!!.agent.code
-            val agentChannelCode = paymentChannelOptions.getText()
+            val agentChannelCode = if (tabSelected != TAB_COUNTER_SERVICE) {
+                paymentChannelOptions.getText()
+            } else {
+                item.agent.channel
+            }
             val mobileNumber = paymentMobileInput.getText()
             paymentTransferListener.startPayNow(payerName, payerEmail, agentCode,
                     agentChannelCode, mobileNumber)
@@ -151,18 +172,25 @@ class PaymentTransfersFragment : Fragment() {
             setHasFixedSize(true)
             adapter = paymentTransferAdapter
         }
-        // Show only bank agents
-        updateAgentItems(bankAgentItems)
-
-        // setup bank channel
-        bankChannelAdapter.setCallback(object : PwbArrayAdapter.PwbArrayAdapterListener {
-            override fun onItemClickListener(item: String) {
-                paymentChannelOptions.setError(null) // clear error
-                paymentChannelOptions.setText(item)
-                hideKeyboard()
+        when (tabSelected) {
+            TAB_COUNTER_SERVICE -> {
+                updateAgentItems(counterServiceItems)
+                paymentChannelOptions.visibility = View.GONE
             }
-        })
-        paymentChannelOptions.setAdapter(bankChannelAdapter)
+            else -> {
+                updateAgentItems(bankAgentItems)
+                paymentChannelOptions.visibility = View.VISIBLE
+                // setup bank channel
+                bankChannelAdapter.setCallback(object : PwbArrayAdapter.PwbArrayAdapterListener {
+                    override fun onItemClickListener(item: String) {
+                        paymentChannelOptions.setError(null) // clear error
+                        paymentChannelOptions.setText(item)
+                        hideKeyboard()
+                    }
+                })
+                paymentChannelOptions.setAdapter(bankChannelAdapter)
+            }
+        }
     }
 
     private fun setupTab() {
@@ -176,13 +204,13 @@ class PaymentTransfersFragment : Fragment() {
             }
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if (tab.position == 0) {
-                    paymentTransferTabLayout.getTabAt(1)?.select()
-                    return
-                }
+                this@PaymentTransfersFragment.tabSelected = tab.position
+                paymentTransferTabLayout.getTabAt(tab.position)?.select()
+                setupOptionRecycler()
             }
         })
-        paymentTransferTabLayout.getTabAt(1)?.select()
+        // set default tab selected
+        paymentTransferTabLayout.getTabAt(tabSelected)?.select()
     }
 
     private fun hideKeyboard() {
@@ -192,5 +220,9 @@ class PaymentTransfersFragment : Fragment() {
             inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
             inputManager.hideSoftInputFromInputMethod(currentFocus.windowToken, 0)
         }
+    }
+
+    companion object {
+        const val TAB_COUNTER_SERVICE = 0
     }
 }

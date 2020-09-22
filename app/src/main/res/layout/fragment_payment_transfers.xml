@@ -19,11 +19,11 @@
         app:tabTextAppearance="@style/TabLayoutTextStyle"
         app:tabTextColor="@color/graySelect">
 
-<!--        <com.google.android.material.tabs.TabItem-->
-<!--            android:id="@+id/paymentCounterTab"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="@string/payment_counter_transfer" />-->
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/paymentCounterTab"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/payment_counter_transfer" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/paymentBankTab"
@@ -135,6 +135,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_padding_normal"
                 android:text="@string/pay_now"
+                android:textAllCaps="true"
+                android:textSize="@dimen/text_button_pay_size"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/paymentMobileInput"
                 app:layout_constraintVertical_bias="1" />
