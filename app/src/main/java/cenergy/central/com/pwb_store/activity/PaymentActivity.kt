@@ -870,10 +870,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             showCommonDialog(getString(R.string.not_found_payment_methods))
         } else {
             this.paymentMethods = filterPaymentMethods(paymentMethodsFromAPI)
-            val isEorderingPaymentOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_PAYMENT_ON)
-            if (isEorderingPaymentOn && this.paymentMethods.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null) {
-                this.paymentMethods.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
-            }
             startSelectPaymentMethod()
         }
     }
@@ -883,6 +879,12 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         Log.d(TAG, supportedPaymentMethods)
         val result = methods.filter {
             supportedPaymentMethods.contains(it.code, true)
+        }
+        // checkForceDisplayEOrdering
+        val isEorderingPaymentOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_EORDERING_PAYMENT_ON)
+        if (isEorderingPaymentOn && result.firstOrNull { it.code == PaymentMethod.E_ORDERING } == null) {
+            result as ArrayList
+            result.add(PaymentMethod(title = getString(R.string.pay_here), code = PaymentMethod.E_ORDERING))
         }
         return ArrayList(result)
     }
