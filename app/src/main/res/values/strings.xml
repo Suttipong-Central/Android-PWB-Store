@@ -417,5 +417,5 @@
     <string name="filter_by">Filter by</string>
     <string name="reset_filter">Reset</string>
     <string name="format_add_filter">Apply (%d items)</string>
-    <string name="filters">Filter</string>
+    <string name="filters">Filters</string>
 </resources>
