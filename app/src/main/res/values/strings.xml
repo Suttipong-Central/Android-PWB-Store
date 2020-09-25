@@ -430,7 +430,7 @@
     <string name="format_bath">%d฿</string>
     <string name="format_get_more_percent">Extra %d%% Off</string>
     <string name="format_get_more_bath">Extra %d฿ Off</string>
-    <string name="title_credit_card_on_top">Credit card on-top promotion discount when create full payment</string>
+    <string name="title_credit_card_on_top">Credit card on top promotion when apply selected bank</string>
     <string name="badge_promotion">Promotion</string>
 
     <!--  Installment  -->
