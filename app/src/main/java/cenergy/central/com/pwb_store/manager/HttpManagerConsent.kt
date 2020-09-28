@@ -23,9 +23,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class HttpManagerConsent(var context: Context){
+class HttpManagerConsent(var context: Context) {
     private val pref by lazy { PreferenceManager(context) }
     private val database by lazy { RealmController.getInstance() }
+    private val apiManager by lazy {  HttpManagerMagento.getInstance(context) }
 
     private var retrofit: Retrofit
     private var defaultHttpClient: OkHttpClient
@@ -46,6 +47,7 @@ class HttpManagerConsent(var context: Context){
                 .build()
 
         val gson = GsonConverterFactory.create()
+
         retrofit = Retrofit.Builder()
                 .baseUrl(Constants.CONSENT_HOSTNAME)
                 .addConverterFactory(gson)
@@ -53,14 +55,16 @@ class HttpManagerConsent(var context: Context){
                 .build()
     }
 
-    fun getConsentInfo(callback: ApiResponseCallback<ConsentInfoResponse>){
-        if (isSecretKeyNotNull()){
+    fun getConsentInfo(callback: ApiResponseCallback<ConsentInfoResponse>) {
+        if (isSecretKeyNotNull()) {
             val consentService = retrofit.create(ConsentService::class.java)
-            if (BuildConfig.IS_PRODUCTION){
-                consentService.getConsentInfo(Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
+            if (BuildConfig.IS_PRODUCTION) {
+                consentService.getConsentInfo(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                        apiManager.getUserClientType(), apiManager.getUserRetailerId(),
+                        Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
                         pref.xApiKeyConsent ?: "").enqueue(object : Callback<ConsentInfoResponse> {
                     override fun onResponse(call: Call<ConsentInfoResponse>, response: Response<ConsentInfoResponse>?) {
-                        if (response != null && response.isSuccessful && response.body() != null){
+                        if (response != null && response.isSuccessful && response.body() != null) {
                             callback.success(response.body())
                         } else {
                             callback.failure(APIErrorUtils.parseError(response))
@@ -72,10 +76,12 @@ class HttpManagerConsent(var context: Context){
                     }
                 })
             } else {
-                consentService.getConsentInfoStaging(Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
+                consentService.getConsentInfoStaging(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                        apiManager.getUserClientType(), apiManager.getUserRetailerId(),
+                        Constants.CONSENT_CHANNEL, Constants.CONSENT_PARTNER, "application/json",
                         pref.xApiKeyConsent ?: "").enqueue(object : Callback<ConsentInfoResponse> {
                     override fun onResponse(call: Call<ConsentInfoResponse>, response: Response<ConsentInfoResponse>?) {
-                        if (response != null && response.isSuccessful && response.body() != null){
+                        if (response != null && response.isSuccessful && response.body() != null) {
                             callback.success(response.body())
                         } else {
                             callback.failure(APIErrorUtils.parseError(response))
@@ -87,29 +93,47 @@ class HttpManagerConsent(var context: Context){
                     }
                 })
             }
-
         } else {
             userLogout()
         }
     }
 
-    fun setConsent(consentBody: ConsentBody, callback: ApiResponseCallback<ConsentResponse>){
-        if (isSecretKeyNotNull()){
+    fun setConsent(consentBody: ConsentBody, callback: ApiResponseCallback<ConsentResponse>) {
+        if (isSecretKeyNotNull()) {
             val consentService = retrofit.create(ConsentService::class.java)
-            consentService.setConsent("application/json", pref.xApiKeyConsent?:"",
-                    consentBody).enqueue(object : Callback<ConsentResponse>{
-                override fun onResponse(call: Call<ConsentResponse>, response: Response<ConsentResponse>) {
-                    if (response.body() != null && response.isSuccessful){
-                        callback.success(response.body())
-                    } else {
-                        callback.failure(APIErrorUtils.parseError(response))
+            if (BuildConfig.IS_PRODUCTION) {
+                consentService.setConsent(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                        apiManager.getUserClientType(), apiManager.getUserRetailerId(),
+                        "application/json", pref.xApiKeyConsent ?: "", consentBody).enqueue(object : Callback<ConsentResponse> {
+                    override fun onResponse(call: Call<ConsentResponse>, response: Response<ConsentResponse>) {
+                        if (response.body() != null && response.isSuccessful) {
+                            callback.success(response.body())
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<ConsentResponse>, t: Throwable) {
-                    callback.failure(t.getResultError())
-                }
-            })
+                    override fun onFailure(call: Call<ConsentResponse>, t: Throwable) {
+                        callback.failure(t.getResultError())
+                    }
+                })
+            } else {
+                consentService.setConsentStaging(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
+                        apiManager.getUserClientType(), apiManager.getUserRetailerId(),
+                        "application/json", pref.xApiKeyConsent ?: "", consentBody).enqueue(object : Callback<ConsentResponse> {
+                    override fun onResponse(call: Call<ConsentResponse>, response: Response<ConsentResponse>) {
+                        if (response.body() != null && response.isSuccessful) {
+                            callback.success(response.body())
+                        } else {
+                            callback.failure(APIErrorUtils.parseError(response))
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ConsentResponse>, t: Throwable) {
+                        callback.failure(t.getResultError())
+                    }
+                })
+            }
         } else {
             userLogout()
         }

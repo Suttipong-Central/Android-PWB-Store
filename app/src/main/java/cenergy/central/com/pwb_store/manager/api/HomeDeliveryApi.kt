@@ -16,7 +16,7 @@ class HomeDeliveryApi {
         val apiManager = HttpManagerMagento.getInstance(context)
         val slotBody = BookingSlotBody(shippingSlot)
         apiManager.hdlService.createBooking(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
-                cartId, slotBody).enqueue(object : Callback<ShippingSlot> {
+                apiManager.getUserRetailerId(), cartId, slotBody).enqueue(object : Callback<ShippingSlot> {
             override fun onResponse(call: Call<ShippingSlot>, response: Response<ShippingSlot>) {
                 if (response.isSuccessful) {
                     callback.success(response.body())

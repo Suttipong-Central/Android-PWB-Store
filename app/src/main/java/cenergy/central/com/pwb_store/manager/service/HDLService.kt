@@ -15,6 +15,7 @@ interface HDLService {
     @PUT("/rest/V1/guest-carts/{cartId}/shipping-slot-hdl/book")
     fun createBooking(@Header("client") client: String,
                       @Header("client-type") clientType: String,
+                      @Header("retailer-id") retailerId: String,
                       @Path("cartId") cartId: String,
                       @Body bookingSlotBody: BookingSlotBody): Call<ShippingSlot>
 }

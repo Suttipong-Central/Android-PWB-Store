@@ -22,7 +22,7 @@ class OrderApi {
         val apiManager = HttpManagerMagento.getInstance(context)
 
         apiManager.cartService.setPaymentInformation(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
-                apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
+                apiManager.getUserRetailerId(), apiManager.getLanguage(), cartId, paymentMethodBody).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     callback.onSuccess(response.body())

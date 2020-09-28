@@ -243,8 +243,8 @@ class CartUtils(private val context: Context) {
 
     fun addCoupon(cartId: String, couponCode: String, callback: ApiResponseCallback<Boolean>) {
         val apiManager = HttpManagerMagento.getInstance(context)
-        apiManager.cartService.addCoupon(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
-                apiManager.getUserClientType(), cartId, couponCode).enqueue(object : Callback<Boolean> {
+        apiManager.cartService.addCoupon(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                apiManager.getUserRetailerId() ,cartId, couponCode).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
@@ -261,8 +261,8 @@ class CartUtils(private val context: Context) {
 
     fun deleteCoupon(cartId: String, callback: ApiResponseCallback<Boolean>) {
         val apiManager = HttpManagerMagento.getInstance(context)
-        apiManager.cartService.deleteCoupon(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
-                apiManager.getUserClientType(), cartId).enqueue(object : Callback<Boolean> {
+        apiManager.cartService.deleteCoupon(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                apiManager.getUserRetailerId(), cartId).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.body() != null && response.body() == true) {
                     callback.success(response.body())
@@ -280,7 +280,7 @@ class CartUtils(private val context: Context) {
     fun viewCart(cartId: String, callback: ApiResponseCallback<Pair<CartResponse?, List<Product>>>) {
         val apiManager = HttpManagerMagento.getInstance(context)
         apiManager.cartService.viewCart(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
-                apiManager.getLanguage(), cartId).enqueue(object : Callback<CartResponse> {
+                apiManager.getUserRetailerId(), apiManager.getLanguage(), cartId).enqueue(object : Callback<CartResponse> {
             override fun onResponse(call: Call<CartResponse>, response: Response<CartResponse>) {
                 if (response.body() != null && response.isSuccessful) {
 
@@ -322,6 +322,7 @@ class CartUtils(private val context: Context) {
     }
 
     fun viewCartTotal(cartId: String, callback: ApiResponseCallback<CartTotal>) {
+        val apiManager = HttpManagerMagento.getInstance(context)
         val httpUrl = HttpUrl.Builder()
                 .scheme("https")
                 .host(Constants.MDC_HOST_NAME)
@@ -330,6 +331,9 @@ class CartUtils(private val context: Context) {
 
         val request = Request.Builder()
                 .url(httpUrl)
+                .addHeader(HttpManagerMagento.HEADER_CLIENT_NAME, HttpManagerMagento.CLIENT_NAME_E_ORDERING)
+                .addHeader(HttpManagerMagento.HEADER_CLIENT_TYPE, apiManager.getUserClientType())
+                .addHeader(HttpManagerMagento.HEADER_RETAILER_ID, apiManager.getUserRetailerId())
                 .build()
 
         HttpManagerMagento(context).defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {

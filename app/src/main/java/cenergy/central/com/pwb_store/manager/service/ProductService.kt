@@ -14,6 +14,7 @@ interface ProductService {
     fun getDeliveryInfo(
             @Header("client") client: String,
             @Header("client-type") clientType: String,
+            @Header("retailer-id") retailerId: String,
             @Path("lang") language: String,
             @Path("sku") sku: String): Call<List<DeliveryInfo>>
 }

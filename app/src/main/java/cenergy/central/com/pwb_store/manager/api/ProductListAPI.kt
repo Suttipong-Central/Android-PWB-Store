@@ -6,6 +6,10 @@ import cenergy.central.com.pwb_store.Constants
 import cenergy.central.com.pwb_store.extensions.isChatAndShop
 import cenergy.central.com.pwb_store.manager.ApiResponseCallback
 import cenergy.central.com.pwb_store.manager.HttpManagerMagento
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.CLIENT_NAME_E_ORDERING
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.HEADER_CLIENT_NAME
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.HEADER_CLIENT_TYPE
+import cenergy.central.com.pwb_store.manager.HttpManagerMagento.Companion.HEADER_RETAILER_ID
 import cenergy.central.com.pwb_store.model.body.FilterGroups
 import cenergy.central.com.pwb_store.model.body.ProductListBody
 import cenergy.central.com.pwb_store.model.body.SortOrder
@@ -40,6 +44,9 @@ class ProductListAPI {
             val request = Request.Builder()
                     .url(httpUrl)
                     .post(requestBody)
+                    .addHeader(HEADER_CLIENT_NAME, CLIENT_NAME_E_ORDERING)
+                    .addHeader(HEADER_CLIENT_TYPE, apiManager.getUserClientType())
+                    .addHeader(HEADER_RETAILER_ID, apiManager.getUserRetailerId())
                     .build()
 
             apiManager.defaultHttpClient.newCall(request).enqueue(object : okhttp3.Callback {

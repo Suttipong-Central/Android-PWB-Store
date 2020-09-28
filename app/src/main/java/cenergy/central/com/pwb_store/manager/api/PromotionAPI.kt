@@ -19,7 +19,7 @@ class PromotionAPI {
             val apiManager = HttpManagerMagento.getInstance(context)
             apiManager.promotionService.getPromotionSuggestion(Constants.CLIENT_MAGENTO,
                     HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
-                    apiManager.getLanguage(), product.sku).enqueue(object : Callback<PromotionResponse> {
+                    apiManager.getUserRetailerId(), apiManager.getLanguage(), product.sku).enqueue(object : Callback<PromotionResponse> {
                 override fun onResponse(call: Call<PromotionResponse>, response: Response<PromotionResponse>) {
                     if (response.isSuccessful) {
                         callback.success(response.body())
@@ -38,7 +38,7 @@ class PromotionAPI {
             val apiManager = HttpManagerMagento.getInstance(context)
             apiManager.promotionService.getPromotionSuggestionBySKUs(Constants.CLIENT_MAGENTO,
                     HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
-                    apiManager.getLanguage(), "sku", productSKUs, "in")
+                    apiManager.getUserRetailerId(), apiManager.getLanguage(), "sku", productSKUs, "in")
                     .enqueue(object : Callback<List<PromotionResponse>> {
                         override fun onResponse(call: Call<List<PromotionResponse>>, response: Response<List<PromotionResponse>>) {
                             if (response.isSuccessful) {

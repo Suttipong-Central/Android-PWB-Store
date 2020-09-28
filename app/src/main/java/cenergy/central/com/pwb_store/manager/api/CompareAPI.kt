@@ -15,7 +15,7 @@ class CompareAPI {
     fun retrieveCompareProduct(context: Context, productSKUs: String, callback: ApiResponseCallback<List<CompareProductResponse>>) {
         val apiManager = HttpManagerMagento.getInstance(context)
         apiManager.compareService.getCompareProduct(Constants.CLIENT_MAGENTO,
-                HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(), apiManager.getUserRetailerId(),
                 apiManager.getLanguage(), productSKUs).enqueue(object : Callback<List<CompareProductResponse>> {
             override fun onResponse(call: Call<List<CompareProductResponse>>, response: Response<List<CompareProductResponse>>) {
                 if (response.isSuccessful) {

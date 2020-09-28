@@ -15,8 +15,8 @@ class PaymentApi {
     fun retrievePaymentInformation(context: Context, cartId: String,
                                    callback: ApiResponseCallback<PaymentInformationResponse>) {
         val apiManager = HttpManagerMagento.getInstance(context)
-        apiManager.cartService.retrievePaymentInformation(HttpManagerMagento.CLIENT_NAME_E_ORDERING,
-                apiManager.getUserClientType(), apiManager.getLanguage(), cartId).enqueue(object : Callback<PaymentInformationResponse> {
+        apiManager.cartService.retrievePaymentInformation(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
+                apiManager.getUserRetailerId(), apiManager.getLanguage(), cartId).enqueue(object : Callback<PaymentInformationResponse> {
             override fun onResponse(call: Call<PaymentInformationResponse>,
                                     response: Response<PaymentInformationResponse>) {
                 if (response.isSuccessful) {
@@ -39,7 +39,7 @@ class PaymentApi {
         val cartService = apiManager.cartService
         val languageCode = apiManager.getLanguage()
         cartService.updatePaymentInformation(HttpManagerMagento.CLIENT_NAME_E_ORDERING, apiManager.getUserClientType(),
-                languageCode, cartId, paymentMethodBody).enqueue(object : Callback<Boolean> {
+                apiManager.getUserRetailerId(), languageCode, cartId, paymentMethodBody).enqueue(object : Callback<Boolean> {
             override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (response.isSuccessful && response.body() == true) {
                     callback.success(true)

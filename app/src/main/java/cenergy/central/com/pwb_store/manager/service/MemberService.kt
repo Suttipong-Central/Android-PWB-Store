@@ -27,6 +27,7 @@ interface MemberService {
     fun getProvinces(@Header("Authorization") token: String,
                      @Header("client") client: String,
                      @Header("client-type") clientType: String,
+                     @Header("retailer-id") retailerId: String,
                      @Path("lang") language: String) : Call<List<Province>>
 
     // get Districts
@@ -34,6 +35,7 @@ interface MemberService {
     fun getDistricts(@Header("Authorization") token: String,
                      @Header("client") client: String,
                      @Header("client-type") clientType: String,
+                     @Header("retailer-id") retailerId: String,
                      @Path("lang") language: String,
                      @Path("provinceId") provinceId: String) : Call<List<District>>
 
@@ -42,6 +44,7 @@ interface MemberService {
     fun getSubDistricts(@Header("Authorization") token: String,
                         @Header("client") client: String,
                         @Header("client-type") clientType: String,
+                        @Header("retailer-id") retailerId: String,
                         @Path("lang") language: String,
                         @Path("provinceId") provinceId: String,
                         @Path("districtId") districtId: String) : Call<List<SubDistrict>>

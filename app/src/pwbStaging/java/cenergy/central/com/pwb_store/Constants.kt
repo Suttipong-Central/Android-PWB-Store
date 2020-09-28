@@ -18,7 +18,7 @@ class Constants {
         const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"
 
         // Consent
-        const val CONSENT_HOSTNAME = "https://api-uat.central.tech/member/"
+        const val CONSENT_HOSTNAME = "https://api-uat.central.tech/"
         const val CONSENT_CHANNEL = "EORDERING"
         const val CONSENT_PARTNER = "PWB"
 

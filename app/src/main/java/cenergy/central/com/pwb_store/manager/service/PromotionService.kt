@@ -12,6 +12,7 @@ interface PromotionService {
     fun getPromotionSuggestion(@Header("Authorization") token: String,
                                @Header("client") client: String,
                                @Header("client-type") clientType: String,
+                               @Header("retailer-id") retailerId: String,
                                @Path("lang") language: String,
                                @Path("sku") sku: String): Call<PromotionResponse>
 
@@ -20,6 +21,7 @@ interface PromotionService {
             @Header("Authorization") token: String,
             @Header("client") client: String,
             @Header("client-type") clientType: String,
+            @Header("retailer-id") retailerId: String,
             @Path("lang") language: String,
             @Query("searchCriteria[filterGroups][0][filters][0][field]") fieldSKU: String,
             @Query("searchCriteria[filterGroups][0][filters][0][value]") valueSKUs: String,
