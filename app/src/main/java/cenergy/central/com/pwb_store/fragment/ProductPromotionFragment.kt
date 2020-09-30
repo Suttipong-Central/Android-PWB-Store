@@ -81,49 +81,49 @@ class ProductPromotionFragment : Fragment() {
     }
 
     fun badgeSelected(position: Int) {
-        badgeSelectAdapter.selectedPosition = position
-        when (badgesSelects[position]) {
-            FREEBIE_ITEM -> {
-                if (freebieSKUs.isNotEmpty()) {
-                    titleDisplayPromotion.text = getString(R.string.get_free_item)
-                    icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_freebie))
-                    if (freeItems.isNotEmpty()) {
-                        freebiePromotionAdapter.items = freeItems
+        if (badgeSelectAdapter.selectedPosition == null || badgeSelectAdapter.selectedPosition != position) {
+            badgeSelectAdapter.selectedPosition = position
+            when (badgesSelects[position]) {
+                FREEBIE_ITEM -> {
+                    if (freebieSKUs.isNotEmpty()) {
+                        titleDisplayPromotion.text = getString(R.string.get_free_item)
+                        icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_freebie))
+                        if (freeItems.isNotEmpty()) {
+                            freebiePromotionAdapter.items = freeItems
+                        } else {
+                            retrieveProductFreebies(freebieSKUs)
+                        }
+                        displayPromotionRecycler.adapter = freebiePromotionAdapter
                         tvPromotionNotFound.visibility = View.GONE
                         groupPromotion.visibility = View.VISIBLE
                     } else {
-                        retrieveProductFreebies(freebieSKUs)
+                        displayNotHavePromotion()
                     }
-                    displayPromotionRecycler.adapter = freebiePromotionAdapter
-                    tvPromotionNotFound.visibility = View.GONE
-                    groupPromotion.visibility = View.VISIBLE
-                } else {
-                    displayNotHavePromotion()
                 }
-            }
 
-            CREDIT_CARD_ON_TOP -> {
-                if (creditCardOnTopList.isNotEmpty()){
-                    titleDisplayPromotion.text = getString(R.string.title_credit_card_on_top)
-                    icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_credit_card_white))
-                    creditCardPromotionAdapter.items = creditCardOnTopList
-                    displayPromotionRecycler.adapter = creditCardPromotionAdapter
-                    tvPromotionNotFound.visibility = View.GONE
-                    groupPromotion.visibility = View.VISIBLE
-                } else {
-                    displayNotHavePromotion()
+                CREDIT_CARD_ON_TOP -> {
+                    if (creditCardOnTopList.isNotEmpty()) {
+                        titleDisplayPromotion.text = getString(R.string.title_credit_card_on_top)
+                        icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_credit_card_white))
+                        creditCardPromotionAdapter.items = creditCardOnTopList
+                        displayPromotionRecycler.adapter = creditCardPromotionAdapter
+                        tvPromotionNotFound.visibility = View.GONE
+                        groupPromotion.visibility = View.VISIBLE
+                    } else {
+                        displayNotHavePromotion()
+                    }
                 }
-            }
-            INSTALLMENT_PLANS -> {
-                if (installmentPlanList.isNotEmpty()){
-                    titleDisplayPromotion.text = getString(R.string.title_installment_plans)
-                    icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_credit_card_white))
-                    installmentPlanAdapter.items = installmentPlanList
-                    displayPromotionRecycler.adapter = installmentPlanAdapter
-                    tvPromotionNotFound.visibility = View.GONE
-                    groupPromotion.visibility = View.VISIBLE
-                } else {
-                    displayNotHavePromotion()
+                INSTALLMENT_PLANS -> {
+                    if (installmentPlanList.isNotEmpty()) {
+                        titleDisplayPromotion.text = getString(R.string.title_installment_plans)
+                        icPromotion.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.ic_credit_card_white))
+                        installmentPlanAdapter.items = installmentPlanList
+                        displayPromotionRecycler.adapter = installmentPlanAdapter
+                        tvPromotionNotFound.visibility = View.GONE
+                        groupPromotion.visibility = View.VISIBLE
+                    } else {
+                        displayNotHavePromotion()
+                    }
                 }
             }
         }
@@ -146,7 +146,7 @@ class ProductPromotionFragment : Fragment() {
                 override fun success(response: PromotionResponse?) {
                     if (response?.extension != null) {
                         // Free item
-                        if (response.extension!!.freeItems.isNotEmpty()){
+                        if (response.extension!!.freeItems.isNotEmpty()) {
                             response.extension!!.freeItems[0].freebies.forEach {
                                 freebieSKUs.add(it.sku)
                             }
@@ -154,18 +154,18 @@ class ProductPromotionFragment : Fragment() {
                             productDetailListener?.setFreebieSKUs(freebieSKUs)
                         }
                         // CC on top
-                        if (response.extension!!.creditCardPromotions.isNotEmpty()){
+                        if (response.extension!!.creditCardPromotions.isNotEmpty()) {
                             badgesSelects.add(CREDIT_CARD_ON_TOP)
                             creditCardOnTopList.addAll(response.extension!!.creditCardPromotions)
                             productDetailListener?.setCreditCardPromotionList(creditCardOnTopList)
                         }
                         // Installment plans
-                        if (product.getInstallments().isNotEmpty()){
+                        if (product.getInstallments().isNotEmpty()) {
                             badgesSelects.add(INSTALLMENT_PLANS)
                             installmentPlanList.addAll(product.getInstallments())
                             productDetailListener?.setInstallmentPlanList(installmentPlanList)
                         }
-                        if (badgesSelects.isNotEmpty()){
+                        if (badgesSelects.isNotEmpty()) {
                             productDetailListener?.setBadgeSelects(badgesSelects)
                             badgeSelectAdapter.badgesSelect = badgesSelects
                             // Set default select is
@@ -188,7 +188,7 @@ class ProductPromotionFragment : Fragment() {
         }
     }
 
-    private fun displayNotHavePromotion(){
+    private fun displayNotHavePromotion() {
         tvPromotionNotFound.visibility = View.VISIBLE
         groupPromotion.visibility = View.GONE
     }

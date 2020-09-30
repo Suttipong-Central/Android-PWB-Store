@@ -31,7 +31,7 @@ class InstallmentViewHolder(itemView: View, private val listener: PaymentItemCli
         override fun onItemSelected(adapter: AdapterView<*>?, view: View?, position: Int, id: Long) {
             val item = adapter?.getItemAtPosition(position)
             if (item != null && item is PaymentPromotionView.PromotionView) {
-                listener.onSelectedPromotion(PaymentMethod.INSTALLMENT, item.promotionId)
+                listener.onSelectedPromotion(PaymentMethod.INSTALLMENT, item.promotionId, item.promotionCode)
             } else if (item != null && item is PaymentPromotionView.PromotionDefaultView) {
                 listener.onSelectedDefaultPromotion(PaymentMethod.INSTALLMENT)
             }
@@ -52,7 +52,7 @@ class InstallmentViewHolder(itemView: View, private val listener: PaymentItemCli
                     itemView.context.getString(R.string.select_credit_card_promotion)))
 
             items.addAll(item.promotions.map {
-                val title = when(it.simpleAction){
+                val title = when (it.simpleAction) {
                     PaymentCreditCardPromotion.DISCOUNT_BY_PERCENT -> {
                         itemView.context.getString(R.string.format_credit_card_promotion_percent, it.discountAmount)
                     }
@@ -62,6 +62,7 @@ class InstallmentViewHolder(itemView: View, private val listener: PaymentItemCli
                 }
                 PaymentPromotionView.PromotionView(
                         promotionId = it.promotionId,
+                        promotionCode = it.promotionCode,
                         title = title,
                         bankImageUrl = it.getBankImageUrl(),
                         bankColor = it.bankColor

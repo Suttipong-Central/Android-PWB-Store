@@ -1,6 +1,7 @@
 package cenergy.central.com.pwb_store.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -31,35 +32,37 @@ class InstallmentPlanAdapter : RecyclerView.Adapter<InstallmentPlanViewHolder>()
     }
 }
 
-class InstallmentPlanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+class InstallmentPlanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private var badgeIcon: ImageView = itemView.findViewById(R.id.badgeIcon)
     private var planTv: PowerBuyTextView = itemView.findViewById(R.id.planTv)
 
     @SuppressLint("Range")
-    fun bind(installment: Installment){
-        badgeIcon.setImage(installment.installments[0].getBankImageUrl())
-        planTv.text = getDisplayMonths(installment.installments.map { it.period })
+    fun bind(installment: Installment) {
+        itemView.context?.let { context ->
+            badgeIcon.setImage(installment.installments[0].getBankImageUrl())
+            planTv.text = getDisplayMonths(context, installment.installments.map { it.period })
+        }
     }
 
-    private fun getDisplayMonths(months: List<Int>): String{
+    private fun getDisplayMonths(context: Context, months: List<Int>): String {
         var result = ""
-        if (months.size > 1){
-            for (i in months.indices){
+        if (months.size > 1) {
+            for (i in months.indices) {
                 result += when (i) {
-                    months.size -1 -> {
-                        " ${months[i]} months"
+                    months.size - 1 -> {
+                        " ${months[i]} ${context.getString(R.string.month)}"
                     }
                     0 -> {
-                        "${months[i]} months,"
+                        "${months[i]} ${context.getString(R.string.month)},"
                     }
                     else -> {
-                        " ${months[i]} months,"
+                        " ${months[i]} ${context.getString(R.string.month)},"
                     }
                 }
             }
         } else {
-            result += "${months[0]} months"
+            result += "${months[0]} ${context.getString(R.string.month)}"
         }
         return result
     }

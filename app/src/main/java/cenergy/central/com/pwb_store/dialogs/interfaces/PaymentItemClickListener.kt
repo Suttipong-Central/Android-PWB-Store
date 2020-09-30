@@ -5,6 +5,6 @@ import cenergy.central.com.pwb_store.model.PaymentMethod
 interface PaymentItemClickListener {
     fun onClickedPayButton()
     fun onClickedPaymentItem(paymentMethod: PaymentMethod)
-    fun onSelectedPromotion(paymentMethod: String, promotionId: Int)
+    fun onSelectedPromotion(paymentMethod: String, promotionId: Int, promotionCode: String)
     fun onSelectedDefaultPromotion(paymentMethod: String)
 }

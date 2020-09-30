@@ -293,8 +293,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
                         if (response?.first != null) {
                             cartResponse = response.first
                             products = response.second
-                            getCartTotal()
                             updateCacheCartItem(cartResponse, response.second)
+                            getCartTotal()
                         } else {
                             mProgressDialog?.dismiss()
                             showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
@@ -317,8 +317,11 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             it.items.forEach { item ->
                 val product = products.firstOrNull { p -> item.sku == p.sku }
                 product?.let {
-                    database.getCacheCartItem(product.id)?.let { cacheItem ->
+                    val cacheItem = database.getCacheCartItem(product.id)
+                    if (cacheItem != null) {
                         database.saveCartItem(CacheCartItem.updateCartItem(cacheItem, product))
+                    } else {
+                        database.saveCartItem(CacheCartItem.asCartItem(item, product))
                     }
                 }
             }

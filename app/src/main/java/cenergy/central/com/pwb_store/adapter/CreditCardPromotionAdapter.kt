@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import cenergy.central.com.pwb_store.R
 import cenergy.central.com.pwb_store.extensions.setImageUrl
 import cenergy.central.com.pwb_store.model.response.CreditCardPromotion
+import cenergy.central.com.pwb_store.model.response.PaymentCreditCardPromotion.Companion.DISCOUNT_BY_PERCENT
+import cenergy.central.com.pwb_store.model.response.PaymentInformationResponse
 import cenergy.central.com.pwb_store.view.PowerBuyTextView
 
 class CreditCardPromotionAdapter : RecyclerView.Adapter<CreditCardPromotionViewHolder>() {
@@ -32,21 +34,26 @@ class CreditCardPromotionAdapter : RecyclerView.Adapter<CreditCardPromotionViewH
     }
 }
 
-class CreditCardPromotionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+class CreditCardPromotionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private var border: FrameLayout = itemView.findViewById(R.id.layoutBorder)
     private var badgeIcon: ImageView = itemView.findViewById(R.id.badgeIcon)
     private var badgeTv: PowerBuyTextView = itemView.findViewById(R.id.badgeTv)
-    private var tvPercent: PowerBuyTextView = itemView.findViewById(R.id.tvPercent)
+    private var tvPercent: PowerBuyTextView = itemView.findViewById(R.id.tvDiscount)
 
     @SuppressLint("Range")
-    fun bind(creditCardOnTop: CreditCardPromotion){
+    fun bind(creditCardOnTop: CreditCardPromotion) {
         val color = Color.parseColor(creditCardOnTop.bankColor)
         badgeIcon.setImageUrl(creditCardOnTop.getBankImageUrl())
         badgeIcon.setBackgroundColor(color)
         badgeTv.setTextColor(color)
         border.setBackgroundColor(color)
-        badgeTv.text = itemView.context.getString(R.string.format_percent, creditCardOnTop.discountAmount)
-        tvPercent.text = itemView.context.getString(R.string.format_get_more_percent, creditCardOnTop.discountAmount)
+        if (creditCardOnTop.simpleAction == DISCOUNT_BY_PERCENT) {
+            badgeTv.text = itemView.context.getString(R.string.format_percent, creditCardOnTop.discountAmount)
+            tvPercent.text = itemView.context.getString(R.string.format_get_more_percent, creditCardOnTop.discountAmount)
+        } else {
+            badgeTv.text = itemView.context.getString(R.string.format_bath, creditCardOnTop.discountAmount)
+            tvPercent.text = itemView.context.getString(R.string.format_get_more_bath, creditCardOnTop.discountAmount)
+        }
     }
 }
