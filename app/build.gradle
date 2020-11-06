@@ -44,7 +44,7 @@ android {
         flavorDimensions "version"
         multiDexEnabled true
         versionCode 152
-        versionName "1.2.4"
+        versionName "1.2.5"
     }
     buildTypes {
         debug {
