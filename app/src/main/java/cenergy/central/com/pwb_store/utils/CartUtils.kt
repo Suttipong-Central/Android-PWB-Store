@@ -128,16 +128,16 @@ class CartUtils(private val context: Context) {
         // is empty cart?
         if (cacheCartItems == null || cacheCartItems.isEmpty()) {
             val cartItemBody = if (branchResponse != null) {
-                CartItemBody.create(cartId, product, branchResponse!!, retailerId)  // ispu
+                CartItemBody.create(cartId, product, branchResponse!!, null)  // ispu
             } else {
-                CartItemBody.create(cartId, product, retailerId) // normal
+                CartItemBody.create(cartId, product, null) // normal
             }
             requestAddToCart(cartId, product, cartItemBody)
         } else {
             // is product ispu
             if (branchResponse != null) {
                 if (cacheCartItems.hasProduct2h()) {
-                    val body = CartItemBody.create(cartId, product, branchResponse!!, retailerId)  // ispu
+                    val body = CartItemBody.create(cartId, product, branchResponse!!, null)  // ispu
                     requestAddToCart(cartId, product, body)
                 } else {
                     clearCartAndRecreateCart(product)
@@ -147,7 +147,7 @@ class CartUtils(private val context: Context) {
                 if (cacheCartItems.hasProduct2h()) {
                     clearCartAndRecreateCart(product)
                 } else {
-                    val body = CartItemBody.create(cartId, product, retailerId)  // normal
+                    val body = CartItemBody.create(cartId, product, null)  // normal
                     requestAddToCart(cartId, product, body)
                 }
             }

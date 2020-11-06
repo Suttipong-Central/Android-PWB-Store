@@ -87,14 +87,14 @@ android {
 
         release {
             signingConfig signingConfigs.config
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
             renderscriptOptimLevel 3
-            zipAlignEnabled true
+            zipAlignEnabled false
             buildConfigField 'boolean', 'IS_PRODUCTION', 'true'
         }
     }
