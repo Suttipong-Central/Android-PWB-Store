@@ -44,7 +44,7 @@ android {
         flavorDimensions "version"
         multiDexEnabled true
         versionCode 152
-        versionName "1.2.4"
+        versionName "1.2.5"
     }
     buildTypes {
         debug {
@@ -87,14 +87,14 @@ android {
 
         release {
             signingConfig signingConfigs.config
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true
-            jniDebuggable true
-            renderscriptDebuggable true
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
             renderscriptOptimLevel 3
-            zipAlignEnabled false
+            zipAlignEnabled true
             buildConfigField 'boolean', 'IS_PRODUCTION', 'true'
         }
     }
