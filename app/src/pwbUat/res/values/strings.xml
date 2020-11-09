@@ -3,4 +3,5 @@
     <string name="app_name" translatable="false">E-Ordering - UAT</string>
     <string name="watermark_business" translatable="false">PowerBuy</string>
     <string name="watermark_environment" translatable="false">Pre Production(headless)</string>
+    <string name="hostname_deep_link" translatable="false">uat-fe.powerbuy.co.th</string>
 </resources>
