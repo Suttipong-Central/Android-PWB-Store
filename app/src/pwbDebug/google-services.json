@@ -1,0 +1,272 @@
+{
+  "project_info": {
+    "project_number": "284179438681",
+    "firebase_url": "https://e-ordering-254609.firebaseio.com",
+    "project_id": "e-ordering-254609",
+    "storage_bucket": "e-ordering-254609.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:83367725477145604e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.cds"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:e644fe1fc054034a4e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.cds.lte"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:ff9abba5f6be92ba4e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.cds.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:d0d5a4bf625c31d74e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.pwb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:d9d471629f1210644e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.pwb.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:a59bedf2f27df3e14e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.pwb.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:e0756faeea9b955e4e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.pwb_omni_tv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:bad178292e73e7a94e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.pwb_omni_tv.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284179438681:android:19f8627abfbafeed4e6548",
+        "android_client_info": {
+          "package_name": "cenergy.central.com.eordering.rbs.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoZ9WxhHT7_9F2R7256Aejw71dkq-6xFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284179438681-dto5drj845bbu6hf7h1vb80o1i8p294k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

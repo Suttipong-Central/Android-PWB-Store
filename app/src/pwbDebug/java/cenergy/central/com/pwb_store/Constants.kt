@@ -6,30 +6,24 @@ import java.util.*
 class Constants {
     companion object {
         // region magento
-        const val BASE_URL_MAGENTO = "https://dev-mdc.powerbuy.co.th"
-        const val PWB_HOST_NAME = "dev-mdc.powerbuy.co.th"
+        const val BASE_URL_MAGENTO = "https://staging-mdc.powerbuy.co.th"
+        const val MDC_HOST_NAME = "staging-mdc.powerbuy.co.th"
         const val CLIENT_MAGENTO = "Bearer ngvids7tnggs94sm81k8a3oxjgl9cd16"
         // endregion
 
-        const val CONTENT_TYPE = "Content-Type"
-        const val APPTICATION_JSON = "application/json"
+        const val WEB_HOST_NAME = "https://staging-fe.powerbuy.co.th"
 
-        // datalake
-        const val DATALAKE_HOST_NAME = "staging-datalake-api.powerbuy.co.th"
-        const val DATALAKE_X_SUBJECT_ID_HEADER = "x-subject-id"
-        const val DATALAKE_X_SUBJECT_ID_VALUE = "base64"
-        const val DATALAKE_X_API_KEY_HEADER = "x-api-key"
-        const val DATALAKE_X_API_KEY_VALUE = "dCbwYN80p5cCdGDeCcOVW6ojJdTblN41dzRKWHd0"
-        // end region datalake
-
-        // region central
+        // Central UAT
         const val CENTRAL_HOST_NAME = "https://uat-api.central.tech"
-        const val CLIENT_SERVICE_NAME = "execute-api"
-        const val CLIENT_REGION = "ap-southeast-1"
-        const val CLIENT_X_API_KEY = "lIrZy8ZTEvkmu4uDe0m06wqNo91REUN7aWnk6GYi"
-        const val CLIENT_ACCESS_KEY = "AKIAIIIW7RXNLIKRTSNQ"
-        const val CLIENT_SECRET_KEY = "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"
-        // endregion
+
+        // Consent
+        const val CONSENT_HOSTNAME = "https://api-uat.central.tech/"
+        const val CONSENT_CHANNEL = "EORDERING"
+        const val CONSENT_PARTNER = "PWB"
+
+        // Firebase
+        const val FIRE_STORE_COLLECTION_NAME = "secret-key"
+        const val FIRE_STORE_DOCUMENT_KEY = "staging"
 
         // region formatter
         val DATE_FORMATTER_VALUE = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)

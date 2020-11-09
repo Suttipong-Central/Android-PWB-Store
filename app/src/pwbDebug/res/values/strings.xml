@@ -3,4 +3,5 @@
     <string name="app_name" translatable="false">E-Ordering - Dev</string>
     <string name="watermark_business" translatable="false">PowerBuy</string>
     <string name="watermark_environment" translatable="false">Dev(headless)</string>
+    <string name="hostname_deep_link" translatable="false">dev-fe.powerbuy.co.th</string>
 </resources>
