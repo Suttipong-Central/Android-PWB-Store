@@ -658,6 +658,7 @@ class PaymentBillingFragment : Fragment() {
 
         // is checkout type ispu
         val billingOptionLayout = rootView.findViewById<Group>(R.id.group_radio_same_billing)
+        /** FIXME should change button to 'Complete Order' */
         if (this.checkoutType == CheckoutType.ISPU) {
             val shippingLabel = rootView.findViewById<TextView>(R.id.shipping_label_text_view)
             billingOptionLayout.visibility = View.GONE
