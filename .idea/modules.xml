@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PWB_EOrdering.iml" filepath="$PROJECT_DIR$/.idea/modules/PWB_EOrdering.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/PWB_EOrdering.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/PWB_EOrdering.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-pwb-store.iml" filepath="$PROJECT_DIR$/.idea/modules/android-pwb-store.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/android-pwb-store.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/android-pwb-store.app.iml" />
     </modules>
   </component>
 </project>
