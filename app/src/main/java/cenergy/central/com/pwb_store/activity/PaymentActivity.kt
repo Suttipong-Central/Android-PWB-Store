@@ -269,7 +269,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.billingAddress = billingAddress
         this.theOneCardNo = t1cNumber
         if (privacyVersion != null) { // if privacy is null because API get consent info not working
-            setConsent(privacyVersion, isCheckConsent, false)
+            setConsent(privacyVersion, isCheckConsent, true)
         } else {
             cartId?.let { getDeliveryOptions(it) } // request delivery options
         }
@@ -1310,6 +1310,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
     // region {@link StorePickUpListener}
     override fun onUpdateStoreDetail(branch: BranchResponse) {
         if (currentFragment is DeliveryStorePickUpFragment) {
+            this.branch = branch.branch
             (currentFragment as DeliveryStorePickUpFragment).updateStoreDetail(branch)
         }
     }
@@ -1403,6 +1404,9 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
 
     private fun createOrderWithIspu() {
         val cacheCartItems = database.cacheCartItems
+        /** FIXME just to hack to get the updated branch details */
+        cacheCartItems[0].branch = this.branch
+
         val item = cacheCartItems.find { it.branch != null }
         if (item != null) {
             this.branch = item.branch
