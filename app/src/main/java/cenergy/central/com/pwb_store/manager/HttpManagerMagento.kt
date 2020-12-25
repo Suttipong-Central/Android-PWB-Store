@@ -21,6 +21,8 @@ import cenergy.central.com.pwb_store.model.response.*
 import cenergy.central.com.pwb_store.realm.RealmController
 import cenergy.central.com.pwb_store.utils.APIErrorUtils
 import cenergy.central.com.pwb_store.utils.getResultError
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.GsonBuilder
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -50,6 +52,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
 
     init {
         val interceptor = HttpLoggingInterceptor()
+        val chuckerInterceptor = ChuckerInterceptor(context, ChuckerCollector(context))
         if (BuildConfig.DEBUG) interceptor.level = HttpLoggingInterceptor.Level.BODY
         defaultHttpClient = OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -62,6 +65,7 @@ class HttpManagerMagento(val context: Context, isSerializeNull: Boolean = false)
                     chain.proceed(request)
                 }
                 .addInterceptor(interceptor)
+                .addInterceptor(chuckerInterceptor)
                 .build()
 
         val gson = if (isSerializeNull) GsonConverterFactory.create(GsonBuilder().serializeNulls().create()) else GsonConverterFactory.create()
