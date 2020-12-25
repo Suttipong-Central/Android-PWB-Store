@@ -290,6 +290,12 @@ public class RealmController {
         return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
     }
 
+    public CacheCartItem getCacheCartItem(String sku) {
+        Realm realm = getRealm();
+        CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_SKU, sku).findFirst();
+        return realmCartItem == null ? null : realm.copyFromRealm(realmCartItem);
+    }
+
     public CacheCartItem getCacheCartItemBySKU(String sku) {
         Realm realm = getRealm();
         CacheCartItem realmCartItem = realm.where(CacheCartItem.class).equalTo(CacheCartItem.FIELD_SKU, sku).findFirst();

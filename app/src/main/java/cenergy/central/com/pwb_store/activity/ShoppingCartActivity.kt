@@ -325,7 +325,7 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             it.items.forEach { item ->
                 val product = products.firstOrNull { p -> item.sku == p.sku }
                 product?.let {
-                    val cacheItem = database.getCacheCartItem(product.id)
+                    val cacheItem = database.getCacheCartItem(product.sku)
                     if (cacheItem != null) {
                         database.saveCartItem(CacheCartItem.updateCartItem(cacheItem, product))
                     } else {
