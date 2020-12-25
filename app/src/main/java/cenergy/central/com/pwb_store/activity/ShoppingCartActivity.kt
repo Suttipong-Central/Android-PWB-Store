@@ -90,10 +90,12 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         @JvmStatic
         fun startActivity(context: Context, view: View) {
             val intent = Intent(context, ShoppingCartActivity::class.java)
-            ActivityCompat.startActivityForResult((context as Activity), intent, REQUEST_UPDATE_LANGUAGE,
-                    ActivityOptionsCompat
-                            .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
-                            .toBundle())
+            ActivityCompat.startActivityForResult(
+                (context as Activity), intent, REQUEST_UPDATE_LANGUAGE,
+                ActivityOptionsCompat
+                    .makeScaleUpAnimation(view, 0, 0, view.width, view.height)
+                    .toBundle()
+            )
         }
 
         @JvmStatic
@@ -170,7 +172,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         couponBtn = findViewById(R.id.couponBtn)
         couponBtn.setText(getString(R.string.add_coupon))
 
-        val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
+        val isSupportCouponOn =
+            fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
         if (isSupportCouponOn) { // support coupon?
             couponBtn.visibility = View.VISIBLE
             couponCodeEdt.visibility = View.VISIBLE
@@ -203,11 +206,14 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         val cacheCartItems = database.cacheCartItems
         val retailer = cartResponse?.extension?.retailer
         if (cacheCartItems != null && cacheCartItems.isNotEmpty() &&
-                cacheCartItems[0].branch != null && retailer != null) {
+            cacheCartItems[0].branch != null && retailer != null
+        ) {
             val item = cacheCartItems[0]
             cartDescriptionTextView.visibility = View.VISIBLE
-            cartDescriptionTextView.text = getString(R.string.format_shopping_cart_ispu,
-                    retailer.extension!!.deliverlyPromiseIspu ?: "")
+            cartDescriptionTextView.text = getString(
+                R.string.format_shopping_cart_ispu,
+                retailer.extension!!.deliverlyPromiseIspu ?: ""
+            )
             // store name use from cache follow website
             storeNameTextView.text = item.branch?.storeName ?: ""
             this.checkoutType = CheckoutType.ISPU
@@ -287,28 +293,30 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
 
     private fun getCartItem() {
         preferenceManager.cartId?.let { cartId ->
-            CartUtils(this).viewCart(cartId, object : ApiResponseCallback<Pair<CartResponse?, List<Product>>> {
-                override fun success(response: Pair<CartResponse?, List<Product>>?) {
-                    runOnUiThread {
-                        if (response?.first != null) {
-                            cartResponse = response.first
-                            products = response.second
-                            updateCacheCartItem(cartResponse, response.second)
-                            getCartTotal()
-                        } else {
-                            mProgressDialog?.dismiss()
-                            showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+            CartUtils(this).viewCart(
+                cartId,
+                object : ApiResponseCallback<Pair<CartResponse?, List<Product>>> {
+                    override fun success(response: Pair<CartResponse?, List<Product>>?) {
+                        runOnUiThread {
+                            if (response?.first != null) {
+                                cartResponse = response.first
+                                products = response.second
+                                updateCacheCartItem(cartResponse, response.second)
+                                getCartTotal()
+                            } else {
+                                mProgressDialog?.dismiss()
+                                showCommonDialog(resources.getString(R.string.cannot_get_cart_item))
+                            }
                         }
                     }
-                }
 
-                override fun failure(error: APIError) {
-                    runOnUiThread {
-                        mProgressDialog?.dismiss()
-                        displayError(error)
+                    override fun failure(error: APIError) {
+                        runOnUiThread {
+                            mProgressDialog?.dismiss()
+                            displayError(error)
+                        }
                     }
-                }
-            })
+                })
         }
     }
 
@@ -355,21 +363,25 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     private fun retrievePromotion(shoppingCartResponse: CartTotal) {
         if (cartResponse != null && cartResponse!!.items.isNotEmpty()) {
             // not retrieve promotion of freebie items
-            val skuList = cartResponse!!.items.filter { it.price != null && it.price!! > 0.0 }.map { it.sku }
+            val skuList =
+                cartResponse!!.items.filter { it.price != null && it.price!! > 0.0 }.map { it.sku }
             val result = TextUtils.join(",", skuList)
-            PromotionAPI.retrievePromotionBySKUs(this, result, object : ApiResponseCallback<List<PromotionResponse>> {
-                override fun success(response: List<PromotionResponse>?) {
-                    if (response != null) {
-                        promotions.clear()
-                        promotions.addAll(response)
+            PromotionAPI.retrievePromotionBySKUs(
+                this,
+                result,
+                object : ApiResponseCallback<List<PromotionResponse>> {
+                    override fun success(response: List<PromotionResponse>?) {
+                        if (response != null) {
+                            promotions.clear()
+                            promotions.addAll(response)
+                            updateViewShoppingCart(shoppingCartResponse)
+                        }
+                    }
+
+                    override fun failure(error: APIError) {
                         updateViewShoppingCart(shoppingCartResponse)
                     }
-                }
-
-                override fun failure(error: APIError) {
-                    updateViewShoppingCart(shoppingCartResponse)
-                }
-            })
+                })
         } else {
             updateViewShoppingCart(shoppingCartResponse)
         }
@@ -384,18 +396,22 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             var total = shoppingCartResponse.totalPrice
 
             var discountPriceValue = 0.0
-            val discount = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
+            val discount =
+                shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.DISCOUNT_KEY }
             if (discount != null) {
                 discountPriceValue = discount.value.toString().toStringDiscount()
             }
 
-            val isSupportCouponOn = fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
+            val isSupportCouponOn =
+                fbRemoteConfig.getBoolean(RemoteConfigUtils.CONFIG_KEY_SUPPORT_COUPON_ON)
             if (isSupportCouponOn) { // support coupon?
-                val coupon = shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
+                val coupon =
+                    shoppingCartResponse.totalSegment?.firstOrNull { it.code == TotalSegment.COUPON_KEY }
                 if (coupon != null) {
                     val couponDiscount = TotalSegment.getCouponDiscount(coupon.value.toString())
                     val couponDiscountAmount = couponDiscount?.couponAmount.toStringDiscount()
-                    val hasCoupon = (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
+                    val hasCoupon =
+                        (couponDiscountAmount > 0 && !couponDiscount?.couponCode.isNullOrEmpty())
                     discountPriceValue -= couponDiscountAmount
                     total -= couponDiscountAmount
                     promotionPrice.text = getDisplayDiscount(unit, couponDiscountAmount.toString())
@@ -416,12 +432,17 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
             }
 
             if (promotions.size > 1) {
-                warningCreditCardTv.visibility = if (isErrorPromotion() || isErrorInstallmentPlans()) View.VISIBLE else View.GONE
+                warningCreditCardTv.visibility =
+                    if (isErrorPromotion() || isErrorInstallmentPlans()) View.VISIBLE else View.GONE
             } else {
                 warningCreditCardTv.visibility = View.GONE
             }
 
-            shoppingCartAdapter.setAdapter(products, promotions, items.checkItems(cartItemList)) // update items in shopping cart
+            shoppingCartAdapter.setAdapter(
+                products,
+                promotions,
+                items.checkItems(cartItemList)
+            ) // update items in shopping cart
 
             updateTitle(shoppingCartResponse.qty)
             val t1Points = (total - (total % 50)) / 50
@@ -523,21 +544,28 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         promotionCode = couponCodeEdt.text.toString()
         if (promotionCode.isNotEmpty()) {
             preferenceManager.cartId?.let { cartId ->
-                CartUtils(this).addCoupon(cartId, promotionCode, object : ApiResponseCallback<Boolean> {
-                    override fun success(response: Boolean?) {
-                        if (response != null) {
-                            refreshShoppingCart()
-                            Toast.makeText(this@ShoppingCartActivity, getString(R.string.used_promo_code, promotionCode), Toast.LENGTH_SHORT).show()
-                        } else {
-                            showCommonDialog(R.string.some_thing_wrong)
+                CartUtils(this).addCoupon(
+                    cartId,
+                    promotionCode,
+                    object : ApiResponseCallback<Boolean> {
+                        override fun success(response: Boolean?) {
+                            if (response != null) {
+                                refreshShoppingCart()
+                                Toast.makeText(
+                                    this@ShoppingCartActivity,
+                                    getString(R.string.used_promo_code, promotionCode),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                showCommonDialog(R.string.some_thing_wrong)
+                            }
                         }
-                    }
 
-                    override fun failure(error: APIError) {
-                        mProgressDialog?.dismiss()
-                        showCommonDialog(getString(R.string.invalid_promo_code, promotionCode))
-                    }
-                })
+                        override fun failure(error: APIError) {
+                            mProgressDialog?.dismiss()
+                            showCommonDialog(getString(R.string.invalid_promo_code, promotionCode))
+                        }
+                    })
             }
         } else {
             mProgressDialog?.dismiss()
@@ -566,22 +594,23 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         showProgressDialog()
         analytics?.trackRemoveItemFromCart(sku)
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
-                override fun success(response: Boolean?) {
-                    if (response == true) {
-                        deleteItemInLocal(itemId)
-                        getCartItem()
-                    } else {
-                        Log.d("DeleteItem", "delete fail.")
-                        mProgressDialog?.dismiss()
+            HttpManagerMagento.getInstance(this)
+                .deleteItem(cartId, itemId, object : ApiResponseCallback<Boolean> {
+                    override fun success(response: Boolean?) {
+                        if (response == true) {
+                            deleteItemInLocal(itemId)
+                            getCartItem()
+                        } else {
+                            Log.d("DeleteItem", "delete fail.")
+                            mProgressDialog?.dismiss()
+                        }
                     }
-                }
 
-                override fun failure(error: APIError) {
-                    mProgressDialog?.dismiss()
-                    showCommonDialog(getString(R.string.please_try_again))
-                }
-            })
+                    override fun failure(error: APIError) {
+                        mProgressDialog?.dismiss()
+                        showCommonDialog(getString(R.string.please_try_again))
+                    }
+                })
         }
     }
 
@@ -589,7 +618,8 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
         hasChangingData = true
         showProgressDialog()
         preferenceManager.cartId?.let { cartId ->
-            HttpManagerMagento.getInstance(this).updateItem(cartId, itemId, qty, branch, isChatAndShop,
+            HttpManagerMagento.getInstance(this)
+                .updateItem(cartId, itemId, qty, branch, isChatAndShop,
                     object : ApiResponseCallback<CartItem> {
                         override fun success(response: CartItem?) {
                             saveCartItemInLocal(response)
@@ -620,13 +650,19 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun getDisplayPrice(unit: String, price: String): String {
-        return String.format(Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
-                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+        return String.format(
+            Locale.getDefault(), "%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()
+            ).format(java.lang.Double.parseDouble(price))
+        )
     }
 
     private fun getDisplayDiscount(unit: String, price: String): String {
-        return String.format(Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
-                Locale.getDefault()).format(java.lang.Double.parseDouble(price)))
+        return String.format(
+            Locale.getDefault(), "-%s %s", unit, NumberFormat.getInstance(
+                Locale.getDefault()
+            ).format(java.lang.Double.parseDouble(price))
+        )
     }
 
     private fun clearCart() {
@@ -658,11 +694,14 @@ class ShoppingCartActivity : BaseActivity(), ShoppingCartAdapter.ShoppingCartLis
     }
 
     private fun showClearCartDialog() {
-        showCommonDialog(null, getString(R.string.title_clear_cart), DialogInterface.OnClickListener { dialog, which ->
-            clearCart() // clear item cart
-            dialog?.dismiss()
-            finish()
-        })
+        showCommonDialog(
+            null,
+            getString(R.string.title_clear_cart),
+            DialogInterface.OnClickListener { dialog, which ->
+                clearCart() // clear item cart
+                dialog?.dismiss()
+                finish()
+            })
     }
 
     private fun hideKeyBoard() {
