@@ -285,7 +285,6 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
             createOrderWithIspu()
         }
     }
-
     // endregion
 
     // region {@link PaymentT1Listener}
