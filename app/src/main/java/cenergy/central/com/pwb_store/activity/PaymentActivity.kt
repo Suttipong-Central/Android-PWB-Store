@@ -269,7 +269,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.billingAddress = billingAddress
         this.theOneCardNo = t1cNumber
         if (privacyVersion != null) { // if privacy is null because API get consent info not working
-            setConsent(privacyVersion, isCheckConsent, checkoutType == CheckoutType.ISPU)
+            setConsent(privacyVersion, isCheckConsent)
         } else {
             cartId?.let { getDeliveryOptions(it) } // request delivery options
         }
