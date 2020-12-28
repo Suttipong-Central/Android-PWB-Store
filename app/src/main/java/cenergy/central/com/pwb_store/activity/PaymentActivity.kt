@@ -280,7 +280,7 @@ class PaymentActivity : BaseActivity(), CheckoutListener,
         this.shippingAddress = billingAddress // sent only address box 1
         this.theOneCardNo = t1cNumber
         if (privacyVersion != null) { // if privacy is null because API get consent info not working
-            setConsent(privacyVersion, isCheckConsent, false)
+            setConsent(privacyVersion, isCheckConsent, checkoutType == CheckoutType.ISPU)
         } else {
             createOrderWithIspu()
         }
